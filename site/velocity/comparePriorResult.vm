@@ -10,6 +10,10 @@
 <img src="earslogo2.gif"/><br/>
 
 <p><b>Comparison with Prior Result $name</p>
+<p>$ref.getName()</p>
+<p>$ref.getReference()</p>
+<p><a href="$ref.getURL()">$ref.getURL()</a></p>
+<p>$ref.getMethod()</p>
 
 <table>
 <tr>

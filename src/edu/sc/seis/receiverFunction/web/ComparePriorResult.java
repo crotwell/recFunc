@@ -37,6 +37,9 @@ public class ComparePriorResult extends StationList {
         String name = RevUtil.get("name", req);
         context.put("name", name);
         StationResult[] results = jdbcStationResult.getAll(name);
+        if (results.length != 0) {
+            context.put("ref", results[0].getRef());
+        }
         HashMap prior = new HashMap();
         context.put("prior", prior);
         for(int i = 0; i < results.length; i++) {

@@ -25,9 +25,10 @@ module IfReceiverFunction {
         ChannelSeq channels;
         Fissures::IfSeismogramDC::LocalSeismogramSeq original;
         Fissures::IfSeismogramDC::LocalSeismogram radial;
-        float radialError;
+        float radialMatch;
         Fissures::IfSeismogramDC::LocalSeismogram tansverse;
-        float transverseError;
+        float transverseMatch;
+        long bump;
 	};
 	
     typedef sequence<IterDeconConfig> IterDeconConfigSeq;
@@ -53,9 +54,11 @@ module IfReceiverFunction {
 					      in ChannelSeq channels,
 					      in Fissures::IfSeismogramDC::LocalSeismogramSeq original,
 					      in Fissures::IfSeismogramDC::LocalSeismogram radial,
-					      in float radialError,
+					      in float radialMatch,
+					      in long radialBump,
 					      in Fissures::IfSeismogramDC::LocalSeismogram tansverse,
-					      in float transverseError
+					      in float transverseMatch,
+					      in long transverseBump
                     );
 
     };

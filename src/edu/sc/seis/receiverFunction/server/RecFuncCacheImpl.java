@@ -38,8 +38,12 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     
 	public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,
 				                    ChannelId[] channel) {
-		
-	return null;
+	    try {
+            return jdbcRecFunc.getCachedConfigs(prefOrigin, channel);
+        } catch(Exception e) {
+            GlobalExceptionHandler.handle(e);
+            throw new org.omg.CORBA.UNKNOWN(e.toString());
+        }
 	}
 	
     /**
@@ -48,9 +52,14 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     public CachedResult get(Origin prefOrigin,
 						        ChannelId[] channel,
 								IterDeconConfig config) {
-        // TODO Auto-generated method stub
-        return new CachedResult();
+        try {
+            return jdbcRecFunc.get(prefOrigin, channel, config);
+        } catch(Exception e) {
+            GlobalExceptionHandler.handle(e);
+            throw new org.omg.CORBA.UNKNOWN(e.toString());
+        }
     }
+    
     /**
      *
      */
@@ -60,9 +69,11 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                        Channel[] channels,
                        LocalSeismogram[] original,
                        LocalSeismogram radial,
-                       float radialError,
+                       float radialMatch,
+                       int radialBump,
                        LocalSeismogram tansverse,
-                       float transverseError) {
+                       float transverseMatch,
+                       int transverseBump) {
         try {
             synchronized (jdbcRecFunc.getConnection()) {
                 int recFuncDbId = jdbcRecFunc.put(prefOrigin,
@@ -71,9 +82,11 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                   channels,
                                                   original,
                                                   radial,
-                                                  radialError,
+                                                  radialMatch,
+                                                  radialBump,
                                                   tansverse,
-                                                  transverseError);
+                                                  transverseMatch,
+                                                  transverseBump);
                 System.out.println("insert "+recFuncDbId);
             }
         } catch(Exception e) {

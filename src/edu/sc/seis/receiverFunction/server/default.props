@@ -11,12 +11,13 @@ receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
                                    chanZ_id int, \
                                    seisZ varchar, \
                                    recfuncITR varchar, \
-                                   itr_error float, \
+                                   itr_match float, \
                                    recFuncITT varchar, \
-                                   itt_error float, \
+                                   itt_match float, \
                                    gwidth float, \
                                    maxbumps int, \
-                                   maxerror float, \
+                                   tol float, \
+                                   insertTime timestamp, \
                                    PRIMARY KEY (recFunc_id), \
                                    FOREIGN KEY (origin_id) \
                                    REFERENCES origin (origin_id), \

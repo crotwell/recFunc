@@ -27,7 +27,8 @@ public class IterDeconResult {
                            float[][] corrSave,
                            float[] spikes,
                            float residualPower,
-                           float numeratorPower) {
+                           float numeratorPower,
+                           int bump) {
         this.maxBumps = maxBumps;
         this.useAbsVal = useAbsVal;
         this.tol = tol;
@@ -43,6 +44,7 @@ public class IterDeconResult {
         this.spikes = spikes;
         this.residualPower = residualPower;
         this.numeratorPower = numeratorPower;
+        this.bump = bump;
     }
 
     public float getPercentMatch() {
@@ -128,6 +130,10 @@ public class IterDeconResult {
     public float getNumeratorPower() {
         return numeratorPower;
     }
+    
+    public int getBump() {
+        return bump;
+    }
 
     TimeInterval alignShift;
 
@@ -160,5 +166,7 @@ public class IterDeconResult {
     float residualPower;
 
     float numeratorPower;
+    
+    int bump;
 
 } // IterDeconResult

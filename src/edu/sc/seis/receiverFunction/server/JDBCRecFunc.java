@@ -1,13 +1,16 @@
 package edu.sc.seis.receiverFunction.server;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import org.omg.CORBA.UNKNOWN;
+import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.Orientation;
 import edu.iris.Fissures.IfEvent.EventAttr;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
@@ -19,8 +22,10 @@ import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.iris.dmc.seedcodec.CodecException;
+import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
+import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.DBUtil;
 import edu.sc.seis.fissuresUtil.database.JDBCSequence;
@@ -30,7 +35,10 @@ import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.mseed.FissuresConvert;
 import edu.sc.seis.fissuresUtil.mseed.SeedFormatException;
+import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
+import edu.sc.seis.fissuresUtil.sac.SacToFissures;
 import edu.sc.seis.fissuresUtil.xml.SeismogramFileTypes;
 import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.UnsupportedFileTypeException;
@@ -72,24 +80,39 @@ public class JDBCRecFunc extends JDBCTable {
                                         "chanZ_id, "+
                                         "seisZ, "+
                                         "recfuncITR,  "+
-                                        "itr_error, "+
+                                        "itr_match, "+
+                                        "itr_bump, "+
                                         "recFuncITT, "+
-                                        "itt_error, "+
+                                        "itt_match, "+
+                                        "itt_bump, "+
                                         "gwidth, "+
                                         "maxbumps,  "+
-                                        "maxerror) "+
-        "VALUES(?,?,?,?, ?,?,?,?, ?,?,?,?, ?,?,?,?)");
+                                        "tol, "+
+                                        "insertTime) "+
+                                        "VALUES(?,?,?,?, ?,?,?,?, ?,?,?,?, ?,?,?,?, ?,?,?)");
         isCachedStmt = conn.prepareStatement("SELECT recFunc_id from "+getTableName()+
                                              " WHERE origin_id = ? "+
                                              " AND chanZ_id = ? AND ( "+
-                                             "( chanA_id = ? AND  chanB_id = ? ) OR "+
-                                             "( chanB_id = ? AND  chanA_id = ? ) )"+
+                                             " ( chanA_id = ? AND  chanB_id = ? ) OR "+
+                                             " ( chanB_id = ? AND  chanA_id = ? ) )"+
                                              " AND gwidth = ? "+
                                              " AND maxbumps = ? "+
-                                             " AND maxerror = ? "
-        );
-        //        getConfigsStmt = conn.prepareStatement("SELECT gwidth, maxbumps, maxerror from "+getTableName()+
-        //                                               " WHERE ");
+                                             " AND tol = ? ");
+        getConfigsStmt = conn.prepareStatement("SELECT gwidth, maxbumps, maxerror from "+getTableName()+
+                                               " WHERE "+
+                                               " origin_id = ? "+
+                                               " AND chanZ_id = ? AND ( "+
+                                               " ( chanA_id = ? AND  chanB_id = ? ) OR "+
+                                               " ( chanB_id = ? AND  chanA_id = ? ) )");
+        getStmt = conn.prepareStatement("SELECT *  from "+getTableName()+
+                                               " WHERE "+
+                                               " origin_id = ? "+
+                                               " AND chanZ_id = ? AND ( "+
+                                               " ( chanA_id = ? AND  chanB_id = ? ) OR "+
+                                               " ( chanB_id = ? AND  chanA_id = ? ) )"+
+                                               " AND gwidth = ? "+
+                                               " AND maxbumps = ? "+
+                                               " AND tol = ? ");
     }
     
     public int put(Origin prefOrigin,
@@ -98,9 +121,11 @@ public class JDBCRecFunc extends JDBCTable {
                    Channel[] channels,
                    LocalSeismogram[] original,
                    LocalSeismogram radial,
-                   float radialError,
+                   float radialMatch,
+                   int radialBump,
                    LocalSeismogram transverse,
-                   float transverseError) throws SQLException, IOException, NoPreferredOrigin, CodecException, UnsupportedFileTypeException, SeedFormatException {
+                   float transverseMatch,
+                   int transverseBump) throws SQLException, IOException, NoPreferredOrigin, CodecException, UnsupportedFileTypeException, SeedFormatException {
         logger.debug("put: "+eventAttr.name+" "+ChannelIdUtil.toStringNoDates(channels[0].get_id()));
         int originDbId = jdbcOrigin.put(prefOrigin);
         int eventAttrDbId = jdbcEventAttr.put(eventAttr);
@@ -108,12 +133,9 @@ public class JDBCRecFunc extends JDBCTable {
         for(int i = 0; i < channels.length; i++) {
             channelDbId[i] = jdbcChannel.put(channels[i]);
         }
+
         CacheEvent cacheEvent = new CacheEvent(eventAttr, prefOrigin);
-        File eventDir = new File(dataDir, eventFormatter.getResult(cacheEvent));
-        File netDir = new File(eventDir, channels[0].get_id().network_id.network_code);
-        File stationDir = new File(netDir, channels[0].get_id().station_code);
-        stationDir.mkdirs();
-        
+        File stationDir = getDir(cacheEvent, channels[0]);
         File[] seisFile = new File[original.length];
         
         for (int i=0; i<original.length; i++) {
@@ -195,12 +217,16 @@ public class JDBCRecFunc extends JDBCTable {
         putStmt.setInt(index++, channelDbId[zChanNum]);
         putStmt.setString(index++, seisFile[zChanNum].getName());
         putStmt.setString(index++, radialFile.getName());
-        putStmt.setFloat(index++, radialError);
+        putStmt.setFloat(index++, radialMatch);
+        putStmt.setFloat(index++, radialBump);
         putStmt.setString(index++, transverseFile.getName());
-        putStmt.setFloat(index++, transverseError);
+        putStmt.setFloat(index++, transverseMatch);
+        putStmt.setFloat(index++, transverseBump);
         putStmt.setFloat(index++, config.gwidth);
         putStmt.setInt(index++, config.maxBumps);
         putStmt.setFloat(index++, config.tol);
+        
+        putStmt.setTimestamp(index++, ClockUtil.now().getTimestamp());
         putStmt.executeUpdate();
         logger.debug("insert: "+putStmt);
         return id;
@@ -210,6 +236,79 @@ public class JDBCRecFunc extends JDBCTable {
     public int getDbId(Origin prefOrigin,
                        ChannelId[] channels,
                        IterDeconConfig config) throws SQLException, NotFound {
+        populateGetStmt(isCachedStmt, prefOrigin, channels, config);
+        ResultSet rs = isCachedStmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        throw new NotFound("No rec func entry found");
+    }
+    
+
+    public CachedResult get(Origin prefOrigin,
+                            ChannelId[] channel,
+                            IterDeconConfig config) throws NotFound, FileNotFoundException, IOException, SQLException, FissuresException {
+        populateGetStmt(getStmt, prefOrigin, channel, config);
+        ResultSet rs = getStmt.executeQuery();
+        if (rs.next()) {
+            Origin origin = jdbcOrigin.get(rs.getInt("origin_id"));
+            EventAttr eventAttr = jdbcEventAttr.get(rs.getInt("eventAttr_id"));
+            Channel[] channels = new Channel[] {jdbcChannel.get(rs.getInt("chanA_id")),
+                                                jdbcChannel.get(rs.getInt("chanB_id")),
+                                                jdbcChannel.get(rs.getInt("chanZ_id"))};
+            CacheEvent cacheEvent = new CacheEvent(eventAttr, prefOrigin);
+            File stationDir = getDir(cacheEvent, channels[0]);
+            
+            SacTimeSeries radialSAC = new SacTimeSeries();
+            radialSAC.read(new File(stationDir, rs.getString("radial")));
+            LocalSeismogramImpl radial = SacToFissures.getSeismogram(radialSAC);
+            
+            SacTimeSeries transverseSAC = new SacTimeSeries();
+            transverseSAC.read(new File(stationDir, rs.getString("transverse")));
+            LocalSeismogramImpl transverse = SacToFissures.getSeismogram(transverseSAC);
+            
+            LocalSeismogramImpl[] originals = new LocalSeismogramImpl[3];
+            SacTimeSeries SACa = new SacTimeSeries();
+            SACa.read(new File(stationDir, rs.getString("seisA")));
+            originals[0] = SacToFissures.getSeismogram(SACa);
+            SacTimeSeries SACb = new SacTimeSeries();
+            SACb.read(new File(stationDir, rs.getString("seisB")));
+            originals[1] = SacToFissures.getSeismogram(SACb);
+            SacTimeSeries SACz = new SacTimeSeries();
+            SACz.read(new File(stationDir, rs.getString("seisZ")));
+            originals[2] = SacToFissures.getSeismogram(SACz);
+            
+            CachedResult result = new CachedResult(origin,
+                                                   eventAttr,
+                                                   new IterDeconConfig(rs.getFloat("gwidth"),
+                                                   rs.getInt("maxBumps"),
+                                                   rs.getFloat("tol")),
+                                                   channels,
+                                                   originals,
+                                                   radial,
+                                                   rs.getFloat("radialMatch"),
+                                                   transverse,
+                                                   rs.getFloat("transverseMatch"),
+                                                   rs.getInt("bump"));
+            return result;
+        }
+        throw new NotFound("No rec func entry found");
+    }
+    
+    public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,
+                        ChannelId[] channel) throws SQLException, NotFound {
+        populateGetStmt(getConfigsStmt, prefOrigin, channel);
+        ResultSet rs = getConfigsStmt.executeQuery();
+        ArrayList out = new ArrayList();
+        while(rs.next()) {
+            out.add(new IterDeconConfig(rs.getFloat("gwidth"), rs.getInt("maxBumps"), rs.getFloat("tol")));
+        }
+        return (IterDeconConfig[])out.toArray(new IterDeconConfig[0]);
+    }
+    
+    protected int populateGetStmt(Statement stmt, 
+                                   Origin prefOrigin,
+                                   ChannelId[] channels) throws SQLException, NotFound {
         int originDbId = jdbcOrigin.getDBId(prefOrigin);
         int[] chanDbId = new int[channels.length];
         int zChan = -1;
@@ -247,14 +346,27 @@ public class JDBCRecFunc extends JDBCTable {
                 isCachedStmt.setInt(index++, chanDbId[1]);
                 break;
         }
+        return index;
+    }
+    
+
+    protected int populateGetStmt(Statement stmt, 
+                                   Origin prefOrigin,
+                                   ChannelId[] channels,
+                                   IterDeconConfig config) throws SQLException, NotFound {
+        int index = populateGetStmt(stmt, prefOrigin, channels);
         isCachedStmt.setFloat(index++, config.gwidth);
         isCachedStmt.setFloat(index++, config.maxBumps);
         isCachedStmt.setFloat(index++, config.tol);
-        ResultSet rs = isCachedStmt.executeQuery();
-        if (rs.next()) {
-            return rs.getInt(1);
-        }
-        throw new NotFound("No rec func entry for origin="+originDbId+" chan="+chanDbId[0]+","+chanDbId[1]+","+chanDbId[2]);
+        return index;
+    }
+    
+    protected File getDir(CacheEvent cacheEvent, Channel chan) {
+        File eventDir = new File(dataDir, eventFormatter.getResult(cacheEvent));
+        File netDir = new File(eventDir, chan.get_id().network_id.network_code);
+        File stationDir = new File(netDir, chan.get_id().station_code);
+        stationDir.mkdirs();
+        return stationDir;
     }
     
     private File dataDir;

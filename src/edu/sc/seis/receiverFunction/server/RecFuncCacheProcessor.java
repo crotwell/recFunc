@@ -20,6 +20,7 @@ import edu.sc.seis.IfReceiverFunction.RecFuncCacheHelper;
 import edu.sc.seis.IfReceiverFunction.RecFuncCacheOperations;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
+import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.ProxyEventAccessOperations;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
@@ -38,24 +39,23 @@ import edu.sc.seis.sod.process.waveform.vector.WaveformVectorProcess;
 import edu.sc.seis.sod.process.waveform.vector.WaveformVectorResult;
 import edu.sc.seis.sod.status.StringTreeLeaf;
 
-
 /**
- * @author crotwell
- * Created on Sep 10, 2004
+ * @author crotwell Created on Sep 10, 2004
  */
-public class RecFuncCacheProcessor extends RecFuncProcessor implements WaveformVectorProcess  {
-    
-    public RecFuncCacheProcessor(Element config)  throws ConfigurationException, TauModelException {
+public class RecFuncCacheProcessor extends RecFuncProcessor implements
+        WaveformVectorProcess {
+
+    public RecFuncCacheProcessor(Element config) throws ConfigurationException,
+            TauModelException {
         super(config);
         String modelName = "prem";
         taup = new TauPUtil(modelName);
-        recFunc = new RecFunc(taup,
-                              new IterDecon(maxBumps, true, tol, gwidth));
-        FissuresNamingService fisName = CommonAccess.getCommonAccess().getFissuresNamingService();
+        recFunc = new RecFunc(taup, new IterDecon(maxBumps, true, tol, gwidth));
+        FissuresNamingService fisName = CommonAccess.getCommonAccess()
+                .getFissuresNamingService();
         cache = new NSRecFuncCache(dns, serverName, fisName);
     }
-    
-    
+
     /**
      *
      */
@@ -65,82 +65,97 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements WaveformV
                                         RequestFilter[][] available,
                                         LocalSeismogramImpl[][] seismograms,
                                         CookieJar cookieJar) throws Exception {
-        
-        Channel chan = channelGroup.getChannels()[0];
-        Location staLoc = chan.my_site.my_station.my_location;
-        Origin origin = event.get_preferred_origin();
-        Location evtLoc = origin.my_location;
-        
-        IterDeconConfig config = new IterDeconConfig(gwidth, maxBumps, tol);
-        ChannelId[] chanIds = new ChannelId[channelGroup.getChannels().length];
-        for(int i = 0; i < chanIds.length; i++) {
-            chanIds[i] = channelGroup.getChannels()[i].get_id();
-        }
-        if ( ! overwrite && cache.isCached(origin,
-                                           chanIds,
-                                           config)) {
-            return new WaveformVectorResult(seismograms, new StringTreeLeaf(this, true, "Already calculated"));
-        }
-        
-        LocalSeismogramImpl[] singleSeismograms = new LocalSeismogramImpl[3];
-        for(int i = 0; i < singleSeismograms.length; i++) {
-            singleSeismograms[i] = seismograms[i][0];
-        }
-        
-        IterDeconResult[] ans = recFunc.process(event,
-                                                channelGroup,
-                                                singleSeismograms);
-        
-        Arrival[] pPhases = taup.calcTravelTimes(chan.my_site.my_station, origin, new String[] { "ttp"});
-        MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
-        firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
-        
-        TimeInterval shift = recFunc.getShift();
-        MemoryDataSetSeismogram[] predictedDSS = new MemoryDataSetSeismogram[2];
-        for (int i = 0; i < ans.length; i++) {
-            float[] predicted = ans[i].getPredicted();
-            String chanCode = (i==0)?"ITR":"ITT"; // ITR for radial
-            // ITT for tangential
-            predictedDSS[i] = RecFunc.saveTimeSeries(predicted,
-                                                     "receiver function "+singleSeismograms[0].channel_id.station_code,
-                                                     chanCode,
-                                                     firstP.subtract(shift),
-                                                     singleSeismograms[0],
-                                                     UnitImpl.DIMENSONLESS);
-        }
-        
-        while(true) {
-            try {
-                cache.insert(origin,
-                             event.get_attributes(),
-                             config,
-                             channelGroup.getChannels(),
-                             singleSeismograms,
-                             predictedDSS[0].getCache()[0], ans[0].getPercentMatch(), ans[0].getBump(),
-                             predictedDSS[1].getCache()[0], ans[1].getPercentMatch(), ans[1].getBump());
-                break;
-            } catch(Throwable e) {
-                GlobalExceptionHandler.handle("Problem while sending result to database, will retry in 1 minute...", e);
+        try {
+            Channel chan = channelGroup.getChannels()[0];
+            Location staLoc = chan.my_site.my_station.my_location;
+            Origin origin = event.get_preferred_origin();
+            Location evtLoc = origin.my_location;
+            IterDeconConfig config = new IterDeconConfig(gwidth, maxBumps, tol);
+            ChannelId[] chanIds = new ChannelId[channelGroup.getChannels().length];
+            for(int i = 0; i < chanIds.length; i++) {
+                chanIds[i] = channelGroup.getChannels()[i].get_id();
+            }
+            if(!overwrite && cache.isCached(origin, chanIds, config)) { return new WaveformVectorResult(seismograms,
+                                                                                                        new StringTreeLeaf(this,
+                                                                                                                           true,
+                                                                                                                           "Already calculated")); }
+            LocalSeismogramImpl[] singleSeismograms = new LocalSeismogramImpl[3];
+            for(int i = 0; i < singleSeismograms.length; i++) {
+                singleSeismograms[i] = seismograms[i][0];
+            }
+            IterDeconResult[] ans = recFunc.process(event,
+                                                    channelGroup,
+                                                    singleSeismograms);
+            Arrival[] pPhases = taup.calcTravelTimes(chan.my_site.my_station,
+                                                     origin,
+                                                     new String[] {"ttp"});
+            MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
+            firstP = firstP.add(new TimeInterval(pPhases[0].getTime(),
+                                                 UnitImpl.SECOND));
+            TimeInterval shift = recFunc.getShift();
+            MemoryDataSetSeismogram[] predictedDSS = new MemoryDataSetSeismogram[2];
+            for(int i = 0; i < ans.length; i++) {
+                float[] predicted = ans[i].getPredicted();
+                // ITR for radial
+                // ITT for tangential
+                String chanCode = (i == 0) ? "ITR" : "ITT";
+                predictedDSS[i] = RecFunc.saveTimeSeries(predicted,
+                                                         "receiver function "
+                                                                 + singleSeismograms[0].channel_id.station_code,
+                                                         chanCode,
+                                                         firstP.subtract(shift),
+                                                         singleSeismograms[0],
+                                                         UnitImpl.DIMENSONLESS);
+            }
+            while(true) {
                 try {
-                    Thread.sleep(60000);
-                } catch (InterruptedException interrupt) {
-                    // ignore
+                    cache.insert(origin,
+                                 event.get_attributes(),
+                                 config,
+                                 channelGroup.getChannels(),
+                                 singleSeismograms,
+                                 predictedDSS[0].getCache()[0],
+                                 ans[0].getPercentMatch(),
+                                 ans[0].getBump(),
+                                 predictedDSS[1].getCache()[0],
+                                 ans[1].getPercentMatch(),
+                                 ans[1].getBump());
+                    break;
+                } catch(Throwable e) {
+                    GlobalExceptionHandler.handle("Problem while sending result to database, will retry in 1 minute...",
+                                                  e);
+                    try {
+                        Thread.sleep(60000);
+                    } catch(InterruptedException interrupt) {
+                        // ignore
+                    }
                 }
             }
+            WaveformVectorResult result = new WaveformVectorResult(seismograms,
+                                                                   new StringTreeLeaf(this,
+                                                                                      true));
+            return result;
+        } catch(IncompatibleSeismograms e) {
+            WaveformVectorResult result = new WaveformVectorResult(seismograms,
+                                                                   new StringTreeLeaf(this,
+                                                                                      false,
+                                                                                      "Seismograms not compatble",
+                                                                                      e));
+            return result;
         }
-        WaveformVectorResult result = new WaveformVectorResult(seismograms, new StringTreeLeaf(this, true));
-        return result;
     }
-    
+
     String dns = "edu/sc/seis";
+
     String interfaceName = "IfReceiverFunction";
+
     String serverName = "Ears";
-    
+
     boolean overwrite = false;
-    
+
     NSRecFuncCache cache;
-    
+
     TauPUtil taup;
-    
+
     RecFunc recFunc;
 }

@@ -90,7 +90,6 @@ public class RecFunc {
 
         float[][] rotated = Rotate.rotateGCP(e, n, staLoc, evtLoc);
 
-
         // check lengths, trim if needed???
         float[] zdata = z.get_as_floats();
         if (rotated[0].length != zdata.length) {

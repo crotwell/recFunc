@@ -287,6 +287,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
             // problem occurred
             SeisDataErrorEvent error = processor.getError();
             logger.error("problem with recfunc:", error.getCausalException());
+            return new ChannelGroupLocalSeismogramResult(false, seismograms);
         }
         MicroSecondDate after = new MicroSecondDate();
         System.out.println("Save took "+after.subtract(before).convertTo(UnitImpl.SECOND));

@@ -1,5 +1,7 @@
 package edu.sc.seis.receiverFunction;
 
+import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
+
 /**
  * TestIterDecon.java
  *
@@ -16,8 +18,18 @@ public class TestIterDecon {
     }
     
     public static void main (String[] args) {
+	if ( args.length != 2) {
+	    System.out.println("Usage: java TestIterDecon numer.sac denom.sac");
+	    System.exit(1);
+	} // end of if ()
+	
 	IterDecon decon = new IterDecon(4, true, .001f, 2f);
-	int length = 64;
+	SacTimeSeries num = new SacTimeSeries();
+	num.read(args[0]);
+	SacTimeSeries denom = new SacTimeSeries();
+	denom.read(args[1]);
+
+	/*	int length = 64;
 	float[] num = new float[length];
 	float[] denom = new float[length];
 	int t=length/8;
@@ -36,11 +48,15 @@ public class TestIterDecon {
 	denom[t+8] = 3f;
 	denom[t+8+1] = 1f;
 	denom[t+16] = 1f;
-	float[] ans = decon.process(num, denom, .25f);
-	for (int i=0; i<num.length; i++) {
-	    System.out.println(num[i]+" "+denom[i]+" "+ans[i]);
+	*/
+
+	IterDeconResult ans = decon.process(num.y, denom.y, num.delta);
+	float[] predicted = ans.getPredicted();
+	for (int i=0; i<num.y.length; i++) {
+	    System.out.println(num.y[i]+" "+denom.y[i]+" "+predicted[i]);
 	} // end of for (int i=0; i<num.length; i++)
-	
+	num.y = predicted;
+	num.write("recfunc.out");
     } // end of main ()
     
 }// TestIterDecon

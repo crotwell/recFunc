@@ -31,5 +31,9 @@ public class RecFuncCacheController extends AbstractController {
         return impl;
     }
 
+    public String getInterfaceName() {
+        return NSRecFuncCache.interfaceName;
+    }
+    
     private RecFuncCacheImpl impl;
 }

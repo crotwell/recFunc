@@ -10,6 +10,7 @@ import edu.sc.seis.fissuresUtil.database.DBUtil;
 import edu.sc.seis.fissuresUtil.database.JDBCSequence;
 import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 import edu.sc.seis.sod.ConfigurationException;
 
 
@@ -19,16 +20,9 @@ import edu.sc.seis.sod.ConfigurationException;
  */
 public class JDBCSodConfig  extends JDBCTable {
     
-    public JDBCSodConfig(Connection conn) throws SQLException, ConfigurationException {
+    public JDBCSodConfig(Connection conn) throws SQLException, ConfigurationException, Exception {
         super("sodConfig", conn);
-        Statement stmt = conn.createStatement();
-        seq = new JDBCSequence(conn, getTableName()+"Seq");
-        if(!DBUtil.tableExists(getTableName(), conn)){
-            stmt.executeUpdate(ConnMgr.getSQL(getTableName()+".create"));
-        }
-        putStmt = conn.prepareStatement(ConnMgr.getSQL(getTableName()+".put"));
-        getStmt = conn.prepareStatement(ConnMgr.getSQL(getTableName()+".get"));
-        getDbIdStmt = conn.prepareStatement(ConnMgr.getSQL(getTableName()+".getDbId"));
+        TableSetup.setup(getTableName(), conn, this, "edu/sc/seis/receiverFunction/server/default.props");
     }
     
     public int put(String sodConfig) throws SQLException {
@@ -37,16 +31,16 @@ public class JDBCSodConfig  extends JDBCTable {
         } catch (NotFound e) {
             // not in db yet
             int id = seq.next();
-            putStmt.setInt(1, id);
-            putStmt.setString(2, sodConfig);
-            putStmt.executeUpdate();
+            put.setInt(1, id);
+            put.setString(2, sodConfig);
+            put.executeUpdate();
             return id;
         }
     }
     
     public String get(int dbid) throws SQLException, NotFound {
-        getStmt.setInt(1, dbid);
-        ResultSet rs = getStmt.executeQuery();
+        get.setInt(1, dbid);
+        ResultSet rs = get.executeQuery();
         if (rs.next()) {
             return rs.getString(1);
         }
@@ -54,8 +48,8 @@ public class JDBCSodConfig  extends JDBCTable {
     }
     
     public int getDbId(String sodConfig) throws SQLException, NotFound {
-        getDbIdStmt.setString(1, sodConfig);
-        ResultSet rs = getDbIdStmt.executeQuery();
+        getDbId.setString(1, sodConfig);
+        ResultSet rs = getDbId.executeQuery();
         if (rs.next()) {
             return rs.getInt(1);
         }
@@ -64,5 +58,5 @@ public class JDBCSodConfig  extends JDBCTable {
     
     JDBCSequence seq;
     
-    PreparedStatement putStmt, getStmt, getDbIdStmt;
+    PreparedStatement put, get, getDbId;
 }

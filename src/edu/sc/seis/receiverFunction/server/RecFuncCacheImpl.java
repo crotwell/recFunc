@@ -31,8 +31,9 @@ import edu.sc.seis.sod.ConfigurationException;
  */
 public class RecFuncCacheImpl extends RecFuncCachePOA {
     
-    public RecFuncCacheImpl() throws IOException, SQLException, ConfigurationException, TauModelException {
+    public RecFuncCacheImpl() throws IOException, SQLException, ConfigurationException, TauModelException, Exception {
         ConnMgr.setDB(ConnMgr.POSTGRES);
+        ConnMgr.setURL("jdbc:postgresql:ears");
         Connection conn = ConnMgr.createConnection();
         jdbcOrigin = new JDBCOrigin(conn);
         jdbcEventAttr = new JDBCEventAttr(conn);

@@ -40,6 +40,7 @@ import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
 import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
+import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
@@ -57,50 +58,42 @@ public class JDBCHKStack extends JDBCTable {
     public JDBCHKStack(Connection conn, JDBCOrigin jdbcOrigin,
             JDBCEventAttr jdbcEventAttr, JDBCChannel jdbcChannel,
             JDBCSodConfig jdbcSodConfig, JDBCRecFunc jdbcRecFunc)
-            throws SQLException, ConfigurationException, TauModelException {
+            throws SQLException, ConfigurationException, TauModelException, Exception {
         super("hkstack", conn);
         this.jdbcOrigin = jdbcOrigin;
         this.jdbcEventAttr = jdbcEventAttr;
         this.jdbcChannel = jdbcChannel;
         this.jdbcRecFunc = jdbcRecFunc;
-        seq = new JDBCSequence(conn, "hkStackSeq");
-        Statement stmt = conn.createStatement();
-        if(!DBUtil.tableExists(getTableName(), conn)) {
-            stmt.executeUpdate(ConnMgr.getSQL("hkStack.create"));
-        }
+        TableSetup.setup(getTableName(), conn, this, "edu/sc/seis/receiverFunction/server/default.props");
         dataDir = new File(dataDirectory);
         dataDir.mkdirs();
         eventFormatter = new EventFormatter(true);
         tauPTime = TauPUtil.getTauPUtil(modelName);
-        uncalculatedStmt = conn.prepareStatement(ConnMgr.getSQL("hkStack.uncalculated"));
-        calcByPercentStmt = conn.prepareStatement(ConnMgr.getSQL("hkStack.calcbypercent"));
-        putStmt = conn.prepareStatement(ConnMgr.getSQL("hkStack.put"));
-        getForStationStmt = conn.prepareStatement(ConnMgr.getSQL("hkStack.getForStation"));
     }
 
     public int put(int recfunc_id, HKStack stack) throws SQLException,
             IOException {
         int hkstack_id = seq.next();
         int index = 1;
-        putStmt.setInt(index++, hkstack_id);
-        putStmt.setInt(index++, recfunc_id);
-        putStmt.setFloat(index++, stack.getAlpha());
-        putStmt.setFloat(index++, stack.getP());
-        putStmt.setFloat(index++, stack.getPercentMatch());
-        putStmt.setFloat(index++, stack.getMinH());
-        putStmt.setFloat(index++, stack.getStepH());
-        putStmt.setInt(index++, stack.getNumH());
-        putStmt.setFloat(index++, stack.getMinK());
-        putStmt.setFloat(index++, stack.getStepK());
-        putStmt.setInt(index++, stack.getNumK());
+        put.setInt(index++, hkstack_id);
+        put.setInt(index++, recfunc_id);
+        put.setFloat(index++, stack.getAlpha());
+        put.setFloat(index++, stack.getP());
+        put.setFloat(index++, stack.getPercentMatch());
+        put.setFloat(index++, stack.getMinH());
+        put.setFloat(index++, stack.getStepH());
+        put.setInt(index++, stack.getNumH());
+        put.setFloat(index++, stack.getMinK());
+        put.setFloat(index++, stack.getStepK());
+        put.setInt(index++, stack.getNumK());
         float peakH, peakK, peakVal = 0;
         int[] indicies = stack.getMaxValueIndices();
         peakH = stack.getMinH() + stack.getStepH() * indicies[0];
         peakK = stack.getMinK() + stack.getStepK() * indicies[1];
         peakVal = stack.getStack()[indicies[0]][indicies[1]];
-        putStmt.setFloat(index++, peakH);
-        putStmt.setFloat(index++, peakK);
-        putStmt.setFloat(index++, peakVal);
+        put.setFloat(index++, peakH);
+        put.setFloat(index++, peakK);
+        put.setFloat(index++, peakVal);
         float[][] data = stack.getStack();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(out);
@@ -110,12 +103,12 @@ public class JDBCHKStack extends JDBCTable {
             }
         }
         byte[] valBytes = out.toByteArray();
-        putStmt.setBytes(index++, valBytes);
-        putStmt.setTimestamp(index++, ClockUtil.now().getTimestamp());
+        put.setBytes(index++, valBytes);
+        put.setTimestamp(index++, ClockUtil.now().getTimestamp());
         try {
-            putStmt.executeUpdate();
+            put.executeUpdate();
         } catch(SQLException e) {
-            logger.error("SQL stmt: " + putStmt.toString());
+            logger.error("SQL stmt: " + put.toString());
             throw e;
         }
         return hkstack_id;
@@ -140,10 +133,10 @@ public class JDBCHKStack extends JDBCTable {
             FissuresException, NotFound, IOException, SQLException,
             TauModelException {
         // get all uncalculated rows
-        uncalculatedStmt.setString(1, netCode);
-        uncalculatedStmt.setString(2, staCode);
-        uncalculatedStmt.setFloat(3, percentMatch);
-        ResultSet rs = uncalculatedStmt.executeQuery();
+        uncalculated.setString(1, netCode);
+        uncalculated.setString(2, staCode);
+        uncalculated.setFloat(3, percentMatch);
+        ResultSet rs = uncalculated.executeQuery();
         return calcStmt(rs, save, weightPs, weightPpPs, weightPsPs);
     }
 
@@ -157,10 +150,10 @@ public class JDBCHKStack extends JDBCTable {
             FissuresException, NotFound, IOException, SQLException,
             TauModelException {
         // get all uncalculated rows
-        calcByPercentStmt.setString(1, netCode);
-        calcByPercentStmt.setString(2, staCode);
-        calcByPercentStmt.setFloat(3, percentMatch);
-        ResultSet rs = calcByPercentStmt.executeQuery();
+        calcByPercent.setString(1, netCode);
+        calcByPercent.setString(2, staCode);
+        calcByPercent.setFloat(3, percentMatch);
+        ResultSet rs = calcByPercent.executeQuery();
         return calcStmt(rs, save, weightPs, weightPpPs, weightPsPs);
     }
 
@@ -225,10 +218,10 @@ public class JDBCHKStack extends JDBCTable {
             IOException, SQLException {
         ArrayList individualHK = new ArrayList();
         int index = 1;
-        getForStationStmt.setString(index++, netCode);
-        getForStationStmt.setString(index++, staCode);
-        getForStationStmt.setFloat(index++, percentMatch);
-        ResultSet rs = getForStationStmt.executeQuery();
+        getForStation.setString(index++, netCode);
+        getForStation.setString(index++, staCode);
+        getForStation.setFloat(index++, percentMatch);
+        ResultSet rs = getForStation.executeQuery();
         while(rs.next()) {
             individualHK.add(extract(rs));
         }
@@ -277,8 +270,8 @@ public class JDBCHKStack extends JDBCTable {
         return out;
     }
 
-    private PreparedStatement uncalculatedStmt, calcByPercentStmt, putStmt,
-            getForStationStmt;
+    private PreparedStatement uncalculated, calcByPercent, put,
+            getForStation;
 
     private JDBCOrigin jdbcOrigin;
 
@@ -326,7 +319,7 @@ public class JDBCHKStack extends JDBCTable {
                                         float weightPsPs)
             throws FileNotFoundException, FissuresException, NotFound,
             IOException, TauModelException, SQLException,
-            ConfigurationException {
+            ConfigurationException, Exception {
         ConnMgr.setDB(ConnMgr.POSTGRES);
         Properties props = RecFuncCacheStart.loadProps(args);
         Connection conn = ConnMgr.createConnection();

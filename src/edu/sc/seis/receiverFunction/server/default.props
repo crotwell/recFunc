@@ -2,7 +2,8 @@
 # default sql props for rec func db
 #
 sodConfig.create=CREATE TABLE sodConfig (config_id int, \
-                                         config varchar)
+                                         config varchar, \
+                                         PRIMARY KEY (config_id))
 sodConfig.put=INSERT INTO sodConfig (config_id, config) VALUES (?, ?)
 sodConfig.get=SELECT config from sodConfig where config_id = ?
 sodConfig.getDbId=SELECT config_id from sodConfig where config = ?
@@ -47,7 +48,7 @@ receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
 receiverFunctionSeq.create=CREATE SEQUENCE receiverFunctionSeq
 receiverFunctionSeq.nextVal=SELECT NEXTVAL ('receiverFunctionSeq')
 
-hkStack.create=CREATE TABLE hkstack ( \
+hkstack.create=CREATE TABLE hkstack ( \
                    hkstack_id int, \
                    recFunc_id int, \
                    alpha float, \
@@ -67,10 +68,10 @@ hkStack.create=CREATE TABLE hkstack ( \
                    PRIMARY KEY (hkstack_id), \
                    FOREIGN KEY (recFunc_id) \
                    REFERENCES receiverFunction (recFunc_id) )
-hkStackSeq.create=CREATE SEQUENCE hkStackSeq
-hkStackSeq.nextVal=SELECT NEXTVAL ('hkStackSeq')
+hkstackSeq.create=CREATE SEQUENCE hkStackSeq
+hkstackSeq.nextVal=SELECT NEXTVAL ('hkStackSeq')
 
-hkStack.calcbypercent=SELECT receiverFunction.recfunc_id FROM network \
+hkstack.calcbypercent=SELECT receiverFunction.recfunc_id FROM network \
                    NATURAL JOIN station \
                    NATURAL JOIN site \
                    NATURAL JOIN channel \
@@ -79,7 +80,7 @@ hkStack.calcbypercent=SELECT receiverFunction.recfunc_id FROM network \
                    AND sta_code = ? \
                    AND receiverFunction.itr_match >= ?
                    
-hkStack.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
+hkstack.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
                    NATURAL JOIN station \
                    NATURAL JOIN site \
                    NATURAL JOIN channel \
@@ -95,7 +96,7 @@ hkStack.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
                        , hkStack \
                        WHERE receiverFunction.recfunc_id = hkstack.recfunc_id
 
-hkStack.put=INSERT INTO hkstack ( \
+hkstack.put=INSERT INTO hkstack ( \
                    hkstack_id,  \
                    recFunc_id,  \
                    alpha , \
@@ -115,7 +116,7 @@ hkStack.put=INSERT INTO hkstack ( \
                    VALUES ( \
                    ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?)
                    
-hkStack.getForStation=SELECT * FROM network \
+hkstack.getForStation=SELECT * FROM network \
                    NATURAL JOIN station \
                    NATURAL JOIN site \
                    NATURAL JOIN channel \
@@ -150,8 +151,3 @@ sumhkstack.create=CREATE TABLE sumhkstack ( \
 sumhkstack.createSeq.create=CREATE SEQUENCE sumhkstackSeq
 sumhkstack.createSeq.nextVal=SELECT NEXTVAL ('sumhkstackSeq')
 
-# specifies the database URL
-#    for hsqldb
-#URL=jdbc:hsqldb:Ears/EarsDb
-#    for postgres
-URL=jdbc:postgresql:ears

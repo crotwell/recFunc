@@ -37,7 +37,7 @@ import edu.sc.seis.sod.status.FissuresFormatter;
 public class StackSummary {
 
     public StackSummary(Connection conn) throws IOException, SQLException,
-            ConfigurationException, TauModelException {
+            ConfigurationException, TauModelException, Exception {
         JDBCOrigin jdbcOrigin = new JDBCOrigin(conn);
         JDBCEventAttr jdbcEventAttr = new JDBCEventAttr(conn);
         JDBCChannel jdbcChannel  = new JDBCChannel(conn);

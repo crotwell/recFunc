@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.context.Context;
 import org.omg.CORBA.UNKNOWN;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.Orientation;
@@ -35,6 +37,8 @@ import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.fissuresUtil.database.util.SQLLoader;
+import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.mseed.FissuresConvert;
 import edu.sc.seis.fissuresUtil.mseed.SeedFormatException;
@@ -58,17 +62,14 @@ public class JDBCRecFunc extends JDBCTable {
                        JDBCEventAttr jdbcEventAttr,
                        JDBCChannel jdbcChannel,
                        JDBCSodConfig jdbcSodConfig,
-                       String dataDirectory) throws SQLException, ConfigurationException {
+                       String dataDirectory) throws SQLException, ConfigurationException, Exception {
         super("receiverFunction", conn);
         this.jdbcOrigin = jdbcOrigin;
         this.jdbcEventAttr = jdbcEventAttr;
         this.jdbcChannel = jdbcChannel;
         this.jdbcSodConfig = jdbcSodConfig;
-        seq = new JDBCSequence(conn, "receiverFunctionSeq");
-        Statement stmt = conn.createStatement();
-        if(!DBUtil.tableExists("receiverFunction", conn)){
-            stmt.executeUpdate(ConnMgr.getSQL("receiverFunction.create"));
-        }
+        TableSetup.setup(getTableName(), conn, this, "edu/sc/seis/receiverFunction/server/default.props");
+        
         dataDir = new File(dataDirectory);
         dataDir.mkdirs();
         eventFormatter = new EventFormatter(true);

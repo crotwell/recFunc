@@ -24,7 +24,7 @@ public class TestIterDecon {
             System.exit(1);
         } // end of if ()
 	
-        IterDecon decon = new IterDecon(1, false, .001f, 2f);
+        IterDecon decon = new IterDecon(100, true, .001f, 2f);
         SacTimeSeries num = new SacTimeSeries();
         num.read(args[0]);
         SacTimeSeries denom = new SacTimeSeries();
@@ -62,6 +62,10 @@ public class TestIterDecon {
         float[] residual = ans.getResidual();
         num.y = residual;
         num.write("recfunc.residual");
+
+        float[][] corrSave = ans.getCorrSave();
+        num.y = corrSave[0];
+        num.write("recfunc.corr");
 
     } // end of main ()
     

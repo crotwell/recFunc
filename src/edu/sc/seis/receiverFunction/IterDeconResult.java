@@ -11,16 +11,17 @@ package edu.sc.seis.receiverFunction;
  */
 public class IterDeconResult {
     public IterDeconResult(int maxBumps,
-			   boolean useAbsVal,
-			   float tol,
-			   float gwidth,
-			   float[] numerator,
-			   float[] denominator,
-			   float dt,
-			   float[] amps,
-			   int[] shifts,
-			   float[] residual,
-			   float[] predicted) {
+                           boolean useAbsVal,
+                           float tol,
+                           float gwidth,
+                           float[] numerator,
+                           float[] denominator,
+                           float dt,
+                           float[] amps,
+                           int[] shifts,
+                           float[] residual,
+                           float[] predicted,
+                           float[][] corrSave) {
 	this.maxBumps = maxBumps;
 	this.useAbsVal = useAbsVal;
 	this.tol = tol;
@@ -32,6 +33,7 @@ public class IterDeconResult {
 	this.shifts = shifts;
 	this.residual = residual;
 	this.predicted = predicted;
+    this.corrSave = corrSave;
     } // IterDeconResult constructor
 
     public int getMaxBumps() {
@@ -77,6 +79,12 @@ public class IterDeconResult {
     public float[] getPredicted() {
 	return predicted;
     }
+
+    public float[][] getCorrSave() {
+	return corrSave;
+    }
+
+    float[][] corrSave;
 
     int maxBumps;
 

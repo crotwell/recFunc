@@ -10,7 +10,7 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 3560 2003-03-26 02:53:21Z crotwell $
+ * @version $Id: IterDecon.java 3564 2003-03-26 03:56:16Z crotwell $
  */
 
 public class IterDecon {
@@ -41,10 +41,13 @@ public class IterDecon {
 
         float[] residual = f;
         float[] predicted = new float[0];
+
+        float[][] corrSave = new float[maxBumps][];
         for (int bump=0; bump < maxBumps; bump++) {
 	
             // correlate the signals
             float[] corr = correlate(residual, g);
+            corrSave[bump] = corr;
 
             //  find the peak in the correlation
             float peak;
@@ -72,26 +75,27 @@ public class IterDecon {
                                    amps,
                                    shifts,
                                    residual,
-                                   predicted);
+                                   predicted,
+                                   corrSave);
     }
 
     /** computes the correlation of f and g normalized by the zero-lag
-     *  autocorrelation of g divided by dt. */
+     *  autocorrelation of g. */
     float[] correlate(float[] fdata, float[] gdata) {
-        float[] corr = Cmplx.correlate(fdata, gdata);
         float zeroLag = 0;
         for (int i=0; i<gdata.length; i++) {
             zeroLag += gdata[i]*gdata[i];
         }
-        System.out.println("g autocorrelation at  = "+zeroLag);
+        //System.out.println("g autocorrelation at  = "+zeroLag);
+        float[] corr = Cmplx.correlate(fdata, gdata);
 
         float temp = 1 / zeroLag;
-        //        for (int i=0; i<corr.length; i++) {
-        //            corr[i] *= temp;
-        //        }
         for (int i=0; i<corr.length; i++) {
-            System.out.println("correlation at "+i+" = "+corr[i]);
+            corr[i] *= temp;
         }
+        // for (int i=0; i<corr.length; i++) {
+        //  System.out.println("correlation at "+i+" = "+corr[i]);
+        //}
         return corr;	    
     }
 

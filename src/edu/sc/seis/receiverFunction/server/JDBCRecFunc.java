@@ -64,6 +64,9 @@ public class JDBCRecFunc extends JDBCTable {
         this.jdbcChannel = jdbcChannel;
         seq = new JDBCSequence(conn, "receiverFunctionSeq");
         Statement stmt = conn.createStatement();
+        if(!DBUtil.tableExists("sodConfig", conn)){
+            stmt.executeUpdate(ConnMgr.getSQL("sodConfig.create"));
+        }
         if(!DBUtil.tableExists("receiverFunction", conn)){
             stmt.executeUpdate(ConnMgr.getSQL("receiverFunction.create"));
         }

@@ -254,7 +254,7 @@ public class RecFuncTask  extends MouseAdapter implements GUITask {
                                                  (float)shift.getValue(),
                                                  (float)period);
                 
-                logger.info("Finished with receiver funciton processing");
+                logger.info("Finished with receiver function processing");
                 logger.debug("rec func begin "+firstP.subtract(shift));
                 LocalSeismogramImpl predSeis =
                     new LocalSeismogramImpl("recFunc/"+z.get_id(),
@@ -264,7 +264,7 @@ public class RecFuncTask  extends MouseAdapter implements GUITask {
                                             z.y_unit,
                                             z.channel_id,
                                             predicted);
-                predSeis.setName("receiver function");
+                predSeis.setName("receiver function "+z.channel_id.station_code);
                 DataSetSeismogram predDSS =
                     new MemoryDataSetSeismogram(predSeis,
                                                 "receiver function");

@@ -1,6 +1,9 @@
 #
 # default sql props for rec func db
 #
+sodConfig.create=CREATE TABLE sodConfig (config_id int, \
+                                         config varchar)
+                                   
 receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
                                    origin_id int, \
                                    eventAttr_id int, \
@@ -20,6 +23,7 @@ receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
                                    maxbumps int, \
                                    tol float, \
                                    insertTime timestamp, \
+                                   sodConfig_id int, \
                                    PRIMARY KEY (recFunc_id), \
                                    FOREIGN KEY (origin_id) \
                                    REFERENCES origin (origin_id), \
@@ -30,7 +34,9 @@ receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
                                    FOREIGN KEY (chanB_id) \
                                    REFERENCES channel (chan_id), \
                                    FOREIGN KEY (chanZ_id) \
-                                   REFERENCES channel (chan_id))
+                                   REFERENCES channel (chan_id), \
+                                   FOREIGN KEY (sodConfig_id) \
+                                   REFERENCES sodConfig (config_id))
                                    
 receiverFunctionSeq.create=CREATE SEQUENCE receiverFunctionSeq
 receiverFunctionSeq.nextVal=SELECT NEXTVAL ('receiverFunctionSeq')

@@ -14,6 +14,8 @@ import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.IfReceiverFunction.RecFuncCache;
 import edu.sc.seis.IfReceiverFunction.RecFuncCacheHelper;
 import edu.sc.seis.IfReceiverFunction.RecFuncCacheOperations;
+import edu.sc.seis.IfReceiverFunction.RecFuncNotFound;
+import edu.sc.seis.IfReceiverFunction.SodConfigNotFound;
 import edu.sc.seis.fissuresUtil.cache.NSEventDC;
 import edu.sc.seis.fissuresUtil.namingService.FissuresNamingService;
 
@@ -107,13 +109,16 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
     }
     
     /**
+     * @throws RecFuncNotFound
      *
      */
     public CachedResult get(Origin prefOrigin,
                             ChannelId[] channel,
-                            IterDeconConfig config) {
+                            IterDeconConfig config) throws RecFuncNotFound {
         try {
             return getCorbaObject().get(prefOrigin, channel, config);
+        } catch (RecFuncNotFound e) {
+            throw e;
         } catch (Throwable e) {
             // retry in case regetting from name service helps
             logger.warn("Exception in a_channel_finder(), regetting from nameservice to try again.", e);
@@ -122,6 +127,31 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
         } // end of try-catch
     }
     
+
+    public int insertSodConfig(String config) {
+        try {
+            return getCorbaObject().insertSodConfig(config);
+        } catch (Throwable e) {
+            // retry in case regetting from name service helps
+            logger.warn("Exception in a_channel_finder(), regetting from nameservice to try again.", e);
+            reset();
+            return getCorbaObject().insertSodConfig(config);
+        } // end of try-catch
+    }
+
+    public String getSodConfig(int sodConfig_id) throws SodConfigNotFound {
+        try {
+            return getCorbaObject().getSodConfig(sodConfig_id);
+        } catch (SodConfigNotFound e) {
+            throw e;
+        } catch (Throwable e) {
+            // retry in case regetting from name service helps
+            logger.warn("Exception in a_channel_finder(), regetting from nameservice to try again.", e);
+            reset();
+            return getCorbaObject().getSodConfig(sodConfig_id);
+        } // end of try-catch
+    }
+
     /**
      *
      */
@@ -135,7 +165,8 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
                        int radialBump,
                        LocalSeismogram tansverse,
                        float transverseMatch,
-                       int transverseBump) {
+                       int transverseBump,
+                       int sodConfig_id) {
         try {
             getCorbaObject().insert(prefOrigin,
                                     eventAttr,
@@ -147,7 +178,8 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
                                     radialBump,
                                     tansverse,
                                     transverseMatch,
-                                    transverseBump);
+                                    transverseBump,
+                                    sodConfig_id);
         } catch (Throwable e) {
             // retry in case regetting from name service helps
             logger.warn("Exception in a_channel_finder(), regetting from nameservice to try again.", e);
@@ -162,7 +194,8 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
                                     radialBump,
                                     tansverse,
                                     transverseMatch,
-                                    transverseBump);
+                                    transverseBump,
+                                    sodConfig_id);
         } // end of try-catch
     }
     
@@ -177,5 +210,6 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
     protected FissuresNamingService namingService;
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(NSRecFuncCache.class);
+
     
 }

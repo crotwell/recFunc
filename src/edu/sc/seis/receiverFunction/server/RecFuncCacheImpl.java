@@ -12,6 +12,7 @@ import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.IfReceiverFunction.RecFuncCachePOA;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
+import edu.sc.seis.IfReceiverFunction.SodConfigNotFound;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
@@ -73,7 +74,8 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                        int radialBump,
                        LocalSeismogram tansverse,
                        float transverseMatch,
-                       int transverseBump) {
+                       int transverseBump,
+                       int sodConfig_id) {
         try {
             synchronized (jdbcRecFunc.getConnection()) {
                 int recFuncDbId = jdbcRecFunc.put(prefOrigin,
@@ -86,7 +88,8 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                   radialBump,
                                                   tansverse,
                                                   transverseMatch,
-                                                  transverseBump);
+                                                  transverseBump,
+                                                  sodConfig_id);
                 System.out.println("insert "+recFuncDbId);
             }
         } catch(Exception e) {
@@ -112,6 +115,15 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         return false;
     }
 
+
+    public int insertSodConfig(String config) {
+return -1;
+    }
+
+    public String getSodConfig(int sodConfig_id) throws SodConfigNotFound {
+return "NO IMPL";
+    }
+    
     private JDBCOrigin jdbcOrigin ;
     
     private JDBCEventAttr jdbcEventAttr;

@@ -18,6 +18,7 @@ import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
+import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
@@ -127,7 +128,8 @@ public class JDBCRecFunc extends JDBCTable {
                    int radialBump,
                    LocalSeismogram transverse,
                    float transverseMatch,
-                   int transverseBump) throws SQLException, IOException, NoPreferredOrigin, CodecException, UnsupportedFileTypeException, SeedFormatException {
+                   int transverseBump,
+                   int sodConfig_id) throws SQLException, IOException, NoPreferredOrigin, CodecException, UnsupportedFileTypeException, SeedFormatException {
         logger.debug("put: "+eventAttr.name+" "+ChannelIdUtil.toStringNoDates(channels[0].get_id()));
         int originDbId = jdbcOrigin.put(prefOrigin);
         int eventAttrDbId = jdbcEventAttr.put(eventAttr);
@@ -276,13 +278,13 @@ public class JDBCRecFunc extends JDBCTable {
         CacheEvent cacheEvent = new CacheEvent(eventAttr, origin);
         File stationDir = getDir(cacheEvent, channels[0]);
         
-        SacTimeSeries radialSAC = new SacTimeSeries();
-        radialSAC.read(new File(stationDir, rs.getString("radial")));
-        LocalSeismogramImpl radial = SacToFissures.getSeismogram(radialSAC);
+        SacTimeSeries itrSAC = new SacTimeSeries();
+        itrSAC.read(new File(stationDir, rs.getString("recfuncITR")));
+        LocalSeismogramImpl itrSeis = SacToFissures.getSeismogram(itrSAC);
         
-        SacTimeSeries transverseSAC = new SacTimeSeries();
-        transverseSAC.read(new File(stationDir, rs.getString("transverse")));
-        LocalSeismogramImpl transverse = SacToFissures.getSeismogram(transverseSAC);
+        SacTimeSeries ittSAC = new SacTimeSeries();
+        ittSAC.read(new File(stationDir, rs.getString("recfuncITT")));
+        LocalSeismogramImpl ittSeis = SacToFissures.getSeismogram(ittSAC);
         
         LocalSeismogramImpl[] originals = new LocalSeismogramImpl[3];
         SacTimeSeries SACa = new SacTimeSeries();
@@ -294,6 +296,7 @@ public class JDBCRecFunc extends JDBCTable {
         SacTimeSeries SACz = new SacTimeSeries();
         SACz.read(new File(stationDir, rs.getString("seisZ")));
         originals[2] = SacToFissures.getSeismogram(SACz);
+        MicroSecondDate insertTime = new MicroSecondDate(rs.getTimestamp("inserttime"));
         
         CachedResult result = new CachedResult(origin,
                                                eventAttr,
@@ -302,11 +305,14 @@ public class JDBCRecFunc extends JDBCTable {
                                                rs.getFloat("tol")),
                                                channels,
                                                originals,
-                                               radial,
-                                               rs.getFloat("radialMatch"),
-                                               transverse,
-                                               rs.getFloat("transverseMatch"),
-                                               rs.getInt("bump"));
+                                               itrSeis,
+                                               rs.getFloat("itr_match"),
+                                               rs.getInt("itr_bump"),
+                                               ittSeis,
+                                               rs.getFloat("itt_match"),
+                                               rs.getInt("itt_bump"),
+                                               rs.getInt("config_id"),
+                                               insertTime.getFissuresTime());
         return result;   
     }
     

@@ -67,6 +67,9 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
                                         LocalSeismogramImpl[][] seismograms,
                                         CookieJar cookieJar) throws Exception {
         try {
+            if (sodconfig_id == -1) {
+                System.out.println("Bad socConfig_id");
+            }
             Channel chan = channelGroup.getChannels()[0];
             Location staLoc = chan.my_site.my_station.my_location;
             Origin origin = event.get_preferred_origin();
@@ -121,7 +124,8 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
                                  ans[0].getBump(),
                                  predictedDSS[1].getCache()[0],
                                  ans[1].getPercentMatch(),
-                                 ans[1].getBump());
+                                 ans[1].getBump(),
+                                 sodconfig_id);
                     break;
                 } catch(Throwable e) {
                     GlobalExceptionHandler.handle("Problem while sending result to database, will retry in 1 minute...",
@@ -153,6 +157,8 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
 
     String serverName = "Ears";
 
+    int sodconfig_id = -1;
+    
     boolean overwrite = false;
 
     NSRecFuncCache cache;

@@ -105,7 +105,7 @@ hkstack.getForStation=SELECT * FROM network \
                    NATURAL JOIN site \
                    NATURAL JOIN channel \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
-                   NATURAL JOIN hkStack
+                   NATURAL JOIN hkStack \
                    WHERE net_code = ? \
                    AND sta_code = ? \
                    AND percentMatch > ?

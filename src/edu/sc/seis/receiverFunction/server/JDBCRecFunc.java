@@ -311,7 +311,7 @@ public class JDBCRecFunc extends JDBCTable {
                                                ittSeis,
                                                rs.getFloat("itt_match"),
                                                rs.getInt("itt_bump"),
-                                               rs.getInt("config_id"),
+                                               rs.getInt("sodConfig_id"),
                                                insertTime.getFissuresTime());
         return result;   
     }

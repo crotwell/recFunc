@@ -31,7 +31,7 @@ public class IterDeconTest
 
     public edu.sc.seis.receiverFunction.IterDecon createInstance() throws Exception {
         // JUnitDoclet begin method testcase.createInstance
-        return new edu.sc.seis.receiverFunction.IterDecon(100, false, .0001f, 3);
+        return new edu.sc.seis.receiverFunction.IterDecon(100, true, .0001f, 3);
         // JUnitDoclet end method testcase.createInstance
     }
 
@@ -81,7 +81,7 @@ public class IterDeconTest
         numData[100] = 2;
         numData[200] = -1.5f;
         numData[300] = .25f;
-        denomData = new float[2048];
+        denomData = new float[numData.length];
         denomData[100] = .5f;
 
         result = iterdecon.process(numData, denomData, .05f);
@@ -94,12 +94,72 @@ public class IterDeconTest
         assertEquals("gauss amp 1",   -3,    a[1], 0.0001f);
         assertEquals("gauss spike 2 a="+a[2],  200, s[2]);
         assertEquals("gauss amp 2",  .5f,    a[2], 0.0001f);
-        assertEquals("gauss pred 0",   4, pred[0], 0.0001f);
-        assertEquals("gauss pred 1",   0, pred[1], 0.0001f);
-        assertEquals("gauss pred 100",  -3, pred[100], 0.0001f);
-        assertEquals("gauss pred 101",   0, pred[3], 0.0001f);
-        assertEquals("gauss pred 200", .5f, pred[200], 0.0001f);
-        assertEquals("gauss pred 201",   0, pred[5], 0.0001f);
+        assertEquals("gauss pred 0",   0.33851373, pred[0], 0.0001f); // 4
+        assertEquals("gauss pred 100",  -0.25388527, pred[100], 0.0001f); // -3
+        assertEquals("gauss pred 200", .5f, pred[200], 0.0001f); // .5
+
+        // with more complex demon
+        denomData = new float[2048];
+        denomData[100] = .15f;
+        denomData[101] = .5f;
+        denomData[102] = .9f;
+        denomData[103] =1.1f;
+        denomData[104] = .8f;
+        denomData[105] = .4f;
+        denomData[106] = .1f;
+        denomData[107] =-.3f;
+        denomData[108] =-.6f;
+        denomData[109] =-.4f;
+        denomData[110] =-.1f;
+        denomData[111] = .1f;
+
+        // create fake crust with Vp=6 and Vs=3.5, h=30
+        float alpha = 6;
+        float beta = 3.5f;
+        float h = 30;
+        float p = 7.6f/111.19f;
+        float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
+        float etaS = (float) Math.sqrt(1/(beta*beta)-p*p);
+        float timePs = h * (etaS - etaP);
+        float timePpPs = h * (etaS + etaP);
+        float timePsPs = h * (2 * etaS);
+
+        numData   = new float[denomData.length];
+        System.arraycopy(denomData, 0, numData, 0, denomData.length);
+        // scale num by 1/3
+        for (int i = 0; i < numData.length; i++) {
+            numData[i] *= .33f;
+        }
+        float[] temp = new float[numData.length];
+        System.arraycopy(numData, 0, temp, 0, numData.length);
+        IterDecon.phaseShift(temp, timePs, 0.05f);
+        // scale num by 1/5
+        for (int i = 0; i < temp.length; i++) {
+            numData[i] += .50f*temp[i];
+        }
+        IterDecon.phaseShift(temp, timePpPs-timePs, 0.05f);
+        // scale num
+        for (int i = 0; i < temp.length; i++) {
+            numData[i] += .3f*temp[i];
+        }
+        IterDecon.phaseShift(temp, timePsPs-timePpPs-timePs, 0.05f);
+        // scale num
+        for (int i = 0; i < temp.length; i++) {
+            numData[i] += .2f*temp[i];
+        }
+
+        result = iterdecon.process(numData, denomData, .05f);
+        pred = result.getPredicted();
+        s = result.getShifts();
+        a = result.getAmps();
+        assertEquals("fake data spike 0",  0, s[0]);
+        assertEquals("fake data amp 0",    .33,    a[0], 0.0001f);
+        assertEquals("fake data spike 1",  timePs, s[1], 0.1f);
+        assertEquals("fake data amp 1",   .33f*.5f,    a[1], 0.0001f);
+        assertEquals("fake data spike 2 a="+a[2],  timePpPs, s[2], 0.1f);
+        assertEquals("fake data amp 2",  .33f*.3f,    a[2], 0.0001f);
+        assertEquals("fake data spike 2 a="+a[2],  timePsPs, s[2], 0.1f);
+        assertEquals("fake data amp 2",  .33f*.2f,    a[2], 0.0001f);
 
         // JUnitDoclet end method process
     }

@@ -29,6 +29,7 @@ def buildDist(proj, name, clean=False):
     extras = [('sodRF/scepp2003.xml', 'scepp2003.xml'),
               ('sodRF/Bolivia.xml', 'Bolivia.xml'),
               ('sodRF/irisRF.xml', 'irisRF.xml'),
+              ('sodRF/pfoRF.xml', 'pfoRF.xml'),
               ('../sod/scripts/cwg.prop', 'cwg.prop'),
               ('scripts/logs', 'logs', False)]
     scripts = build.buildAllScripts(proj)

@@ -3,6 +3,8 @@ package edu.sc.seis.receiverFunction.web;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.Location;
@@ -15,9 +17,11 @@ import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
+import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
@@ -54,6 +58,7 @@ public class StationsNearBy extends Revlet {
                                       jdbcChannel,
                                       jdbcSodConfig,
                                       jdbcRecFunc);
+        jdbcSumHKStack = new JDBCSummaryHKStack(jdbcHKStack);
     }
 
     /**
@@ -80,6 +85,14 @@ public class StationsNearBy extends Revlet {
             }
         }
         logger.info("distance check finished");
+        Iterator it = stationList.iterator();
+        HashMap summary = new HashMap();
+        while(it.hasNext()) {
+            VelocityStation sta = (VelocityStation)it.next();
+            int dbid = jdbcSumHKStack.getDbIdForStation(sta.my_network.get_id(), sta.get_code());
+            SumHKStack sumStack = jdbcSumHKStack.get(dbid);
+            summary.put(sta, sumStack);
+        }
         RevletContext context = new RevletContext("stationsNearBy.vm");
         context.put("stationList", stationList);
         context.put("lat", lat + "");
@@ -97,6 +110,8 @@ public class StationsNearBy extends Revlet {
     JDBCChannel jdbcChannel;
 
     JDBCHKStack jdbcHKStack;
+    
+    JDBCSummaryHKStack jdbcSumHKStack;
 
     JDBCRecFunc jdbcRecFunc;
 

@@ -16,12 +16,16 @@
 <td class="headodd"Station</td>
 <td class="headodd">Name</td>
 <td class="headodd">Lat/Lon</td>
+<td class="headodd">Est. Thick</td>
+<td class="headodd">Est. Vp/Vs</td>
 </tr>
 #foreach($sta in $stationList)
 <tr>
 <td class="odd">$sta.getNet().getCode() $sta.getCode()</td>
 <td class="even"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()">$sta.getName()</a></td>
 <td class="odd">$sta.getLatitude()/$sta.getLongitude()</td>
+<td class="even">$summary.get($sta).getSum().getMaxValueH()</td>
+<td class="odd">$summary.get($sta).getSum().getMaxValueK()</td>
 </tr>
 #end
 </table>

@@ -50,12 +50,10 @@
             </unitRange>
         </originDepthRange>
 
-        <eventTimeRange>
-        <timeRange>
+        <originTimeRange>
             <startTime>19940601T00:00:00.001Z</startTime>
             <endTime>19940631T23:59:59.999Z</endTime>
-        </timeRange>
-        </eventTimeRange>
+        </originTimeRange>
 
 
                 <magnitudeRange>
@@ -161,7 +159,7 @@
         <someCoverage/>
     </ORAvailableDataWrapper>
 
-    <ORLocalSeismogramSubsetterWrapper>
+    <ORLocalSeismogramWrapper>
             <phaseSignalToNoise>
                 <modelName>prem</modelName>
                 <phaseName>P</phaseName>
@@ -183,7 +181,7 @@
                 </longOffsetEnd>
                 <ratio>2.7</ratio>
             </phaseSignalToNoise>
-    </ORLocalSeismogramSubsetterWrapper>
+    </ORLocalSeismogramWrapper>
 
 
     <printlineSeismogramProcess/>

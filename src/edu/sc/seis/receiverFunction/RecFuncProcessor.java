@@ -174,8 +174,6 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                             if (processes[j] instanceof LocalSeismogramTemplateGenerator) {
                                 lSeisTemplateGen = (LocalSeismogramTemplateGenerator)processes[j];
                                 break;
-                            } else {
-                                System.out.println("Monitor "+i+"  "+processes[j]);
                             }
                         }
                     }
@@ -185,7 +183,6 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                     File outImageFile  = new File(imageDir, prefix+channelIdString+".png");
                     BufferedImage bufImage = stack.createStackImage();
                     javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
-                    System.out.println("Stack image to "+outImageFile.getPath());
 
                     synchronized(lSeisTemplateGen) {
                         lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, original, available, predicted.getCache(), cookieJar);

@@ -56,7 +56,7 @@ public class StackSummary {
                                   parentDir,
                                   minPercentMatch);
                     if (sumStack == null) { continue;}
-                    String outStr = net+" "+station[j].get_code()+" "+station[i].my_location.latitude+" "+station[i].my_location.longitude;
+                    String outStr = net+" "+station[j].get_code()+" "+station[j].my_location.latitude+" "+station[j].my_location.longitude;
                     
                     float peakH, peakK, peakVal = 0;
                     int[] indicies = sumStack.getSum().getMaxValueIndices();
@@ -67,8 +67,8 @@ public class StackSummary {
 
                     Crust2 crust2 = HKStack.getCrust2();
                     if (crust2 != null) {
-                        Crust2Profile profile = crust2.getClosest(station[i].my_location.longitude,
-                                                                  station[i].my_location.latitude);
+                        Crust2Profile profile = crust2.getClosest(station[j].my_location.longitude,
+                                                                  station[j].my_location.latitude);
                         double depth = profile.getLayer(7).topDepth;
                         double vpvs = profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity();
                         outStr+=" "+depth+" "+vpvs;

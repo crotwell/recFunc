@@ -380,9 +380,9 @@ public class JDBCRecFunc extends JDBCTable {
                                    ChannelId[] channels,
                                    IterDeconConfig config) throws SQLException, NotFound {
         int index = populateGetStmt(stmt, prefOrigin, channels);
-        isCachedStmt.setFloat(index++, config.gwidth);
-        isCachedStmt.setFloat(index++, config.maxBumps);
-        isCachedStmt.setFloat(index++, config.tol);
+        stmt.setFloat(index++, config.gwidth);
+        stmt.setFloat(index++, config.maxBumps);
+        stmt.setFloat(index++, config.tol);
         return index;
     }
     

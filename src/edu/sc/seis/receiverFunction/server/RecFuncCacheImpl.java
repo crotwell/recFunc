@@ -19,11 +19,8 @@ import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
-import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
-import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
-import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.sod.ConfigurationException;
 
 

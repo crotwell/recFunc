@@ -67,6 +67,20 @@ public class HKStackImage extends JComponent {
             g.setColor(mark.color);
             g.fillRect(2*mark.vpvsIndex, 2*(mark.depthIndex-smallestHindex), 2, 2);
         }
+        g.setColor(Color.CYAN);
+        TradeoffCurve tradeoff = new TradeoffCurve(stack);
+        float[] curve = tradeoff.getH_Ps();
+        for (int k = 0; k < stackOut[0].length-1; k++) {
+            g.drawLine(2*k, Math.round(2*stack.getHIndexFloat(curve[k])), 2*(k+1), 2*stack.getHIndex(curve[k+1]));
+        }
+        curve = tradeoff.getH_PpPs();
+        for (int k = 0; k < stackOut[0].length-1; k++) {
+            g.drawLine(2*k, Math.round(2*stack.getHIndexFloat(curve[k])), 2*(k+1), 2*stack.getHIndex(curve[k+1]));
+        }
+        curve = tradeoff.getH_PsPs();
+        for (int k = 0; k < stackOut[0].length-1; k++) {
+            g.drawLine(2*k, Math.round(2*stack.getHIndexFloat(curve[k])), 2*(k+1), 2*stack.getHIndex(curve[k+1]));
+        }
         g.setColor(origColor);
     }
     

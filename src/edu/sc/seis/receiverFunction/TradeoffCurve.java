@@ -16,31 +16,47 @@ public class TradeoffCurve  {
 
     public TradeoffCurve(HKStack stack) {
         this.stack = stack;
-        int[] peakIndices = stack.getMaxValueIndices();
-        float peakH = stack.getMaxValueH();
-        float peakK = stack.getMaxValueK();
+        peakIndices = stack.getMaxValueIndices();
+        peakH = stack.getMaxValueH();
+        peakK = stack.getMaxValueK();
         calc();
     }
-    
-    public float[] getPs() {
-        return outK_Ps;
+
+    public float[] getH_PpPs() {
+        return outH_PpPs;
+    }
+    public float[] getH_Ps() {
+        return outH_Ps;
+    }
+    public float[] getH_PsPs() {
+        return outH_PsPs;
     }
     
     void calc() {
-        outK_Ps = new float[stack.getNumK()];
+        outH_Ps = new float[stack.getNumK()];
+        outH_PpPs = new float[stack.getNumK()];
+        outH_PsPs = new float[stack.getNumK()];
         for(int i = 0; i < stack.getNumK(); i++) {
             float ki = stack.getMinK()+i*stack.getStepK();
             float vsi = stack.getAlpha()/ki;
             float vso = stack.getAlpha()/peakK;
             // Ps
-            outK_Ps[i] = (float)(peakH*Math.sqrt(1/vso-1/stack.getAlpha())/
+            outH_Ps[i] = (float)(peakH*Math.sqrt(1/vso-1/stack.getAlpha())/
                     Math.sqrt(1/vsi-1/stack.getAlpha()));
+            // PpPs
+            outH_PpPs[i] = (float)(peakH*Math.sqrt(1/vso+1/stack.getAlpha())/
+                    Math.sqrt(1/vsi+1/stack.getAlpha()));
+            //PsPs
+            outH_PsPs[i] = (float)(peakH*Math.sqrt(1/vso)/
+                    Math.sqrt(1/vsi));
         }
     }
     
     float peakH, peakK;
-    
+    int[] peakIndices;
     HKStack stack;
-    
-    float[] outK_Ps;
+
+    float[] outH_Ps;
+    float[] outH_PpPs;
+    float[] outH_PsPs;
 }

@@ -4,7 +4,7 @@
 xmlns:xlink="http://www.w3.org/1999/xlink/"
 >
     <properties>
-        <runName>IRIS RecFunc</runName>
+        <runName>USA RecFunc</runName>
         <statusBase>status</statusBase>
         <eventQueryIncrement>
             <value>1</value>

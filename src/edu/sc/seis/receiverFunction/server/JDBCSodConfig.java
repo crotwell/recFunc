@@ -28,14 +28,20 @@ public class JDBCSodConfig  extends JDBCTable {
         }
         putStmt = conn.prepareStatement(ConnMgr.getSQL(getTableName()+".put"));
         getStmt = conn.prepareStatement(ConnMgr.getSQL(getTableName()+".get"));
+        getDbIdStmt = conn.prepareStatement(ConnMgr.getSQL(getTableName()+".getDbId"));
     }
     
     public int put(String sodConfig) throws SQLException {
-        int id = seq.next();
-        putStmt.setInt(1, id);
-        putStmt.setString(2, sodConfig);
-        putStmt.executeUpdate();
-        return id;
+        try {
+            return getDbId(sodConfig);
+        } catch (NotFound e) {
+            // not in db yet
+            int id = seq.next();
+            putStmt.setInt(1, id);
+            putStmt.setString(2, sodConfig);
+            putStmt.executeUpdate();
+            return id;
+        }
     }
     
     public String get(int dbid) throws SQLException, NotFound {
@@ -47,7 +53,16 @@ public class JDBCSodConfig  extends JDBCTable {
         throw new NotFound("dbid="+dbid+" not found in sodConfig");
     }
     
+    public int getDbId(String sodConfig) throws SQLException, NotFound {
+        getDbIdStmt.setString(1, sodConfig);
+        ResultSet rs = getDbIdStmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        throw new NotFound("dbid not found for sodConfig");
+    }
+    
     JDBCSequence seq;
     
-    PreparedStatement putStmt, getStmt;
+    PreparedStatement putStmt, getStmt, getDbIdStmt;
 }

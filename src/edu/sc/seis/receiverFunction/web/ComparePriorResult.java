@@ -57,10 +57,14 @@ public class ComparePriorResult extends StationList {
                 context.put("ref", results[0].getRef());
             }
             for(int i = 0; i < results.length; i++) {
-                int[] dbids = jdbcChannel.getStationTable().getDBIds(results[i].getNetworkId(), results[i].getStationCode());
-                VelocityStation station = new VelocityStation(jdbcChannel.getStationTable().get(dbids[0]));
-                stations.add(station);
-                prior.put(station, results[i]);
+                try {
+                    int[] dbids = jdbcChannel.getStationTable().getDBIds(results[i].getNetworkId(), results[i].getStationCode());
+                    VelocityStation station = new VelocityStation(jdbcChannel.getStationTable().get(dbids[0]));
+                    stations.add(station);
+                    prior.put(station, results[i]);
+                } catch (NotFound e) {
+                    // this station is in the prior result, but not in ears, skip...
+                }
             }
         }
         return stations;

@@ -162,7 +162,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                     Origin origin = CacheEvent.extractOrigin(event);
 
                     Arrival[] arrivals =
-                        tauPTime.calcTravelTimes(recFuncChannel.my_site.my_station, origin, phases);
+                        tauPTime.calcTravelTimes(recFuncChannel.my_site.my_station, origin, pPhases);
 
                     // convert radian per sec ray param into km per sec
                     float kmRayParam = (float)(arrivals[0].getRayParam()/tauPTime.getTauModel().getRadiusOfEarth());
@@ -195,8 +195,8 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                         zoomP[0] = new RequestFilter(recFuncChannel.get_id(),
                                                      pTime.subtract(new TimeInterval(5, UnitImpl.SECOND)).getFissuresTime(),
                                                      pTime.add(new TimeInterval(30, UnitImpl.SECOND)).getFissuresTime());
-                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP,predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PNG, phases);
-                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP, predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PDF, phases);
+                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP,predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PNG, phases, true);
+                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP, predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PDF, phases, true);
                     }
                     RecFuncTemplate rfTemplate =new RecFuncTemplate();
                     File velocityOutFile = new File(getEventDirectory(event),"Vel_"+channelIdString+".html");
@@ -370,7 +370,10 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
 
     String modelName = "iasp91";
 
-    String[] phases = { "P", "Pms", "PPvms", "PSvms"};
+    String[] phases = { };
+    //String[] phases = { "P", "Pms", "PPvms", "PSvms"};
+
+    String[] pPhases = { "P" };
 
     static BufferedWriter summaryPage = null;
 

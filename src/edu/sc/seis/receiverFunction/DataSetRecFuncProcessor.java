@@ -59,27 +59,27 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
      *
      */
     public void finished(SeisDataChangeEvent sdce) {
-        try {
-            logger.debug("finished for "+sdce.getSource().getName());
-            finished[getIndex(sdce.getSource())] = true;
-            for (int i=0; i<finished.length; i++) {
-                if ( ! finished[i]) {
-                    // not all finished yet
-                    return;
-                }
-            }
-            // must be all finished
-            if (error != null) {
-                logger.error("problem: ", error.getCausalException());
+        logger.debug("finished for "+sdce.getSource().getName()+" "+getIndex(sdce.getSource()));
+        finished[getIndex(sdce.getSource())] = true;
+        for (int i=0; i<finished.length; i++) {
+            if ( ! finished[i]) {
+                // not all finished yet
                 return;
             }
-            
-            Channel[] channel = new Channel[3];
-            for (int i = 0; i < seis.length; i++) {
-                channel[i] =
-                    seis[i].getDataSet().getChannel(seis[i].getRequestFilter().channel_id);
-            }
-            
+        }
+        // must be all finished
+        if (error != null) {
+            logger.error("problem: ", error.getCausalException());
+            return;
+        }
+        
+        Channel[] channel = new Channel[3];
+        for (int i = 0; i < seis.length; i++) {
+            channel[i] =
+                seis[i].getDataSet().getChannel(seis[i].getRequestFilter().channel_id);
+        }
+        
+        try {
             ans = recFunc.process(event,
                                   channel,
                                   localSeis);
@@ -91,9 +91,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
             
             Arrival[] pPhases = CommonAccess.getCommonAccess().getTravelTimes(evtLoc, staLoc, "ttp");
             MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
-            logger.debug("origin "+firstP);
             firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
-            logger.debug("firstP "+firstP);
             
             TimeInterval shift = recFunc.getShift();
             float[] predicted = ans.getPredicted();
@@ -104,8 +102,6 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                                                     "RFR",
                                                     localSeis[0].channel_id.begin_time);
             
-            logger.info("Finished with receiver function processing");
-            logger.debug("rec func begin "+firstP.subtract(shift));
             LocalSeismogramImpl predSeis =
                 new LocalSeismogramImpl("recFunc/"+localSeis[0].get_id(),
                                         firstP.subtract(shift).getFissuresTime(),
@@ -118,13 +114,14 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
             predictedDSS =
                 new MemoryDataSetSeismogram(predSeis,
                                             "receiver function "+localSeis[0].channel_id.station_code);
+
             AuditInfo[] audit = new AuditInfo[1];
             audit[0] =
                 new AuditInfo("Calculated receiver function",
                               System.getProperty("user.name"));
             sdce.getSource().getDataSet().addDataSetSeismogram(predictedDSS,
                                                                audit);
-            
+            logger.debug("Processing finished OK "+chan.my_site.my_station.name);
         } catch (ConfigurationException ce) {
             logger.error("Unable to get travel time calculator", ce);
             CommonAccess.getCommonAccess().handleException("Unable to get travel time calculator", ce);
@@ -157,7 +154,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
         }
         throw new IllegalArgumentException("Can't find index for this seismogram");
     }
-
+    
     public boolean isRecFuncFinished() {
         return recFuncFinished;
     }

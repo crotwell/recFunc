@@ -81,17 +81,6 @@ public class RecFunc {
         Location staLoc = chan.my_site.my_station.my_location;
         Origin origin = event.get_preferred_origin();
         Location evtLoc = origin.my_location;
-//
-        //        PhaseCut phaseCut;
-//
-        //        phaseCut =
-        //            new PhaseCut(timeCalc,
-        //                         "P", new TimeInterval(-15, UnitImpl.SECOND),
-        //                         "P", new TimeInterval(90, UnitImpl.SECOND));
-//
-        //        n = phaseCut.cut(staLoc, origin, n);
-        //        e = phaseCut.cut(staLoc, origin, e);
-        //        z = phaseCut.cut(staLoc, origin, z);
 
         float[][] rotated = Rotate.rotateGCP(e, n, staLoc, evtLoc);
 

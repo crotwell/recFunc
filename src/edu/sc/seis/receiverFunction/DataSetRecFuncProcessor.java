@@ -239,6 +239,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
         return recFuncFinished;
     }
 
+    /** returns ITR (radial) in 0 and ITT (tansverse) in 1 */
     public MemoryDataSetSeismogram[] getPredicted() {
         return predictedDSS;
     }

@@ -63,18 +63,19 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                        float radialError,
                        LocalSeismogram tansverse,
                        float transverseError) {
-        // TODO Auto-generated method stub
         try {
-            int recFuncDbId = jdbcRecFunc.put(prefOrigin,
-                       eventAttr,
-                       config,
-                       channels,
-                       original,
-                       radial,
-                       radialError,
-                       tansverse,
-                       transverseError);
-            System.out.println("insert "+recFuncDbId);
+            synchronized (jdbcRecFunc.getConnection()) {
+                int recFuncDbId = jdbcRecFunc.put(prefOrigin,
+                                                  eventAttr,
+                                                  config,
+                                                  channels,
+                                                  original,
+                                                  radial,
+                                                  radialError,
+                                                  tansverse,
+                                                  transverseError);
+                System.out.println("insert "+recFuncDbId);
+            }
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);
             throw new UNKNOWN(e.toString());

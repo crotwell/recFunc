@@ -24,7 +24,8 @@ public class HKStackImage extends JComponent {
     }
 
     public void addMarker(int vpvsIndex, int depthIndex) {
-        // TODO
+        markerH = depthIndex;
+        markerV = vpvsIndex;
     }
 
 

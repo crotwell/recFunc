@@ -125,18 +125,22 @@ public class StackSummary {
                                               station.station_code,
                                               minPercentMatch,
                                               smallestH);
+        if (sumStack.getChannel() == null) {
+            System.out.println("Channel is null for "+StationIdUtil.toStringNoDates(station));
+        } else {
         try {
             int dbid = jdbcSummary.getDbIdForStation(station.network_id, station.station_code);
             jdbcSummary.update(dbid, sumStack);
         } catch (NotFound e) {
             jdbcSummary.put(sumStack);
         }
+        }
         
-        saveImage(sumStack,
-                   station,
-                   parentDir,
-                   minPercentMatch,
-                   smallestH);
+//        saveImage(sumStack,
+//                   station,
+//                   parentDir,
+//                   minPercentMatch,
+//                   smallestH);
         return sumStack;
     }
     
@@ -214,18 +218,28 @@ public class StackSummary {
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StackSummary.class);
 
     public static void main(String[] args) {
-        if (args.length != 1) {
+        if (args.length == 0 ) {
             System.out.println("Usage: StackSummary netCode");
             return;
         }
         try {
             Properties props = loadProps(args);
             ConnMgr.setDB(ConnMgr.POSTGRES);
+            String dbURL = props.getProperty("cormorant.servers.ears.databaseURL");
+            ConnMgr.setURL(dbURL);
             Connection conn = ConnMgr.createConnection();
             StackSummary summary = new StackSummary(conn);
             float minPercentMatch = 80f;
             int smallestH = 25;
-            summary.createSummary(args[0], new File("stackImages"+smallestH+"_"+minPercentMatch), minPercentMatch, smallestH);
+            String netArg = "";
+            for(int i = 0; i < args.length; i++) {
+                if (args[i].equals("-net")) {
+                    netArg = args[i+1];
+                } else if (args[i].equals("-all")) {
+                    netArg = args[i];
+                }
+            }
+            summary.createSummary(netArg, new File("stackImages"+smallestH+"_"+minPercentMatch), minPercentMatch, smallestH);
         } catch(Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -5,6 +5,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 >
   <properties>
 
+
     <property>
       <name>edu.sc.seis.sod.waveformarm.threads</name>
       <value>1</value>
@@ -66,8 +67,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 <!-- Only take events from Apr-June -->
         <eventTimeRange>
         <timeRange>
-            <startTime>19990101T00:00:00.001Z</startTime>
-            <endTime>20001108T23:59:59.999Z</endTime>
+            <startTime>20030101T00:00:00.001Z</startTime>
+            <endTime>20040320T23:59:59.999Z</endTime>
         </timeRange>
         </eventTimeRange>
 
@@ -78,8 +79,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                         <max>10.0</max>
                 </magnitudeRange>
 
-                <catalog>ISCCD</catalog>
-                <contributor>ISC</contributor>
+                <catalog>FINGER</catalog>
+                <contributor>NEIC</contributor>
 
        </eventFinder>
 
@@ -95,21 +96,17 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
     <printLineEventProcess/>
 
 
-                <mapEventStatus xlink:href="ESKstatus/eventMap.png"/>
+                <mapEventStatus xlink:href="status/eventMap.png"/>
                 <eventStatusTemplate>
-                        <fileDir>ESKstatus</fileDir>
                         <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/timeSorted.xml"/>
                 </eventStatusTemplate>
                 <eventStatusTemplate>
-                        <fileDir>ESKstatus</fileDir>
                         <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/depthSorted.xml"/>
                 </eventStatusTemplate>
                 <eventStatusTemplate>
-                        <fileDir>ESKstatus</fileDir>
                         <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/locSorted.xml"/>
                 </eventStatusTemplate>
                 <eventStatusTemplate>
-                        <fileDir>ESKstatus</fileDir>
                         <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/magSorted.xml"/>
                 </eventStatusTemplate>
 
@@ -126,17 +123,19 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         </refreshInterval>
     </networkFinder>
 
-              <networkCode>II</networkCode>
+    <networkCode>II</networkCode>
 
     <stationAND>
         <stationCode>ESK</stationCode>
         <stationEffectiveTimeOverlap>
            <effectiveTimeOverlap>
-               <min>19990101T00:00:00.001Z</min>
-               <max>20001231T23:59:59.999Z</max>
+               <min>20030101T00:00:00.001Z</min>
+               <max>20040320T23:59:59.999Z</max>
            </effectiveTimeOverlap>
         </stationEffectiveTimeOverlap>
     </stationAND>
+
+    <siteCode>00</siteCode>
 
    <channelAND>
 <!-- Accept any channel with B band code -->
@@ -155,7 +154,6 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
     <printlineChannelProcessor/>
                 <networkInfoTemplateGenerator>
-                    <fileDir>ESKstatus</fileDir>
                     <netConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/networks.xml"/>
                     <stationConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/stations.xml"/>
                     <channelConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/channels.xml"/>
@@ -163,7 +161,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
     </networkArm>
 
 
-    <waveFormArm>
+    <waveformArm>
       <eventStationAND>
         <distanceRange>
             <unit>DEGREE</unit>
@@ -200,6 +198,17 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
     <someCoverage/>
 
     <printlineSeismogramProcess/>
+<!--
+    <forkProcess>
+       <saveSeismogramToFile>
+           <fileType>sac</fileType>
+           <prefix>RAW_</prefix>
+           <dataDirectory>ESK_recfunc</dataDirectory>
+                   <eventDirLabel><originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/></eventDirLabel>
+       </saveSeismogramToFile>
+    </forkProcess>
+-->
+
     <phaseCut>
         <beginPhase>ttp</beginPhase>
         <beginOffset>
@@ -214,8 +223,25 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
     </phaseCut>
     <rMean/>
     <rTrend/>
-    <taper/>
-
+    <taper>
+       <width>0.01</width>
+    </taper>
+<!--
+    <forkProcess>
+       <saveSeismogramToFile>
+           <fileType>sac</fileType>
+           <prefix>NoFilter_</prefix>
+           <dataDirectory>ESK_recfunc</dataDirectory>
+                   <eventDirLabel><originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/></eventDirLabel>
+       </saveSeismogramToFile>
+    </forkProcess>
+-->
+    <filter>
+       <lowFreqCorner><value>50</value><unit>SECOND</unit></lowFreqCorner>
+       <highFreqCorner><value>5</value><unit>HERTZ</unit></highFreqCorner>
+       <numPoles>2</numPoles>
+       <filterType>NONCAUSAL</filterType>
+    </filter>
     <externalSeismogramProcess>
         <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
         <fileType>sac</fileType>
@@ -223,13 +249,16 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <eventDirLabel><originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/></eventDirLabel>
     </externalSeismogramProcess>
 
+     <localSeismogramTemplateGenerator>  
+          <seismogramConfig xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/localSeismogram.xml"/>
+      </localSeismogramTemplateGenerator>
+
     </localSeismogramArm>
 
 
                 <waveformEventTemplateGenerator>
-                        <fileDir>ESKstatus</fileDir>
                         <waveformConfig xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml"/>
                 </waveformEventTemplateGenerator>
 
-   </waveFormArm>
+   </waveformArm>
 </sod>

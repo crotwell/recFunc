@@ -31,7 +31,7 @@ public class Start {
         String netHTML = "/networkList.html";
         String staForNet = "/stationList.html";
         String station = "/station.html";
-        String rfstationEvent = "/rfStationEvent.html";
+        String summaryHKStack = "/summaryHKStack.png";
         String rfstationEventImage = "/hkstackimage.png";
         
         Set servletStrings = new HashSet();
@@ -39,7 +39,7 @@ public class Start {
         servletStrings.add(staForNet);
         servletStrings.add(station);
         servletStrings.add(rfstationEventImage);
-        servletStrings.add(rfstationEvent);
+        servletStrings.add(summaryHKStack);
         
         ServletHandler sh = new ServletFromSet(servletStrings);
         sh.addServlet(netHTML,
@@ -51,6 +51,9 @@ public class Start {
         sh.addServlet(station,
                       station,
                       "edu.sc.seis.receiverFunction.web.Station");
+        sh.addServlet(summaryHKStack,
+                      summaryHKStack,
+                      "edu.sc.seis.receiverFunction.web.SummaryHKStackImageServlet");
 //        sh.addServlet("rfStationEvent",
 //                      rfstationEvent,
 //                      "edu.sc.seis.receiverFunction.web.RFStationEvent");

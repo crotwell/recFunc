@@ -25,6 +25,11 @@
 </tr>
 #end
 </table>
+</br>
+
+<img src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$sta.getCode()&minPercentMatch=80&smallestH=25"/>
+</br>
+</br>
 
 
 #set( $sta = $stationList.get(0) )

@@ -30,7 +30,7 @@ Events for $fissures.formatNetwork($station.get_id()) $fissures.formatStation($s
 <th><b>Back Azimuth</b></th>
 </tr>
 #set( $extraRows = 10 )
-#foreach ( $ecp in $successful_event_channels )
+#foreach ( $ecp in $successful_event_channel_groups )
 <tr>
 #set ( $event = $ecp.getEvent() )
 #set ( $origin = $event.get_preferred_origin() )

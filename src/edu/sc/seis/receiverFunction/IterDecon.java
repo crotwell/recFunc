@@ -10,7 +10,7 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 2579 2002-09-12 15:09:54Z crotwell $
+ * @version $Id: IterDecon.java 3384 2003-03-05 14:56:01Z crotwell $
  */
 
 public class IterDecon {
@@ -22,12 +22,11 @@ public class IterDecon {
 	this.useAbsVal = useAbsVal;
 	this.tol = tol;
 	this.gwidth = gwidth;
-	//	this.shift = shift;
     }
 
-    public float[] process(float[] numerator, 
-			   float[] denominator,
-			   float dt) {
+    public IterDeconResult process(float[] numerator, 
+				    float[] denominator,
+				    float dt) {
 	float[] amps = new float[maxBumps];
 	int[] shifts = new int[maxBumps];
 
@@ -63,7 +62,17 @@ public class IterDecon {
 	    residual = getResidual(f, predConvolve);
 	} // end of for (int bump=0; bump < maxBumps; bump++)
 
-	return predicted;
+	return new IterDeconResult(maxBumps,
+				   useAbsVal,
+				   tol,
+				   gwidth,
+				   numerator,
+				   denominator,
+				   dt,
+				   amps,
+				   shifts,
+				   residual,
+				   predicted);
     }
 
     /** computes the correlation of f and g normalized by the zero-lag
@@ -194,6 +203,5 @@ public class IterDecon {
     boolean useAbsVal; 
     float tol;
     float gwidth;
-    float shift;
 
 }// IterDecon

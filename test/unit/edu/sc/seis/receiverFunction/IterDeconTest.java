@@ -107,6 +107,7 @@ public class IterDeconTest
     }
 
     public void testFakeCrustProcess() throws Exception {
+        float delta = 0.05f;
 
         // with more complex demon
         float[] denomData = new float[2048];
@@ -133,6 +134,7 @@ public class IterDeconTest
         float timePs = h * (etaS - etaP);
         float timePpPs = h * (etaS + etaP);
         float timePsPs = h * (2 * etaS);
+        System.out.println("timePs="+timePs+"  timePpPs="+timePpPs+"  timePsPs="+timePsPs);
 
         float[] numData   = new float[denomData.length];
         System.arraycopy(denomData, 0, numData, 0, denomData.length);
@@ -141,42 +143,48 @@ public class IterDeconTest
             numData[i] *= .33f;
         }
         float[] temp = new float[numData.length];
-        System.arraycopy(denomData, 0, temp, 0, numData.length);
-        IterDecon.phaseShift(temp, timePs, 0.05f);
+        System.arraycopy(denomData, 0, temp, 0, denomData.length);
+        temp = IterDecon.phaseShift(temp, timePs, delta);
         // scale num by 1/5
         for (int i = 0; i < temp.length; i++) {
             numData[i] += .33f*.50f*temp[i];
         }
-        System.arraycopy(denomData, 0, temp, 0, numData.length);
-        IterDecon.phaseShift(temp, timePpPs, 0.05f);
+        System.arraycopy(denomData, 0, temp, 0, denomData.length);
+        temp = IterDecon.phaseShift(temp, timePpPs, delta);
         // scale num
         for (int i = 0; i < temp.length; i++) {
             numData[i] += .33f*.3f*temp[i];
         }
-        System.arraycopy(denomData, 0, temp, 0, numData.length);
-        IterDecon.phaseShift(temp, timePsPs, 0.05f);
+        System.arraycopy(denomData, 0, temp, 0, denomData.length);
+        temp = IterDecon.phaseShift(temp, timePsPs, delta);
         // scale num
         for (int i = 0; i < temp.length; i++) {
             numData[i] += .33f*.2f*temp[i];
         }
 
-        IterDeconResult result = iterdecon.process(numData, denomData, .05f);
+
+        IterDeconResult result = iterdecon.process(numData, denomData, delta);
         float[] pred = result.getPredicted();
         int[] s = result.getShifts();
         float[] a = result.getAmps();
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println("spike "+i+" "+s[i]+"  amp="+a[i]);
+        }
+
         assertEquals("fake data spike 0",  0, s[0]);
         assertEquals("fake data amp 0",    .33,    a[0], 0.0001f);
-        assertEquals("fake data spike 1",  timePs, s[1], 0.1f);
-        assertEquals("fake data amp 1",   .33f*.5f,    a[1], 0.0001f);
-        assertEquals("fake data spike 2 a="+a[2],  timePpPs, s[2], 0.1f);
-        assertEquals("fake data amp 2",  .33f*.3f,    a[2], 0.0001f);
-        assertEquals("fake data spike 2 a="+a[2],  timePsPs, s[2], 0.1f);
-        assertEquals("fake data amp 2",  .33f*.2f,    a[2], 0.0001f);
+        assertEquals("fake data spike 1",  Math.round(timePs/delta), s[1], 0.1f);
+        assertEquals("fake data amp 1",   .33f*.5f,    a[1], 0.001f);
+        assertEquals("fake data spike 2 a="+a[2],  Math.round(timePpPs/delta), s[2], 0.1f);
+        assertEquals("fake data amp 2",  .33f*.3f,    a[2], 0.001f);
+        assertEquals("fake data spike 3 a="+a[3],  Math.round(timePsPs/delta), s[3], 0.1f);
+        assertEquals("fake data amp 3",  .33f*.2f,    a[3], 0.001f);
 
         // JUnitDoclet end method process
     }
 
-    public void testPhaseShift() throws Exception {
+    public void testOnePhaseShift() throws Exception {
         // JUnitDoclet begin method phaseShift
         float[] data = new float[1024];
         data[10] = 1;
@@ -190,6 +198,26 @@ public class IterDeconTest
         assertEquals("9 shifts to 10",   data[9], out[10], .001);
         assertEquals("10 shifts to 11", data[10], out[11], .001);
         assertEquals("11 shifts to 12", data[11], out[12], .001);
+
+
+        // JUnitDoclet end method phaseShift
+    }
+    public void testFivePhaseShift() throws Exception {
+        // JUnitDoclet begin method phaseShift
+        float[] data = new float[1024];
+        data[10] = 1;
+        data[11] = 2;
+        data[12] = 1.1f;
+        float[] out = iterdecon.phaseShift(data, 5f, 0.05f);
+
+        //                              expected  actual
+        assertEquals("9 shifts to 109",   data[9], out[109], .001);
+        assertEquals("10 shifts to 110", data[10], out[110], .001);
+        assertEquals("11 shifts to 111", data[11], out[111], .001);
+        assertEquals("12 shifts to 112", data[11], out[111], .001);
+        assertEquals("13 shifts to 113", data[11], out[111], .001);
+
+
         // JUnitDoclet end method phaseShift
     }
 

@@ -127,6 +127,12 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <modelName>prem</modelName>
                 <phaseName>P</phaseName>
             </phaseExists>
+            <eventStationNOT>
+                <externalEventVectorSubsetter>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                    <gaussianWidth>2.5</gaussianWidth>
+                </externalEventVectorSubsetter>
+            </eventStationNOT>
         </eventStationAND>
         
             
@@ -268,7 +274,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             </externalWaveformVectorProcess>
 
             <externalWaveformVectorProcess>
-                <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
+                <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
                 <fileType>sac</fileType>
                 <dataDirectory>IRIS_recfunc</dataDirectory>
                 <eventDirLabel>

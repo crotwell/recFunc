@@ -56,6 +56,7 @@ import edu.sc.seis.sod.status.EventFormatter;
  */
 public class JDBCHKStack  extends JDBCTable {
 
+    
     public JDBCHKStack(Connection conn) throws SQLException, ConfigurationException, TauModelException {
         super("hkstack", conn);
         JDBCOrigin jdbcOrigin = new JDBCOrigin(conn); 
@@ -159,7 +160,7 @@ public class JDBCHKStack  extends JDBCTable {
         HKStack stack = new HKStack(6.5f,
                                     kmRayParam,
                                     cachedResult.radialMatch,
-                                    10, .25f, 240,
+                                    getDefaultMinH(), .25f, 240,
                                     1.6f, .0025f, 200,
                                     (LocalSeismogramImpl)cachedResult.radial,
                                     cachedResult.channels[0],
@@ -240,6 +241,8 @@ public class JDBCHKStack  extends JDBCTable {
     String modelName = "iasp91";
 
     private TauPUtil tauPTime;
+
+    private static final int DEFAULT_MIN_H = 10;
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCHKStack.class);
     
@@ -303,5 +306,9 @@ public class JDBCHKStack  extends JDBCTable {
     }
     public TauPUtil getTauPTime() {
         return tauPTime;
+    }
+    
+    public static int getDefaultMinH() {
+        return DEFAULT_MIN_H;
     }
 }

@@ -215,7 +215,7 @@ public class HKStack implements Serializable {
         if (crust2 != null) {
             Crust2Profile profile = crust2.getClosest(chan.my_site.my_station.my_location.longitude,
                                                       chan.my_site.my_station.my_location.latitude);
-            int depthIndex = (int)Math.round((profile.getLayer(7).topDepth-minH)/stepH);
+            int depthIndex = (int)Math.round((profile.getCrustThickness()-minH)/stepH);
             double vpvs = profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity();
             int vpvsIndex = (int)Math.round((vpvs-minK)/stepK);
             System.out.println("Crust2 "+StationIdUtil.toString(chan.my_site.my_station.get_id())+" depth="+

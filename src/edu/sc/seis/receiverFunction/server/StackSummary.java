@@ -56,10 +56,26 @@ public class StackSummary {
                 Station[] station = jdbcStation.getAllStations(netId[i]);
                 for(int j = 0; j < station.length; j++) {
                     System.out.println("calc for "+StationIdUtil.toStringNoDates(station[j].get_id()));
-                    SumHKStack sumStack = createSummary(station[j].get_id(),
-                                                        parentDir,
-                                                        minPercentMatch,
-                                                        smallestH);
+
+                    Crust2Profile crust2 = HKStack.getCrust2().getClosest(station[j].my_location.longitude,
+                                                                          station[j].my_location.latitude);
+                    double crust2H = crust2.getCrustThickness();
+                    SumHKStack sumStack;
+                    if (crust2H > smallestH+5) {
+                        sumStack = createSummary(station[j].get_id(),
+                                                 parentDir,
+                                                 minPercentMatch,
+                                                 smallestH);
+                    } else {
+                        float modSmallestH = (float)(crust2H-5);
+                        if (modSmallestH < JDBCHKStack.getDefaultMinH()) {
+                            modSmallestH = JDBCHKStack.getDefaultMinH();
+                        }
+                        sumStack = createSummary(station[j].get_id(),
+                                                 parentDir,
+                                                 minPercentMatch,
+                                                 modSmallestH);
+                    }
                     if(sumStack == null) {
                         continue;
                     }
@@ -74,15 +90,13 @@ public class StackSummary {
                             + sumStack.getSum().getStepK() * indicies[1];
                     peakVal = sumStack.getSum().getStack()[indicies[0]][indicies[1]];
                     outStr += " " + peakH + " " + peakK + " " + peakVal+" "+sumStack.getIndividuals().length;
-                    Crust2 crust2 = HKStack.getCrust2();
-                    if(crust2 != null) {
-                        Crust2Profile profile = crust2.getClosest(station[j].my_location.longitude,
-                                                                  station[j].my_location.latitude);
-                        double depth = profile.getLayer(7).topDepth;
-                        double vpvs = profile.getPWaveAvgVelocity()
-                                / profile.getSWaveAvgVelocity();
-                        outStr += " " + depth + " " + vpvs;
-                    }
+                    
+                    
+                    double depth = crust2.getCrustThickness();
+                    double vpvs = crust2.getPWaveAvgVelocity()
+                        / crust2.getSWaveAvgVelocity();
+                    outStr += " " + depth + " " + vpvs;
+                    
                     textSumm.write(outStr);
                     textSumm.newLine();
                 }

@@ -50,6 +50,10 @@ public class Crust2Profile {
         }
         return travelTime/layers[layers.length-1].topDepth;
     }
+    
+    public double getCrustThickness() {
+        return layers[7].topDepth;
+    }
 
     String name;
     String code;

@@ -37,6 +37,11 @@ public class Start {
                                             "edu.sc.seis.receiverFunction.web.StationList",
                                             servletStrings,
                                             sh);
+        edu.sc.seis.rev.RevUtil.populateJetty("/stationsNearBy.html",
+                                              "/stationsNearBy.html",
+                                              "edu.sc.seis.receiverFunction.web.StationsNearBy",
+                                              servletStrings,
+                                              sh);
         edu.sc.seis.rev.RevUtil.populateJetty("/station.html",
                                             "/station.html",
                                             "edu.sc.seis.receiverFunction.web.Station",

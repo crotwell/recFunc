@@ -49,12 +49,8 @@ public class TestIterDecon {
         DocumentBuilderFactory factory
             = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = factory.newDocumentBuilder();
-        URL dirURL = new URL(".");
+        URL dirURL = new URL("./ReccFunc/");
         System.out.println(" dirURL is "+dirURL.toString());
-        URL directory = new URL("RecFunc");
-        System.out.println(" directory name is "+directory.toString());
-        dirURL = new URL(dirURL.toString()+"/"+directory+"/");
-        System.out.println("updated dirURL is "+dirURL.toString());
         String dsName = "RecFunc";
         String userName = "crotwell";
         XMLDataSet dataset
@@ -63,6 +59,7 @@ public class TestIterDecon {
                              "genid"+Math.round(Math.random()*Integer.MAX_VALUE),
                              dsName,
                              userName);
+        
 
         SacTimeSeries predOut = new SacTimeSeries();
         predOut.y = predicted;

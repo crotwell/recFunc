@@ -18,7 +18,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <value>6</value>
             <unit>MINUTE</unit>
         </eventRefreshInterval>
-        <waveformWorkerThreads>2</waveformWorkerThreads>
+        <waveformWorkerThreads>1</waveformWorkerThreads>
         <maxRetryDelay>
             <value>16</value>
             <unit>DAY</unit>
@@ -51,7 +51,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             </originDepthRange>
             
             <originTimeRange>
-                <startTime>19940101T00:00:00.001Z</startTime>
+                <startTime>20020101T00:00:00.001Z</startTime>
                 <endTime>20041231T23:59:59.999Z</endTime>
             </originTimeRange>
             
@@ -66,7 +66,44 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             
         </eventFinder>
         
-        <removeEventDuplicate/>
+        <originAND>
+            <originOR>
+                <!-- California -->
+                <originPointDistance>
+                    <latitude>25</latitude>
+                    <longitude>-120</longitude>
+                    <unit>DEGREE</unit>
+                    <min>20</min>
+                    <max>115</max>
+                </originPointDistance>
+                <!-- Florida -->
+                <originPointDistance>
+                    <latitude>25</latitude>
+                    <longitude>-80</longitude>
+                    <unit>DEGREE</unit>
+                    <min>20</min>
+                    <max>115</max>
+                </originPointDistance>
+                <!-- Maine -->
+                <originPointDistance>
+                    <latitude>49</latitude>
+                    <longitude>-80</longitude>
+                    <unit>DEGREE</unit>
+                    <min>20</min>
+                    <max>115</max>
+                </originPointDistance>
+                <!-- Washington -->
+                <originPointDistance>
+                    <latitude>49</latitude>
+                    <longitude>-125</longitude>
+                    <unit>DEGREE</unit>
+                    <min>20</min>
+                    <max>115</max>
+                </originPointDistance>
+            </originOR>
+
+            <removeEventDuplicate/>
+        </originAND>
 
         
         <!-- Print out a line for each successful event -->
@@ -84,14 +121,31 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <!-- recheck channels after some time -->
             <refreshInterval>
                 <unit>DAY</unit>
-                <value>30</value>
+                <value>3</value>
             </refreshInterval>
         </networkFinder>
         
         <networkOR>
+            <networkCode>US</networkCode>
             <networkCode>II</networkCode>
             <networkCode>IU</networkCode>
+            <networkCode>SP</networkCode>
         </networkOR>
+        
+        <stationArea>
+            <boxArea>
+                <latitudeRange>
+                    <unit>DEGREE</unit>
+                    <min>25</min>
+                    <max>50</max>
+                </latitudeRange>
+                <longitudeRange>
+                    <unit>DEGREE</unit>
+                    <min>-130</min>
+                    <max>-75</max>
+                </longitudeRange>
+            </boxArea>
+        </stationArea>
         
         <channelAND>
             <!-- Accept any channel with B band code -->

@@ -18,7 +18,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <value>6</value>
             <unit>MINUTE</unit>
         </eventRefreshInterval>
-        <waveformWorkerThreads>1</waveformWorkerThreads>
+        <waveformWorkerThreads>2</waveformWorkerThreads>
         <maxRetryDelay>
             <value>16</value>
             <unit>DAY</unit>

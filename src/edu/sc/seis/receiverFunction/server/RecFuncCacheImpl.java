@@ -1,5 +1,6 @@
 package edu.sc.seis.receiverFunction.server;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.omg.CORBA.UNKNOWN;
@@ -8,6 +9,7 @@ import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
+import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.IfReceiverFunction.RecFuncCachePOA;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
@@ -25,7 +27,8 @@ import edu.sc.seis.sod.ConfigurationException;
  */
 public class RecFuncCacheImpl extends RecFuncCachePOA {
     
-    public RecFuncCacheImpl() throws SQLException, ConfigurationException {
+    public RecFuncCacheImpl() throws SQLException, ConfigurationException, IOException {
+        ConnMgr.setDB(ConnMgr.POSTGRES);
         Connection conn = ConnMgr.createConnection();
         jdbcOrigin = new JDBCOrigin(conn);
         jdbcEventAttr = new JDBCEventAttr(conn);
@@ -42,11 +45,11 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     /**
      *
      */
-    public LocalSeismogram[] get(Origin prefOrigin,
+    public CachedResult get(Origin prefOrigin,
 						        ChannelId[] channel,
 								IterDeconConfig config) {
         // TODO Auto-generated method stub
-        return new LocalSeismogram[0];
+        return new CachedResult();
     }
     /**
      *

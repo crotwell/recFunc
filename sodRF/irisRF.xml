@@ -283,7 +283,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <networkListTemplate>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformNetworks.xml</networkListTemplate>
         </waveformNetworkStatus>
         <waveformStationStatus>
-            <template>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformStation.xml</template>
+            <template>jar:edu/sc/seis/receiverFunction/waveformStation.xml</template>
         </waveformStationStatus>
     </waveformArm>
 </sod>

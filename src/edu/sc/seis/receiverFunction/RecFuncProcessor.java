@@ -138,66 +138,14 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                     Arrival arrival = tauPTime.getArrival(0);
                     // convert radian per sec ray param into km per sec
                     float kmRayParam = (float)(arrival.getRayParam()/tauPTime.getTauModel().getRadiusOfEarth());
-                    HKStack stack = new HKStack(6.5f, kmRayParam, 5, .25f, 240, 1.6f, .005f, 100);
-                    float[][] stackOut = stack.calculate(saved);
+                    HKStack stack = new HKStack(6.5f,
+                                                kmRayParam,
+                                                5, .25f, 240,
+                                                1.6f, .0025f, 200,
+                                                saved);
                     
-                    
-                    BufferedImage bufImage = new BufferedImage(2*stackOut.length+10,
-                                                               2*stackOut[0].length+60,
-                                                               BufferedImage.TYPE_INT_RGB);
-                    Graphics2D g = bufImage.createGraphics();
-                    g.setColor(Color.darkGray);
-                    g.fillRect(0, 0, bufImage.getWidth(), bufImage.getHeight());
-                    g.translate(5, 5);
-                    float min = stackOut[0][0];
-                    int maxIndexX = 0;
-                    int maxIndexY = 0;
-                    int minIndexX = 0;
-                    int minIndexY = 0;
-                    float max = min;
-                    
-                    for (int j = 0; j < stackOut.length; j++) {
-                        for (int k = 0; k < stackOut[j].length; k++) {
-                            if (stackOut[j][k] < min) {
-                                min = stackOut[j][k];
-                                minIndexX = j;
-                                minIndexY = k;
-                            }
-                            if (stackOut[j][k] > max) {
-                                max = stackOut[j][k];
-                                maxIndexX = j;
-                                maxIndexY = k;
-                            }
-                        }
-                    }
-                    int minColor = makeImageable(min, max, min);
-                    g.setColor(new Color(minColor, minColor, minColor));
-                    g.fillRect(0, 2*stackOut[0].length+5, 15, 15);
-                    g.setColor(Color.white);
-                    g.drawString("Min="+min, 0, 2*stackOut[0].length+35);
-                    
-                    int maxColor = makeImageable(min, max, max);
-                    g.setColor(new Color(maxColor, maxColor, maxColor));
-                    g.fillRect(2*stackOut.length-20, 2*stackOut[0].length+5, 15, 15);
-                    g.setColor(Color.white);
-                    String maxString = "Max="+max;
-                    FontMetrics fm = g.getFontMetrics();
-                    int stringWidth = fm.stringWidth(maxString);
-                    g.drawString(maxString, 2*stackOut.length-5-stringWidth, 2*stackOut[0].length+35);
-                    
-                    for (int j = 0; j < stackOut.length; j++) {
-                        System.out.print(j+" : ");
-                        for (int k = 0; k < stackOut[j].length; k++) {
-                            int colorVal = makeImageable(min, max, stackOut[j][k]);
-                            g.setColor(new Color(colorVal, colorVal, colorVal));
-                            g.fillRect(2*j, 2*k, 2, 2);
-                            System.out.print(colorVal+" ");
-                        }
-                        System.out.println("");
-                    }
-                    g.dispose();
                     File outImageFile  = new File(getEventDirectory(event),"stack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
-
+                    BufferedImage bufImage = createStackImage(stack);
                     javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
                 }
             } else {
@@ -220,11 +168,83 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         return processor.isRecFuncFinished();
     }
     
+    public BufferedImage createStackImage(HKStack stack) {
+        float[][] stackOut = stack.getStack();
+        int fullWidth = 2*stackOut.length+40;
+        int fullHeight = 2*stackOut[0].length+110;
+        BufferedImage bufImage = new BufferedImage(fullWidth,
+                                                   fullHeight,
+                                                   BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = bufImage.createGraphics();
+        g.setColor(Color.darkGray);
+        g.fillRect(0, 0, bufImage.getWidth(), bufImage.getHeight());
+        g.translate(0, 5);
+        FontMetrics fm = g.getFontMetrics();
+        
+        String title = ChannelIdUtil.toStringNoDates(stack.getRecFunc().getRequestFilter().channel_id);
+        g.drawString(title, (fullWidth-fm.stringWidth(title))/2, fm.getHeight());
+        
+        g.translate(5, 5);
+        
+        float min = stackOut[0][0];
+        int maxIndexX = 0;
+        int maxIndexY = 0;
+        int minIndexX = 0;
+        int minIndexY = 0;
+        float max = min;
+        
+        for (int j = 0; j < stackOut.length; j++) {
+            for (int k = 0; k < stackOut[j].length; k++) {
+                if (stackOut[j][k] < min) {
+                    min = stackOut[j][k];
+                    minIndexX = k;
+                    minIndexY = j;
+                }
+                if (stackOut[j][k] > max) {
+                    max = stackOut[j][k];
+                    maxIndexX = k;
+                    maxIndexY = j;
+                }
+            }
+        }
+        
+        g.setColor(Color.white);
+        g.drawString("H max="+stack.getMinH()+maxIndexY*stack.getStepH(), 0, 2*stackOut[0].length+5);
+        g.drawString("K max="+stack.getMinK()+maxIndexX*stack.getStepK(), 0, 2*stackOut[0].length+20);
+        
+        int minColor = makeImageable(min, max, min);
+        g.setColor(new Color(minColor, minColor, minColor));
+        g.fillRect(0, 2*stackOut[0].length+25, 15, 15);
+        g.setColor(Color.white);
+        g.drawString("Min="+min, 0, 2*stackOut[0].length+55);
+        
+        int maxColor = makeImageable(min, max, max);
+        g.setColor(new Color(maxColor, maxColor, maxColor));
+        g.fillRect(2*stackOut.length-20, 2*stackOut[0].length+25, 15, 15);
+        g.setColor(Color.white);
+        String maxString = "Max="+max;
+        int stringWidth = fm.stringWidth(maxString);
+        g.drawString(maxString, 2*stackOut.length-5-stringWidth, 2*stackOut[0].length+55);
+        
+        for (int j = 0; j < stackOut.length; j++) {
+            System.out.print(j+" : ");
+            for (int k = 0; k < stackOut[j].length; k++) {
+                int colorVal = makeImageable(min, max, stackOut[j][k]);
+                g.setColor(new Color(colorVal, colorVal, colorVal));
+                g.fillRect( 2*k, 2*j, 2, 2);
+                System.out.print(colorVal+" ");
+            }
+            System.out.println("");
+        }
+        g.dispose();
+        return bufImage;
+    }
+    
     RecFunc recFunc;
     DataSetRecFuncProcessor processor;
     TauP_Time tauPTime;
     
-    static Logger logger = Logger.getLogger(RecFuncProcessor.class);
+    private static Logger logger = Logger.getLogger(RecFuncProcessor.class);
     
 }
 

@@ -25,6 +25,7 @@ public class RecFuncTemplate {
 
     public RecFuncTemplate() throws Exception {
         if (ve == null) {
+            ve = new VelocityEngine();
             String loggerName = "Velocity";
             Logger velocityLogger = Logger.getLogger(loggerName);
             Properties props = new Properties();

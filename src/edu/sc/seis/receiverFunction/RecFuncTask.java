@@ -1,5 +1,8 @@
 package edu.sc.seis.receiverFunction;
 
+import edu.sc.seis.fissuresUtil.xml.*;
+
+import edu.iris.Fissures.AuditInfo;
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
@@ -14,18 +17,15 @@ import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.bag.Rotate;
 import edu.sc.seis.fissuresUtil.chooser.DataSetChannelGrouper;
 import edu.sc.seis.fissuresUtil.display.BasicSeismogramDisplay;
-import edu.sc.seis.fissuresUtil.xml.DataSet;
-import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
-import edu.sc.seis.fissuresUtil.xml.SeisDataChangeEvent;
-import edu.sc.seis.fissuresUtil.xml.SeisDataChangeListener;
-import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
 import edu.sc.seis.vsnexplorer.CommonAccess;
 import edu.sc.seis.vsnexplorer.configurator.ConfigurationException;
+import edu.sc.seis.vsnexplorer.task.GUITask;
 import edu.sc.seis.vsnexplorer.task.GlobalToolBar;
-import edu.sc.seis.vsnexplorer.task.Task;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Map;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 
 /**
@@ -38,7 +38,7 @@ import org.apache.log4j.Logger;
  * @version
  */
 
-public class RecFuncTask  extends MouseAdapter implements Task {
+public class RecFuncTask  extends MouseAdapter implements GUITask {
     public RecFuncTask (){
         
     }
@@ -51,6 +51,31 @@ public class RecFuncTask  extends MouseAdapter implements Task {
     
     public void invoke() {
         GlobalToolBar.setMouseListener(this);
+    }
+    
+    
+    /** Gets the GUI for this Task. Used for interacting with the user
+     before and after invoking this Task's action.
+     */
+    public JComponent getGUI() throws Exception {
+        return new JPanel();
+    }
+    
+    /** True if this GUI has a "more options" funtionality. More options
+     *  appear in a separate panel below the main gui, and can be shown/hidden
+     *  with a "Show More Options" and "Hide More Options" button that is
+     *  provided automatically is this return true.
+     */
+    public boolean hasMoreOptions() {
+        // TODO
+        return false;
+    }
+    
+    /** Gets the "More Options" GUI component.
+     */
+    public JComponent getMoreOptionsGUI() {
+        // TODO
+        return null;
     }
     
     public void destroy(){}
@@ -85,8 +110,9 @@ public class RecFuncTask  extends MouseAdapter implements Task {
                 }
                 
                 DataSetRecFuncProcessor processor =
-                    new DataSetRecFuncProcessor(chGrpSeismograms, currEvent);
+                    new DataSetRecFuncProcessor(chGrpSeismograms, currEvent, display);
                 for (int i=0; i<chGrpSeismograms.length; i++) {
+                    logger.debug("Retrieveing for "+chGrpSeismograms[i].getName());
                     chGrpSeismograms[i].retrieveData(processor);
                 }
             }
@@ -114,11 +140,13 @@ public class RecFuncTask  extends MouseAdapter implements Task {
     
     class DataSetRecFuncProcessor implements SeisDataChangeListener {
         DataSetRecFuncProcessor(DataSetSeismogram[] seis,
-                                EventAccessOperations event)
+                                EventAccessOperations event,
+                                BasicSeismogramDisplay display)
             throws NoPreferredOrigin{
             this.seis = seis;
             this.event = event;
             this.origin = event.get_preferred_origin();
+            this.display = display;
             finished = new boolean[seis.length];
             localSeis = new LocalSeismogramImpl[seis.length];
         }
@@ -141,6 +169,7 @@ public class RecFuncTask  extends MouseAdapter implements Task {
          *
          */
         public void finished(SeisDataChangeEvent sdce) {
+            logger.debug("finished for "+sdce.getSource().getName());
             finished[getIndex(sdce.getSource())] = true;
             for (int i=0; i<finished.length; i++) {
                 if ( ! finished[i]) {
@@ -168,6 +197,7 @@ public class RecFuncTask  extends MouseAdapter implements Task {
                 logger.error("problem one seismogram component is null ");
                 return;
             }
+            
             Channel chan =
                 seis[0].getDataSet().getChannel(seis[0].getRequestFilter().channel_id);
             Location staLoc = chan.my_site.my_station.my_location;
@@ -175,13 +205,44 @@ public class RecFuncTask  extends MouseAdapter implements Task {
             DistAz distAz = new DistAz(staLoc.latitude, staLoc.longitude,
                                        evtLoc.latitude, evtLoc.longitude);
             float[][] rotated = Rotate.rotate(e, n, (180+distAz.baz)*Math.PI/180);
+            
+            // check lengths, trim if needed???
+            float[] zdata = z.get_as_floats();
+            if (rotated[0].length != zdata.length) {
+                logger.error("data is not of same length "+
+                                 rotated[0].length+" "+zdata.length);
+                return;
+            }
+            zdata = decon.makePowerTwo(zdata);
+            rotated[0] = decon.makePowerTwo(rotated[0]);
+            rotated[1] = decon.makePowerTwo(rotated[1]);
+            
             SamplingImpl samp = SamplingImpl.createSamplingImpl(z.sampling_info);
             double period = samp.getPeriod().convertTo(UnitImpl.SECOND).getValue();
             IterDeconResult ans = decon.process(rotated[0],
-                                                z.get_as_floats(),
-                                                    (float)period);
+                                                zdata,
+                                                (float)period);
             float[] predicted = ans.getPredicted();
             logger.info("Finished with receiver funciton processing");
+            
+            LocalSeismogramImpl predSeis =
+                new LocalSeismogramImpl("recFunc/"+z.get_id(),
+                                        z.getBeginTime().getFissuresTime(),
+                                        predicted.length,
+                                        z.sampling_info,
+                                        z.y_unit,
+                                        z.channel_id,
+                                        predicted);
+            predSeis.setName("receiver function");
+            DataSetSeismogram predDSS =
+                new MemoryDataSetSeismogram(predSeis,
+                                            "receiver function");
+            AuditInfo[] audit = new AuditInfo[1];
+            audit[0] =
+                new AuditInfo("Calculated receiver function",
+                              System.getProperty("user.name"));
+            sdce.getSource().getDataSet().addDataSetSeismogram(predDSS,
+                                                               audit);
         }
         
         /**
@@ -191,7 +252,11 @@ public class RecFuncTask  extends MouseAdapter implements Task {
          *
          */
         public void pushData(SeisDataChangeEvent sdce) {
-            localSeis[getIndex(sdce.getSource())] = sdce.getSeismograms()[0];
+            if (sdce.getSeismograms().length != 0) {
+                localSeis[getIndex(sdce.getSource())] = sdce.getSeismograms()[0];
+            } else {
+                logger.info("pushData event has zero length localSeismogram array");
+            }
         }
         
         int getIndex(DataSetSeismogram s) {
@@ -208,6 +273,8 @@ public class RecFuncTask  extends MouseAdapter implements Task {
         EventAccessOperations event;
         
         Origin origin;
+        
+        BasicSeismogramDisplay display;
         
         boolean[] finished;
         

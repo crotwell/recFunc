@@ -26,13 +26,16 @@ import edu.sc.seis.sod.LocalSeismogramProcess;
 import edu.sc.seis.sod.subsetter.waveFormArm.SacFileProcessor;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
+import edu.sc.seis.fissuresUtil.bag.DistAz;
+import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
+import edu.sc.seis.TauP.Arrival;
 
 public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogramProcess {
-    
+
     public RecFuncProcessor(Element config)  throws ConfigurationException {
         super(config);
     }
-    
+
     /**
      * Processes localSeismograms to calculate receiver functions.
      *
@@ -62,21 +65,21 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                       cookies);
         if (recFunc == null) {
             float gwidth = 3.0f;
-            TauP_Time tauPTime = new TauP_Time("iasp91");
+            tauPTime = new TauP_Time("iasp91");
             recFunc = new RecFunc(tauPTime,
                                   new IterDecon(100, true, .001f, gwidth));
         }
-        
+
         DataSet dataset = getDataSet(event);
         DataSetSeismogram[] chGrpSeismograms =
             DisplayUtils.getComponents(dataset, available[0]);
-        
+
         if (chGrpSeismograms.length < 3) {
             logger.debug("chGrpSeismograms.length = "+chGrpSeismograms.length);
             // must not be all here yet
             return seismograms;
         }
-        
+
         logger.info("RecFunc for "+ChannelIdUtil.toStringNoDates(channel.get_id()));
         for (int i=0; i<chGrpSeismograms.length; i++) {
             if (chGrpSeismograms[i] == null) {
@@ -85,7 +88,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                 return seismograms;
             }
         }
-        
+
         processor =
             new DataSetRecFuncProcessor(chGrpSeismograms,
                                         event,
@@ -97,7 +100,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         while ( ! processor.isRecFuncFinished()) {
             try {
                 System.out.println("Sleeping "+ChannelIdUtil.toStringNoDates(channel.get_id()));
-                
+
                 Thread.sleep(100);
             } catch (InterruptedException e) {
             }
@@ -113,8 +116,14 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                                                              channel.sampling_info,
                                                              channel.effective_time,
                                                              channel.my_site);
-                    
-                    saveInDataSet(event, recFuncChannel, predicted.getCache());
+
+                    URLDataSetSeismogram saved =
+                        saveInDataSet(event, recFuncChannel, predicted.getCache());
+                    DistAz distAz = DisplayUtils.calculateDistAz(saved);
+                    tauPTime.calculate(distAz.delta);
+                    Arrival arrival = tauPTime.getArrival(0);
+                    HKStack stack = new HKStack(6.5f, (float)arrival.getRayParam(), 5, .5f, 80, 1.6f, .01f, 30);
+                    float[][] stackOut = stack.calculate(saved);
                 }
             } else {
                 logger.error("problem with recfunc: predicted is null");
@@ -126,15 +135,16 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         }
         return seismograms;
     }
-    
+
     boolean isDataComplete(LocalSeismogram seis) {
         return processor.isRecFuncFinished();
     }
-    
+
     RecFunc recFunc;
     DataSetRecFuncProcessor processor;
-    
+    TauP_Time tauPTime;
+
     static Logger logger = Logger.getLogger(RecFuncProcessor.class);
-    
+
 }
 

@@ -268,7 +268,7 @@ public class JDBCHKStack  extends JDBCTable {
                         Station[] station = jdbcStation.getAllStations(netId[i]);
                         for(int j = 0; j < station.length; j++) {
                             System.out.println("calc for "+netId[i].network_code+"."+station[j].get_code());
-                            jdbcHKStack.calc(netCode, station[j].get_code(), minPercentMatch);
+                            jdbcHKStack.calc(netId[i].network_code, station[j].get_code(), minPercentMatch);
                         }
                     }
                 }

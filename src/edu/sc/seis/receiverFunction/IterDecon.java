@@ -10,18 +10,18 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 3568 2003-03-26 15:54:42Z crotwell $
+ * @version $Id: IterDecon.java 3595 2003-03-31 21:06:51Z crotwell $
  */
 
 public class IterDecon {
     public IterDecon (int maxBumps, 
                       boolean useAbsVal, 
                       float tol, 
-                      float gwidth) {
+                      float gwidthFactor) {
         this.maxBumps = maxBumps;
         this.useAbsVal = useAbsVal;
         this.tol = tol;
-        this.gwidth = gwidth;
+        this.gwidthFactor = gwidthFactor;
     }
 
     public IterDeconResult process(float[] numerator, 
@@ -33,8 +33,8 @@ public class IterDecon {
         /* Now begin the cross-correlation procedure
            Put the filter in the signals
         */
-        float[] f  = gaussianFilter(numerator, gwidth, dt);
-        float[] g  = gaussianFilter(denominator, gwidth, dt);
+        float[] f  = gaussianFilter(numerator, gwidthFactor, dt);
+        float[] g  = gaussianFilter(denominator, gwidthFactor, dt);
 
         // compute the power in the "numerator" for error scaling
         float fPower = power(f);
@@ -59,16 +59,18 @@ public class IterDecon {
             amps[bump] = corr[shifts[bump]]; // note don't normalize by dt here
             System.out.println("Corr max is "+amps[bump]+" at index "+shifts[bump]+" for length "+g.length);
 
-            predicted = buildDecon(amps, shifts, g.length, gwidth, dt);
+            predicted = buildDecon(amps, shifts, g.length, gwidthFactor, dt);
             float[] predConvolve = Cmplx.convolve(predicted, denominator);
 
             residual = getResidual(f, predConvolve);
         } // end of for (int bump=0; bump < maxBumps; bump++)
 
+        System.out.println("predicted[0]="+predicted[0]+"  amps[0]="+amps[0]);
+
         return new IterDeconResult(maxBumps,
                                    useAbsVal,
                                    tol,
-                                   gwidth,
+                                   gwidthFactor,
                                    numerator,
                                    denominator,
                                    dt,
@@ -111,11 +113,11 @@ public class IterDecon {
         return p;
     }
 
-    float[] buildDecon(float[] amps, int[] shifts, int n, float gwidth, float dt) {
-        return gaussianFilter(buildSpikes(amps, shifts, n), gwidth, dt);
+    float[] buildDecon(float[] amps, int[] shifts, int n, float gwidthFactor, float dt) {
+        return gaussianFilter(buildSpikes(amps, shifts, n), gwidthFactor, dt);
     }
 
-    float[] getResidual(float[] x, float[] y) {
+    public static float[] getResidual(float[] x, float[] y) {
         float[] r = new float[x.length];
         for (int i=0; i<x.length; i++) {
             r[i] = x[i]-y[i];
@@ -123,7 +125,7 @@ public class IterDecon {
         return r;
     }
 
-    int getAbsMaxIndex(float[] data) {
+    public static int getAbsMaxIndex(float[] data) {
         int minIndex = getMinIndex(data);
         int maxIndex = getMaxIndex(data);
         if (Math.abs(data[minIndex]) > Math.abs(data[maxIndex])) {
@@ -132,7 +134,7 @@ public class IterDecon {
         return maxIndex;
     }
 
-    int getMinIndex(float[] data) {
+    public static int getMinIndex(float[] data) {
         int index = 0;
         for (int i=1; i<data.length; i++) {
             if (data[i] < data[index]) {
@@ -142,7 +144,7 @@ public class IterDecon {
         return index;
     }	
 
-    int getMaxIndex(float[] data) {
+    public static int getMaxIndex(float[] data) {
         int index = 0;
         for (int i=1; i<data.length; i++) {
             if (data[i] > data[index]) {
@@ -152,13 +154,13 @@ public class IterDecon {
         return index;
     }	
 
-    void zero(float[] data) {
+    public static void zero(float[] data) {
         for (int i=0; i<data.length; i++) {
             data[i] = 0;
         } // end of for (int i=0; i<data.length; i++)
     }
 
-    float power(float[] data) {
+    public static float power(float[] data) {
         float power=0;
         for (int i=0; i<data.length; i++) {
             power += data[i]*data[i];
@@ -166,8 +168,14 @@ public class IterDecon {
         return power;
     }
 
-    /** convolve a function with a unit-area Gaussian filter.*/
-    float[] gaussianFilter(float[] x, float gwidthFactor, float dt) {
+    /** convolve a function with a unit-area Gaussian filter.
+     *  The 1D gaussian is: f(x) = 1/(2*PI*sigma) e^(-x^2/(q * sigma^2))
+     *  and the impluse response is: g(x) = 1/(2*PI)e^(-sigma^2 * u^2 / 2)
+     * 
+*/
+    public static float[] gaussianFilter(float[] x, 
+                                         float gwidthFactor, 
+                                         float dt) {
         int n2 = nextPowerTwo(x.length);
         int halfpts = n2 / 2;
 
@@ -183,8 +191,7 @@ public class IterDecon {
 
         forward[0].i *= gauss;
 
-        for (int i=1; i<halfpts; i++) {
-            int j=i*2;
+        for (int i=1; i<forward.length; i++) {
             omega = i*d_omega;
             gauss = Math.exp(-omega*omega / gwidth);
             forward[i].r *= gauss;
@@ -192,15 +199,17 @@ public class IterDecon {
         }
 	
         float[] ans = Cmplx.fftInverse(forward, x.length);
-
+        System.out.println("before scale [10="+ans[10]);
+        
         float scaleFactor = (float)(dt * 2 * df);
         for (int i=0; i<ans.length; i++) {
             ans[i] *= scaleFactor;
         }
+        System.out.println("after scale [10="+ans[10]);
         return ans;
     }
 
-    public float[] phaseShift(float[] x, float shift, float dt) {
+    public static float[] phaseShift(float[] x, float shift, float dt) {
         int n2 = nextPowerTwo(x.length);
         int halfpts = n2 / 2;
 
@@ -236,7 +245,7 @@ public class IterDecon {
         return ans;
     }
 
-    int nextPowerTwo(int n) {
+    public static int nextPowerTwo(int n) {
         int i=1;
         while (i < n) {
             i*=2;
@@ -247,6 +256,6 @@ public class IterDecon {
     int maxBumps;
     boolean useAbsVal; 
     float tol;
-    float gwidth;
+    float gwidthFactor;
 
 }// IterDecon

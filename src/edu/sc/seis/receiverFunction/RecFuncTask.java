@@ -1,6 +1,7 @@
-package edu.sc.seis.vsnexplorer.task;
+package edu.sc.seis.receiverFunction;
 
 import edu.sc.seis.vsnexplorer.*;
+import edu.sc.seis.vsnexplorer.task.*;
 import edu.sc.seis.vsnexplorer.task.dataSetBrowser.*;
 import edu.sc.seis.vsnexplorer.configurator.*;
 import edu.sc.seis.fissuresUtil.display.*;

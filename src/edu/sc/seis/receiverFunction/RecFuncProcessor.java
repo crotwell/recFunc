@@ -120,7 +120,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
         }
 
         if (recFunc == null) {
-            tauPTime = new TauPUtil(modelName);
+            tauPTime = TauPUtil.getTauPUtil(modelName);
             recFunc = new RecFunc(tauPTime,
                                   new IterDecon(maxBumps, true, tol, gwidth));
         }

@@ -54,7 +54,7 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
             TauModelException {
         super(config);
         String modelName = "prem";
-        taup = new TauPUtil(modelName);
+        taup = TauPUtil.getTauPUtil(modelName);
         recFunc = new RecFunc(taup, new IterDecon(maxBumps, true, tol, gwidth));
         FissuresNamingService fisName = CommonAccess.getCommonAccess()
                 .getFissuresNamingService();

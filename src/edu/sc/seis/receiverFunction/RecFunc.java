@@ -120,14 +120,18 @@ public class RecFunc {
         firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
         logger.debug("firstP "+firstP);
         //TimeInterval shift = firstP.subtract(z.getBeginTime());
-        //shift = (TimeInterval)shift.convertTo(UnitImpl.SECOND);
+        shift = (TimeInterval)shift.convertTo(UnitImpl.SECOND);
         if (shift.getValue() != 0) {
+            logger.debug("shifting by "+shift+"  before 0="+predicted[0]);
             predicted = decon.phaseShift(predicted,
                                              (float)shift.getValue(),
                                              (float)period);
+            
+            logger.debug("shifting by "+shift+"  after 2000="+predicted[2000]);
         }
         logger.info("Finished with receiver function processing");
         logger.debug("rec func begin "+firstP.subtract(shift));
+        ans.predicted = predicted;
         return ans;
     }
     

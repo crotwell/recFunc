@@ -2,7 +2,8 @@
 
 <project>
     <pomVersion>3</pomVersion>
-    <id>recFunc</id>
+    <groupId>recFunc</groupId>
+    <artifactId>recFunc</artifactId>
     <name>recFunc</name>
     <currentVersion>1.0beta</currentVersion>
     <organization>

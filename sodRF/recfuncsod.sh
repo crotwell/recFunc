@@ -23,5 +23,5 @@ SOD=$MAVEN/sod/jars/sod-1.0Beta.jar
 RECFUNC=$MAVEN/recFunc/jars/recFunc-1.0Beta.jar
 
 
-java -cp ${SEEDCODEC}:${SOD}:${RECFUNC}:${OPENMAP}:${GEE}:${JING}:${FISSURESIDL}:${FISSURESIMPL}:${FISSURESUTIL}:${XERCES}:${XMLAPI}:${XALAN}:${TAUP}:${LOG4J}:${HSQLDB}:${CLASSPATH} edu.sc.seis.sod.Start $*
+java -Xmx128m -cp ${SEEDCODEC}:${SOD}:${RECFUNC}:${OPENMAP}:${GEE}:${JING}:${FISSURESIDL}:${FISSURESIMPL}:${FISSURESUTIL}:${XERCES}:${XMLAPI}:${XALAN}:${TAUP}:${LOG4J}:${HSQLDB}:${CLASSPATH} edu.sc.seis.sod.Start $*
 

@@ -1,7 +1,7 @@
 
-# see
-# http://developer.apple.com/techpubs/macosx/Java/JavaDevelopment/overview/chapter_2_section_8.html
-#
+# see http://developer.apple.com/unix/crossplatform.html
+# in the section Using Java > Extensions and JNI Libraries 
+# to see about jni installation on the mac
 #
 # to make available without setting this env var, copy to
 # /Users/crotwell/Library/Java/Extensions/libnativeFFT.jnilib

@@ -26,12 +26,16 @@ import edu.sc.seis.fissuresUtil.display.DisplayUtils;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.SodUtil;
+import edu.sc.seis.sod.Start;
 import edu.sc.seis.sod.process.waveformArm.LocalSeismogramProcess;
+import edu.sc.seis.sod.process.waveformArm.LocalSeismogramTemplateGenerator;
 import edu.sc.seis.sod.process.waveformArm.SaveSeismogramToFile;
+import edu.sc.seis.sod.status.waveformArm.WaveformArmMonitor;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Iterator;
 import org.apache.log4j.Logger;
+import org.apache.velocity.VelocityContext;
 import org.w3c.dom.Element;
 
 public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeismogramProcess {
@@ -126,6 +130,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
         if (processor.getError() == null) {
             if (processor.getPredicted() != null) {
                 for (int i = 0; i < processor.getPredicted().length; i++) {
+                    String ITR_ITT = (i==0?"ITR":"ITT");
                     MemoryDataSetSeismogram predicted = processor.getPredicted()[i];
                     dataset.remove(predicted); // to avoid duplicates
                     Channel recFuncChannel = new ChannelImpl(predicted.getRequestFilter().channel_id,
@@ -163,13 +168,50 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                     stack.write(dos);
                     dos.close();
 
-                    File outImageFile  = new File(getEventDirectory(event),prefix+channelIdString+".png");
+                    if (lSeisTemplateGen == null) {
+                        LocalSeismogramProcess[] processes = Start.getWaveformArm().getLocalSeismogramArm().getProcesses();
+                        for (int j = 0; j < processes.length; j++) {
+                            if (processes[j] instanceof LocalSeismogramTemplateGenerator) {
+                                lSeisTemplateGen = (LocalSeismogramTemplateGenerator)processes[j];
+                                break;
+                            } else {
+                                System.out.println("Monitor "+i+"  "+processes[j]);
+                            }
+                        }
+                    }
+
+                    File imageDir = lSeisTemplateGen.getOutputFile(event, channel);
+                    imageDir.mkdirs();
+                    File outImageFile  = new File(imageDir, prefix+channelIdString+".png");
                     BufferedImage bufImage = stack.createStackImage();
                     javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
+                    System.out.println("Stack image to "+outImageFile.getPath());
 
-                    cookieJar.put("recFunc_hkstack_image", outImageFile.getName());
-                    cookieJar.put("recFunc_pred_auxData", aux);
-                    cookieJar.put("stack", stack);
+                    synchronized(lSeisTemplateGen) {
+                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, original, available, predicted.getCache(), cookieJar);
+                    }
+
+                    // put the answer in the site context as the result is shared
+                    // by all channels from that site, helps with velocity template
+                    VelocityContext siteContext = (VelocityContext)cookieJar.getSiteContext(event, channel.my_site);
+                    siteContext.put("recFunc_hkstack_image_"+ITR_ITT, outImageFile.getName());
+                    siteContext.put("recFunc_pred_auxData"+ITR_ITT, aux);
+                    siteContext.put("stack_"+ITR_ITT, stack);
+
+                    // test in out for all channels
+                    Collection c = (Collection)cookieJar.get("allChanIds");
+                    Iterator iterator = c.iterator();
+                    boolean found = false;
+                    while(iterator.hasNext()) {
+                        VelocityContext cTemp = (VelocityContext)cookieJar.getContext().get(iterator.next().toString());
+                        System.out.println("Check for stack"+ cTemp.get("stack_"+ITR_ITT).toString());
+                        found = true;
+                        break;
+                    }
+                    if ( ! found) {
+                        System.err.println("XXXXXX  DIDN't find stack_"+ITR_ITT);
+                    }
+
 
                     RecFuncTemplate rfTemplate =new RecFuncTemplate();
                     File velocityOutFile = new File(getEventDirectory(event),"Vel_"+prefix+channelIdString+".html");
@@ -291,6 +333,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
     RecFunc recFunc;
     DataSetRecFuncProcessor processor;
     TauP_Time tauPTime;
+    LocalSeismogramTemplateGenerator lSeisTemplateGen = null;
 
     float gwidth = 3.0f;
 

@@ -73,7 +73,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
             return;
         }
         
-        Channel[] channel = new Channel[3];
+        Channel[] channel = new Channel[seis.length];
         for (int i = 0; i < seis.length; i++) {
             channel[i] =
                 seis[i].getDataSet().getChannel(seis[i].getRequestFilter().channel_id);
@@ -94,33 +94,38 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
             firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
             
             TimeInterval shift = recFunc.getShift();
-            float[] predicted = ans.getPredicted();
-            
-            ChannelId recFuncChanId = new ChannelId(localSeis[0].channel_id.network_id,
-                                                    localSeis[0].channel_id.station_code,
-                                                    localSeis[0].channel_id.site_code,
-                                                    "RFR",
-                                                    localSeis[0].channel_id.begin_time);
-            
-            LocalSeismogramImpl predSeis =
-                new LocalSeismogramImpl("recFunc/"+localSeis[0].get_id(),
-                                        firstP.subtract(shift).getFissuresTime(),
-                                        predicted.length,
-                                        localSeis[0].sampling_info,
-                                        localSeis[0].y_unit,
-                                        recFuncChanId,
-                                        predicted);
-            predSeis.setName("receiver function "+localSeis[0].channel_id.station_code);
-            predictedDSS =
-                new MemoryDataSetSeismogram(predSeis,
-                                            "receiver function "+localSeis[0].channel_id.station_code);
-
-            AuditInfo[] audit = new AuditInfo[1];
-            audit[0] =
-                new AuditInfo("Calculated receiver function",
-                              System.getProperty("user.name"));
-            sdce.getSource().getDataSet().addDataSetSeismogram(predictedDSS,
-                                                               audit);
+            predictedDSS = new MemoryDataSetSeismogram[2];
+            for (int i = 0; i < ans.length; i++) {
+                float[] predicted = ans[i].getPredicted();
+                String chanCode = (i==0)?"ITR":"ITT"; // ITR for radial
+                                                      // ITT for tangential
+                
+                ChannelId recFuncChanId = new ChannelId(localSeis[0].channel_id.network_id,
+                                                        localSeis[0].channel_id.station_code,
+                                                        localSeis[0].channel_id.site_code,
+                                                        chanCode,
+                                                        localSeis[0].channel_id.begin_time);
+                
+                LocalSeismogramImpl predSeis =
+                    new LocalSeismogramImpl("recFunc/"+chanCode+"/"+localSeis[0].get_id(),
+                                            firstP.subtract(shift).getFissuresTime(),
+                                            predicted.length,
+                                            localSeis[0].sampling_info,
+                                            localSeis[0].y_unit,
+                                            recFuncChanId,
+                                            predicted);
+                predSeis.setName("receiver function "+localSeis[0].channel_id.station_code);
+                predictedDSS[i] =
+                    new MemoryDataSetSeismogram(predSeis,
+                                                "receiver function "+localSeis[0].channel_id.station_code);
+                
+                AuditInfo[] audit = new AuditInfo[1];
+                audit[0] =
+                    new AuditInfo("Calculated receiver function",
+                                  System.getProperty("user.name"));
+                sdce.getSource().getDataSet().addDataSetSeismogram(predictedDSS[i],
+                                                                   audit);
+            }
             logger.debug("Processing finished OK "+chan.my_site.my_station.name);
         } catch (ConfigurationException ce) {
             logger.error("Unable to get travel time calculator", ce);
@@ -159,7 +164,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
         return recFuncFinished;
     }
     
-    public MemoryDataSetSeismogram getPredicted() {
+    public MemoryDataSetSeismogram[] getPredicted() {
         return predictedDSS;
     }
     
@@ -179,9 +184,9 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
     
     RecFunc recFunc;
     
-    IterDeconResult ans = null;
+    IterDeconResult[] ans = null;
     
-    MemoryDataSetSeismogram predictedDSS = null;
+    MemoryDataSetSeismogram[] predictedDSS = null;
     
     boolean recFuncFinished = false;
     

@@ -104,16 +104,18 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         }
         if (processor.getError() == null) {
             if (processor.getPredicted() != null) {
-                MemoryDataSetSeismogram predicted = processor.getPredicted();
-                dataset.remove(predicted); // to avoid duplicates
-                Channel recFuncChannel = new ChannelImpl(predicted.getRequestFilter().channel_id,
-                                                         "receiver function fake channel for "+ChannelIdUtil.toStringNoDates(channel.get_id()),
-                                                         new Orientation(0, 0),
-                                                         channel.sampling_info,
-                                                         channel.effective_time,
-                                                         channel.my_site);
-                
-                saveInDataSet(event, recFuncChannel, predicted.getCache());
+                for (int i = 0; i < processor.getPredicted().length; i++) {
+                    MemoryDataSetSeismogram predicted = processor.getPredicted()[i];
+                    dataset.remove(predicted); // to avoid duplicates
+                    Channel recFuncChannel = new ChannelImpl(predicted.getRequestFilter().channel_id,
+                                                             "receiver function fake channel for "+ChannelIdUtil.toStringNoDates(channel.get_id()),
+                                                             new Orientation(0, 0),
+                                                             channel.sampling_info,
+                                                             channel.effective_time,
+                                                             channel.my_site);
+                    
+                    saveInDataSet(event, recFuncChannel, predicted.getCache());
+                }
             } else {
                 logger.error("problem with recfunc: predicted is null");
             }

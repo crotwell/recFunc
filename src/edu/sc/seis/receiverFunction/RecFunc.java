@@ -36,14 +36,14 @@ public class RecFunc {
         this(timeCalc, decon, new TimeInterval(10, UnitImpl.SECOND));
         
     }
-      
+    
     RecFunc(TauP_Time timeCalc, IterDecon decon, TimeInterval shift) {
         this.timeCalc = timeCalc;
         this.decon = decon;
         this.shift = shift;
     }
     
-    public IterDeconResult process(EventAccessOperations event,
+    public IterDeconResult[] process(EventAccessOperations event,
                                    Channel[] channel,
                                    LocalSeismogramImpl[] localSeis)
         throws NoPreferredOrigin,
@@ -102,10 +102,35 @@ public class RecFunc {
         
         SamplingImpl samp = SamplingImpl.createSamplingImpl(z.sampling_info);
         double period = samp.getPeriod().convertTo(UnitImpl.SECOND).getValue();
-        IterDeconResult ans = decon.process(rotated[0],
+        IterDeconResult ansRadial = processComponent(rotated[0],
+                                                     zdata,
+                                                         (float)period,
+                                                    staLoc,
+                                                    origin);
+        
+        IterDeconResult ansTangential = processComponent(rotated[1],
+                                                         zdata,
+                                                             (float)period,
+                                                    staLoc,
+                                                    origin);
+        IterDeconResult[] ans = new IterDeconResult[2];
+        ans[0] = ansRadial;
+        ans[1] = ansTangential;
+        return ans;
+    }
+    
+    protected IterDeconResult processComponent(float[] component,
+                                               float[] zdata,
+                                               float period,
+                                               Location staLoc,
+                                               Origin origin)
+        throws TauModelException {
+        IterDeconResult ans = decon.process(component,
                                             zdata,
-                                                (float)period);
+                                            period);
         float[] predicted = ans.getPredicted();
+        
+        Location evtLoc = origin.my_location;
         
         timeCalc.parsePhaseList("ttp");
         timeCalc.depthCorrect(((QuantityImpl)evtLoc.depth).convertTo(UnitImpl.KILOMETER).value);

@@ -9,7 +9,14 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
       <name>sod.start.IndexPageDirectory</name>
       <value>status</value>
     </property>
-
+        <property>
+                <name>sod.waveform.maxRetryDelay.value</name>
+                <value>9</value>
+        </property>
+        <property>
+            <name>sod.waveform.maxRetryDelay.unit</name>
+            <value>DAY</value>
+        </property>
 
 
     <property>
@@ -87,7 +94,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
                 <magnitudeRange>
                         <magType>M</magType>
-                        <min>5.8</min>
+                        <min>6.0</min>
                         <max>10.0</max>
                 </magnitudeRange>
 

@@ -106,6 +106,7 @@ public class EventSeismogramRFTask extends EventSeismogramTask {
                         CachedResult result = cache.get(eventAccess[eventNum].get_preferred_origin(), chanIds, deconConfig[0]);
                         
                         if (result != null) {
+                            logger.debug("CachedResult is not null "+result.insertTime.date_time);
                             Channel itrChan = new ChannelImpl(new ChannelId(chanIds[0].network_id,
                                                                         chanIds[0].station_code,
                                                                         chanIds[0].site_code,
@@ -122,7 +123,7 @@ public class EventSeismogramRFTask extends EventSeismogramTask {
                                 display.display(dss);
                             }
                         } else {
-                            logger.info("No available data for "+
+                            logger.info("No CachedResult for "+
                                         ChannelIdUtil.toString(groups[channelNum].getChannels()[0].get_id()));
                         }
                     }

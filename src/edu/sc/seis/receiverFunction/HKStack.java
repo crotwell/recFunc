@@ -230,7 +230,25 @@ public class HKStack implements Serializable {
         return xy;
     }
     
-
+    public float getMaxValueH() {
+        int[] indicies = getMaxValueIndices();
+        float peakH = getMinH() + getStepH() * indicies[0];
+        return peakH;
+    }
+    
+    public float getMaxValueK() {
+        int[] indicies = getMaxValueIndices();
+        float peakK = getMinK() + getStepK() * indicies[1];
+        return peakK;
+    }
+    
+    public float getMaxValue() {
+        int[] indicies = getMaxValueIndices();
+        float peakVal = getStack()[indicies[0]][indicies[1]];
+        return peakVal;
+    }
+    
+    
     public JComponent getStackComponent() {
         return getStackComponent(minH);
     }

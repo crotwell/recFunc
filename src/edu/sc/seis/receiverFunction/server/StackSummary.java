@@ -92,11 +92,9 @@ public class StackSummary {
                             + station[j].my_location.longitude;
                     float peakH, peakK, peakVal = 0;
                     int[] indicies = sumStack.getSum().getMaxValueIndices();
-                    peakH = sumStack.getSum().getMinH()
-                            + sumStack.getSum().getStepH() * indicies[0];
-                    peakK = sumStack.getSum().getMinK()
-                            + sumStack.getSum().getStepK() * indicies[1];
-                    peakVal = sumStack.getSum().getStack()[indicies[0]][indicies[1]];
+                    peakH = sumStack.getSum().getMaxValueH();
+                    peakK = sumStack.getSum().getMaxValueK();
+                    peakVal = sumStack.getSum().getMaxValue();
                     outStr += " " + peakH + " " + peakK + " " + peakVal+" "+sumStack.getIndividuals().length;
                     outStr += " "+(float)(2*Math.sqrt(sumStack.getHVariance()))+" "+(float)(2*Math.sqrt(sumStack.getKVariance()));
                     

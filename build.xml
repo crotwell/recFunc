@@ -69,7 +69,7 @@
        <target name="test" depends="testcompile">
            <java fork="yes" classname="junit.swingui.TestRunner"
                  taskname="junit" failonerror="true" >
-              <arg value="test.edu.sc.seis.anhinga.database.AllJUnitTests"/>
+              <arg value="test.edu.sc.seis.receiverFunction.AllJUnitTests"/>
               <classpath refid="myclasspath" />
            </java>
        </target>
@@ -77,29 +77,29 @@
        <target name="javadoc" depends="prepare">
          <!-- Compile the javadocs from ${src} into ${javadocs} -->
          <javadoc destdir="${javadocs}" sourcepath="${src}" 
-            packagenames="edu.sc.seis.fissuresUtil.*"  maxmemory="64m" >
+            packagenames="edu.sc.seis.receiverFunction.*"  maxmemory="64m" >
 
         <link href="http://www.seis.sc.edu/software/Fissures/idljava_docs" />
          </javadoc>
        </target>
 
        <target name="jar" depends="javacompile, testcompile">
-         <jar jarfile="${dist}/lib/fissuresUtil.jar" basedir="${build}" />
+         <jar jarfile="${dist}/lib/recfunc.jar" basedir="${build}" />
        </target>
 
        <target name="signjar" depends="jar" if="signjarpasswd">
-         <signjar jar="${dist}/lib/fissuresUtil.jar"
+         <signjar jar="${dist}/lib/recfunc.jar"
                   alias="scepp"
                   storepass="${signjarpasswd}"
                   keystore="../KeySigning/SCEPPKeystore"/>
        </target>
 
        <target name="dist" depends="jar, signjar, javadoc, testcompile">
-         <zip zipfile="${dist}/lib/fissuresUtil_src.zip" >
+         <zip zipfile="${dist}/lib/recfunc_src.zip" >
               <fileset dir=".." >
-                 <include name="fissuresUtil/**/*.java" />
-                 <include name="fissuresUtil/build.xml" />
-                 <exclude name="fissuresUtil/**/*.class" />
+                 <include name="recFunc/**/*.java" />
+                 <include name="recFunc/build.xml" />
+                 <exclude name="recFunc/**/*.class" />
               </fileset>
          </zip>
        </target>

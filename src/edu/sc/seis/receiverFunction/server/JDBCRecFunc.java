@@ -376,7 +376,7 @@ public class JDBCRecFunc extends JDBCTable {
     }
     
 
-    protected int populateGetStmt(Statement stmt, 
+    protected int populateGetStmt(PreparedStatement stmt, 
                                    Origin prefOrigin,
                                    ChannelId[] channels,
                                    IterDeconConfig config) throws SQLException, NotFound {

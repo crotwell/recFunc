@@ -295,7 +295,7 @@ public class HKStack implements Serializable {
                 comp.validate();
             }
             Dimension size = comp.getPreferredSize();
-System.out.println("Image size is "+size.width+", "+size.height);
+
             int fullWidth = size.width+40;
             int fullHeight = size.height+140;
             bufImage = new BufferedImage(fullWidth,

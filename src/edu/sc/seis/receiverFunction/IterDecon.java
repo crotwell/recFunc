@@ -8,7 +8,7 @@ package edu.sc.seis.receiverFunction;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 10601 2004-09-17 19:23:26Z crotwell $
+ * @version $Id: IterDecon.java 12134 2005-02-16 20:48:12Z crotwell $
  */
 
 public class IterDecon {
@@ -24,7 +24,7 @@ public class IterDecon {
 
     public IterDeconResult process(float[] numerator,
                                    float[] denominator,
-                                   float dt) {
+                                   float dt) throws RecFuncException {
         float[] amps = new float[maxBumps];
         int[] shifts = new int[maxBumps];
 
@@ -42,7 +42,7 @@ public class IterDecon {
         float prevPower = fPower;
         float gPower = power(g);
         if (fPower == 0 || gPower == 0) {
-            throw new IllegalArgumentException("Power of numerator and denominator must be non-zero: num="+fPower+" denom="+gPower);
+            throw new RecFuncException("Power of numerator and denominator must be non-zero: num="+fPower+" denom="+gPower);
         }
         float[] residual = f;
         float[] predicted = new float[0];

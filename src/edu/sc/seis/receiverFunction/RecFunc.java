@@ -49,10 +49,7 @@ public class RecFunc {
     public IterDeconResult[] process(EventAccessOperations event,
                                      ChannelGroup channelGroup,
                                      LocalSeismogramImpl[] localSeis)
-        throws NoPreferredOrigin,
-        TauModelException,
-        IncompatibleSeismograms,
-        FissuresException {
+        throws NoPreferredOrigin, FissuresException, IncompatibleSeismograms, TauModelException, RecFuncException {
         return process(event, channelGroup.getChannels(), localSeis);
     }
     
@@ -60,9 +57,8 @@ public class RecFunc {
                                      Channel[] channel,
                                      LocalSeismogramImpl[] localSeis)
         throws NoPreferredOrigin,
-        TauModelException,
         IncompatibleSeismograms,
-        FissuresException {
+        FissuresException, TauModelException, RecFuncException {
 
         LocalSeismogramImpl n = null, e = null, z = null;
         String foundChanCodes = "";
@@ -130,7 +126,7 @@ public class RecFunc {
                                                float period,
                                                Location staLoc,
                                                Origin origin)
-        throws TauModelException {
+        throws TauModelException, RecFuncException {
         if (component.length == 0) {
             throw new ArrayIndexOutOfBoundsException("Component length is "+component.length);
         }

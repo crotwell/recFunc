@@ -64,6 +64,31 @@ deconvolution method of Ammon.
     </developers>
 
   <dependencies>
+        <dependency>
+            <groupId>isti</groupId>
+            <artifactId>isti.util</artifactId>
+            <version>1.0.1USC</version>
+            <url>http://www.isti.com</url> 
+            <properties>
+                <jnlp.jar>true</jnlp.jar>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>isti</groupId>
+            <artifactId>isti.util.toplevel</artifactId>
+            <version>1.0USC</version>
+            <url>http://www.isti.com</url>
+            <properties>
+                <jnlp.jar>true</jnlp.jar>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>b9</version>
+            <url>http://www.jdom.org</url>
+        </dependency>
+
     <dependency>
       <id>gee</id>
       <version>2.0.7beta</version>
@@ -88,13 +113,13 @@ deconvolution method of Ammon.
     <dependency>
       <groupId>JacORB</groupId>
       <artifactId>JacORB</artifactId>
-      <version>2.2</version>
+      <version>2.1</version>
       <url>http://www.jacorb.org</url>
     </dependency>
     <dependency>
       <groupId>JacORB</groupId>
       <artifactId>idl</artifactId>
-      <version>2.2</version>
+      <version>2.1</version>
       <url>http://www.jacorb.org</url>
     </dependency>
     <dependency>

@@ -132,10 +132,17 @@ public class RecFunc {
                                                Location staLoc,
                                                Origin origin)
         throws TauModelException {
+        if (component.length == 0) {
+            throw new ArrayIndexOutOfBoundsException("Component length is "+component.length);
+        }
+        if (zdata.length == 0) {
+            throw new ArrayIndexOutOfBoundsException("Z component length is "+zdata.length);
+        }
         IterDeconResult ans = decon.process(component,
                                             zdata,
                                             period);
         float[] predicted = ans.getPredicted();
+        logger.info("predicted.length = "+predicted.length);
 
         Arrival[] pPhases =
             timeCalc.calcTravelTimes(staLoc, origin, new String[] {"ttp"});

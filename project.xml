@@ -253,14 +253,14 @@
             <version>1.5-USC1</version>
             <url>http://jakarta.apache.org/velocity</url>                      
         </dependency>
-         
+        
         <dependency>   
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>3.0</version>
             <url>http://jakarta.apache.org/commons/collections</url>
         </dependency>
-         
+        
         <dependency>
             <groupId>velocity-tools</groupId>
             <artifactId>velocity-tools-generic</artifactId>
@@ -287,7 +287,13 @@
             <artifactId>namespace</artifactId>
             <version>1.0</version>
         </dependency>
-        
+        <dependency>
+            <id>itext</id>
+            <version>0.99</version>
+            <properties>
+                <jnlp.jar>true</jnlp.jar>
+            </properties>
+        </dependency>
     </dependencies>
     
     <build>

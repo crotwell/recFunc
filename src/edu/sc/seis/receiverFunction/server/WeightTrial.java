@@ -25,6 +25,7 @@ public class WeightTrial {
                                                      0.7f,
                                                      0.2f,
                                                      0.1f);
+            System.out.println("Got "+list.size()+" item in stack.");
             HKStack[] stackArray = (HKStack[])list.toArray(new HKStack[0]);
             SumHKStack sumStack = new SumHKStack(stackArray,
                                                  stackArray[0].getChannel(),

@@ -256,7 +256,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <rMean/>
             <rTrend/>
             <taper/>
-            <responseGainProcessor/>
+            <responseGain/>
             
             <filter>
                 <lowFreqCorner>

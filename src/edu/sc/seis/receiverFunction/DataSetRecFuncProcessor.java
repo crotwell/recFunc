@@ -12,17 +12,13 @@ import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
+import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.model.MicroSecondDate;
-import edu.iris.Fissures.model.SamplingImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
-import edu.sc.seis.fissuresUtil.bag.DistAz;
-import edu.sc.seis.fissuresUtil.bag.PhaseCut;
-import edu.sc.seis.fissuresUtil.bag.Rotate;
-import edu.sc.seis.fissuresUtil.display.BasicSeismogramDisplay;
 import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.SeisDataChangeEvent;
@@ -102,6 +98,12 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
             TimeInterval shift = recFunc.getShift();
             float[] predicted = ans.getPredicted();
             
+            ChannelId recFuncChanId = new ChannelId(localSeis[0].channel_id.network_id,
+                                                    localSeis[0].channel_id.station_code,
+                                                    localSeis[0].channel_id.site_code,
+                                                    "RFR",
+                                                    localSeis[0].channel_id.begin_time);
+            
             logger.info("Finished with receiver function processing");
             logger.debug("rec func begin "+firstP.subtract(shift));
             LocalSeismogramImpl predSeis =
@@ -110,7 +112,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                                         predicted.length,
                                         localSeis[0].sampling_info,
                                         localSeis[0].y_unit,
-                                        localSeis[0].channel_id,
+                                        recFuncChanId,
                                         predicted);
             predSeis.setName("receiver function "+localSeis[0].channel_id.station_code);
             predictedDSS =
@@ -124,10 +126,10 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                                                                audit);
             
         } catch (ConfigurationException ce) {
-            logger.warn("Unable to get travel time calculator", ce);
+            logger.error("Unable to get travel time calculator", ce);
             CommonAccess.getCommonAccess().handleException("Unable to get travel time calculator", ce);
         } catch (Exception ee) {
-            logger.warn("Problem shifting receiver function to align P wave", ee);
+            logger.error("Problem shifting receiver function to align P wave", ee);
         } finally {
             recFuncFinished = true;
         }

@@ -22,6 +22,7 @@ import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.Arrival;
@@ -264,6 +265,7 @@ public class JDBCHKStack  extends JDBCTable {
                 JDBCNetwork jdbcNetwork = jdbcStation.getNetTable();
                 NetworkId[] netId = jdbcNetwork.getAllNetworkIds();
                 for(int i = 0; i < netId.length; i++) {
+                    System.out.println("Network: "+NetworkIdUtil.toString(netId[i]));
                     if(netCode.equals("-all") || netId[i].network_code.equals(netCode)) {
                         Station[] station = jdbcStation.getAllStations(netId[i]);
                         for(int j = 0; j < station.length; j++) {

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
@@ -61,6 +62,7 @@ public class StackSummary {
     public static void main(String[] args) {
     try {
         StackSummary summary = new StackSummary();
+        Properties props = RecFuncCacheStart.loadProps(args);
         summary.createSummary(args[0], new File("stackImages"), 90f);
     } catch(Exception e) {
         // TODO Auto-generated catch block

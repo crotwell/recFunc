@@ -68,13 +68,13 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
 
                 <magnitudeRange>
-                        <magType>M</magType>
+                        <magType>MB</magType>
                         <min>5.8</min>
                         <max>10.0</max>
                 </magnitudeRange>
 
-                <catalog>FINGER</catalog>
-                <contributor>NEIC</contributor>
+                <catalog>ISCCD</catalog>
+                <contributor>ISC</contributor>
 
        </eventFinder>
 

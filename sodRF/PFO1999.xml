@@ -1,0 +1,238 @@
+<?xml version="1.0" ?>
+
+<sod
+xmlns:xlink="http://www.w3.org/1999/xlink/"
+>
+  <properties>
+
+    <property>
+      <name>edu.sc.seis.sod.waveformarm.threads</name>
+      <value>1</value>
+    </property>
+
+    <property>
+      <name>edu.sc.seis.sod.databasename</name>
+      <value>PFOSodDB</value>
+    </property>
+
+    <property>
+      <name>edu.sc.seis.sod.databasetype</name>
+      <value>edu.sc.seis.sod.database.HSqlDbManager</value>
+    </property>
+
+    <!-- number of days to get events per request to eventFinder -->
+
+    <property>
+      <name>edu.sc.seis.sod.daystoincrement</name>
+      <value>7</value>
+    </property>
+
+    <!-- go back and reask server for events that may have appeared in server
+         after this was first run. -->
+
+    <property>
+      <name>edu.sc.seis.sod.database.getNewEvents</name>
+      <value>false</value>
+    </property>
+  </properties>
+
+     <eventArm>
+
+       <eventFinder>
+        <name>IRIS_EventDC</name>
+        <dns>edu/iris/dmc</dns>
+            <boxArea>
+            <latitudeRange>
+                <unit>DEGREE</unit>
+                <min>-90</min>
+                <max>90</max>
+            </latitudeRange>
+            <longitudeRange>
+                <unit>DEGREE</unit>
+                <min>-180</min>
+                <max>180</max>
+            </longitudeRange>
+            </boxArea>
+
+<!-- Depths from 0 to 1000 kilometers are ok, -->
+        <originDepthRange>
+            <unitRange>
+                <unit>KILOMETER</unit>
+                <min>0</min>
+                <max>1000</max>
+            </unitRange>
+        </originDepthRange>
+
+<!-- Only take events from Apr-June -->
+        <eventTimeRange>
+        <timeRange>
+            <startTime>19990101T00:00:00.001Z</startTime>
+            <endTime>19991231T23:59:59.999Z</endTime>
+        </timeRange>
+        </eventTimeRange>
+
+
+                <magnitudeRange>
+                        <magType>MB</magType>
+                        <min>5.8</min>
+                        <max>10.0</max>
+                </magnitudeRange>
+
+                <catalog>ISCCD</catalog>
+                <contributor>ISC</contributor>
+
+       </eventFinder>
+
+       <originPointDistance>
+          <latitude>33</latitude>
+          <longitude>-116</longitude>
+          <unit>DEGREE</unit>
+          <min>35</min>
+          <max>100</max>
+       </originPointDistance>
+
+<!-- Print out a line for each successful event -->
+    <printLineEventProcess/>
+
+
+                <mapEventStatus xlink:href="PFOstatus/eventMap.png"/>
+                <eventStatusTemplate>
+                        <fileDir>PFOstatus</fileDir>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/timeSorted.xml"/>
+                </eventStatusTemplate>
+                <eventStatusTemplate>
+                        <fileDir>PFOstatus</fileDir>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/depthSorted.xml"/>
+                </eventStatusTemplate>
+                <eventStatusTemplate>
+                        <fileDir>PFOstatus</fileDir>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/locSorted.xml"/>
+                </eventStatusTemplate>
+                <eventStatusTemplate>
+                        <fileDir>PFOstatus</fileDir>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/magSorted.xml"/>
+                </eventStatusTemplate>
+
+   </eventArm>
+
+   <networkArm>
+    <networkFinder>
+        <name>IRIS_NetworkDC</name>
+        <dns>edu/iris/dmc</dns>
+<!-- recheck channels after some time -->
+        <refreshInterval>
+            <unit>MINUTE</unit>
+            <value>3000</value>
+        </refreshInterval>
+    </networkFinder>
+
+              <networkCode>II</networkCode>
+
+    <stationAND>
+        <stationCode>PFO</stationCode>
+        <stationEffectiveTimeOverlap>
+           <effectiveTimeOverlap>
+               <min>20030101T00:00:00.001Z</min>
+               <max>20041231T23:59:59.999Z</max>
+           </effectiveTimeOverlap>
+        </stationEffectiveTimeOverlap>
+    </stationAND>
+
+   <channelAND>
+<!-- Accept any channel with B band code -->
+    <channelOR>
+        <bandCode>B</bandCode>
+    </channelOR>
+
+        <channelEffectiveTimeOverlap>
+        <effectiveTimeOverlap>
+            <min>20030101T00:00:00.001Z</min>
+            <max>20041231T23:59:59.999Z</max>
+        </effectiveTimeOverlap>
+        </channelEffectiveTimeOverlap>
+
+   </channelAND>
+
+    <printlineChannelProcessor/>
+                <networkInfoTemplateGenerator>
+                    <fileDir>PFOstatus</fileDir>
+                    <netConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/networks.xml"/>
+                    <stationConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/stations.xml"/>
+                    <channelConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/channels.xml"/>
+                </networkInfoTemplateGenerator>
+    </networkArm>
+
+
+    <waveFormArm>
+      <eventStationAND>
+        <distanceRange>
+            <unit>DEGREE</unit>
+            <min>35</min>
+            <max>100</max>
+        </distanceRange>
+        <phaseExists>
+            <phaseName>P</phaseName>
+        </phaseExists>
+      </eventStationAND>
+
+    <localSeismogramArm>
+
+
+    <phaseRequest>
+        <beginPhase>ttp</beginPhase>
+        <beginOffset>
+            <unit>SECOND</unit>
+            <value>-30</value>
+        </beginOffset>
+        <endPhase>ttp</endPhase>
+        <endOffset>
+            <unit>SECOND</unit>
+            <value>90</value>
+        </endOffset>
+    </phaseRequest>
+
+
+    <fixedDataCenter>
+        <name>IRIS_PondDataCenter</name>
+        <dns>edu/iris/dmc</dns>
+    </fixedDataCenter>
+
+    <someCoverage/>
+
+    <printlineSeismogramProcess/>
+    <phaseCut>
+        <beginPhase>ttp</beginPhase>
+        <beginOffset>
+            <unit>SECOND</unit>
+            <value>-30</value>
+        </beginOffset>
+        <endPhase>ttp</endPhase>
+        <endOffset>
+            <unit>SECOND</unit>
+            <value>90</value>
+        </endOffset>
+    </phaseCut>
+    <rMean/>
+    <rTrend/>
+    <taper/>
+
+    <externalSeismogramProcess>
+        <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
+        <fileType>sac</fileType>
+        <dataDirectory>PFO_recfunc</dataDirectory>
+                <eventDirLabel><originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/></eventDirLabel>
+    </externalSeismogramProcess>
+
+       <localSeismogramTemplateGenerator>
+              <fileDir>PFOstatus</fileDir>
+              <seismogramConfig xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/localSeismogram.xml"/>
+       </localSeismogramTemplateGenerator>
+
+    </localSeismogramArm>
+    <waveformEventTemplateGenerator>
+         <fileDir>PFOstatus</fileDir>
+         <waveformConfig xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml"/>
+    </waveformEventTemplateGenerator>
+
+   </waveFormArm>
+</sod>

@@ -34,7 +34,7 @@
 <td class="even">$!summary.get($sta).getSum().getAlpha()</td>
 <td class="odd">$!summary.get($sta).getSum().getVs()</td>
 <td class="even">$!summary.get($sta).getSum().getPoissonsRatio()</td>
-<td class="odd">$!summary.get($sta).getSum().getPoissonsRatio()</td>
+<td class="odd">$!numEQ.get($sta)</td>
 </tr>
 #end
 </table>

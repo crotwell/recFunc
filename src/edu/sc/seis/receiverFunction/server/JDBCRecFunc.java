@@ -126,13 +126,6 @@ public class JDBCRecFunc extends JDBCTable {
                                                " AND tol = ? ");
         getByDbIdStmt = conn.prepareStatement("SELECT * from "+getTableName()+
                                               " WHERE recfunc_id = ? ");
-        getOriginByStation = conn.prepareStatement("SELECT * FROM network "+
-                   "NATURAL JOIN station "+
-                   "NATURAL JOIN site "+
-                   "NATURAL JOIN channel "+
-                   "JOIN  receiverFunction ON (chanz_id = chan_id ) "+
-                   "WHERE net_id = ? "+
-                   "AND sta_code = ? ");
     }
     
     public int put(Origin prefOrigin,
@@ -410,6 +403,15 @@ public class JDBCRecFunc extends JDBCTable {
         return (IterDeconConfig[])out.toArray(new IterDeconConfig[0]);
     }
 
+    public int countSeccessfulEvents(int netDbId, String stationCode, float minPercentMatch) throws SQLException, NotFound {
+        getOriginByStationByPercent.setInt(1, netDbId);
+        getOriginByStationByPercent.setString(2, stationCode);
+        getOriginByStationByPercent.setFloat(3, minPercentMatch);
+        ResultSet rs = getOriginByStationByPercent.executeQuery();
+        rs.next();
+        return rs.getInt(1);
+    }
+    
     public CacheEvent[] getSuccessfulEvents(int netDbId, String stationCode) throws SQLException, NotFound {
         getOriginByStation.setInt(1, netDbId);
         getOriginByStation.setString(2, stationCode);
@@ -516,7 +518,7 @@ public class JDBCRecFunc extends JDBCTable {
 
     private SeismogramFileTypes fileType = SeismogramFileTypes.SAC;
     
-    private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt, getByDbIdStmt, getOriginByStation;
+    private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt, getByDbIdStmt, getOriginByStation, getOriginByStationByPercent;
     
     private JDBCSequence receiverFunctionSeq;
     

@@ -29,6 +29,10 @@ import edu.sc.seis.fissuresUtil.database.util.TableSetup;
  */
 public class JDBCStationResult extends JDBCTable {
 
+    public JDBCStationResult(JDBCNetwork jdbcNetwork) throws SQLException {
+        this(jdbcNetwork, new JDBCStationResultRef(jdbcNetwork.getConnection()));
+    }
+
     public JDBCStationResult(JDBCNetwork jdbcNetwork,
             JDBCStationResultRef jdbcStationResultRef) throws SQLException {
         super("stationResult", jdbcStationResultRef.getConnection());
@@ -73,11 +77,29 @@ public class JDBCStationResult extends JDBCTable {
             throw new WrappedSQLException(e.getMessage()+"     sql:"+get, e);
         }
     }
+    
+    public  StationResult[] getAll(String referenceName) throws SQLException, NotFound {
+        getAllForName.setString(1, referenceName);
+        ArrayList list = new ArrayList();
+        ResultSet rs = getAllForName.executeQuery();
+        while (rs.next()) {
+            StationResultRef ref = jdbcStationResultRef.extract(rs);
+            list.add(new StationResult(jdbcNetwork.getNetworkId(rs.getInt("net_id")),
+                                       rs.getString("sta_code"),
+                                       rs.getFloat("h"),
+                                       rs.getFloat("vpvs"),
+                                       rs.getFloat("vp"),
+                                       ref));
+        }
+        return (StationResult[])list.toArray(new StationResult[0]);
+    }
 
     public static void main(String[] args) throws FileNotFoundException,
             IOException, SQLException, NotFound {
         if(args.length == 0) {
             System.err.println("Usage: progname -n name -m method -r reference -f filename -u url");
+            System.err.println(" file is network station h vpvs vp");
+            System.err.println(" passcal networks should use netYear, like XM99");
         }
         String name = "", reference = "", method = "", filename = "", url = null;
         Properties props = System.getProperties();
@@ -159,11 +181,15 @@ public class JDBCStationResult extends JDBCTable {
             } else {
                 networkId = attr[0].get_id();
             }
+            if (networkId != null) {
             jdbc.put(new StationResult(networkId, sta, h, vpvs, vp, ref));
+            } else {
+                throw new NotFound(net+"  "+netYear);
+            }
         }
     }
 
-    PreparedStatement put, get;
+    PreparedStatement put, get, getAllForName;
 
     JDBCStationResultRef jdbcStationResultRef;
 

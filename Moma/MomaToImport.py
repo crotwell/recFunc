@@ -17,6 +17,9 @@ for l in lines:
   h = s[6:9]
   for x in [0, 1, 2]:
       if (h[x] != '-'):
-          print 'XA95'+' '+s[0]+' '+h[x]+' '+vpvs[x]+' '+vp[x]
+          net = 'XA95'
+          if (s[0] == 'CCM'): net = 'IU'
+          if (s[0] == 'HRV'): net = 'IU'
+          print net+' '+s[0]+' '+h[x]+' '+vpvs[x]+' '+vp[x]
 f.close()
 

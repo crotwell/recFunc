@@ -44,6 +44,23 @@ receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
                                    
 receiverFunction.index_origin=create index receiverfunction_origin_idx on receiverfunction ( origin_id )
 
+receiverFunction.getOriginByStation=SELECT * FROM network \
+    NATURAL JOIN station \
+    NATURAL JOIN site \
+    NATURAL JOIN channel \
+    JOIN  receiverFunction ON (chanz_id = chan_id ) \
+    WHERE net_id = ? \
+    AND sta_code = ?
+                   
+receiverFunction.getOriginByStationByPercent=SELECT count(*) FROM network \
+    NATURAL JOIN station \
+    NATURAL JOIN site \
+    NATURAL JOIN channel \
+    JOIN  receiverFunction ON (chanz_id = chan_id ) \
+    WHERE net_id = ? \
+    AND sta_code = ? \
+    AND itr_match >= ?
+    
 hkstack.create=CREATE TABLE hkstack ( \
                    hkstack_id int, \
                    recFunc_id int, \

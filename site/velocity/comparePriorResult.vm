@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Stations within $delta degrees of ($lat, $lon)</title>
+<title>Comparison with Prior Result $name</title>
 <link rel="stylesheet" type="text/css" href="style.css"/>
 </head>
 <body>
@@ -9,20 +9,35 @@
 
 <img src="earslogo2.gif"/><br/>
 
-<p><b>Stations within $delta degrees of ($lat, $lon)</p>
+<p><b>Comparison with Prior Result $name</p>
 
 <table>
+<tr>
+<td class="headodd"></td>
+<td class="headodd"></td>
+<td class="headodd"></td>
+<td class="headodd"></td>
+<td class="headodd" colspan="6">EARS</td>
+<td class="headodd" colspan="5">$name</td>
+</tr>
 <tr>
 <td class="headodd">Net</td>
 <td class="headodd">Station</td>
 <td class="headodd">Name</td>
 <td class="headodd">Lat/Lon</td>
+
 <td class="headodd">Est. Thick</td>
 <td class="headodd">Est. Vp/Vs</td>
 <td class="headodd">Assumed Vp</td>
 <td class="headodd">Vs</td>
 <td class="headodd">Poissons Ratio</td>
 <td class="headodd">Num EQ</td>
+
+<td class="headodd">Thick</td>
+<td class="headodd">Vp/Vs</td>
+<td class="headodd">Vp</td>
+<td class="headodd">Vs</td>
+<td class="headodd">Poissons Ratio</td>
 </tr>
 #foreach($sta in $stationList)
 <tr>
@@ -30,12 +45,19 @@
 <td class="even">$sta.getCode()</td>
 <td class="odd"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()">$sta.getName()</a></td>
 <td class="even">$sta.getLatitude()/$sta.getLongitude()</td>
+
 <td class="odd">$!summary.get($sta).getSum().getMaxValueH()</td>
 <td class="even">$!summary.get($sta).getSum().getMaxValueK()</td>
 <td class="odd">$!summary.get($sta).getSum().getAlpha()</td>
 <td class="even">$!summary.get($sta).getSum().getVs()</td>
 <td class="odd">$!summary.get($sta).getSum().getPoissonsRatio()</td>
 <td class="odd">$!numEQ.get($sta)</td>
+
+<td class="even">$!prior.get($sta).formatH()</td>
+<td class="odd">$!prior.get($sta).formatVpVs()</td>
+<td class="even">$!prior.get($sta).formatVp()</td>
+<td class="odd">$!prior.get($sta).formatVs()</td>
+<td class="even">$!prior.get($sta).formatPoissonsRatio()</td>
 </tr>
 #end
 </table>

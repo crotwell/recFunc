@@ -17,6 +17,10 @@ stationResult.get=SELECT * from $tablename \
     WHERE stationResult.net_id = ? \
     AND stationResult.sta_code = ? 
  
+stationResult.getAllForName=SELECT * from $tablename \
+    JOIN stationResultRef ON ( stationResult.ref_id = stationResultRef.ref_id )  \
+    WHERE stationResultRef.name = ? \
+    
 stationResultRef.create=CREATE TABLE $tablename (  \
     ref_id int, \
     name varchar, \

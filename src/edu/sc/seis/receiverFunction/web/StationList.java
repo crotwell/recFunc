@@ -60,8 +60,15 @@ public class StationList extends Revlet {
         RevletContext context = new RevletContext(getVelocityTemplate());
         ArrayList stationList = getStations(req, context);
         HashMap summary = getSummaries(stationList);
+        HashMap numEQ = new HashMap();
+        Iterator it = stationList.iterator();
+        while(it.hasNext()) {
+            VelocityStation sta = (VelocityStation)it.next();
+            numEQ.put(sta, new Integer(jdbcRecFunc.countSeccessfulEvents(sta.getNet().getDbId(), sta.get_code(), 80.0f)));
+        }
         context.put("stationList", stationList);
         context.put("summary", summary);
+        context.put("numEQ", numEQ);
         return context;
     }
     

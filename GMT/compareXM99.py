@@ -15,12 +15,12 @@ for l in lines:
   ears[s[0]] = s[3]
 f.close()
 
-print "EARS Wilson Station"
+print "Wilson EARS Station"
 dwilsonkeys = dwilson.keys()
 dwilsonkeys.sort()
 for sta in dwilsonkeys:
     #  if abs(float(ears[sta]) - float(dwilson[sta])) > 10:
-    print ears[sta], dwilson[sta],  sta
+    print dwilson[sta], ears[sta],  sta
 
 
 

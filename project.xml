@@ -234,7 +234,7 @@ deconvolution method of Ammon.
 
   <build>
     <nagEmailAddress>crotwell@seis.sc.edu</nagEmailAddress>
-    <unitTestSourceDirectory>test</unitTestSourceDirectory>
+    <unitTestSourceDirectory>test/unit</unitTestSourceDirectory>
     <sourceDirectory>src</sourceDirectory>
   </build>
 

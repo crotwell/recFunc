@@ -226,6 +226,28 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
     <rMean/>
     <rTrend/>
     <taper/>
+    <responseGainProcessor/>
+    <phaseSignalToNoiseCalculator>
+                <modelName>prem</modelName>
+                <phaseName>P</phaseName>
+                <shortOffsetBegin>
+                    <unit>SECOND</unit>
+                    <value>-5</value>
+                </shortOffsetBegin>
+                <shortOffsetEnd>
+                    <unit>SECOND</unit>
+                    <value>5</value>
+                </shortOffsetEnd>
+                <longOffsetBegin>
+                    <unit>SECOND</unit>
+                    <value>-105</value>
+                </longOffsetBegin>
+                <longOffsetEnd>
+                    <unit>SECOND</unit>
+                    <value>-5</value>
+                </longOffsetEnd>
+                <ratio>0.01</ratio>
+    </phaseSignalToNoiseCalculator>
 
     <filter>
        <lowFreqCorner><value>50</value><unit>SECOND</unit></lowFreqCorner>
@@ -252,16 +274,12 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <waveformEventTemplateGenerator>
                         <waveformConfig xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml"/>
                 </waveformEventTemplateGenerator>
->
                 <waveformNetworkStatus>
                     <template>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformNetwork.xml</template>
                     <networkListTemplate>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformNetworks.xml</networkListTemplate>
                 </waveformNetworkStatus>
-
                 <waveformStationStatus>
                     <template>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformStation.xml</template>
                 </waveformStationStatus>
-
-
    </waveformArm>
 </sod>

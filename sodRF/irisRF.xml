@@ -201,8 +201,33 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 </phaseSignalToNoise>
             </ORLocalSeismogramWrapper>
             
-            
             <printlineSeismogramProcess/>
+
+            <ANDLocalSeismogramWrapper>
+               <alwaysSuccess>
+                <phaseSignalToNoise>
+                    <modelName>prem</modelName>
+                    <phaseName>P</phaseName>
+                    <shortOffsetBegin>
+                        <unit>SECOND</unit>
+                        <value>-5</value>
+                    </shortOffsetBegin>
+                    <shortOffsetEnd>
+                        <unit>SECOND</unit>
+                        <value>5</value>
+                    </shortOffsetEnd>
+                    <longOffsetBegin>
+                        <unit>SECOND</unit>
+                        <value>-105</value>
+                    </longOffsetBegin>
+                    <longOffsetEnd>
+                        <unit>SECOND</unit>
+                        <value>-5</value>
+                    </longOffsetEnd>
+                    <ratio>0.0</ratio>
+                </phaseSignalToNoise>
+               </alwaysSuccess>
+            </ANDLocalSeismogramWrapper>
             
             <seismogramImageProcess>  
                 <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
@@ -229,28 +254,6 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <rMean/>
             <taper/>
             <responseGainProcessor/>
-            
-            <phaseSignalToNoiseCalculator>
-                <modelName>prem</modelName>
-                <phaseName>P</phaseName>
-                <shortOffsetBegin>
-                    <unit>SECOND</unit>
-                    <value>-5</value>
-                </shortOffsetBegin>
-                <shortOffsetEnd>
-                    <unit>SECOND</unit>
-                    <value>5</value>
-                </shortOffsetEnd>
-                <longOffsetBegin>
-                    <unit>SECOND</unit>
-                    <value>-105</value>
-                </longOffsetBegin>
-                <longOffsetEnd>
-                    <unit>SECOND</unit>
-                    <value>-5</value>
-                </longOffsetEnd>
-                <ratio>0.01</ratio>
-            </phaseSignalToNoiseCalculator>
             
             <filter>
                 <lowFreqCorner>

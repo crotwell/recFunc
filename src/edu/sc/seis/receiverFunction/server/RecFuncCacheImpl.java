@@ -35,7 +35,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         jdbcOrigin = new JDBCOrigin(conn);
         jdbcEventAttr = new JDBCEventAttr(conn);
         jdbcChannel  = new JDBCChannel(conn);
-        jdbcRecFunc = new JDBCRecFunc(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, "Ears/Data");
+        jdbcRecFunc = new JDBCRecFunc(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, "../Ears/Data");
         jdbcHKStack = new JDBCHKStack(conn);
     }
     

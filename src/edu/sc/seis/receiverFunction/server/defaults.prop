@@ -1,0 +1,31 @@
+#
+# default sql props for rec func db
+#
+receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
+                                   origin_id int, \
+                                   eventAttr_id int, \
+                                   chanA_id int, \
+                                   seisA varchar, \
+                                   chanB_id int, \
+                                   seisB varchar, \
+                                   chanZ_id int, \
+                                   seisZ varchar, \
+                                   recfuncITR varchar, \
+                                   itr_error float, \
+                                   recFuncITT varchar, \
+                                   itt_error float, \
+                                   gwidth float, \
+                                   maxbumps int, \
+                                   maxerror float, \
+                                   PRIMARY KEY (recFunc_id), \
+                                   FOREIGN KEY (origin_id) \
+                                   REFERENCES origin (origin_id), \
+                                   FOREIGN KEY (eventAttr_id) \
+                                   REFERENCES eventattr (eventattr_id), \
+                                   FOREIGN KEY (chanA_id) \
+                                   REFERENCES channel (chan_id) \
+                                   FOREIGN KEY (chanB_id) \
+                                   REFERENCES channel (chan_id) \
+                                   FOREIGN KEY (chanZ_id) \
+                                   REFERENCES channel (chan_id))
+                                   

@@ -1,0 +1,13 @@
+<html>
+<head>
+<title>$sod_channel</title>
+<body>
+</br>
+$recFunc_hkstack_image
+
+#foreach ($a in $recFunc_pred_auxData )
+$a
+#end
+
+ </body>
+ </html>

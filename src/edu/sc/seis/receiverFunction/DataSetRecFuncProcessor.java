@@ -108,7 +108,8 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                                                  "receiver function "+localSeis[0].channel_id.station_code,
                                                  chanCode,
                                                  firstP.subtract(shift),
-                                                 localSeis[0]);
+                                                 localSeis[0],
+                                                UnitImpl.COUNT);
 
                 Document d = DataSetToXML.getDocumentBuilder().newDocument();
                 Element alignElement = d.createElement("timeInterval");
@@ -188,6 +189,15 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                                            String chanCode,
                                            MicroSecondDate begin,
                                            LocalSeismogramImpl refSeismogram) {
+        return saveTimeSeries(data, name, chanCode, begin, refSeismogram, UnitImpl.createUnitImpl(refSeismogram.y_unit));
+    }
+
+    MemoryDataSetSeismogram saveTimeSeries(float[] data,
+                                           String name,
+                                           String chanCode,
+                                           MicroSecondDate begin,
+                                           LocalSeismogramImpl refSeismogram,
+                                          UnitImpl unit) {
         ChannelId recFuncChanId = new ChannelId(refSeismogram.channel_id.network_id,
                                                 refSeismogram.channel_id.station_code,
                                                 refSeismogram.channel_id.site_code,

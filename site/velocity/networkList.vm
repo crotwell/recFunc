@@ -5,14 +5,14 @@
 </head>
 <body>
 	
-<div id="content" align="left">
+<div id="content">
 
-<img src="earslogo.png"/><br/>
+<img src="earslogo2.gif"/><br/>
 
 <table>
 <tr>
-<td class="odd">Code</td>
-<td class="even">Name</td>
+<td class="headodd">Code</td>
+<td class="headeven">Name</td>
 </tr>
 #foreach($net in $networkList)
 <tr>
@@ -34,7 +34,7 @@
   <a href="http://www.iris.edu">
     <img src="irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
   </a>
-</div id="footer2">
-</div id="content">
+</div>
+</div>
 </body>
 </html>

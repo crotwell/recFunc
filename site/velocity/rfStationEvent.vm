@@ -5,9 +5,9 @@
 </head>
 <body>
 	
-<div id="content" align="left">
+<div id="content">
 
-<img src="earslogo.png"/><br/>
+<img src="earslogo2.gif"/><br/>
 
 <table>
 <tr>
@@ -62,7 +62,7 @@
 </tr>
 </table>
 
-<img src="hkstackimage.png?rf=$rf"/>
+<img class="dataimg" src="hkstackimage.png?rf=$rf"/>
 
 
 <table>
@@ -104,7 +104,7 @@
 </tr>
 </table>
 
-<img src="waveforms.png?rf=$rf"/>
+<img class="dataimg" src="waveforms.png?rf=$rf"/>
 
 <div id="footer2" align="center">
   <a href="http://seis.sc.edu">
@@ -113,7 +113,7 @@
   <a href="http://www.iris.edu">
     <img src="irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
   </a>
-</div id="footer2">
-</div id="content">
+</div>
+</div>
 </body>
 </html>

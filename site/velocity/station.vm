@@ -5,18 +5,18 @@
 </head>
 <body>
 	
-<div id="content" align="left">
+<div id="content">
 
-<img src="earslogo.png"/><br/>
+<img src="earslogo2.gif"/><br/>
 
-<b>Network: </b>$net.getCodeWithYear() - $net.name<br/>
+<p><b>Network: </b>$net.getCodeWithYear() - $net.name<br/></p>
 
 <table>
 <tr>
-<td class="odd">Station</td>
-<td class="even">Name</td>
-<td class="odd">(Lat, Lon)</td>
-<td class="odd">Start / End</td>
+<td class="headodd">Station</td>
+<td class="headodd">Name</td>
+<td class="headodd">(Lat, Lon)</td>
+<td class="headodd">Start / End</td>
 </tr>
 #foreach($sta in $stationList)
 <tr>
@@ -27,24 +27,23 @@
 </tr>
 #end
 </table>
-</br>
 
-<img src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=25"/>
-</br>
-</br>
+
+<img class="dataimg" src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=25"/>
+
 
 
 #set( $sta = $stationList.get(0) )
 <table>
 <tr>
-<td class="odd">Radial Match</td>
-<td class="even">Distance</td>
-<td class="odd">Baz</td>
-<td class="odd">FERegion</td>
-<td class="even">Time</td>
-<td class="odd">Lat/Lon</td>
-<td class="even">Depth</td>
-<td class="odd">Magnitude</td>
+<td class="headodd">Radial Match</td>
+<td class="headodd">Distance</td>
+<td class="headodd">Baz</td>
+<td class="headodd">FERegion</td>
+<td class="headodd">Time</td>
+<td class="headodd">Lat/Lon</td>
+<td class="headodd">Depth</td>
+<td class="headodd">Magnitude</td>
 
 </tr>
 #foreach($eq in $eventList)
@@ -71,7 +70,7 @@
   <a href="http://www.iris.edu">
     <img src="irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
   </a>
-</div id="footer2">
-</div id="content">
+</div>
+</div>
 </body>
 </html>

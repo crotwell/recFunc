@@ -5,17 +5,17 @@
 </head>
 <body>
 	
-<div id="content" align="left">
+<div id="content">
 
-<img src="earslogo.png"/><br/>
+<img src="earslogo2.gif"/><br/>
 
-<b>Network: </b>$net.getCodeWithYear() - $net.name<br/>
+<p><b>Network: </b>$net.getCodeWithYear() - $net.name</p>
 
 <table>
 <tr>
-<td class="odd""even">Station</td>
-<td class="even">Name</td>
-<td class="odd">Lat/Lon</td>
+<td class="headodd"Station</td>
+<td class="headodd">Name</td>
+<td class="headodd">Lat/Lon</td>
 </tr>
 #foreach($sta in $stationList)
 <tr>
@@ -34,7 +34,7 @@
   <a href="http://www.iris.edu">
     <img src="irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
   </a>
-</div id="footer2">
-</div id="content">
+</div>
+</div>
 </body>
 </html>

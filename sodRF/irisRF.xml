@@ -223,28 +223,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             </seismogramImageProcess>
             
             <rMean/>
-            <seismogramImageProcess>  
-                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
-                <prefix>rmean_</prefix>
-            </seismogramImageProcess>
-            
-            <rTrend/>
-            <seismogramImageProcess>  
-                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
-                <prefix>rtrend_</prefix>
-            </seismogramImageProcess>
-            
             <taper/>
-            <seismogramImageProcess>  
-                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
-                <prefix>taper_</prefix>
-            </seismogramImageProcess>
-            
             <responseGainProcessor/>
-            <seismogramImageProcess>  
-                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
-                <prefix>gain_</prefix>
-            </seismogramImageProcess>
             
             <phaseSignalToNoiseCalculator>
                 <modelName>prem</modelName>
@@ -278,12 +258,6 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <numPoles>2</numPoles>
                 <filterType>NONCAUSAL</filterType>
             </filter>
-            <seismogramImageProcess>  
-                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
-                <prefix>filter_</prefix>
-            </seismogramImageProcess>
-            
-            
             
             <externalChannelGroupSeismogramProcess>
                 <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>

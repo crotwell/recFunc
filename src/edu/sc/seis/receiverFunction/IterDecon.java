@@ -10,13 +10,13 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 3694 2003-04-16 13:46:02Z crotwell $
+ * @version $Id: IterDecon.java 3833 2003-05-08 03:15:40Z crotwell $
  */
 
 public class IterDecon {
-    public IterDecon (int maxBumps, 
-                      boolean useAbsVal, 
-                      float tol, 
+    public IterDecon (int maxBumps,
+                      boolean useAbsVal,
+                      float tol,
                       float gwidthFactor) {
         this.maxBumps = maxBumps;
         this.useAbsVal = useAbsVal;
@@ -24,7 +24,7 @@ public class IterDecon {
         this.gwidthFactor = gwidthFactor;
     }
 
-    public IterDeconResult process(float[] numerator, 
+    public IterDeconResult process(float[] numerator,
                                    float[] denominator,
                                    float dt) {
         float[] amps = new float[maxBumps];
@@ -44,7 +44,7 @@ public class IterDecon {
 
         float[][] corrSave = new float[maxBumps][];
         for (int bump=0; bump < maxBumps; bump++) {
-	
+    
             // correlate the signals
             float[] corr = correlate(residual, g);
             corrSave[bump] = corr;
@@ -98,7 +98,7 @@ public class IterDecon {
         // for (int i=0; i<corr.length; i++) {
         //  System.out.println("correlation at "+i+" = "+corr[i]);
         //}
-        return corr;	    
+        return corr;
     }
 
     void subtractSpike(float[] data, int shift, float amp) {
@@ -139,10 +139,10 @@ public class IterDecon {
         for (int i=1; i<data.length/2; i++) {
             if (data[i] < data[index]) {
                 index = i;
-            } 
+            }
         }
         return index;
-    }	
+    }
 
     public static int getMaxIndex(float[] data) {
         int index = 0;
@@ -152,7 +152,7 @@ public class IterDecon {
             }
         }
         return index;
-    }	
+    }
 
     public static void zero(float[] data) {
         for (int i=0; i<data.length; i++) {
@@ -169,12 +169,13 @@ public class IterDecon {
     }
 
     /** convolve a function with a unit-area Gaussian filter.
+     *   G(w) = exp(-w^2 / (4 a^2))
      *  The 1D gaussian is: f(x) = 1/(2*PI*sigma) e^(-x^2/(q * sigma^2))
      *  and the impluse response is: g(x) = 1/(2*PI)e^(-sigma^2 * u^2 / 2)
-     * 
+     *
      */
-    public static float[] gaussianFilter(float[] x, 
-                                         float gwidthFactor, 
+    public static float[] gaussianFilter(float[] x,
+                                         float gwidthFactor,
                                          float dt) {
         float[] forward = new float[x.length];
         System.arraycopy(x, 0, forward, 0, x.length);
@@ -199,7 +200,7 @@ public class IterDecon {
             forward[j] *= gauss;
             forward[j+1] *= gauss;
         }
-	
+    
         NativeFFT.inverse(forward);
         
         return forward;
@@ -207,7 +208,7 @@ public class IterDecon {
 
     public static float[] phaseShift(float[] x, float inShift, float dt) {
         // native fft has imag part with opposite sign ???
-        float shift = -1 * inShift; 
+        float shift = -1 * inShift;
 
         int n2 = nextPowerTwo(x.length);
         int halfpts = n2 / 2;
@@ -238,7 +239,7 @@ public class IterDecon {
             forward[j+1] = (float)(a*d+b*c);
             //System.out.println(" after f="+forward[j]+" "+forward[j+1]);
         }
-	
+    
         NativeFFT.inverse(forward);
 
         return forward;
@@ -247,10 +248,10 @@ public class IterDecon {
     /** convolve a function with a unit-area Gaussian filter.
      *  The 1D gaussian is: f(x) = 1/(2*PI*sigma) e^(-x^2/(q * sigma^2))
      *  and the impluse response is: g(x) = 1/(2*PI)e^(-sigma^2 * u^2 / 2)
-     * 
+     *
      */
-    public static float[] oldgaussianFilter(float[] x, 
-                                            float gwidthFactor, 
+    public static float[] oldgaussianFilter(float[] x,
+                                            float gwidthFactor,
                                             float dt) {
         Cmplx[] forward = Cmplx.fft(x);
 
@@ -272,7 +273,7 @@ public class IterDecon {
             forward[i].r *= gauss;
             forward[i].i *= gauss;
         }
-	
+    
         float[] ans = Cmplx.fftInverse(forward, x.length);
         
         //         float scaleFactor = (float)(dt * 2 * df);
@@ -301,7 +302,7 @@ public class IterDecon {
 
         for (int i=1; i<forward.length; i++) {
             omega = i*d_omega;
-            System.out.print(i+"  omega="+omega+" f="+forward[i].r+" "+forward[i].i);
+            //System.out.print(i+"  omega="+omega+" f="+forward[i].r+" "+forward[i].i);
             a = forward[i].r;
             b = forward[i].i;
             c = Math.cos(omega*shift);
@@ -311,7 +312,7 @@ public class IterDecon {
             forward[i].i = a*d+b*c;
             System.out.println(" after f="+forward[i].r+" "+forward[i].i);
         }
-	
+    
         float[] ans = Cmplx.fftInverse(forward, x.length);
 
         //        float scaleFactor = (float)(dt * 2 * df);
@@ -336,7 +337,7 @@ public class IterDecon {
     }
     
     int maxBumps;
-    boolean useAbsVal; 
+    boolean useAbsVal;
     float tol;
     float gwidthFactor;
 

@@ -14,6 +14,7 @@ def buildDist(proj, name=None):
               ('scripts/logs', 'logs', False)]
     scripts = buildSodScripts.buildAll(proj)
     scriptsWithTarLoc = [(script, 'bin/'+script) for script in scripts]
+    extras.extend(scriptsWithTarLoc)
     if name is None: name = proj.name + '-' + time.strftime('%y%m%d')
     distBuilder.buildDist(proj, extras, name)
 

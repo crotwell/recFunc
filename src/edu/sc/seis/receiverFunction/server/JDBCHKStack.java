@@ -1,5 +1,6 @@
 package edu.sc.seis.receiverFunction.server;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -113,7 +114,7 @@ public class JDBCHKStack  extends JDBCTable {
             }
         }
         byte[] valBytes = out.toByteArray();
-        putStmt.setBytes(index++, valBytes);
+        putStmt.setBinaryStream(index++, new ByteArrayInputStream(valBytes), valBytes.length);
         putStmt.setTimestamp(index++, ClockUtil.now().getTimestamp());
         try {
         putStmt.executeUpdate();

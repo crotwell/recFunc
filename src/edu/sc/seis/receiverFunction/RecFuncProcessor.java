@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
+import edu.iris.Fissures.model.MicroSecondDate;
 
 public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogramProcess {
 
@@ -111,12 +112,14 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         }
         while ( ! processor.isRecFuncFinished()) {
             try {
-                //System.out.println("Sleeping "+ChannelIdUtil.toStringNoDates(channel.get_id()));
+                System.out.println("Sleeping "+ChannelIdUtil.toStringNoDates(channel.get_id()));
 
-                Thread.sleep(100);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
             }
         }
+        MicroSecondDate before = new MicroSecondDate();
+        System.out.println("Before save rec func data");
         if (processor.getError() == null) {
             if (processor.getPredicted() != null) {
                 for (int i = 0; i < processor.getPredicted().length; i++) {
@@ -175,6 +178,8 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
             SeisDataErrorEvent error = processor.getError();
             logger.error("problem with recfunc:", error.getCausalException());
         }
+        MicroSecondDate after = new MicroSecondDate();
+        System.out.println("Save took "+after.subtract(before));
         System.out.println("Done with "+ChannelIdUtil.toStringNoDates(channel.get_id()));
         return seismograms;
     }

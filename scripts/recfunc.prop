@@ -46,7 +46,7 @@ org.omg.CORBA.ORBInitialHost=pooh.seis.sc.edu
 org.omg.CORBA.ORBInitialPort=6371
 
 
-edu.sc.seis.gee.nameServiceCorbaLoc=corbaloc:iiop:pooh.seis.sc.edu:6371/NameService
+edu.sc.seis.fissuresUtil.nameServiceCorbaLoc=corbaloc:iiop:pooh.seis.sc.edu:6371/NameService
 edu.sc.seis.gee.configuration=file:recfunc_config.xml
 #edu.sc.seis.gee.configuration=http://www.seis.sc.edu/jaws/apps/gee_alpha/alpha_config.xml
 

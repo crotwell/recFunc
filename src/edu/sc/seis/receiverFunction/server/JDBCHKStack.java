@@ -103,7 +103,12 @@ public class JDBCHKStack  extends JDBCTable {
         
         putStmt.setObject(index++, stack.getStack());
         putStmt.setTimestamp(index++, ClockUtil.now().getTimestamp());
+        try {
         putStmt.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("SQL stmt: "+putStmt.toString());
+            throw e;
+        }
         return hkstack_id;
     }
     
@@ -193,6 +198,8 @@ public class JDBCHKStack  extends JDBCTable {
     String modelName = "iasp91";
 
     private TauPUtil tauPTime;
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCHKStack.class);
     
     public static void main(String[] args) {
         if (args.length < 2) {

@@ -127,7 +127,15 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                 sdce.getSource().getDataSet().addDataSetSeismogram(predictedDSS[i],
                                                                    audit);
 
+                String radOrTrasName = (i==0)?"Radial":"Transverse";
+                String rOrT = (i==0)?"R":"T";
                 MemoryDataSetSeismogram tmpDSS = saveTimeSeries(ans[i].getNumerator(),
+                                                                chanCode+" "+radOrTrasName+" "+localSeis[0].channel_id.station_code,
+                                                                chanCode.substring(0,2)+rOrT,
+                                                                localSeis[0].getBeginTime(),
+                                                                localSeis[0]);
+                sdce.getSource().getDataSet().addDataSetSeismogram(tmpDSS, audit);
+                tmpDSS = saveTimeSeries(ans[i].getNumerator(),
                                                                 chanCode+" numerator "+localSeis[0].channel_id.station_code,
                                                                 chanCode+"_num",
                                                                 localSeis[0].getBeginTime(),

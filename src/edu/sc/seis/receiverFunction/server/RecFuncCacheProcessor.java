@@ -1,5 +1,9 @@
 package edu.sc.seis.receiverFunction.server;
 
+import org.omg.CORBA.ORB;
+import org.omg.CORBA.SystemException;
+import org.omg.CORBA.UserException;
+import org.omg.CosNaming.NamingContextPackage.InvalidName;
 import org.w3c.dom.Element;
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
@@ -11,19 +15,23 @@ import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
+import edu.sc.seis.IfReceiverFunction.RecFuncCacheHelper;
 import edu.sc.seis.IfReceiverFunction.RecFuncCacheOperations;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.ProxyEventAccessOperations;
+import edu.sc.seis.fissuresUtil.namingService.FissuresNamingService;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.receiverFunction.IterDecon;
 import edu.sc.seis.receiverFunction.IterDeconResult;
 import edu.sc.seis.receiverFunction.RecFunc;
 import edu.sc.seis.receiverFunction.RecFuncProcessor;
 import edu.sc.seis.sod.ChannelGroup;
+import edu.sc.seis.sod.CommonAccess;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
+import edu.sc.seis.sod.Start;
 import edu.sc.seis.sod.process.waveform.vector.WaveformVectorProcess;
 import edu.sc.seis.sod.process.waveform.vector.WaveformVectorResult;
 import edu.sc.seis.sod.status.StringTreeLeaf;
@@ -41,6 +49,14 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements WaveformV
         taup = new TauPUtil(modelName);
         recFunc = new RecFunc(taup,
                               new IterDecon(maxBumps, true, tol, gwidth));
+        try {
+            FissuresNamingService fisName = CommonAccess.getCommonAccess().getFissuresNamingService();
+            cache = RecFuncCacheHelper.narrow(fisName.resolve("edu/sc/seis", "IfReceiverFunction", "Ears"));
+        } catch (SystemException e) {
+            throw new ConfigurationException("Problem getting cache server", e);
+        } catch (UserException e) {
+            throw new ConfigurationException("Problem getting cache server", e);
+        }
     }
     
     

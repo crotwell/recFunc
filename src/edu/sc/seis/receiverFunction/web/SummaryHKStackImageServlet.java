@@ -21,6 +21,7 @@ import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
+import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.StationLocator;
 import edu.sc.seis.rev.velocity.VelocityNetwork;
 import edu.sc.seis.sod.ConfigurationException;
@@ -55,7 +56,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             throws IOException {
         try {
             logger.debug("doGet called");
-            int netDbId = new Integer(req.getParameter("netdbid")).intValue();
+            int netDbId = RevUtil.getInt("netdbid", req);
             VelocityNetwork net = new VelocityNetwork(jdbcHKStack.getJDBCChannel().getStationTable().getNetTable().get(netDbId), netDbId);
             
             // possible that there are multiple stations with the same code

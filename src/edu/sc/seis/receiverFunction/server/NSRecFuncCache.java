@@ -59,8 +59,6 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
                 repackageException(e);
             } catch (org.omg.CosNaming.NamingContextPackage.CannotProceed e) {
                 repackageException(e);
-            } catch (org.omg.CORBA.ORBPackage.InvalidName e) {
-                repackageException(e);
             } catch (org.omg.CosNaming.NamingContextPackage.InvalidName e) {
                 repackageException(e);
             } // end of try-catch

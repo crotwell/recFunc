@@ -111,7 +111,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                 predictedDSS[i].addAuxillaryData("recFunc.alignShift", alignElement);
                 Element auxElement = makeAuxElement(d,
                                                              "percentMatch",
-                                                             ""+(100*ans[i].getResultPower()/ans[i].getNumeratorPower()));
+                                                             ""+ans[i].getPercentMatch());
                 predictedDSS[i].addAuxillaryData("recFunc.percentMatch", auxElement);
 
                 auxElement = makeAuxElement(d, "gwidth", ""+ans[i].getGWidth());

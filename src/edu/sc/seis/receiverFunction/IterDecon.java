@@ -10,7 +10,7 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 6972 2004-02-05 22:00:52Z crotwell $
+ * @version $Id: IterDecon.java 7016 2004-02-07 04:01:07Z crotwell $
  */
 
 public class IterDecon {
@@ -29,15 +29,18 @@ public class IterDecon {
                                    float dt) {
         float[] amps = new float[maxBumps];
         int[] shifts = new int[maxBumps];
+        numerator = makePowerTwo(numerator);
+        denominator = makePowerTwo(denominator);
 
         /* Now begin the cross-correlation procedure
          Put the filter in the signals
          */
-        float[] f  = gaussianFilter(makePowerTwo(numerator), gwidthFactor, dt);
-        float[] g  = gaussianFilter(makePowerTwo(denominator), gwidthFactor, dt);
+        float[] f  = gaussianFilter(numerator, gwidthFactor, dt);
+        float[] g  = gaussianFilter(denominator, gwidthFactor, dt);
 
         // compute the power in the "numerator" for error scaling
         float fPower = power(f);
+        float prevPower = fPower;
 
         float[] residual = f;
         float[] predicted = new float[0];
@@ -57,12 +60,17 @@ public class IterDecon {
                 shifts[bump] = getMaxIndex(corr);
             } // end of else
             amps[bump] = corr[shifts[bump]]; // note don't normalize by dt here
-            //System.out.println("Corr max is "+amps[bump]+" at index "+shifts[bump]+" for length "+g.length+" with dt="+dt);
 
             predicted = buildDecon(amps, shifts, g.length, gwidthFactor, dt);
-            float[] predConvolve = Cmplx.convolve(predicted, g);
+            float[] predConvolve = Cmplx.convolve(predicted, denominator);
 
             residual = getResidual(f, predConvolve);
+            float residualPower = power(residual);
+            System.out.println(bump+" amp= "+amps[bump]+" index= "+shifts[bump]+
+                                   " for length "+g.length+" with dt="+dt+
+                                   " error="+(100*residualPower/fPower)+
+                                   " improve="+100*(prevPower-residualPower)/fPower);
+            prevPower = residualPower;
         } // end of for (int bump=0; bump < maxBumps; bump++)
 
         System.out.println("predicted[0]="+predicted[0]+"  amps[0]="+amps[0]);

@@ -6,8 +6,7 @@ import distBuilder, sodScriptBuilder, ProjectParser
 
 def buildDist(proj, name=None):
     if not os.path.exists('scripts/logs'): os.mkdir('scripts/logs')
-    extras = [('sodRF/recfuncsod.sh', 'recfuncsod.sh'),
-              ('sodRF/scepp2003.xml', 'scepp2003.xml'),
+    extras = [('sodRF/scepp2003.xml', 'scepp2003.xml'),
               ('sodRF/Bolivia.xml', 'Bolivia.xml'),
               ('sodRF/irisRF.xml', 'irisRF.xml'),
               ('../sod/scripts/cwg.prop', 'cwg.prop'),

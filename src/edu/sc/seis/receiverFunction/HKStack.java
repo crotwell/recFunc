@@ -467,7 +467,7 @@ public class HKStack implements Serializable {
     float getAmp(LocalSeismogramImpl seis, double time)  throws FissuresException {
         double sampOffset = time/seis.getSampling().getPeriod().convertTo(UnitImpl.SECOND).value;
         if (sampOffset < 0 || sampOffset > seis.getNumPoints()-2) {
-            throw new IllegalArgumentException("time "+time+" is outside of seismogram");
+            throw new IllegalArgumentException("time "+time+" is outside of seismogram: "+seis.getBeginTime()+" - "+seis.getEndTime());
         }
         int offset = (int)Math.floor(sampOffset);
 

@@ -115,9 +115,9 @@ xsi:noNamespaceSchemaLocation="http://www.seis.sc.edu/xschema/sod/1.0"
         </refreshInterval>
     </networkFinder>
 
-        <networkIDOR>
+        <networkOR>
               <networkCode><value>SP</value></networkCode>
-        </networkIDOR>
+        </networkOR>
 
         <stationEffectiveTimeOverlap>
         <effectiveTimeOverlap>
@@ -126,19 +126,17 @@ xsi:noNamespaceSchemaLocation="http://www.seis.sc.edu/xschema/sod/1.0"
         </effectiveTimeOverlap>
         </stationEffectiveTimeOverlap>
 
-<!-- Accept any channel with B band code -->
-    <channelIDOR>
-        <bandCode><value>B</value></bandCode>
-    </channelIDOR>
-
    <channelAND>
+        <channelOR>
+            <bandCode><value>B</value></bandCode>
+        </channelOR>
+
         <channelEffectiveTimeOverlap>
         <effectiveTimeOverlap>
             <min>20000101T00:00:00.001Z</min>
             <max>20041231T23:59:59.999Z</max>
         </effectiveTimeOverlap>
         </channelEffectiveTimeOverlap>
-
    </channelAND>
 
     <printlineChannelProcessor/>

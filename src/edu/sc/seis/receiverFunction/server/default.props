@@ -3,7 +3,9 @@
 #
 sodConfig.create=CREATE TABLE sodConfig (config_id int, \
                                          config varchar)
-                                   
+sodConfig.createSeq.create=CREATE SEQUENCE sodConfigSeq
+sodConfig.createSeq.nextVal=SELECT NEXTVAL ('sodConfigSeq')
+
 receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
                                    origin_id int, \
                                    eventAttr_id int, \

@@ -136,7 +136,7 @@ deconvolution method of Ammon.
     </dependency>
     <dependency>
       <id>SeedCodec</id>
-      <version>1.0Beta</version>
+      <version>1.0Beta2</version>
       <properties>
 	<jnlp.jar>true</jnlp.jar>
       </properties>

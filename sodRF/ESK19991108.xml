@@ -223,7 +223,9 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
     </phaseCut>
     <rMean/>
     <rTrend/>
-    <taper/>
+    <taper>
+       <width>0.01</width>
+    </taper>
 <!--
     <forkProcess>
        <saveSeismogramToFile>

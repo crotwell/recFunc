@@ -12,8 +12,10 @@ receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
                                    seisZ varchar, \
                                    recfuncITR varchar, \
                                    itr_match float, \
+                                   itr_bump int, \
                                    recFuncITT varchar, \
                                    itt_match float, \
+                                   itt_bump int, \
                                    gwidth float, \
                                    maxbumps int, \
                                    tol float, \

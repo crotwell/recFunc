@@ -43,6 +43,7 @@ public class RecFuncCacheStart {
             serviceDNS = System.getProperty("recFunc.cacheServer.serverDNS", serviceDNS);
             
             FissuresNamingService fissuresNamingService = new FissuresNamingService(orb);
+            fissuresNamingService.setNameServiceCorbaLoc(props.getProperty("edu.sc.seis.nameServiceCorbaLoc"));
             
             String addNS = System.getProperty("recFunc.cacheServer.additionalNameService");
             if (addNS != null) {
@@ -62,6 +63,7 @@ public class RecFuncCacheStart {
                 rootPOA.the_POAManager();
             manager.activate();
             orb.run();
+            System.out.println("ORB.run() finished.");
         }catch(Exception e) {
             GlobalExceptionHandler.handle(e);
         }

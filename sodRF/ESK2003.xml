@@ -91,14 +91,22 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
 
                 <mapEventStatus xlink:href="ESKstatus/eventMap.png"/>
-                <eventStatusTemplate
-                        outputLocation="ESKstatus/time.html" xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/timeSorted.xml"/>
-                <eventStatusTemplate
-                        outputLocation="ESKstatus/depth.html" xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/depthSorted.xml"/>
-                <eventStatusTemplate
-                        outputLocation="ESKstatus/location.html" xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/locSorted.xml"/>
-                <eventStatusTemplate
-                        outputLocation="ESKstatus/mag.html" xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/magSorted.xml"/>
+                <eventStatusTemplate>
+                        <fileDir>ESKstatus</fileDir>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/timeSorted.xml"/>
+                </eventStatusTemplate>
+                <eventStatusTemplate>
+                        <fileDir>ESKstatus</fileDir>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/depthSorted.xml"/>
+                </eventStatusTemplate>
+                <eventStatusTemplate>
+                        <fileDir>ESKstatus</fileDir>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/locSorted.xml"/>
+                </eventStatusTemplate>
+                <eventStatusTemplate>
+                        <fileDir>ESKstatus</fileDir>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/magSorted.xml"/>
+                </eventStatusTemplate>
 
    </eventArm>
 
@@ -143,11 +151,6 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
     <printlineChannelProcessor/>
                 <networkInfoTemplateGenerator>
                     <fileDir>ESKstatus</fileDir>
-                    <netsOutputFileName>networks.html</netsOutputFileName>
-                    <netDir><networkCode/>-<firstWord/></netDir>
-                    <stationsOutputFileName>stations.html</stationsOutputFileName>
-                    <stationDir><stationCode/>-<beginTime>yyyyMMdd</beginTime>-<endTime>yyyyMMdd</endTime></stationDir>
-                    <channelsOutputFileName>channels.html</channelsOutputFileName>
                     <netConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/networks.xml"/>
                     <stationConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/stations.xml"/>
                     <channelConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/channels.xml"/>
@@ -221,8 +224,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
 
                 <waveformEventTemplateGenerator>
-                        <fileLoc>ESKstatus/<originTime>yyyyMMddHHmmssSSS</originTime>/event.html</fileLoc>
-                        <externalConfig xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml"/>
+                        <fileDir>ESKstatus</fileDir>
+                        <waveformConfig xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml"/>
                 </waveformEventTemplateGenerator>
 
    </waveFormArm>

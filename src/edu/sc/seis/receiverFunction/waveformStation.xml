@@ -73,22 +73,25 @@ Events for $fissures.formatNetwork($station.get_id()) $fissures.formatStation($s
 #set( $extraRows = 10 )
 #foreach ( $ecp in $successful_event_channel_groups )
 <tr>
+$fissures.isNull(ecp)
 #set ( $event = $ecp.getEvent() )
+$fissures.isNull(event)
 #set ( $origin = $event.get_preferred_origin() )
+$fissures.isNull($origin)
 #set ( $eventDir = $fissures.formatDateForFile($origin) )
 <td><a href="../../$eventDir/$fissures.formatStation($station.get_id())/seismograms.html">$FERegion.getRegionName(${event.get_attributes().region})</a></td>
-<td>$fissures.formatDate( $event.get_preferred_origin().getTime() )</td>
+<td>$fissures.isNull($origin) $fissures.formatDate( $origin.getTime() )</td>
 <td>
 #foreach ($m in $origin.Magnitudes)
 $fissures.formatMagnitude($m),
 #end</td>
-<td>$ecp.getCookieJar().get("recFunc_percentMatch_ITR")</td>
-<td>$fissures.formatQuantity($fissures.getDepth($origin))</td>
-<td>$fissures.getLatitude($origin)</td>
-<td>$fissures.getLongitude($origin)</td>
-<td>$fissures.formatQuantity($fissures.getDistance($station.location, $origin.location))</td>
-<td>$fissures.formatQuantity($fissures.getAzimuth($station.location, $origin.location))</td>
-<td>$fissures.formatQuantity($fissures.getBackAzimuth($station.location, $origin.location))</td>
+<td>$fissures.isNull($origin) $event.getCookieJar().get("recFunc_percentMatch_ITR")</td>
+<td>$fissures.isNull($origin) $fissures.formatQuantity($fissures.getDepth($origin))</td>
+<td>$fissures.isNull($origin) $fissures.getLatitude($origin)</td>
+<td>$fissures.isNull($origin) $fissures.getLongitude($origin)</td>
+<td>$fissures.isNull($origin) $fissures.formatQuantity($fissures.getDistance($station, $origin))</td>
+<td>$fissures.formatQuantity($fissures.getAzimuth($station, $origin))</td>
+<td>$fissures.formatQuantity($fissures.getBackAzimuth($station, $origin))</td>
 </tr>
 #set( $extraRows = $extraRows - 1 )
 #end

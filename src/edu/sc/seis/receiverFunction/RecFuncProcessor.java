@@ -179,7 +179,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
             logger.error("problem with recfunc:", error.getCausalException());
         }
         MicroSecondDate after = new MicroSecondDate();
-        System.out.println("Save took "+after.subtract(before));
+        System.out.println("Save took "+after.subtract(before).convertTo(UnitImpl.SECOND));
         System.out.println("Done with "+ChannelIdUtil.toStringNoDates(channel.get_id()));
         return seismograms;
     }

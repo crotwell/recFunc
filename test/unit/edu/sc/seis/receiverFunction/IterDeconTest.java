@@ -1,5 +1,11 @@
 package edu.sc.seis.receiverFunction;
 
+import edu.iris.Fissures.model.SamplingImpl;
+import edu.iris.Fissures.model.TimeInterval;
+import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
+import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
+import edu.sc.seis.fissuresUtil.sac.FissuresToSac;
 import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
 import edu.sc.seis.receiverFunction.IterDecon;
 import java.io.DataInputStream;
@@ -80,7 +86,7 @@ public class IterDeconTest
     }
 
     public void testWithGauussProcess() throws Exception {
-
+        IterDecon withGaussIterdecon = new edu.sc.seis.receiverFunction.IterDecon(200, true, .001f, 2.5f);
         // with gaussian filter
         float[] numData   = new float[2048];
 
@@ -90,8 +96,39 @@ public class IterDeconTest
         float[] denomData = new float[numData.length];
         denomData[100] = .5f;
 
-        IterDeconResult result = iterdecon.process(numData, denomData, .05f);
+        float delta = 0.05f;
+        SamplingImpl sampling = new SamplingImpl(1, new TimeInterval(delta, UnitImpl.SECOND));
+
+        LocalSeismogramImpl fakeNum = SimplePlotUtil.createTestData("num");
+        fakeNum.setData(numData);
+        fakeNum.channel_id.channel_code = "BHR";
+        fakeNum.sampling_info = sampling;
+        LocalSeismogramImpl fakeDenom = SimplePlotUtil.createTestData("denom");
+        fakeDenom.setData(denomData);
+        fakeDenom.channel_id.channel_code = "BHZ";
+        fakeDenom.sampling_info = sampling;
+
+        SacTimeSeries sac = FissuresToSac.getSAC(fakeNum);
+        sac.write("withGauss.BHR.sac");
+        sac = FissuresToSac.getSAC(fakeDenom);
+        sac.write("withGauss.BHZ.sac");
+        sac = null;
+
+        IterDeconResult result = withGaussIterdecon.process(numData, denomData, delta);
         float[] pred = result.getPredicted();
+        pred = withGaussIterdecon.phaseShift(pred, 5, delta);
+
+        LocalSeismogramImpl predSeis = SimplePlotUtil.createTestData("denom");
+        predSeis.setData(pred);
+        predSeis.channel_id.channel_code = "OUT";
+        sac = FissuresToSac.getSAC(predSeis);
+        sac.write("withGauss.ITR.sac");
+
+        DataInputStream in =
+            new DataInputStream(this.getClass().getClassLoader().getResourceAsStream("edu/sc/seis/receiverFunction/withGauss.predicted.sac"));
+        sac.read(in);
+        float[] fortranData = sac.y;
+
         int[] s = result.getShifts();
         float[] a = result.getAmps();
         assertEquals("gauss spike 0",  0, s[0]);
@@ -100,9 +137,12 @@ public class IterDeconTest
         assertEquals("gauss amp 1",   -3,    a[1], 0.0001f);
         assertEquals("gauss spike 2 a="+a[2],  200, s[2]);
         assertEquals("gauss amp 2",  .5f,    a[2], 0.0001f);
-        assertEquals("gauss pred 0",   4f*0.08462843f, pred[0], 0.0001f); // 4
-        assertEquals("gauss pred 100",  -3f*0.08462843f, pred[100], 0.0001f); // -3
-        assertEquals("gauss pred 200", .5f*0.08462843f, pred[200], 0.0001f); // .5
+
+        assertEquals("position 0 "+fortranData[0]+"  "+pred[0]+"  ratio="+(fortranData[0]/pred[0]), fortranData[0], pred[0], 0.0001f);
+        assertEquals("position 100 "+fortranData[100]+"  "+pred[100]+"  ratio="+(fortranData[100]/pred[100]), fortranData[100], pred[100]/delta, 0.0001f);
+        assertEquals("position 200 "+fortranData[200]+"  "+pred[200]+"  ratio="+(fortranData[200]/pred[200]), fortranData[200], pred[200], 0.0001f);
+        assertEquals("position 300 "+fortranData[300]+"  "+pred[300]+"  ratio="+(fortranData[300]/pred[300]), fortranData[300], pred[300], 0.0001f);
+        ArrayAssert.assertEquals("data from fortran", fortranData, pred, 0.0001f);
 
     }
 
@@ -225,6 +265,7 @@ public class IterDeconTest
         // JUnitDoclet begin method phaseShift
         assertEquals(iterdecon.nextPowerTwo(3), 4);
         assertEquals(iterdecon.nextPowerTwo(4), 4);
+        assertEquals(iterdecon.nextPowerTwo(1024), 1024);
         assertEquals(iterdecon.nextPowerTwo(1025), 2048);
         // JUnitDoclet end method phaseShift
     }
@@ -362,4 +403,5 @@ public class IterDeconTest
         // JUnitDoclet end method testcase.main
     }
 }
+
 

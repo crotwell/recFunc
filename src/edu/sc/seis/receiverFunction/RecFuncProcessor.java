@@ -61,12 +61,10 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                                      CookieJar cookies) throws Exception {
         // save original seismograms
         super.process(event,
-                      network,
                       channel,
                       original,
                       available,
-                      seismograms,
-                      cookies);
+                      seismograms);
         if (seismograms.length == 0) {
             // maybe no data after cut?
             return seismograms;

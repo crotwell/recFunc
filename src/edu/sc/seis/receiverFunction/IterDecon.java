@@ -10,7 +10,7 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 7622 2004-03-15 02:39:16Z crotwell $
+ * @version $Id: IterDecon.java 7720 2004-03-19 19:42:30Z crotwell $
  */
 
 public class IterDecon {
@@ -230,8 +230,7 @@ public class IterDecon {
     }
 
     public static float[] phaseShift(float[] x, float inShift, float dt) {
-        // native fft has imag part with opposite sign ???
-        float shift = -1 * inShift;
+        float shift =  inShift;
 
         int n2 = nextPowerTwo(x.length);
         int halfpts = n2 / 2;

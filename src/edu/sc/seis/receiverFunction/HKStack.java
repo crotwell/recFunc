@@ -231,6 +231,22 @@ public class HKStack implements Serializable {
         xy[1] = maxIndexY;
         return xy;
     }
+
+    public int getHIndex(float h) {
+        return Math.round(getHIndexFloat(h));
+    }
+    
+    public int getKIndex(float k) {
+        return Math.round(getKIndexFloat(k));
+    }
+    
+    public float getHIndexFloat(float h) {
+        return (h-getMinH())/getStepH();
+    }
+    
+    public float getKIndexFloat(float k) {
+        return (k-getMinK())/getStepK();
+    }
     
     public float getMaxValueH() {
         int[] indicies = getMaxValueIndices();

@@ -267,7 +267,7 @@ public class RecFuncTask  extends MouseAdapter implements GUITask {
                 predSeis.setName("receiver function "+z.channel_id.station_code);
                 DataSetSeismogram predDSS =
                     new MemoryDataSetSeismogram(predSeis,
-                                                "receiver function");
+                                                "receiver function "+z.channel_id.station_code);
                 AuditInfo[] audit = new AuditInfo[1];
                 audit[0] =
                     new AuditInfo("Calculated receiver function",

@@ -44,8 +44,8 @@ public class RecFunc {
     }
     
     public IterDeconResult[] process(EventAccessOperations event,
-                                   Channel[] channel,
-                                   LocalSeismogramImpl[] localSeis)
+                                     Channel[] channel,
+                                     LocalSeismogramImpl[] localSeis)
         throws NoPreferredOrigin,
         TauModelException,
         PhaseNonExistent,
@@ -105,14 +105,14 @@ public class RecFunc {
         IterDeconResult ansRadial = processComponent(rotated[0],
                                                      zdata,
                                                          (float)period,
-                                                    staLoc,
-                                                    origin);
+                                                     staLoc,
+                                                     origin);
         
         IterDeconResult ansTangential = processComponent(rotated[1],
                                                          zdata,
                                                              (float)period,
-                                                    staLoc,
-                                                    origin);
+                                                         staLoc,
+                                                         origin);
         IterDeconResult[] ans = new IterDeconResult[2];
         ans[0] = ansRadial;
         ans[1] = ansTangential;
@@ -157,6 +157,7 @@ public class RecFunc {
         logger.info("Finished with receiver function processing");
         logger.debug("rec func begin "+firstP.subtract(shift));
         ans.predicted = predicted;
+        ans.setAlignShift(shift);
         return ans;
     }
     

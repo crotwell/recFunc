@@ -6,45 +6,38 @@
 
 package edu.sc.seis.receiverFunction;
 
+import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.model.MicroSecondDate;
-import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.SamplingImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
-import edu.sc.seis.TauP.SphericalCoords;
 import edu.sc.seis.TauP.TauModelException;
-import edu.sc.seis.TauP.TauP_Time;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
-import edu.sc.seis.fissuresUtil.bag.PhaseCut;
 import edu.sc.seis.fissuresUtil.bag.PhaseNonExistent;
 import edu.sc.seis.fissuresUtil.bag.Rotate;
-import edu.sc.seis.fissuresUtil.sac.FissuresToSac;
-import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
+import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import org.apache.log4j.Logger;
-import edu.iris.dmc.seedcodec.CodecException;
-import java.io.IOException;
-import edu.iris.Fissures.FissuresException;
 
 public class RecFunc {
 
     /** uses a default shift of 10 seconds. */
-    RecFunc(TauP_Time timeCalc, IterDecon decon) {
+    RecFunc(TauPUtil timeCalc, IterDecon decon) {
         this(timeCalc, decon, new TimeInterval(10, UnitImpl.SECOND));
 
     }
 
-    RecFunc(TauP_Time timeCalc, IterDecon decon, TimeInterval shift) {
+    RecFunc(TauPUtil timeCalc, IterDecon decon, TimeInterval shift) {
         this(timeCalc, decon, shift, new TimeInterval(100, UnitImpl.SECOND));
     }
 
-    RecFunc(TauP_Time timeCalc, IterDecon decon, TimeInterval shift, TimeInterval pad) {
+    RecFunc(TauPUtil timeCalc, IterDecon decon, TimeInterval shift, TimeInterval pad) {
         this.timeCalc = timeCalc;
         this.decon = decon;
         this.shift = shift;
@@ -56,7 +49,6 @@ public class RecFunc {
                                      LocalSeismogramImpl[] localSeis)
         throws NoPreferredOrigin,
         TauModelException,
-        PhaseNonExistent,
         IncompatibleSeismograms,
         FissuresException {
 
@@ -131,15 +123,8 @@ public class RecFunc {
                                             period);
         float[] predicted = ans.getPredicted();
 
-        Location evtLoc = origin.my_location;
-
-        timeCalc.parsePhaseList("ttp");
-        timeCalc.depthCorrect(((QuantityImpl)evtLoc.depth).convertTo(UnitImpl.KILOMETER).value);
-        timeCalc.calculate(SphericalCoords.distance(evtLoc.latitude,
-                                                    evtLoc.longitude,
-                                                    staLoc.latitude,
-                                                    staLoc.longitude));
-        Arrival[] pPhases = timeCalc.getArrivals();
+        Arrival[] pPhases =
+            timeCalc.calcTravelTimes(staLoc, origin, new String[] {"ttp"});
 
         MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
         logger.debug("origin "+firstP);
@@ -151,10 +136,11 @@ public class RecFunc {
             logger.debug("shifting by "+shift+"  before 0="+predicted[0]);
             predicted = decon.phaseShift(predicted,
                                              (float)shift.getValue(),
-                                             (float)period);
+                                             period);
 
-            logger.debug("shifting by "+shift+"  after 2000="+predicted[2000]);
+            logger.debug("shifting by "+shift);
         }
+
         logger.info("Finished with receiver function processing");
         logger.debug("rec func begin "+firstP.subtract(shift));
         ans.predicted = predicted;
@@ -166,7 +152,7 @@ public class RecFunc {
         return decon;
     }
 
-    public TauP_Time getTimeCalc() {
+    public TauPUtil getTimeCalc() {
         return timeCalc;
     }
 
@@ -174,7 +160,7 @@ public class RecFunc {
         return shift;
     }
 
-    TauP_Time timeCalc;
+    TauPUtil timeCalc;
 
     IterDecon decon;
 

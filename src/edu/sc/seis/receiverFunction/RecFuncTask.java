@@ -2,6 +2,8 @@ package edu.sc.seis.receiverFunction;
 
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
+import edu.sc.seis.TauP.TauModelException;
+import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.display.BasicSeismogramDisplay;
 import edu.sc.seis.fissuresUtil.display.DisplayUtils;
 import edu.sc.seis.fissuresUtil.display.mouse.SDMouseAdapter;
@@ -9,7 +11,6 @@ import edu.sc.seis.fissuresUtil.display.mouse.SDMouseEvent;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.xml.DataSet;
 import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
-import edu.sc.seis.gee.CommonAccess;
 import edu.sc.seis.gee.configurator.ConfigurationException;
 import edu.sc.seis.gee.task.GUITask;
 import edu.sc.seis.gee.task.GlobalToolBar;
@@ -36,8 +37,13 @@ public class RecFuncTask  extends SDMouseAdapter implements GUITask {
     public void configure(java.util.Map params) throws ConfigurationException {
         configParams = params;
         float gwidth = 3.0f;
-        recFunc = new RecFunc(CommonAccess.getCommonAccess().getTravelTimeCalc(),
-                              new IterDecon(100, true, .001f, gwidth));
+        try {
+            taupUtil = new TauPUtil("iasp91");
+            recFunc = new RecFunc(taupUtil,
+                new IterDecon(100, true, .001f, gwidth));
+        } catch (TauModelException e) {
+            throw new ConfigurationException("Problem with TauP", e);
+        }
     }
 
     public void invoke() {
@@ -86,7 +92,9 @@ public class RecFuncTask  extends SDMouseAdapter implements GUITask {
                 DataSetRecFuncProcessor processor =
                     new DataSetRecFuncProcessor(chGrpSeismograms,
                                                 currEvent,
-                                                recFunc);
+                                                recFunc,
+                                                taupUtil
+                                               );
                 for (int i=0; i<chGrpSeismograms.length; i++) {
                     logger.debug("Retrieveing for "+chGrpSeismograms[i].getName());
                     chGrpSeismograms[i].retrieveData(processor);
@@ -114,7 +122,7 @@ public class RecFuncTask  extends SDMouseAdapter implements GUITask {
 
     Map configParams;
 
-
+    TauPUtil taupUtil;
 
     IterDecon decon;
 

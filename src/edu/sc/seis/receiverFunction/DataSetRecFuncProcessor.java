@@ -21,6 +21,7 @@ import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
+import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.gee.CommonAccess;
 import edu.sc.seis.gee.configurator.ConfigurationException;
@@ -30,14 +31,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
 public class DataSetRecFuncProcessor implements SeisDataChangeListener {
+
     DataSetRecFuncProcessor(DataSetSeismogram[] seis,
                             EventAccessOperations event,
-                            RecFunc recFunc)
+                            RecFunc recFunc,
+                            TauPUtil taupUtil)
         throws NoPreferredOrigin{
         this.seis = seis;
         this.event = event;
         this.origin = event.get_preferred_origin();
         this.recFunc = recFunc;
+        this.taupUtil = taupUtil;
         finished = new boolean[seis.length];
         localSeis = new LocalSeismogramImpl[seis.length];
     }
@@ -90,7 +94,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
             Origin origin = event.get_preferred_origin();
             Location evtLoc = origin.my_location;
 
-            Arrival[] pPhases = CommonAccess.getCommonAccess().getTravelTimes(evtLoc, staLoc, "ttp");
+            Arrival[] pPhases = taupUtil.calcTravelTimes(chan.my_site.my_station, origin, new String[] { "ttp"});
             MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
             firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
 
@@ -111,8 +115,8 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                 XMLQuantity.insert(alignElement, shift);
                 predictedDSS[i].addAuxillaryData("recFunc.alignShift", alignElement);
                 Element auxElement = makeAuxElement(d,
-                                                             "percentMatch",
-                                                             ""+ans[i].getPercentMatch());
+                                                    "percentMatch",
+                                                    ""+ans[i].getPercentMatch());
                 predictedDSS[i].addAuxillaryData("recFunc.percentMatch", auxElement);
 
                 auxElement = makeAuxElement(d, "gwidth", ""+ans[i].getGWidth());
@@ -137,10 +141,10 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                                                                 localSeis[0]);
                 sdce.getSource().getDataSet().addDataSetSeismogram(tmpDSS, audit);
                 tmpDSS = saveTimeSeries(ans[i].getNumerator(),
-                                                                chanCode+" numerator "+localSeis[0].channel_id.station_code,
-                                                                chanCode+"_num",
-                                                                localSeis[0].getBeginTime(),
-                                                                localSeis[0]);
+                                        chanCode+" numerator "+localSeis[0].channel_id.station_code,
+                                        chanCode+"_num",
+                                        localSeis[0].getBeginTime(),
+                                        localSeis[0]);
                 sdce.getSource().getDataSet().addDataSetSeismogram(tmpDSS, audit);
                 tmpDSS = saveTimeSeries(ans[i].getDenominator(),
                                         chanCode+" denominator "+localSeis[0].channel_id.station_code,
@@ -164,10 +168,6 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
 
             }
             logger.debug("Processing finished OK "+chan.my_site.my_station.name);
-        } catch (ConfigurationException ce) {
-            logger.error("Unable to get travel time calculator", ce);
-            GlobalExceptionHandler.handle("Unable to get travel time calculator", ce);
-            this.error = new SeisDataErrorEvent(ce, seis[0], this);
         } catch (Throwable ee) {
             logger.error("Problem", ee);
             this.error = new SeisDataErrorEvent(ee, seis[0], this);
@@ -248,6 +248,8 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
     public SeisDataErrorEvent getError() {
         return error;
     }
+
+    TauPUtil taupUtil;
 
     DataSetSeismogram[] seis;
 

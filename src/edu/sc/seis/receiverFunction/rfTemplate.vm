@@ -111,7 +111,6 @@ $chanContext.status <br/>
 
 <table>
 <tr><td>percentMatch</td><td>$stack.percentMatch</td></tr>
-<tr><td>Amp</td><td>$stack.Amp</td></tr>
 <tr><td>ChannelId</td><td>$stack.ChannelId</td></tr>
 <tr><td>P</td><td>$stack.P</td></tr>
 <tr><td>Alpha</td><td>$stack.Alpha</td></tr>

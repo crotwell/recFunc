@@ -1,0 +1,33 @@
+
+#pragma prefix "seis.sc.edu"
+
+#include "Fissures.idl"
+#include "IfTimeSeries.idl"
+#include "IfNetwork.idl"
+#include "IfEvent.idl"
+#include "IfSeismogramDC.idl"
+
+module receiverFunction {
+
+	typedef sequence<Fissures::IfNetwork::ChannelId> ChannelIdSeq;
+	
+    interface RecFuncCache {
+
+        boolean isCached(in ChannelIdSeq channel, in Fissures::IfEvent::EventAccess event);
+
+        Fissures::IfSeismogramDC::LocalSeismogramSeq calculate(
+                           in Fissures::IfEvent::EventAccess event,
+                           in ChannelIdSeq channel,
+					      in Fissures::IfSeismogramDC::LocalSeismogramSeq seis
+					      );
+					      
+        void insert(in Fissures::IfEvent::EventAccess event,
+                           in ChannelIdSeq channel,
+					      in Fissures::IfSeismogramDC::LocalSeismogramSeq original,
+					      in Fissures::IfSeismogramDC::LocalSeismogram radial,
+					      in Fissures::IfSeismogramDC::LocalSeismogram tansverse
+        );
+
+    };
+
+};

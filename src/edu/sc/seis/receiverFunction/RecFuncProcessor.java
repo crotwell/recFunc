@@ -81,19 +81,19 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
      * @exception Exception if an error occurs
      */
     public WaveformVectorResult process(EventAccessOperations event,
-                                                     ChannelGroup channelGroup,
-                                                     RequestFilter[][] original,
-                                                     RequestFilter[][] available,
-                                                     LocalSeismogramImpl[][] seismograms,
-                                                     CookieJar cookieJar) throws Exception {
+                                        ChannelGroup channelGroup,
+                                        RequestFilter[][] original,
+                                        RequestFilter[][] available,
+                                        LocalSeismogramImpl[][] seismograms,
+                                        CookieJar cookieJar) throws Exception {
         // save original seismograms, return value is ignored
         for (int i = 0; i < seismograms.length; i++) {
             WaveformResult saveToFileSeis = super.process(event,
-                                                                 channelGroup.getChannels()[i],
-                                                                 original[i],
-                                                                 available[i],
-                                                                 seismograms[i],
-                                                                 cookieJar);
+                                                          channelGroup.getChannels()[i],
+                                                          original[i],
+                                                          available[i],
+                                                          seismograms[i],
+                                                          cookieJar);
             saveToFileSeis = null;
         }
 

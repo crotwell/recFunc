@@ -50,26 +50,56 @@ public class IterDeconTest
     }
 
     public void testProcess() throws Exception {
-        // JUnitDoclet begin method process
-        float[] numData   = {0,    2, 0, -1.5f, 0, 0.25f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        float[] denomData = {0, 0.5f, 0,     0, 0,     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        float[] numData   = new float[2048];
+        numData[100] = 2;
+        numData[200] = -1.5f;
+        numData[300] = .25f;
+        float[] denomData = new float[2048];
+        denomData[100] = .5f;
+
+        // without gaussian filter
         IterDecon zeroGauss = new IterDecon(3, true, 0.001f, 0.0f);
         IterDeconResult result = zeroGauss.process(numData, denomData, .05f);
         float[] pred = result.getPredicted();
         int[] s = result.getShifts();
         float[] a = result.getAmps();
-        assertEquals("spike 0",  0, s[0]);
-        assertEquals("amp 0",    4,    a[0], 0.0001f);
-        assertEquals("spike 1",  2, s[1]);
-        assertEquals("amp 1",   -3,    a[1], 0.0001f);
-        assertEquals("spike 2 a="+a[2],  4, s[2]);
-        assertEquals("amp 2",  .5f,    a[2], 0.0001f);
-        assertEquals("pred 0",   4, pred[0], 0.0001f);
-        assertEquals("pred 1",   0, pred[1], 0.0001f);
-        assertEquals("pred 2",  -3, pred[2], 0.0001f);
-        assertEquals("pred 3",   0, pred[3], 0.0001f);
-        assertEquals("pred 4", .5f, pred[4], 0.0001f);
-        assertEquals("pred 5",   0, pred[5], 0.0001f);
+        assertEquals("zeroGauss spike 0",  0, s[0]);
+        assertEquals("zeroGauss amp 0",    4,    a[0], 0.0001f);
+        assertEquals("zeroGauss spike 1",  100, s[1]);
+        assertEquals("zeroGauss amp 1",   -3,    a[1], 0.0001f);
+        assertEquals("zeroGauss spike 2 a="+a[2],  200, s[2]);
+        assertEquals("zeroGauss amp 2",  .5f,    a[2], 0.0001f);
+        assertEquals("zeroGauss pred 0",   4, pred[0], 0.0001f);
+        assertEquals("zeroGauss pred 1",   0, pred[1], 0.0001f);
+        assertEquals("zeroGauss pred 100",  -3, pred[100], 0.0001f);
+        assertEquals("zeroGauss pred 101",   0, pred[3], 0.0001f);
+        assertEquals("zeroGauss pred 200", .5f, pred[200], 0.0001f);
+        assertEquals("zeroGauss pred 201",   0, pred[5], 0.0001f);
+
+        // with gaussian filter
+        numData   = new float[2048];
+        numData[100] = 2;
+        numData[200] = -1.5f;
+        numData[300] = .25f;
+        denomData = new float[2048];
+        denomData[100] = .5f;
+
+        result = iterdecon.process(numData, denomData, .05f);
+        pred = result.getPredicted();
+        s = result.getShifts();
+        a = result.getAmps();
+        assertEquals("gauss spike 0",  0, s[0]);
+        assertEquals("gauss amp 0",    4,    a[0], 0.0001f);
+        assertEquals("gauss spike 1",  100, s[1]);
+        assertEquals("gauss amp 1",   -3,    a[1], 0.0001f);
+        assertEquals("gauss spike 2 a="+a[2],  200, s[2]);
+        assertEquals("gauss amp 2",  .5f,    a[2], 0.0001f);
+        assertEquals("gauss pred 0",   4, pred[0], 0.0001f);
+        assertEquals("gauss pred 1",   0, pred[1], 0.0001f);
+        assertEquals("gauss pred 100",  -3, pred[100], 0.0001f);
+        assertEquals("gauss pred 101",   0, pred[3], 0.0001f);
+        assertEquals("gauss pred 200", .5f, pred[200], 0.0001f);
+        assertEquals("gauss pred 201",   0, pred[5], 0.0001f);
 
         // JUnitDoclet end method process
     }

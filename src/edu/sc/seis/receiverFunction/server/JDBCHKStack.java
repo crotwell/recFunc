@@ -18,6 +18,8 @@ import java.util.Properties;
 import org.apache.log4j.BasicConfigurator;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.Channel;
+import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
@@ -35,6 +37,8 @@ import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
+import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
@@ -132,6 +136,7 @@ public class JDBCHKStack  extends JDBCTable {
         // get all uncalculated rows
         uncalculatedStmt.setString(1, netCode);
         uncalculatedStmt.setString(2, staCode);
+        uncalculatedStmt.setFloat(3, percentMatch);
         ResultSet rs = uncalculatedStmt.executeQuery();
         ArrayList individualHK = new ArrayList();
        
@@ -247,9 +252,25 @@ public class JDBCHKStack  extends JDBCTable {
             Connection conn = ConnMgr.createConnection();
             JDBCHKStack jdbcHKStack = new JDBCHKStack(conn);
             String netCode = args[0];
-            String staCode = args[1];
-            System.out.println("calc for "+netCode+"."+staCode);
-            jdbcHKStack.calc(netCode, staCode, 90.0f);
+            if (args.length > 1) {
+                String staCode = args[1];
+                System.out.println("calc for "+netCode+"."+staCode);
+                jdbcHKStack.calc(netCode, staCode, 90.0f);
+            } else {
+                // do all for a net
+                JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel().getSiteTable().getStationTable();
+                JDBCNetwork jdbcNetwork = jdbcStation.getNetTable();
+                NetworkId[] netId = jdbcNetwork.getAllNetworkIds();
+                for(int i = 0; i < netId.length; i++) {
+                    if(netId[i].network_code.equals(netCode)) {
+                        Station[] station = jdbcStation.getAllStations(netId[i]);
+                        for(int j = 0; j < station.length; j++) {
+                            System.out.println("calc for "+netCode+"."+station[j].get_code());
+                            jdbcHKStack.calc(netCode, station[j].get_code(), 90.0f);
+                        }
+                    }
+                }
+            }
             
         }catch(Exception e) {
             GlobalExceptionHandler.handle(e);   

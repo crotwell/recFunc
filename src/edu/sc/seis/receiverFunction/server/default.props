@@ -73,6 +73,7 @@ hkStack.uncalculated=SELECT recfunc_id FROM network \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
                    WHERE net_code = ? \
                    AND sta_code = ? \
+                   AND receiverFunction.itr_match >= ? \
                    EXCEPT SELECT recfunc_id from network \
                        NATURAL JOIN station \
                        NATURAL JOIN site \

@@ -30,7 +30,7 @@ public class NetworkDBPopulate {
         vt.register(orb);
         ConnMgr.setDB(ConnMgr.POSTGRES);
         FissuresNamingService fisName = new FissuresNamingService(orb);
-        fisName.setNameServiceCorbaLoc(props.getProperty("edu.sc.seis.nameServiceCorbaLoc"));
+        fisName.setNameServiceCorbaLoc(props.getProperty(FissuresNamingService.CORBALOC_PROP));
         NetworkDCOperations netDC = BulletproofVestFactory.vestNetworkDC("edu/iris/dmc",
                                                                          "IRIS_NetworkDC",
                                                                          fisName);

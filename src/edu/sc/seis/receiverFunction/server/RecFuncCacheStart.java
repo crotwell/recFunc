@@ -45,7 +45,7 @@ public class RecFuncCacheStart {
             serviceDNS = System.getProperty("recFunc.cacheServer.serverDNS", serviceDNS);
             
             FissuresNamingService fissuresNamingService = new FissuresNamingService(orb);
-            fissuresNamingService.setNameServiceCorbaLoc(props.getProperty("edu.sc.seis.nameServiceCorbaLoc"));
+            fissuresNamingService.setNameServiceCorbaLoc(props.getProperty(FissuresNamingService.CORBALOC_PROP));
             
             String addNS = System.getProperty("recFunc.cacheServer.additionalNameService");
             if (addNS != null) {

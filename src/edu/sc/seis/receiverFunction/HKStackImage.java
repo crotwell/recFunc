@@ -63,9 +63,9 @@ public class HKStackImage extends JComponent {
         Iterator it = markers.iterator();
         while(it.hasNext()) {
             Marker mark = (Marker)it.next();
-            System.out.println("Marker "+mark.name+" "+mark.vpvs+"-->"+Math.round(2*stack.getKIndexFloat(mark.vpvs))+" "+ Math.round(2*stack.getHIndexFloat(mark.depth)));
-            g.setColor(mark.color);
-            g.fillRect(Math.round(2*stack.getKIndexFloat(mark.vpvs)), Math.round(2*stack.getHIndexFloat(mark.depth)), 2, 2);
+            System.out.println("Marker "+mark.getName()+" "+mark.getVpvs()+"-->"+Math.round(2*stack.getKIndexFloat(mark.getVpvs()))+"  "+mark.getDepth()+"-->"+ Math.round(2*stack.getHIndexFloat(mark.getDepth())));
+            g.setColor(mark.getColor());
+            g.fillRect(Math.round(2*stack.getKIndexFloat(mark.getVpvs())), Math.round(2*stack.getHIndexFloat(mark.getDepth())), 2, 2);
         }
         g.setColor(Color.CYAN);
         TradeoffCurve tradeoff = new TradeoffCurve(stack);
@@ -84,18 +84,6 @@ public class HKStackImage extends JComponent {
         g.setColor(origColor);
     }
     
-    class Marker {
-        Marker(String name, double vpvs, double depth, Color color) {
-            this.name = name;
-            this.vpvs = vpvs;
-            this.depth = depth;
-            this.color = color;
-        }
-        String name;
-        double vpvs;
-        double depth;
-        Color color;
-    }
 
     static int makeImageable(float min, float max, float val) {
         if (val > max) { return makeImageable(min, max, max); }

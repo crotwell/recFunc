@@ -38,6 +38,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
 
     public RecFuncProcessor(Element config)  throws ConfigurationException {
         super(config);
+        logger.info("Init RecFuncProcessor");
     }
 
     /**
@@ -53,18 +54,18 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
      * @exception Exception if an error occurs
      */
     public LocalSeismogramImpl[] process(EventAccessOperations event,
-                                     NetworkAccess network,
-                                     Channel channel,
-                                     RequestFilter[] original,
-                                     RequestFilter[] available,
-                                     LocalSeismogramImpl[] seismograms,
-                                     CookieJar cookies) throws Exception {
-        // save original seismograms
-        super.process(event,
-                      channel,
-                      original,
-                      available,
-                      seismograms);
+                                         Channel channel,
+                                         RequestFilter[] original,
+                                         RequestFilter[] available,
+                                         LocalSeismogramImpl[] seismograms) throws Exception {
+        // save original seismograms, return value is ignored
+        LocalSeismogramImpl[] saveToFileSeis = super.process(event,
+                                                    channel,
+                                                    original,
+                                                    available,
+                                                    seismograms);
+        saveToFileSeis = null;
+
         if (seismograms.length == 0) {
             // maybe no data after cut?
             return seismograms;
@@ -73,7 +74,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
             float gwidth = 3.0f;
             tauPTime = new TauP_Time("iasp91");
             recFunc = new RecFunc(tauPTime,
-                                  new IterDecon(200, true, .001f, gwidth));
+                                  new IterDecon(100, true, .001f, gwidth));
         }
         if ( ! ChannelIdUtil.areEqual(available[0].channel_id, seismograms[0].channel_id)) {
             // fix the dumb -farm or -spyder on pond available_data

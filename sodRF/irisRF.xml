@@ -252,6 +252,16 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <waveformEventTemplateGenerator>
                         <waveformConfig xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml"/>
                 </waveformEventTemplateGenerator>
+>
+                <waveformNetworkStatus>
+                    <template>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformNetwork.xml</template>
+                    <networkListTemplate>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformNetworks.xml</networkListTemplate>
+                </waveformNetworkStatus>
+
+                <waveformStationStatus>
+                    <template>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformStation.xml</template>
+                </waveformStationStatus>
+
 
    </waveformArm>
 </sod>

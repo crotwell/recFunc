@@ -21,3 +21,18 @@ log4j.appender.error.layout.ConversionPattern=%d{ISO8601} %p %t %c{2} - %m%n
 log4j.appender.error.Threshold=error
 
 edu.sc.seis.fissuresUtil.nameServiceCorbaLoc=corbaloc:iiop:pooh.seis.sc.edu:6371/NameService
+#edu.sc.seis.fissuresUtil.additionalNameServiceCorbaLoc=corbaloc:iiop:dmc.iris.washington.edu:637
+1/NameService
+
+cormorant.servers=ears
+
+#Plottable Props
+cormorant.servers.ears.controller=edu.sc.seis.receiverFunction.server.RecFuncCacheController
+cormorant.servers.ears.name=EARS
+cormorant.servers.ears.dns=edu/sc/seis
+
+#JacORB Props
+jacorb.connection.client.pending_reply_timeout=120000
+org.omg.CORBA.ORBSingletonClass=org.jacorb.orb.ORBSingleton
+org.omg.CORBA.ORBClass=org.jacorb.orb.ORB
+

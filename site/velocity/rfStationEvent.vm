@@ -15,35 +15,35 @@
 <td class="even">$eq.region</td>
 </tr>
 <tr>
-<td class="odd">Earthquake latitude</td>
-<td class="even">$eq.latitude</td>
-</tr>
-<tr>
-<td class="odd">Earthquake longitude</td>
-<td class="even">$eq.longitude</td>
+<td class="odd">Earthquake latitude/longitude</td>
+<td class="even">$eq.latitude/$eq.longitude</td>
 </tr>
 <tr>
 <td class="odd">Earthquake time(UTC)</td>
 <td class="even">$eq.time</td>
 </tr>
 <tr>
-<td class="odd">Earthquake time(UTC)</td>
+<td class="odd">Earthquake Depth</td>
 <td class="even">$eq.depth</td>
 </tr>
 <tr>
 <td class="odd">Earthquake Magnitude</td>
 <td class="even">$eq.getAllMagnitudes()</td>
 </tr>
+<tr>
+<td class="odd">Earthquake Catalog/Contributor</td>
+<td class="even">$eq.getCatalog()/$eq.getContributor()</td>
+</tr>
 </table>
 
 <table>
 <tr>
 <td class="odd">Network</td>
-<td class="odd">$sta.getNet().getCode()</td>
+<td class="even">$sta.getNet().getCode()</td>
 </tr>
 <tr>
-<td class="even">Station</td>
-<td class="odd">$sta.getCode()</td>
+<td class="odd">Station</td>
+<td class="even">$sta.getCode()</td>
 </tr>
 </table>
 
@@ -61,11 +61,11 @@
 <td class="odd">$sta.getBaz($eq)</td>
 </tr>
 <tr>
-<td class="even">Best Moho Depth</td>
+<td class="even">Estimated Moho Depth</td>
 <td class="odd">$stack.getMaxValueH() km</td>
 </tr>
 <tr>
-<td class="even">Best Crust Vp/Vs</td>
+<td class="even">Estimated Crust Vp/Vs</td>
 <td class="odd">$stack.getMaxValueK()</td>
 </tr>
 </table>

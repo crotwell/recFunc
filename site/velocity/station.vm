@@ -9,7 +9,9 @@
 
 <img src="earslogo.png"/><br/>
 
-<p><b>Network: </b>$net.getCodeWithYear() - $net.name<br/></p>
+#set ($firstSta = $stationList.get(0) )
+<p><b>Network: </b>$net.getCodeWithYear() - $net.name</p>
+<p><a href="stationsNearBy.html?lat=$firstSta.getLatitude()&lon=$firstSta.getLongitude()&delta=2">Nearby stations</a></p>
 
 <table>
 <tr>
@@ -29,16 +31,17 @@
 </table>
 
 <table>
-<tr><td class="odd">Thickness Estimate</td><td class="even">$!summary.getSum().getMaxValueH()</td></tr>
-<tr><td class="odd">Thickness StdDev</td><td class="even">$!summary.getHStdDev()</td></tr>
-<tr><td class="odd">Vp/Vs Estimate</td><td class="even">$!summary.getSum().getMaxValueK()</td></tr>
-<tr><td class="odd">Vp/Vs StdDev</td><td class="even">$!summary.getKStdDev()</td></tr>
-<tr><td class="odd">Vs Estimate</td><td class="even">$!summary.getSum().getVs()</td></tr>
-<tr><td class="odd">Peak Value</td><td class="even">$!summary.getSum().getMaxValue()</td></tr>
-<tr><td class="odd">Assumed Vp</td><td class="even">$!summary.getSum().getAlpha()</td></tr>
-<tr><td class="odd">Ps Weight</td><td class="even">$!summary.getSum().getWeightPs()</td></tr>
-<tr><td class="odd">PsPs Weight</td><td class="even">$!summary.getSum().getWeightPsPs()</td></tr>
-<tr><td class="odd">PpPs Weight</td><td class="even">$!summary.getSum().getWeightPpPs()</td></tr>
+<tr><td class="odd">Thickness Estimate</td><td class="even">$!summary.getSum().getMaxValueH()</td><td class="even">km</td></tr>
+<tr><td class="odd">Thickness StdDev</td><td class="even">$!summary.getHStdDev()</td><td class="even">km</td></tr>
+<tr><td class="odd">Vp/Vs Estimate</td><td class="even">$!summary.getSum().getMaxValueK()</td><td class="even"></td></tr>
+<tr><td class="odd">Vp/Vs StdDev</td><td class="even">$!summary.getKStdDev()</td><td class="even"></td></tr>
+<tr><td class="odd">Vs Estimate</td><td class="even">$!summary.getSum().getVs()</td><td class="even">km/s</td></tr>
+<tr><td class="odd">Poisson's Ratio</td><td class="even">$!summary.getSum().getPoissonsRatio()</td><td class="even"></td></tr>
+<tr><td class="odd">Peak Value</td><td class="even">$!summary.getSum().getMaxValue()</td><td class="even"></td></tr>
+<tr><td class="odd">Assumed Vp</td><td class="even">$!summary.getSum().getAlpha()</td><td class="even">km/s</td></tr>
+<tr><td class="odd">Ps Weight</td><td class="even">$!summary.getSum().getWeightPs()</td><td class="even"></td></tr>
+<tr><td class="odd">PpPs Weight</td><td class="even">$!summary.getSum().getWeightPpPs()</td><td class="even"></td></tr>
+<tr><td class="odd">PsPs Weight</td><td class="even">$!summary.getSum().getWeightPsPs()</td><td class="even"></td></tr>
 </table>
 
 <p>$numNinty with match > 90% and $numEighty with match > 80%.</p>
@@ -46,9 +49,6 @@
 #if( $numEighty > 0)
 <img class="dataimg" src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=${smallestH}"/>
 #end
-
-#set ($firstSta = $stationList.get(0) )
-<p><a href="stationsNearBy.html?lat=$firstSta.getLatitude()&lon=$firstSta.getLongitude()&delta=2">Nearby stations</a></p>
 
 <p><b>Prior Results for this Station</b></p>
 <table>

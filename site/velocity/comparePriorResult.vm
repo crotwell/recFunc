@@ -21,7 +21,7 @@ ${tr}$row${trend}
 #end
 #macro( link $href $name )
 #if ( !$viewType || $viewType == "html" )
-<a href=\"$href\">$name</a>
+<a href="$href">$name</a>
 #else
 $name
 #end

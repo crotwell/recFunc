@@ -132,7 +132,9 @@ public class StackSummary {
             ConnMgr.setDB(ConnMgr.POSTGRES);
             Connection conn = ConnMgr.createConnection();
             StackSummary summary = new StackSummary(conn);
-            summary.createSummary(args[0], new File("stackImages25"), 90f, 25);
+            float minPercentMatch = 80f;
+            int smallestH = 25;
+            summary.createSummary(args[0], new File("stackImages"+smallestH+"_"+minPercentMatch), minPercentMatch, smallestH);
         } catch(Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

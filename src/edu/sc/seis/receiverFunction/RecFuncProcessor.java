@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.context.Context;
 import org.w3c.dom.Element;
 
 public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGroupLocalSeismogramProcess {
@@ -201,7 +202,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
 
                     // put the answer in the site context as the result is shared
                     // by all channels from that site, helps with velocity template
-                    VelocityContext siteContext = (VelocityContext)cookieJar.getSiteContext(event, zeroChannel.my_site);
+                    Context siteContext = cookieJar.getSiteContext(event, zeroChannel.my_site);
                     siteContext.put("recFunc_hkstack_image_"+ITR_ITT, outImageFile.getName());
                     siteContext.put("recFunc_pred_auxData"+ITR_ITT, aux);
                     siteContext.put("stack_"+ITR_ITT, stack);
@@ -211,7 +212,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                     Iterator iterator = c.iterator();
                     boolean found = false;
                     while(iterator.hasNext()) {
-                        VelocityContext cTemp = (VelocityContext)cookieJar.getContext().get(iterator.next().toString());
+                        Context cTemp = (Context)cookieJar.getContext().get(iterator.next().toString());
                         System.out.println("Check for stack"+ cTemp.get("stack_"+ITR_ITT).toString());
                         found = true;
                         break;

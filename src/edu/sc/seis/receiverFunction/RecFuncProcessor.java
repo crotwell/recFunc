@@ -47,12 +47,12 @@ import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.Start;
-import edu.sc.seis.sod.process.waveformArm.LocalSeismogramTemplateGenerator;
-import edu.sc.seis.sod.process.waveformArm.SaveSeismogramToFile;
-import edu.sc.seis.sod.process.waveformArm.WaveformResult;
-import edu.sc.seis.sod.process.waveformVectorArm.ANDWaveformProcessWrapper;
-import edu.sc.seis.sod.process.waveformVectorArm.WaveformVectorProcess;
-import edu.sc.seis.sod.process.waveformVectorArm.WaveformVectorResult;
+import edu.sc.seis.sod.process.waveform.LocalSeismogramTemplateGenerator;
+import edu.sc.seis.sod.process.waveform.SaveSeismogramToFile;
+import edu.sc.seis.sod.process.waveform.WaveformResult;
+import edu.sc.seis.sod.process.waveform.vector.ANDWaveformProcessWrapper;
+import edu.sc.seis.sod.process.waveform.vector.WaveformVectorProcess;
+import edu.sc.seis.sod.process.waveform.vector.WaveformVectorResult;
 import edu.sc.seis.sod.status.FissuresFormatter;
 import edu.sc.seis.sod.status.StringTreeLeaf;
 

@@ -15,8 +15,8 @@ import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.sod.ChannelGroup;
 import edu.sc.seis.sod.CookieJar;
-import edu.sc.seis.sod.process.waveformVectorArm.WaveformVectorProcess;
-import edu.sc.seis.sod.process.waveformVectorArm.WaveformVectorResult;
+import edu.sc.seis.sod.process.waveform.vector.WaveformVectorProcess;
+import edu.sc.seis.sod.process.waveform.vector.WaveformVectorResult;
 import edu.sc.seis.sod.status.StringTreeLeaf;
 
 public class Crust2Process implements WaveformVectorProcess  {

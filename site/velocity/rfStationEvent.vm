@@ -60,7 +60,16 @@
 <td class="even">Baz</td>
 <td class="odd">$sta.getBaz($eq)</td>
 </tr>
+<tr>
+<td class="even">Best Moho Depth</td>
+<td class="odd">$stack.getMaxValueH() km</td>
+</tr>
+<tr>
+<td class="even">Best Crust Vp/Vs</td>
+<td class="odd">$stack.getMaxValueK()</td>
+</tr>
 </table>
+
 
 <img class="dataimg" src="hkstackimage.png?rf=$rf"/>
 

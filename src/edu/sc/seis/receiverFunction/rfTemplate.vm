@@ -132,7 +132,7 @@ $chanContext.status <br/>
 
 #if ( $recFunc_hkstack_image_ITR )
 <br/>
-<img src="$recFunc_hkstack_image_ITR"/>
+<img src="${fissures.filize($recFunc_hkstack_image_ITR)}"/>
 <br/>
 
 <table>

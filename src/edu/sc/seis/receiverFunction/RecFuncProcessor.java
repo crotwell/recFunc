@@ -29,6 +29,7 @@ import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.Start;
+import edu.sc.seis.sod.status.FissuresFormatter;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Iterator;
@@ -166,7 +167,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                     String prefix = "HKstack_";
                     String postfix = ".raw";
                     String channelIdString = ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id);
-                    File stackOutFile = new File(getEventDirectory(event),prefix+channelIdString+postfix);
+                    File stackOutFile = new File(getEventDirectory(event),FissuresFormatter.filize(prefix+channelIdString+postfix));
                     DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(stackOutFile)));
                     stack.write(dos);
                     dos.close();
@@ -187,7 +188,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
 
                     File imageDir = lSeisTemplateGen.getOutputFile(event, zeroChannel).getParentFile();
                     imageDir.mkdirs();
-                    File outImageFile  = new File(imageDir, prefix+channelIdString+".png");
+                    File outImageFile  = new File(imageDir, FissuresFormatter.filize(prefix+channelIdString+".png"));
                     BufferedImage bufImage = stack.createStackImage();
                     javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
 

@@ -10,6 +10,7 @@ import java.io.*;
 
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.sc.seis.sod.status.FissuresFormatter;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
@@ -69,7 +70,7 @@ public class SumHKStack {
                 continue;
             }
             File stackFile = new File(subdir[i],
-                                      prefix+ChannelIdUtil.toStringNoDates(chan)+postfix);
+                                      FissuresFormatter.filize(prefix+ChannelIdUtil.toStringNoDates(chan)+postfix));
             if ( ! stackFile.exists()) {
                 continue;
             }

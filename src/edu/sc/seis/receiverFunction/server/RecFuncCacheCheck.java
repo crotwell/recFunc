@@ -29,10 +29,8 @@ public class RecFuncCacheCheck implements EventVectorSubsetter {
         deconConfig = RecFuncProcessor.parseIterDeconConfig(config);
         try {
             FissuresNamingService fisName = CommonAccess.getCommonAccess().getFissuresNamingService();
-            cache = RecFuncCacheHelper.narrow(fisName.resolve("edu/sc/seis", "IfReceiverFunction", "Ears"));
+            cache = new NSRecFuncCache("edu/sc/seis", "Ears", fisName);
         } catch (SystemException e) {
-            throw new ConfigurationException("Problem getting cache server", e);
-        } catch (UserException e) {
             throw new ConfigurationException("Problem getting cache server", e);
         }
     }

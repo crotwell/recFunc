@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import javax.swing.JComponent;
 import org.w3c.dom.Element;
+import javax.swing.JFrame;
+import java.awt.Dimension;
 
 
 
@@ -152,18 +154,30 @@ public class HKStack {
 
     public JComponent getStackComponent() {
         BorderedDisplay bd = new BorderedDisplay(new HKStackImage(this));
-        UnitRangeBorder depthBorder = new UnitRangeBorder(Border.LEFT,
-                                                          Border.ASCENDING,
-                                                          "Depth",
-                                                          new UnitRangeImpl(getMinH(), getMinH()+getNumH()*getStepH(), UnitImpl.KILOMETER));
-        bd.add(depthBorder, bd.CENTER_LEFT);
-        UnitRangeBorder kBorder = new UnitRangeBorder(Border.TOP,
-                                                      Border.ASCENDING,
-                                                      "Vp/Vs",
-                                                      new UnitRangeImpl(getMinK(),
-                                                                        getMinK()+getNumK()*getStepK(),
-                                                                        UnitImpl.divide(UnitImpl.KILOMETER_PER_SECOND,UnitImpl.KILOMETER_PER_SECOND, "km/s/km/s")));
-        bd.add(kBorder, bd.TOP_CENTER);
+        UnitRangeBorder depthLeftBorder = new UnitRangeBorder(Border.LEFT,
+                                                              Border.ASCENDING,
+                                                              "Depth",
+                                                              new UnitRangeImpl(getMinH(), getMinH()+getNumH()*getStepH(), UnitImpl.KILOMETER));
+        bd.add(depthLeftBorder, bd.CENTER_LEFT);
+        UnitRangeBorder depthRightBorder = new UnitRangeBorder(Border.RIGHT,
+                                                               Border.ASCENDING,
+                                                               "Depth",
+                                                               new UnitRangeImpl(getMinH(), getMinH()+getNumH()*getStepH(), UnitImpl.KILOMETER));
+        bd.add(depthRightBorder, bd.CENTER_LEFT);
+        UnitRangeBorder kTopBorder = new UnitRangeBorder(Border.TOP,
+                                                         Border.ASCENDING,
+                                                         "Vp/Vs",
+                                                         new UnitRangeImpl(getMinK(),
+                                                                           getMinK()+getNumK()*getStepK(),
+                                                                           UnitImpl.divide(UnitImpl.KILOMETER_PER_SECOND,UnitImpl.KILOMETER_PER_SECOND, "km/s/km/s")));
+        bd.add(kTopBorder, bd.TOP_CENTER);
+        UnitRangeBorder kBottomBorder = new UnitRangeBorder(Border.BOTTOM,
+                                                            Border.ASCENDING,
+                                                            "Vp/Vs",
+                                                            new UnitRangeImpl(getMinK(),
+                                                                              getMinK()+getNumK()*getStepK(),
+                                                                              UnitImpl.divide(UnitImpl.KILOMETER_PER_SECOND,UnitImpl.KILOMETER_PER_SECOND, "km/s/km/s")));
+        bd.add(kBottomBorder, bd.BOTTOM_CENTER);
         return bd;
     }
 
@@ -191,8 +205,23 @@ public class HKStack {
 
         g.translate(5, fm.getHeight()+fm.getDescent());
 
-        HKStackImage stackImage = new HKStackImage(this);
-        stackImage.paintComponent(g);
+        JComponent comp =  getStackComponent();
+        JFrame frame = null;
+        try {
+            if(comp.getRootPane() == null){//This won't display if it's not in a root pane
+                frame = new JFrame();//so this plan that is so crazy it might
+                frame.getContentPane().add(comp);//actually work will actually work
+                frame.pack();
+            }
+            Dimension size = comp.getSize();
+            BufferedImage bImg = new BufferedImage(size.width, size.height,
+                                                   BufferedImage.TYPE_INT_RGB);
+            comp.print(g);
+        } finally {
+            if (frame != null) {
+                frame.dispose();
+            }
+        }
 
         g.translate(0, dataH);
 
@@ -210,13 +239,13 @@ public class HKStack {
         g.drawString("    K="+(getMinK()+xy[0]*getStepK()), 0, 2*fm.getHeight());
         g.translate(0, 2*fm.getHeight());
 
-        int minColor = stackImage.makeImageable(min, max, min);
+        int minColor = HKStackImage.makeImageable(min, max, min);
         g.setColor(new Color(minColor, minColor, minColor));
         g.fillRect(0, 0, 15, 15);
         g.setColor(Color.white);
         g.drawString("Min="+min, 0, 15+fm.getHeight());
 
-        int maxColor = stackImage.makeImageable(min, max, max);
+        int maxColor = HKStackImage.makeImageable(min, max, max);
         g.setColor(new Color(maxColor, maxColor, maxColor));
         g.fillRect(dataW-20, 0, 15, 15);
         g.setColor(Color.white);

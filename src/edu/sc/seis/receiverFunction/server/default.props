@@ -5,6 +5,7 @@ sodConfig.create=CREATE TABLE sodConfig (config_id int, \
                                          config varchar)
 sodConfig.put=INSERT INTO sodConfig (config_id, config) VALUES (?, ?)
 sodConfig.get=SELECT config from sodConfig where config_id = ?
+sodConfig.getDbId=SELECT config_id from sodConfig where config = ?
 
 sodConfigSeq.create=CREATE SEQUENCE sodConfigSeq
 sodConfigSeq.nextVal=SELECT NEXTVAL ('sodConfigSeq')

@@ -28,12 +28,6 @@ import edu.sc.seis.sod.status.FissuresFormatter;
  */
 public class StackSummary {
 
-    public StackSummary() throws IOException, SQLException, ConfigurationException, TauModelException {
-        ConnMgr.setDB(ConnMgr.POSTGRES);
-        Connection conn = ConnMgr.createConnection();
-        jdbcHKStack = new JDBCHKStack(conn);
-    }
-
     public StackSummary(Connection conn) throws IOException, SQLException, ConfigurationException, TauModelException {
         jdbcHKStack = new JDBCHKStack(conn);
     }
@@ -65,9 +59,9 @@ public class StackSummary {
     
     public static void main(String[] args) {
     try {
+        Properties props = RecFuncCacheStart.loadProps(args);
         ConnMgr.setDB(ConnMgr.POSTGRES);
         Connection conn = ConnMgr.createConnection();
-        Properties props = RecFuncCacheStart.loadProps(args);
         StackSummary summary = new StackSummary(conn);
         summary.createSummary(args[0], new File("stackImages"), 90f);
     } catch(Exception e) {

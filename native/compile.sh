@@ -1,4 +1,11 @@
 
+# see
+# http://developer.apple.com/techpubs/macosx/Java/JavaDevelopment/overview/chapter_2_section_8.html
+#
+#
+
+setenv DYLD_LIBRARY_PATH `pwd`
+
 javah -classpath ../target/recFunc-1.0beta.jar edu.sc.seis.receiverFunction.NativeFFT
 
 cc -c \

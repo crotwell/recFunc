@@ -86,9 +86,6 @@ public class IterDeconTest
         denomData = new float[numData.length];
         denomData[100] = .5f;
 
-        //******** temp to allow test of gauss...
-        if (true) return;
-
         result = iterdecon.process(numData, denomData, .05f);
         pred = result.getPredicted();
         s = result.getShifts();

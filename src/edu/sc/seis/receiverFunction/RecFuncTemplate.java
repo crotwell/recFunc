@@ -21,14 +21,16 @@ public class RecFuncTemplate {
 
     public RecFuncTemplate() throws Exception {
         VelocityEngine ve = new VelocityEngine();
+        String loggerName = "Velocity";
+        Logger velocityLogger = Logger.getLogger(loggerName);
         Properties props = new Properties();
         props.put("resource.loader", "class");
         props.put("class.resource.loader.description", "Velocity Classpath Resource Loader");
         props.put("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
         props.put( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
                   "org.apache.velocity.runtime.log.SimpleLog4JLogSystem" );
-        Logger velocityLogger = Logger.getLogger(VelocityEngine.class);
-        props.put("runtime.log.logsystem.log4j.category", velocityLogger);
+
+        props.put("runtime.log.logsystem.log4j.category", loggerName);
         ve.init(props);
         template = ve.getTemplate("edu/sc/seis/receiverFunction/rfTemplate.vm");
 
@@ -50,4 +52,5 @@ public class RecFuncTemplate {
     Template template;
 
 }
+
 

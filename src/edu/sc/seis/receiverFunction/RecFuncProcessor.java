@@ -44,7 +44,7 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
-public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGroupLocalSeismogramProcess {
+public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVectorProcess {
 
     public RecFuncProcessor(Element config)  throws ConfigurationException {
         super(config);
@@ -173,7 +173,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                     // find template generator to get directory to output rec func
                     // images
                     if (lSeisTemplateGen == null) {
-                        ChannelGroupLocalSeismogramProcess[] processes = Start.getWaveformArm().getMotionVectorArm().getProcesses();
+                        WaveformVectorProcess[] processes = Start.getWaveformArm().getMotionVectorArm().getProcesses();
                         for (int j = 0; j < processes.length; j++) {
                             if (processes[j] instanceof ANDLocalSeismogramWrapper) {
                                 ANDLocalSeismogramWrapper wrapper =

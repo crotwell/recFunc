@@ -25,7 +25,7 @@ public class RecFuncTemplateTest extends TestCase {
         context.put("recFunc_hkstack_image", "hkstack.png");
         context.put("ChannelIdUtil", new ChannelIdUtil());
 
-        HKStack stack = new HKStack(1, 2, 90, 10, 1, 50, 1.6f, .025f, 50);
+        HKStack stack = new HKStack(1, 2, 90, 10, 1, 50, 1.6f, .025f, 50, 1, 1, 1);
         context.put("stack", stack);
         HashMap aux = new HashMap();
         aux.put("testA", "A");

@@ -36,7 +36,7 @@
 #end
 </ul>
 
-<img class="dataimg" src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=25"/>
+<img class="dataimg" src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=${smallestH}"/>
 
 
 

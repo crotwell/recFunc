@@ -80,7 +80,7 @@ xsi:noNamespaceSchemaLocation="http://www.seis.sc.edu/xschema/sod/1.0"
 <!-- Only take events from Apr-June -->
         <eventTimeRange>
         <timeRange>
-            <startTime>20030101T00:00:00.001Z</startTime>
+            <startTime>20000101T00:00:00.001Z</startTime>
             <endTime>20041231T23:59:59.999Z</endTime>
         </timeRange>
         </eventTimeRange>
@@ -121,7 +121,7 @@ xsi:noNamespaceSchemaLocation="http://www.seis.sc.edu/xschema/sod/1.0"
 
         <stationEffectiveTimeOverlap>
         <effectiveTimeOverlap>
-            <min>20030101T00:00:00.001Z</min>
+            <min>20000101T00:00:00.001Z</min>
             <max>20041231T23:59:59.999Z</max>
         </effectiveTimeOverlap>
         </stationEffectiveTimeOverlap>
@@ -134,8 +134,8 @@ xsi:noNamespaceSchemaLocation="http://www.seis.sc.edu/xschema/sod/1.0"
    <channelAND>
         <channelEffectiveTimeOverlap>
         <effectiveTimeOverlap>
-            <min>20030101T00:00:00.001Z</min>
-            <max>20031231T23:59:59.999Z</max>
+            <min>20000101T00:00:00.001Z</min>
+            <max>20041231T23:59:59.999Z</max>
         </effectiveTimeOverlap>
         </channelEffectiveTimeOverlap>
 
@@ -147,11 +147,16 @@ xsi:noNamespaceSchemaLocation="http://www.seis.sc.edu/xschema/sod/1.0"
 
 
     <waveFormArm>
+      <eventStationAND>
         <distanceRange>
             <unit>DEGREE</unit>
             <min>30</min>
             <max>100</max>
         </distanceRange>
+        <phaseExists>
+            <phaseName>P</phaseName>
+        </phaseExists>
+      <eventStationAND>
 
     <localSeismogramArm>
 
@@ -180,7 +185,7 @@ xsi:noNamespaceSchemaLocation="http://www.seis.sc.edu/xschema/sod/1.0"
 
 <!--
     <sacFileProcessor>
-        <dataDirectory>SP_rf2003</dataDirectory>
+        <dataDirectory>SP_recfunc</dataDirectory>
         <eventDirLabel>
              <originTime>yyyy_DDD_HH_mm_ss</originTime>
              _N
@@ -190,10 +195,10 @@ xsi:noNamespaceSchemaLocation="http://www.seis.sc.edu/xschema/sod/1.0"
 -->
     <externalSeismogramProcess>
         <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
-        <dataDirectory>SP_rf2003</dataDirectory>
+        <dataDirectory>SP_recfunc</dataDirectory>
                 <eventDirLabel>
                      <originTime>yyyy_DDD_HH_mm_ss</originTime>
-                     _N
+                     _<magnitude/>
                 </eventDirLabel>
     </externalSeismogramProcess>
 

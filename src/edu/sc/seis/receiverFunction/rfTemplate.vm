@@ -99,28 +99,30 @@ $chanContext.status <br/>
 </tr>
 #end
 </table>
+#if ( $recFunc_hkstack_image_ITR )
 <br/>
-<img src="$recFunc_hkstack_image"/>
+<img src="$recFunc_hkstack_image_ITR"/>
 <br/>
 
 <table>
-#foreach ($a in $recFunc_pred_auxData.keySet() )
-<tr><td>$a</td><td>$recFunc_pred_auxData.get($a)</td></tr>
+#foreach ($a in $recFunc_pred_auxData_ITR.keySet() )
+<tr><td>$a</td><td>$recFunc_pred_auxData_ITR.get($a)</td></tr>
 #end
 </table>
 
 <table>
-<tr><td>percentMatch</td><td>$stack.percentMatch</td></tr>
-<tr><td>ChannelId</td><td>$stack.ChannelId</td></tr>
-<tr><td>P</td><td>$stack.P</td></tr>
-<tr><td>Alpha</td><td>$stack.Alpha</td></tr>
-<tr><td>MinH</td><td>$stack.MinH</td></tr>
-<tr><td>StepH</td><td>$stack.StepH</td></tr>
-<tr><td>NumH</td><td>$stack.NumH</td></tr>
-<tr><td>MinK</td><td>$stack.MinK</td></tr>
-<tr><td>StepK</td><td>$stack.StepK</td></tr>
-<tr><td>NumK</td><td>$stack.NumK</td></tr>
-<table>
+<tr><td>percentMatch</td><td>$stack_ITR.percentMatch</td></tr>
+<tr><td>ChannelId</td><td>$stack_ITR.ChannelId</td></tr>
+<tr><td>P</td><td>$stack_ITR.P</td></tr>
+<tr><td>Alpha</td><td>$stack_ITR.Alpha</td></tr>
+<tr><td>MinH</td><td>$stack_ITR.MinH</td></tr>
+<tr><td>StepH</td><td>$stack_ITR.StepH</td></tr>
+<tr><td>NumH</td><td>$stack_ITR.NumH</td></tr>
+<tr><td>MinK</td><td>$stack_ITR.MinK</td></tr>
+<tr><td>StepK</td><td>$stack_ITR.StepK</td></tr>
+<tr><td>NumK</td><td>$stack_ITR.NumK</td></tr>
+</table>
+#end
 </div>
 <menu xlink:href="jar:edu/sc/seis/sod/data/templates/menu.xml"/>
 <div id="footer">

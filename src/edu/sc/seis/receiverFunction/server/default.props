@@ -79,8 +79,8 @@ hkStack.uncalculated=SELECT recfunc_id FROM network \
                        NATURAL JOIN hkStack
 
 hkStack.put=INSERT INTO hkstack ( \
-                   hkstack_id  \
-                   recFunc_id  \
+                   hkstack_id,  \
+                   recFunc_id,  \
                    alpha , \
                    p , \
                    percentMatch , \

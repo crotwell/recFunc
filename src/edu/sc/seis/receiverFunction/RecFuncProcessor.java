@@ -159,7 +159,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                     stack.write(dos);
                     dos.close();
 
-                    File outImageFile  = new File(getEventDirectory(event),"HKstack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
+                    File outImageFile  = new File(getEventDirectory(event),prefix+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
                     BufferedImage bufImage = stack.createStackImage();
                     javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
 
@@ -168,15 +168,15 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                                                      predicted.getRequestFilter().channel_id,
                                                      prefix,
                                                      postfix);
-                    File sumStackOutFile = new File(getParentDirectory(),"SumStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+postfix);
+                    File sumStackOutFile = new File(getParentDirectory(),"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+postfix);
                     if (sumStackOutFile.exists()) {sumStackOutFile.delete();}
-                    DataOutputStream sumdos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(stackOutFile)));
-                    stack.write(sumdos);
+                    DataOutputStream sumdos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(sumStackOutFile)));
+                    sum.write(sumdos);
                     sumdos.close();
 
-                    File outSumImageFile  = new File(getEventDirectory(event),"SumHKstack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
+                    File outSumImageFile  = new File(getParentDirectory(),"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
                     if (outSumImageFile.exists()) {outSumImageFile.delete();}
-                    BufferedImage bufSumImage = stack.createStackImage();
+                    BufferedImage bufSumImage = sum.createStackImage();
                     javax.imageio.ImageIO.write(bufSumImage, "png", outSumImageFile);
 
 

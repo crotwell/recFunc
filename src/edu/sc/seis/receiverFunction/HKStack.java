@@ -259,10 +259,8 @@ public class HKStack implements Serializable {
         Graphics2D g = null;
         BufferedImage bufImage = null;
         try {
-            if(comp.getRootPane() == null){//This won't display if it's not in a root pane
-                frame = new JFrame();//so this plan that is so crazy it might
-                frame.getContentPane().add(comp);//actually work will actually work
-                frame.pack();
+            if(comp.getRootPane() == null){
+                comp.addNotify();
             }
             Dimension size = comp.getSize();
 

@@ -1,7 +1,7 @@
 #! /usr/bin/python -O
 import sys, os, time
 sys.path.append("../devTools/maven")
-import ProjectParser, mavenExecutor, depCopy, distBuilder
+import ProjectParser, mavenExecutor, depCopy, distBuilder, cormorant
 sys.path.append("../sod/")
 import build
 from optparse import OptionParser
@@ -32,13 +32,19 @@ def buildDist(proj, name, clean=False):
               ('sodRF/pfoRF.xml', 'pfoRF.xml'),
               ('../sod/scripts/cwg.prop', 'cwg.prop'),
               ('scripts/logs', 'logs', False)]
-    scripts = build.buildAllScripts(proj)
+    scripts = buildScripts(proj)
     scriptsWithTarLoc = [(script, 'bin/'+script) for script in scripts]
     extras.extend(scriptsWithTarLoc)
     distBuilder.buildDist(proj, extras, name)
     for script in scripts: os.remove(script)
 
 def buildName(proj): return proj.name + '-' + time.strftime('%y%m%d')
+
+def buildScripts(proj, boolean=False):
+    scripts = build.buildAllScripts(proj, boolean)
+    corScriptParam = cormorant.scriptParams('cacheServer', 'cache.prop')
+    scripts.extend(cormorant.cormorantDescription().makeScripts([corScriptParam]))
+    return scripts
 
 build.genericScripts.update({'geeRecFunc':'edu.sc.seis.gee.Start',
                              'sumStackCalc':'edu.sc.seis.receiverFunction.server.StackSummary',
@@ -68,6 +74,6 @@ if __name__ == "__main__":
     else :
         buildJars(proj, options.clean)
         os.chdir('scripts')
-        build.buildAllScripts(proj, True)
+        buildScripts(proj, True)
         depCopy.copy(proj)
 

@@ -14,30 +14,36 @@ import edu.iris.Fissures.IfSeismogramDC.RequestFilter;
 import edu.iris.Fissures.Orientation;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
+import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauP_Time;
+import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.display.DisplayUtils;
+import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import edu.sc.seis.fissuresUtil.xml.DataSet;
 import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
+import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.LocalSeismogramProcess;
 import edu.sc.seis.sod.subsetter.waveFormArm.SacFileProcessor;
-import org.apache.log4j.Logger;
-import org.w3c.dom.Element;
-import edu.sc.seis.fissuresUtil.bag.DistAz;
-import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
-import edu.sc.seis.TauP.Arrival;
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
+import org.apache.log4j.Logger;
+import org.w3c.dom.Element;
 
 public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogramProcess {
-
+    
     public RecFuncProcessor(Element config)  throws ConfigurationException {
         super(config);
     }
-
+    
     /**
      * Processes localSeismograms to calculate receiver functions.
      *
@@ -71,17 +77,17 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
             recFunc = new RecFunc(tauPTime,
                                   new IterDecon(100, true, .001f, gwidth));
         }
-
+        
         DataSet dataset = getDataSet(event);
         DataSetSeismogram[] chGrpSeismograms =
             DisplayUtils.getComponents(dataset, available[0]);
-
+        
         if (chGrpSeismograms.length < 3) {
             logger.debug("chGrpSeismograms.length = "+chGrpSeismograms.length);
             // must not be all here yet
             return seismograms;
         }
-
+        
         logger.info("RecFunc for "+ChannelIdUtil.toStringNoDates(channel.get_id()));
         for (int i=0; i<chGrpSeismograms.length; i++) {
             if (chGrpSeismograms[i] == null) {
@@ -90,7 +96,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                 return seismograms;
             }
         }
-
+        
         processor =
             new DataSetRecFuncProcessor(chGrpSeismograms,
                                         event,
@@ -101,8 +107,8 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         }
         while ( ! processor.isRecFuncFinished()) {
             try {
-                System.out.println("Sleeping "+ChannelIdUtil.toStringNoDates(channel.get_id()));
-
+                //System.out.println("Sleeping "+ChannelIdUtil.toStringNoDates(channel.get_id()));
+                
                 Thread.sleep(100);
             } catch (InterruptedException e) {
             }
@@ -118,7 +124,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                                                              channel.sampling_info,
                                                              channel.effective_time,
                                                              channel.my_site);
-
+                    
                     URLDataSetSeismogram saved =
                         saveInDataSet(event, recFuncChannel, predicted.getCache());
                     Collection aux = predicted.getAuxillaryDataKeys();
@@ -130,8 +136,69 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                     DistAz distAz = DisplayUtils.calculateDistAz(saved);
                     tauPTime.calculate(distAz.delta);
                     Arrival arrival = tauPTime.getArrival(0);
-                    HKStack stack = new HKStack(6.5f, (float)arrival.getRayParam(), 5, .5f, 80, 1.6f, .01f, 30);
+                    // convert radian per sec ray param into km per sec
+                    float kmRayParam = (float)(arrival.getRayParam()/tauPTime.getTauModel().getRadiusOfEarth());
+                    HKStack stack = new HKStack(6.5f, kmRayParam, 5, .25f, 240, 1.6f, .005f, 100);
                     float[][] stackOut = stack.calculate(saved);
+                    
+                    
+                    BufferedImage bufImage = new BufferedImage(2*stackOut.length+10,
+                                                               2*stackOut[0].length+60,
+                                                               BufferedImage.TYPE_INT_RGB);
+                    Graphics2D g = bufImage.createGraphics();
+                    g.setColor(Color.darkGray);
+                    g.fillRect(0, 0, bufImage.getWidth(), bufImage.getHeight());
+                    g.translate(5, 5);
+                    float min = stackOut[0][0];
+                    int maxIndexX = 0;
+                    int maxIndexY = 0;
+                    int minIndexX = 0;
+                    int minIndexY = 0;
+                    float max = min;
+                    
+                    for (int j = 0; j < stackOut.length; j++) {
+                        for (int k = 0; k < stackOut[j].length; k++) {
+                            if (stackOut[j][k] < min) {
+                                min = stackOut[j][k];
+                                minIndexX = j;
+                                minIndexY = k;
+                            }
+                            if (stackOut[j][k] > max) {
+                                max = stackOut[j][k];
+                                maxIndexX = j;
+                                maxIndexY = k;
+                            }
+                        }
+                    }
+                    int minColor = makeImageable(min, max, min);
+                    g.setColor(new Color(minColor, minColor, minColor));
+                    g.fillRect(0, 2*stackOut[0].length+5, 15, 15);
+                    g.setColor(Color.white);
+                    g.drawString("Min="+min, 0, 2*stackOut[0].length+35);
+                    
+                    int maxColor = makeImageable(min, max, max);
+                    g.setColor(new Color(maxColor, maxColor, maxColor));
+                    g.fillRect(2*stackOut.length-20, 2*stackOut[0].length+5, 15, 15);
+                    g.setColor(Color.white);
+                    String maxString = "Max="+max;
+                    FontMetrics fm = g.getFontMetrics();
+                    int stringWidth = fm.stringWidth(maxString);
+                    g.drawString(maxString, 2*stackOut.length-5-stringWidth, 2*stackOut[0].length+35);
+                    
+                    for (int j = 0; j < stackOut.length; j++) {
+                        System.out.print(j+" : ");
+                        for (int k = 0; k < stackOut[j].length; k++) {
+                            int colorVal = makeImageable(min, max, stackOut[j][k]);
+                            g.setColor(new Color(colorVal, colorVal, colorVal));
+                            g.fillRect(2*j, 2*k, 2, 2);
+                            System.out.print(colorVal+" ");
+                        }
+                        System.out.println("");
+                    }
+                    g.dispose();
+                    File outImageFile  = new File(getEventDirectory(event),"stack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
+
+                    javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
                 }
             } else {
                 logger.error("problem with recfunc: predicted is null");
@@ -141,18 +208,24 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
             SeisDataErrorEvent error = processor.getError();
             logger.error("problem with recfunc:", error.getCausalException());
         }
+        System.out.println("Done with "+ChannelIdUtil.toStringNoDates(channel.get_id()));
         return seismograms;
     }
-
+    
+    int makeImageable(float min, float max, float val) {
+        return (int)SimplePlotUtil.linearInterp(min, 0, max, 255, val);
+    }
+    
     boolean isDataComplete(LocalSeismogram seis) {
         return processor.isRecFuncFinished();
     }
-
+    
     RecFunc recFunc;
     DataSetRecFuncProcessor processor;
     TauP_Time tauPTime;
-
+    
     static Logger logger = Logger.getLogger(RecFuncProcessor.class);
-
+    
 }
+
 

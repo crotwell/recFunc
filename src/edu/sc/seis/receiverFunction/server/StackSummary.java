@@ -99,6 +99,7 @@ public class StackSummary {
                     
                     textSumm.write(outStr);
                     textSumm.newLine();
+                    textSumm.flush();
                 }
             }
         }

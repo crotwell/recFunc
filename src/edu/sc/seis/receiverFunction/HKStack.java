@@ -7,23 +7,28 @@
 package edu.sc.seis.receiverFunction;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
+import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.SeisDataChangeEvent;
 import edu.sc.seis.fissuresUtil.xml.SeisDataChangeListener;
 import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
 import edu.sc.seis.fissuresUtil.xml.XMLQuantity;
-import java.util.LinkedList;
-import org.w3c.dom.Element;
-import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.DataInputStream;
+import java.util.LinkedList;
+import org.w3c.dom.Element;
 
 
 
 public class HKStack  {
-    
+
     protected HKStack(float alpha,
                    float p,
                    float minH,
@@ -41,7 +46,7 @@ public class HKStack  {
         this.stepK = stepK;
         this.numK = numK;
     }
-    
+
     public HKStack(float alpha,
                    float p,
                    float minH,
@@ -55,7 +60,7 @@ public class HKStack  {
         this.recFunc = recFunc;
         calculate();
     }
-    
+
     public HKStack(float alpha,
                    float p,
                    float minH,
@@ -69,7 +74,94 @@ public class HKStack  {
         this.recFunc = null;
         this.stack = stack;
     }
-    
+
+    public BufferedImage createStackImage() {
+        float[][] stackOut = getStack();
+        int dataH = 2*stackOut.length;
+        int dataW = 2*stackOut[0].length;
+        int fullWidth = dataW+40;
+        int fullHeight = dataH+140;
+        BufferedImage bufImage = new BufferedImage(fullWidth,
+                                                   fullHeight,
+                                                   BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = bufImage.createGraphics();
+        g.setColor(Color.darkGray);
+        g.fillRect(0, 0, bufImage.getWidth(), bufImage.getHeight());
+        g.translate(0, 5);
+        FontMetrics fm = g.getFontMetrics();
+
+        String title = ChannelIdUtil.toStringNoDates(getRecFunc().getRequestFilter().channel_id);
+        g.setColor(Color.white);
+        g.drawString(title, (fullWidth-fm.stringWidth(title))/2, fm.getHeight());
+
+        g.translate(5, fm.getHeight()+fm.getDescent());
+
+        float min = stackOut[0][0];
+        int maxIndexX = 0;
+        int maxIndexY = 0;
+        int minIndexX = 0;
+        int minIndexY = 0;
+        float max = min;
+
+        for (int j = 0; j < stackOut.length; j++) {
+            for (int k = 0; k < stackOut[j].length; k++) {
+                if (stackOut[j][k] < min) {
+                    min = stackOut[j][k];
+                    minIndexX = k;
+                    minIndexY = j;
+                }
+                if (stackOut[j][k] > max) {
+                    max = stackOut[j][k];
+                    maxIndexX = k;
+                    maxIndexY = j;
+                }
+            }
+        }
+
+        for (int j = 0; j < stackOut.length; j++) {
+            //System.out.print(j+" : ");
+            for (int k = 0; k < stackOut[j].length; k++) {
+                int colorVal = makeImageable(min, max, stackOut[j][k]);
+                g.setColor(new Color(colorVal, colorVal, colorVal));
+                g.fillRect( 2*k, 2*j, 2, 2);
+                //System.out.print(colorVal+" ");
+            }
+            //System.out.println("");
+        }
+        g.translate(0, dataH);
+
+        g.setColor(Color.white);
+        g.drawString("Min H="+(getMinH()+minIndexY*getStepH()), 0, fm.getHeight());
+        g.drawString("    K="+(getMinK()+minIndexX*getStepK()), 0, 2*fm.getHeight());
+        g.translate(0, 2*fm.getHeight());
+        g.drawString("Max H="+(getMinH()+maxIndexY*getStepH()), 0, fm.getHeight());
+        g.drawString("    K="+(getMinK()+maxIndexX*getStepK()), 0, 2*fm.getHeight());
+        g.translate(0, 2*fm.getHeight());
+
+        int minColor = makeImageable(min, max, min);
+        g.setColor(new Color(minColor, minColor, minColor));
+        g.fillRect(0, 0, 15, 15);
+        g.setColor(Color.white);
+        g.drawString("Min="+min, 0, 15+fm.getHeight());
+
+        int maxColor = makeImageable(min, max, max);
+        g.setColor(new Color(maxColor, maxColor, maxColor));
+        g.fillRect(dataW-20, 0, 15, 15);
+        g.setColor(Color.white);
+        String maxString = "Max="+max;
+        int stringWidth = fm.stringWidth(maxString);
+        g.drawString(maxString, dataW-5-stringWidth, 15+fm.getHeight());
+
+        g.dispose();
+        return bufImage;
+    }
+
+
+    int makeImageable(float min, float max, float val) {
+        float absMax = Math.max(Math.abs(min), Math.abs(max));
+        return (int)SimplePlotUtil.linearInterp(-1*absMax, 0, absMax, 255, val);
+    }
+
     protected void calculate() {
         stack = new float[numH][numK];
         float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
@@ -106,8 +198,8 @@ public class HKStack  {
             }
         }
     }
-    
-    
+
+
     /** gets the amp at the given time offset from the start of the seismogram. */
     float getAmp(LocalSeismogramImpl seis, double time) {
         double sampOffset = time/seis.getSampling().getPeriod().convertTo(UnitImpl.SECOND).value;
@@ -115,7 +207,7 @@ public class HKStack  {
             throw new IllegalArgumentException("time "+time+" is outside of seismogram");
         }
         int offset = (int)Math.floor(sampOffset);
-        
+
         float valA = seis.get_as_floats()[offset];
         float valB = seis.get_as_floats()[offset+1];
         // linear interp
@@ -125,49 +217,49 @@ public class HKStack  {
         }
         return retVal;
     }
-    
+
     public DataSetSeismogram getRecFunc() {
         return recFunc;
     }
-    
+
     public float[][] getStack() {
         return stack;
     }
-    
+
     public float getP() {
         return p;
     }
-    
+
     public float getAlpha() {
         return alpha;
     }
-    
+
     public float getMinH() {
         return minH;
     }
-    
+
     public float getStepH() {
         return stepH;
     }
-    
-    public float getNumH() {
+
+    public int getNumH() {
         return numH;
     }
-    
+
     public float getMinK() {
         return minK;
     }
-    
+
     public float getStepK() {
         return stepK;
     }
-    
-    public float getnumK() {
+
+    public int getNumK() {
         return numK;
     }
-    
+
     /** Writes the HKStack to the DataOutputStream. The DataSetSeismogram
-     *  is NOT written as it is assumed that this will be saved separatedly.
+     *  is NOT written as it is assumed that this will be saved separately.
      */
     public void write(DataOutputStream out) throws IOException {
         out.writeFloat(p);
@@ -186,7 +278,7 @@ public class HKStack  {
             }
         }
     }
-        
+
     /** Reades the HKStack from the DataInputStream. The DataSetSeismogram
      *  is NOT read as it is assumed that this will be saved separatedly.
      */
@@ -210,7 +302,7 @@ public class HKStack  {
         }
         return out;
     }
-    
+
     float[][] stack;
     float p;
     float alpha;
@@ -221,19 +313,19 @@ public class HKStack  {
     float stepK;
     int numK;
     DataSetSeismogram recFunc;
-    
+
     class DataGetter implements SeisDataChangeListener {
-        
+
         LinkedList data = new LinkedList();
-        
+
         LinkedList errors = new LinkedList();
-        
+
         boolean finished = false;
-        
+
         public boolean isFinished() {
             return finished;
         }
-        
+
         public synchronized LinkedList getData() {
             while (finished == false) {
                 try {
@@ -242,7 +334,7 @@ public class HKStack  {
             }
             return data;
         }
-        
+
         public synchronized void finished(SeisDataChangeEvent sdce) {
             LocalSeismogramImpl[] seis = sdce.getSeismograms();
             for (int i = 0; i < seis.length; i++) {
@@ -251,11 +343,11 @@ public class HKStack  {
             finished = true;
             notifyAll();
         }
-        
+
         public synchronized void error(SeisDataErrorEvent sdce) {
             errors.add(sdce);
         }
-        
+
         public synchronized void pushData(SeisDataChangeEvent sdce) {
             LocalSeismogramImpl[] seis = sdce.getSeismograms();
             for (int i = 0; i < seis.length; i++) {

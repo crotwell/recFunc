@@ -1,0 +1,87 @@
+/**
+ * SumHKStack.java
+ *
+ * @author Created by Omnicore CodeGuide
+ */
+
+package edu.sc.seis.receiverFunction;
+
+import java.io.*;
+
+import edu.iris.Fissures.IfNetwork.ChannelId;
+import edu.iris.Fissures.network.ChannelIdUtil;
+import java.awt.image.BufferedImage;
+import java.util.LinkedList;
+
+public class SumHKStack {
+    public SumHKStack(HKStack[] individuals) {
+        this.individuals = individuals;
+        if (individuals.length == 0) {
+            throw new IllegalArgumentException("Cannot create SumStack with empty array");
+        }
+        for (int i = 0; i < individuals.length; i++) {
+            if (individuals[i].getMinH() != individuals[0].getMinH()) {
+                throw new IllegalArgumentException("Cannot create SumStack with different minH, "+individuals[i].getMinH() +"!="+ individuals[0].getMinH());
+            }
+            // need to do more of this checking...
+        }
+        calculate();
+    }
+
+    public BufferedImage createStackImage() {
+        return sum.createStackImage();
+    }
+
+    public void write(DataOutputStream out)  throws IOException {
+        sum.write(out);
+    }
+
+    void calculate() {
+        float[][] stack = new float[individuals[0].getStack().length][individuals[0].getStack()[0].length];
+        for (int i = 0; i < stack.length; i++) {
+            for (int j = 0; j < stack[0].length; j++) {
+                for (int s = 0; s < individuals.length; s++) {
+                    stack[i][j] += individuals[s].getStack()[i][j];
+                }
+            }
+        }
+        sum = new HKStack(individuals[0].getAlpha(),
+                          0f,
+                          individuals[0].getMinH(),
+                          individuals[0].getStepH(),
+                          individuals[0].getNumH(),
+                          individuals[0].getMinK(),
+                          individuals[0].getStepK(),
+                          individuals[0].getNumK(),
+                          stack);
+    }
+
+    public static SumHKStack load(File parentDir, ChannelId chan, String prefix, String postfix) throws IOException {
+        File[] subdir = parentDir.listFiles();
+        LinkedList stacks = new LinkedList();
+        for (int i = 0; i < subdir.length; i++) {
+            if ( ! subdir[i].isDirectory()) {
+                continue;
+            }
+            File stackFile = new File(subdir[i],
+                                      prefix+ChannelIdUtil.toStringNoDates(chan)+postfix);
+            if ( ! stackFile.exists()) {
+                continue;
+            }
+            // found a file with the correct name, load it
+            DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(stackFile)));
+            HKStack individual = HKStack.read(dis);
+            stacks.add(individual);
+        }
+        if (stacks.size() != 0) {
+            return new SumHKStack((HKStack[])stacks.toArray(new HKStack[0]));
+        } else {
+            return null;
+        }
+    }
+
+    protected HKStack[] individuals;
+    protected HKStack sum;
+
+}
+

@@ -2,6 +2,11 @@ package edu.sc.seis.receiverFunction;
 
 import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
 import java.io.IOException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.net.MalformedURLException;
+import edu.sc.seis.fissuresUtil.xml.XMLDataSet;
+import java.net.URL;
 
 /**
  * TestIterDecon.java
@@ -15,16 +20,16 @@ import java.io.IOException;
 
 public class TestIterDecon {
     public TestIterDecon (){
-	
+
     }
-    
-    public static void main (String[] args) throws IOException {
+
+    public static void main (String[] args) throws Exception {
         if ( args.length != 2) {
             System.out.println("Usage: java TestIterDecon numer.sac denom.sac");
             System.exit(1);
         } // end of if ()
 
-        float gwidth = 3;	
+        float gwidth = 3;
         IterDecon decon = new IterDecon(100, true, .001f, gwidth);
         SacTimeSeries num = new SacTimeSeries();
         num.read(args[0]);
@@ -40,11 +45,30 @@ public class TestIterDecon {
         for (int i=0; i<num.y.length; i++) {
             // System.out.println(i+" "+num.y[i]+" "+denom.y[i]+" "+predicted[i]);
         } // end of for (int i=0; i<num.length; i++)
+
+        DocumentBuilderFactory factory
+            = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = factory.newDocumentBuilder();
+        URL dirURL = new URL(".");
+        System.out.println(" dirURL is "+dirURL.toString());
+        URL directory = new URL("RecFunc");
+        System.out.println(" directory name is "+directory.toString());
+        dirURL = new URL(dirURL.toString()+"/"+directory+"/");
+        System.out.println("updated dirURL is "+dirURL.toString());
+        String dsName = "RecFunc";
+        String userName = "crotwell";
+        XMLDataSet dataset
+            = new XMLDataSet(docBuilder,
+                             dirURL,
+                             "genid"+Math.round(Math.random()*Integer.MAX_VALUE),
+                             dsName,
+                             userName);
+
         SacTimeSeries predOut = new SacTimeSeries();
         predOut.y = predicted;
         predOut.npts = predOut.y.length;
-        predOut.iftype = predOut.ITIME; 
-        predOut.leven = predOut.TRUE; 
+        predOut.iftype = predOut.ITIME;
+        predOut.leven = predOut.TRUE;
         predOut.idep = predOut.IUNKN;
         predOut.nzyear = num.nzyear;
         predOut.nzjday = num.nzjday;
@@ -61,19 +85,19 @@ public class TestIterDecon {
         predOut.depmin = -12345;
         predOut.depmax = -12345;
         predOut.depmen = -12345;
-        String filename = "recfunc.predicted";
+        String filename = "predicted.SAC";
         predOut.write(filename);
         setOSFileExtras(filename);
 
         float[] residual = ans.getResidual();
         predOut.y = residual;
-        filename = "recfunc.residual";
+        filename = "residual.SAC";
         predOut.write(filename);
         setOSFileExtras(filename);
 
         float[][] corrSave = ans.getCorrSave();
         predOut.y = corrSave[0];
-        filename = "recfunc.corr";
+        filename = "correlation0.SAC";
         predOut.write(filename);
         setOSFileExtras(filename);
 
@@ -85,10 +109,10 @@ public class TestIterDecon {
             Class fmClass = Class.forName("com.apple.eio.FileManager");
             com.apple.eio.FileManager.setFileCreator(name, GEE_CREATOR_CODE);
         } catch (Exception e) {
-            
+
        } // end of try-catch
     }
 
     protected static final int GEE_CREATOR_CODE = 0x47454520;
-    
+
 }// TestIterDecon

@@ -26,7 +26,7 @@ public class IterDeconResult {
                            float[] predicted,
                            float[][] corrSave,
                            float[] spikes,
-                           float resultPower,
+                           float residualPower,
                            float numeratorPower) {
         this.maxBumps = maxBumps;
         this.useAbsVal = useAbsVal;
@@ -41,8 +41,14 @@ public class IterDeconResult {
         this.predicted = predicted;
         this.corrSave = corrSave;
         this.spikes = spikes;
-        this.resultPower = resultPower;
+        this.residualPower = residualPower;
         this.numeratorPower = numeratorPower;
+    }
+
+    public float getPercentMatch() {
+        float numPower = getNumeratorPower();
+        return 100*(numPower-getResidualPower())/numPower;
+        //return 100*(IterDecon.power(getPredicted())/numPower);
     }
 
     public int getMaxBumps() {
@@ -115,8 +121,8 @@ public class IterDeconResult {
         return spikes;
     }
 
-    public float getResultPower() {
-        return resultPower;
+    public float getResidualPower() {
+        return residualPower;
     }
 
     public float getNumeratorPower() {
@@ -151,7 +157,7 @@ public class IterDeconResult {
 
     float[] spikes;
 
-    float resultPower;
+    float residualPower;
 
     float numeratorPower;
 

@@ -225,6 +225,81 @@ public class IterDeconTest
         // JUnitDoclet end method process
     }
 
+    public void testESK1999_312_16_45_41_6() throws Exception {
+        SacTimeSeries sac = new SacTimeSeries();
+        DataInputStream in =
+            new DataInputStream(this.getClass().getClassLoader().getResourceAsStream("edu/sc/seis/receiverFunction/ESK1999_312_16.predicted.sac"));
+        sac.read(in);
+        in.close();
+        float[] fortranData = sac.y;
+
+        in =
+            new DataInputStream(this.getClass().getClassLoader().getResourceAsStream("edu/sc/seis/receiverFunction/ESK_num.sac"));
+        sac.read(in);
+        in.close();
+        float[] num = sac.y;
+
+
+        in =
+            new DataInputStream(this.getClass().getClassLoader().getResourceAsStream("edu/sc/seis/receiverFunction/ESK_denom.sac"));
+        sac.read(in);
+        in.close();
+        float[] denom = sac.y;
+
+        IterDecon iterdecon = new edu.sc.seis.receiverFunction.IterDecon(100, true, .0001f, 3);
+        IterDeconResult result = iterdecon.process(num, denom, sac.delta);
+
+
+        float[] pred = result.getPredicted();
+        pred = iterdecon.phaseShift(pred, 5, sac.delta);
+        int[] s = result.getShifts();
+        float[] a = result.getAmps();
+
+        int i=0;
+        // spikes from fortran are in time, div delta to get index
+        // output from fortran iterdecon_tjo is:
+//      The maximum spike delay is  102.40012
+//
+//          File         Spike amplitude   Spike delay   Misfit   Improvement
+//          r001         0.384009242E+00       0.100     48.98%     51.0211%
+//          r002        -0.132486761E+00      16.250     42.91%      6.0732%
+//          r003         0.116493061E+00       2.250     38.21%      4.6952%
+//          r004        -0.988256037E-01      10.800     34.83%      3.3792%
+//          r005        -0.606716201E-01      15.450     33.56%      1.2736%
+//          r006        -0.635700300E-01      20.650     32.16%      1.3983%
+//          r007        -0.568093359E-01      41.350     31.04%      1.1166%
+//          r008         0.520336218E-01       3.950     30.11%      0.9368%
+//          r009         0.494165495E-01       1.000     29.26%      0.8449%
+//          r010        -0.416982807E-01      79.850     28.66%      0.6015%
+//          ... snip ...
+//          r100         0.105094928E-01       3.500     14.55%      0.0382%
+//
+//          Last Error Change =    0.0382%
+//
+//          Number of bumps in final result:   100
+//          The final deconvolution reproduces   85.4% of the signal.
+
+        assertEquals("spike "+i, 0.100/sac.delta, s[i], 0.1f);
+        assertEquals("amp   "+i, 0.384009242/sac.delta, a[i], 0.001f);
+        i++;
+        assertEquals("spike "+i, 16.250/sac.delta, s[i], 0.1f);
+        assertEquals("amp   "+i, -0.132486761/sac.delta, a[i], 0.001f);
+        i++;
+        assertEquals("spike "+i, 2.250/sac.delta, s[i], 0.1f);
+        assertEquals("amp   "+i, 0.116493061/sac.delta, a[i], 0.001f);
+        i++;
+        assertEquals("spike "+i, 10.800/sac.delta, s[i], 0.1f);
+        assertEquals("amp   "+i, -0.0988256037/sac.delta, a[i], 0.001f);
+        i++;
+        assertEquals("spike "+i, 15.450/sac.delta, s[i], 0.1f);
+        assertEquals("amp   "+i, -0.0606716201/sac.delta, a[i], 0.001f);
+        i++;
+
+        ArrayAssert.assertEquals("fortran predicted", fortranData, pred, 0.000001f);
+
+        assertEquals("percent match", 85.4, result.getPercentMatch(), 0.1f);
+    }
+
     public void testOnePhaseShift() throws Exception {
         // JUnitDoclet begin method phaseShift
         float[] data = new float[1024];

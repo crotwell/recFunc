@@ -1,7 +1,9 @@
 package edu.sc.seis.receiverFunction;
 
-//import edu.iris.Fissures.IfSeismogramDC.*;
-import edu.sc.seis.fissuresUtil.freq.*;
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * IterDecon.java
@@ -10,7 +12,7 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 7720 2004-03-19 19:42:30Z crotwell $
+ * @version $Id: IterDecon.java 7772 2004-03-23 22:15:41Z crotwell $
  */
 
 public class IterDecon {
@@ -29,6 +31,7 @@ public class IterDecon {
                                    float dt) {
         float[] amps = new float[maxBumps];
         int[] shifts = new int[maxBumps];
+
         numerator = makePowerTwo(numerator);
         denominator = makePowerTwo(denominator);
 
@@ -62,10 +65,10 @@ public class IterDecon {
             } else {
                 shifts[bump] = getMaxIndex(corr);
             } // end of else
-            amps[bump] = corr[shifts[bump]]; // note don't normalize by dt here
+            amps[bump] = corr[shifts[bump]]/dt; // why normalize by dt here?
 
             predicted = buildDecon(amps, shifts, g.length, gwidthFactor, dt);
-            float[] predConvolve = convolve(predicted, denominator);
+            float[] predConvolve = convolve(predicted, denominator, dt);
 
             residual = getResidual(f, predConvolve);
             float residualPower = power(residual);
@@ -76,10 +79,7 @@ public class IterDecon {
             prevPower = residualPower;
         } // end of for (int bump=0; bump < maxBumps; bump++)
 
-        System.out.println("predicted[0]="+predicted[0]+"  amps[0]="+amps[0]+
-                               " power="+prevPower+"  % match="+(100*prevPower/fPower));
-
-        return new IterDeconResult(maxBumps,
+        IterDeconResult result = new IterDeconResult(maxBumps,
                                    useAbsVal,
                                    tol,
                                    gwidthFactor,
@@ -94,6 +94,10 @@ public class IterDecon {
                                    buildSpikes(amps, shifts, g.length),
                                    prevPower,
                                    fPower);
+
+        System.out.println("predicted[0]="+predicted[0]+"  amps[0]="+amps[0]+
+                               " power="+prevPower+"  % match="+result.getPercentMatch());
+        return result;
     }
 
     /** computes the correlation of f and g normalized by the zero-lag
@@ -104,7 +108,7 @@ public class IterDecon {
         //System.out.println("g autocorrelation at  = "+zeroLag);
         float[] corr = Cmplx.correlate(fdata, gdata);
 
-        float temp = 1 / zeroLag;
+        float temp =1 / zeroLag;
         for (int i=0; i<corr.length; i++) {
             corr[i] *= temp;
         }
@@ -114,8 +118,8 @@ public class IterDecon {
         return corr;
     }
 
-    public float[] convolve(float[] x, float[] y) {
-        return Cmplx.convolve(x, y);
+    public float[] convolve(float[] x, float[] y, float delta) {
+        return Cmplx.convolve(x, y, delta);
     }
 
     void subtractSpike(float[] data, int shift, float amp) {

@@ -77,6 +77,10 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
             recFunc = new RecFunc(tauPTime,
                                   new IterDecon(200, true, .001f, gwidth));
         }
+        if ( ! ChannelIdUtil.areEqual(available[0].channel_id, seismograms[0].channel_id)) {
+            // fix the dumb -farm or -spyder on pond available_data
+            available[0].channel_id = seismograms[0].channel_id;
+        }
 
         DataSet dataset = getDataSet(event);
         DataSetSeismogram[] chGrpSeismograms =

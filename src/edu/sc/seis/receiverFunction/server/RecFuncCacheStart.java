@@ -35,20 +35,20 @@ public class RecFuncCacheStart {
         edu.iris.Fissures.model.AllVTFactory vt = new AllVTFactory();
         vt.register(orb);
         
-        RecFuncCacheImpl impl = new RecFuncCacheImpl();
-        RecFuncCache server = impl._this(orb);
-        
-         serviceName = System.getProperty("recFunc.cacheServer.serverName", serviceName);
-         serviceDNS = System.getProperty("recFunc.cacheServer.serverDNS", serviceDNS);
-        
-        FissuresNamingService fissuresNamingService = new FissuresNamingService(orb);
-        
-        String addNS = System.getProperty("recFunc.cacheServer.additionalNameService");
-        if (addNS != null) {
-            fissuresNamingService.addOtherNameServiceCorbaLoc(addNS);
-        }
-        
         try {
+            RecFuncCacheImpl impl = new RecFuncCacheImpl();
+            RecFuncCache server = impl._this(orb);
+            
+            serviceName = System.getProperty("recFunc.cacheServer.serverName", serviceName);
+            serviceDNS = System.getProperty("recFunc.cacheServer.serverDNS", serviceDNS);
+            
+            FissuresNamingService fissuresNamingService = new FissuresNamingService(orb);
+            
+            String addNS = System.getProperty("recFunc.cacheServer.additionalNameService");
+            if (addNS != null) {
+                fissuresNamingService.addOtherNameServiceCorbaLoc(addNS);
+            }
+            
             fissuresNamingService.rebind(serviceDNS, serviceName, server, interfacename);
             
             logger.info("Bound to Name Service");

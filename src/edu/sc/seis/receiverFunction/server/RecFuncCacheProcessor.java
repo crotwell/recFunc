@@ -114,7 +114,7 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements WaveformV
         return result;
     }
     
-    RecFuncCacheOperations cache = new RecFuncCacheImpl();
+    RecFuncCacheOperations cache;
     
     TauPUtil taup;
     

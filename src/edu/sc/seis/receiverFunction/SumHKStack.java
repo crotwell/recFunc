@@ -24,6 +24,7 @@ public class SumHKStack {
                       float minPercentMatch) {
         this.individuals = individuals;
         this.minPercentMatch = minPercentMatch;
+        this.channel = chan;
         if (individuals.length == 0) {
             throw new IllegalArgumentException("Cannot create SumStack with empty array");
         }
@@ -42,6 +43,10 @@ public class SumHKStack {
 
     public void write(DataOutputStream out)  throws IOException {
         sum.write(out);
+    }
+    
+    public Channel getChannel() {
+        return channel;
     }
 
     void calculate(Channel chan) {
@@ -94,6 +99,7 @@ public class SumHKStack {
         }
     }
 
+    protected Channel channel;
     protected HKStack[] individuals;
     protected HKStack sum;
     protected float minPercentMatch;

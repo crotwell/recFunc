@@ -16,10 +16,31 @@ import edu.sc.seis.fissuresUtil.xml.XMLQuantity;
 import java.util.LinkedList;
 import org.w3c.dom.Element;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.DataInputStream;
 
 
 
 public class HKStack  {
+    
+    protected HKStack(float alpha,
+                   float p,
+                   float minH,
+                   float stepH,
+                   int numH,
+                   float minK,
+                   float stepK,
+                   int numK) {
+        this.alpha = alpha;
+        this.p = p;
+        this.minH = minH;
+        this.stepH = stepH;
+        this.numH = numH;
+        this.minK = minK;
+        this.stepK = stepK;
+        this.numK = numK;
+    }
     
     public HKStack(float alpha,
                    float p,
@@ -29,17 +50,24 @@ public class HKStack  {
                    float minK,
                    float stepK,
                    int numK,
-                  DataSetSeismogram recFunc) {
-        this.alpha = alpha;
-        this.p = p;
-        this.minH = minH;
-        this.stepH = stepH;
-        this.numH = numH;
-        this.minK = minK;
-        this.stepK = stepK;
-        this.numK = numK;
+                   DataSetSeismogram recFunc) {
+        this(alpha,p ,minH ,stepH ,numH ,minK ,stepK ,numK );
         this.recFunc = recFunc;
         calculate();
+    }
+    
+    public HKStack(float alpha,
+                   float p,
+                   float minH,
+                   float stepH,
+                   int numH,
+                   float minK,
+                   float stepK,
+                   int numK,
+                   float[][] stack) {
+        this(alpha,p ,minH ,stepH ,numH ,minK ,stepK ,numK );
+        this.recFunc = null;
+        this.stack = stack;
     }
     
     protected void calculate() {
@@ -136,6 +164,51 @@ public class HKStack  {
     
     public float getnumK() {
         return numK;
+    }
+    
+    /** Writes the HKStack to the DataOutputStream. The DataSetSeismogram
+     *  is NOT written as it is assumed that this will be saved separatedly.
+     */
+    public void write(DataOutputStream out) throws IOException {
+        out.writeFloat(p);
+        out.writeFloat(alpha);
+        out.writeFloat(minH);
+        out.writeFloat(stepH);
+        out.writeInt(numH);
+        out.writeFloat(minK);
+        out.writeFloat(stepK);
+        out.writeInt(numK);
+        out.writeInt(stack.length);
+        out.writeInt(stack[0].length);
+        for (int i = 0; i < stack.length; i++) {
+            for (int j = 0; j < stack[0].length; j++) {
+                out.writeFloat(stack[i][j]);
+            }
+        }
+    }
+        
+    /** Reades the HKStack from the DataInputStream. The DataSetSeismogram
+     *  is NOT read as it is assumed that this will be saved separatedly.
+     */
+    public static HKStack read(DataInputStream in) throws IOException {
+        float p = in.readFloat();
+        float alpha = in.readFloat();
+        float minH = in.readFloat();
+        float stepH = in.readFloat();
+        int numH = in.readInt();
+        float minK = in.readFloat();
+        float stepK = in.readFloat();
+        int numK = in.readInt();
+        int iDim = in.readInt();
+        int jDim = in.readInt();
+        float[][] stack = new float[iDim][jDim];
+        HKStack out = new HKStack(alpha, p, minH, stepH, numH, minK, stepK, numK, stack);
+        for (int i = 0; i < stack.length; i++) {
+            for (int j = 0; j < stack[0].length; j++) {
+                stack[i][j] = in.readFloat();
+            }
+        }
+        return out;
     }
     
     float[][] stack;

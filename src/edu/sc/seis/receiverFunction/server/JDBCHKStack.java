@@ -197,6 +197,7 @@ public class JDBCHKStack  extends JDBCTable {
     public static void main(String[] args) {
         if (args.length < 2) {
             System.out.println("Usage: JDBCHKStack net station");
+            return;
         }
         try {
             ConnMgr.setDB(ConnMgr.POSTGRES);

@@ -168,7 +168,6 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                     BufferedImage bufImage = stack.createStackImage();
                     javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
 
-                    char quote = '"';
                     File outHtmlFile  = new File(getEventDirectory(event),prefix+channelIdString+".html");
                     BufferedWriter bw = new BufferedWriter(new FileWriter(outHtmlFile));
                     bw.write("<html>");bw.newLine();
@@ -184,7 +183,9 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                     bw.write("</html>");bw.newLine();
                     bw.close();
 
-                    appendToSummaryPage(getEventDirectory(event).getName()+" "+channelIdString+" "+stack.getPercentMatch());
+                    int[] xyMax = stack.getMaxValueIndices();
+                    float max = stack.stack[xyMax[0]][xyMax[1]];
+                    appendToSummaryPage("<tr><td>"+getEventDirectory(event).getName()+"</td><td>"+channelIdString+"</td><td>"+stack.getPercentMatch()+"</td><td>"+(stack.getMinH()+xyMax[0]*stack.getStepH())+"</td><td>"+(stack.getMinK()+xyMax[1]*stack.getStepK())+"</td></tr>");
 
                     // now update global per channel stack
                     SumHKStack sum = SumHKStack.load(getParentDirectory(),
@@ -245,9 +246,14 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
             summaryPage.write("<title>Receiver Function Summary</title>");summaryPage.newLine();
             summaryPage.write("</head>");summaryPage.newLine();
             summaryPage.write("<body>");summaryPage.newLine();
+            summaryPage.write("<table>");summaryPage.newLine();
+            summaryPage.write("<tr id="+quote+"title"+quote+">");summaryPage.newLine();
+            summaryPage.write("<td>Event</td><td>Channel</td><td>Match</td><td>best H</td><td>best K</td>");summaryPage.newLine();
+            summaryPage.write("</tr>");summaryPage.newLine();
+
             // we don't close the tags so that we can append to the file easily
         }
-        summaryPage.write(val+"</br>");summaryPage.newLine();
+        summaryPage.write(val);summaryPage.newLine();
         summaryPage.flush();
     }
 
@@ -260,6 +266,8 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
     TauP_Time tauPTime;
 
     static BufferedWriter summaryPage = null;
+
+    public static final char quote = '"';
 
     private static Logger logger = Logger.getLogger(RecFuncProcessor.class);
 

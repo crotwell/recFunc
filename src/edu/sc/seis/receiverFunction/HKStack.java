@@ -395,6 +395,13 @@ public class HKStack {
      */
     public void writeReport(BufferedWriter out) throws IOException {
         out.write("p="+p);out.newLine();
+        out.write("alpha="+alpha);out.newLine();int[] xyMin = getMinValueIndices();
+
+        int[] xyMax = getMaxValueIndices();
+        float max = stack[xyMax[0]][xyMax[1]];
+        out.write("Max H="+(getMinH()+xyMax[0]*getStepH()));
+        out.write("    K="+(getMinK()+xyMax[1]*getStepK()));
+        out.write("  max="+max);
         out.write("alpha="+alpha);out.newLine();
         out.write("percentMatch="+percentMatch);out.newLine();
         out.write("minH="+minH);out.newLine();

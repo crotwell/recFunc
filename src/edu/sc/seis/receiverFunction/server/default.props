@@ -63,7 +63,7 @@ receiverFunction.getOriginByStationByPercent=SELECT count(*) FROM  \
     AND sta_code = ? \
     AND itr_match >= ?
     
-hkstack.create=CREATE TABLE hkstack ( \
+hkstack.create=CREATE TABLE $tablename ( \
                    hkstack_id int, \
                    recFunc_id int, \
                    alpha float, \
@@ -158,7 +158,7 @@ hkstack.getForStation=SELECT * FROM network \
                    AND percentMatch > ? \
                    AND receiverfunction.recfunc_id = hkstack.recfunc_id
 
-hkstackToSummary.create=CREATE TABLE hkstackToSummary ( \
+hkstackToSummary.create=CREATE TABLE $tablename ( \
 					hkstack_id int , \
 					hksummary_id int , \
 					FOREIGN KEY (hkstack_id) REFERENCES hkstack (hkstack_id) , \

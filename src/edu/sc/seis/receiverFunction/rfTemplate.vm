@@ -98,6 +98,21 @@ $chanContext.status <br/>
 </td>
 </tr>
 #end
+
+<tr>
+<td><b>Radial RF</b><br/>
+</td>
+<td>
+<img src="${fissures.formatSite($channel.getSite().get_id())}_ITR.png"/>
+</td>
+</tr>
+<tr>
+<td><b>Transverse RF</b><br/>
+</td>
+<td>
+<img src="${fissures.formatSite($channel.getSite().get_id())}.ITT.png"/>
+</td>
+</tr>
 </table>
 #if ( $recFunc_hkstack_image_ITR )
 <br/>

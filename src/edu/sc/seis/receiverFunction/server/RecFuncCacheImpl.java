@@ -42,6 +42,10 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         jdbcHKStack = new JDBCHKStack(conn,  jdbcOrigin, jdbcEventAttr, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
     }
     
+    Connection getConnection() {
+        return jdbcRecFunc.getConnection();
+    }
+    
 	public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,
 				                    ChannelId[] channel) {
 	    try {

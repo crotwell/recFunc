@@ -43,6 +43,9 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
 				                    ChannelId[] channel) {
 	    try {
             return jdbcRecFunc.getCachedConfigs(prefOrigin, channel);
+        } catch(NotFound e) {
+            logger.info("NotFound: ", e);
+            return new IterDeconConfig[0];
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);
             throw new org.omg.CORBA.UNKNOWN(e.toString());
@@ -138,4 +141,6 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     private JDBCRecFunc jdbcRecFunc;
     
     private JDBCHKStack jdbcHKStack;
+
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(RecFuncCacheImpl.class);
 }

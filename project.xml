@@ -64,29 +64,6 @@ deconvolution method of Ammon.
     </developers>
 
   <dependencies>
-<!-- hopefully temporary Java3D support -->
-    <dependency>
-      <id>j3dcore</id>
-      <version>1.0</version>
-      <jar>j3dcore.jar</jar>
-    </dependency>
-<!-- hopefully temporary Java3D support -->
-    <dependency>
-      <id>j3dutils</id>
-      <version>1.0</version>
-      <jar>j3dutils.jar</jar>
-    </dependency>
-<!-- hopefully temporary Java3D support -->
-    <dependency>
-      <id>vecmath</id>
-      <version>1.0</version>
-      <jar>vecmath.jar</jar>
-    </dependency>
-
-    <dependency>
-      <id>classics</id>
-      <version>1.0</version>
-    </dependency>
     <dependency>
       <id>gee</id>
       <version>2.0.7beta</version>
@@ -95,59 +72,19 @@ deconvolution method of Ammon.
       <id>sod</id>
       <version>1.0Beta</version>
     </dependency>
-    <dependency>
-      <id>fissuresUtil</id>
-      <version>1.0.7beta</version>
-    </dependency>
-    <dependency>
-      <id>fissuresImpl</id>
-      <version>1.1.5beta</version>
-    </dependency>
-    <dependency>
-      <id>fissuresIDL</id>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <id>SeedCodec</id>
-      <version>1.0Beta2</version>
-    </dependency>
-    <dependency>
-      <id>TauP</id>
-      <version>1.1.4</version>
-    </dependency>
-    <dependency>
-      <id>junit-addons</id>
-      <version>1.4</version>
-      <type>test</type>
-      <url>http://sourceforge.net/projects/junit-addons</url>
-    </dependency>
-    <dependency>
-      <id>junit</id>
-      <version>3.8</version>
-      <type>test</type>
-      <url>http://junit.org/</url>
-    </dependency>
-    <dependency>
-      <id>hsqldb</id>
-      <version>1.7.2-rc5</version>
-    </dependency>
-    <dependency>
-      <id>xerces</id>
-      <version>2.4.0</version>
-    </dependency>
-    <dependency>
-      <id>xml-apis</id>
-      <version>1.0.b2</version>
-    </dependency>
-    <dependency>
-      <id>xalan</id>
-      <version>2.5.1</version>
-    </dependency>
-    <dependency>
-      <id>log4j</id>
-      <version>1.2.8</version>
-    </dependency>
-
+<dependency>
+  <id>jing</id>
+  <version>20030619</version>
+</dependency>
+<dependency>
+  <id>openmap</id>
+  <version>4.6</version>
+</dependency>
+<dependency>
+  <groupId>jcalendar</groupId>
+  <artifactId>jcalendar</artifactId>
+  <version>0.6.1beta</version>
+</dependency>
     <dependency>
       <groupId>JacORB</groupId>
       <artifactId>JacORB</artifactId>
@@ -180,23 +117,128 @@ deconvolution method of Ammon.
       <artifactId>logkit</artifactId>
       <version>1.2</version>
     </dependency>
-    <dependency> 
-      <groupId>velocity</groupId>
-      <artifactId>velocity</artifactId>
-      <version>1.4-rc1</version>  
-      <url>http://jakarta.apache.org/velocity</url>
+    <dependency>
+      <id>fissuresUtil</id>
+      <version>1.0.7beta</version>
+      <url>http://www.seis.sc.edu/software/fissuresUtil</url>
     </dependency>
     <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>3.0</version>       
-      <url>http://jakarta.apache.org/commons/collections</url>
+      <id>fissuresImpl</id>
+      <version>1.1.5beta</version>
+      <url>http://www.seis.sc.edu/software/fissuresImpl</url>
     </dependency>
-
+    <dependency>
+      <id>fissuresIDL</id>
+      <version>1.0</version>
+      <url>http://www.seis.sc.edu/software/fissuresIDL</url>
+    </dependency>
+    <dependency>
+      <id>SeedCodec</id>
+      <version>1.0Beta2</version>
+      <url>http://www.seis.sc.edu/software/SeedCodec</url>
+    </dependency>
+    <dependency>
+      <id>TauP</id>
+      <version>1.1.4</version>
+      <url>http://www.seis.sc.edu/software/TauP</url>
+    </dependency>
     <dependency>
       <id>mockFissures</id>
       <version>0.2</version>
       <type>test</type>
+    </dependency>
+    <dependency>
+      <id>junit-addons</id>
+      <version>1.3</version>
+      <type>test</type>
+      <url>http://junit.org/</url>
+    </dependency>
+    <dependency>
+      <id>junit</id>
+      <version>3.8.1</version>
+      <type>test</type>
+      <url>http://junit.org/</url>
+    </dependency>
+    <dependency>
+      <id>mckoi</id>
+      <version>1.0.2</version>
+    </dependency>
+    <dependency>
+      <id>hsqldb</id>
+      <version>1.7.2-rc5</version>
+      <url>http://hsqldb.sourceforge.net</url>
+    </dependency>
+    <dependency>
+      <id>xerces</id>
+      <version>2.3.0</version>
+      <url>http://xml.apache.org/xerces2-j/index.html</url>
+    </dependency>
+    <dependency>
+      <id>xml-apis</id>
+      <version>2.0.2</version>
+      <url>http://xml.apache.org/xalan-j/index.html</url>
+    </dependency>
+    <dependency>
+      <id>xalan</id>
+      <version>2.3.1</version>
+      <url>http://xml.apache.org/xalan-j/index.html</url>
+    </dependency>
+    <dependency>
+      <id>easyMock</id>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <id>log4j</id>
+      <version>1.2.8</version>
+      <url>http://jakarta.apache.org/log4j/docs/index.html</url>
+    </dependency>
+    <dependency>
+      <groupId>rngconv</groupId>
+      <artifactId>rngconv</artifactId>
+      <version>20030225</version>
+      <url>http://wwws.sun.com/software/xml/developers/relaxngconverter</url>
+    </dependency>
+    <dependency>
+      <groupId>msv</groupId>
+      <artifactId>msv</artifactId>
+      <version>20030807</version>
+      <url>http://wwws.sun.com/software/xml/developers/multischema/</url>
+    </dependency>
+    <dependency>
+      <groupId>msv</groupId>
+      <artifactId>isorelax</artifactId>
+      <version>20030807</version>
+      <url>http://iso-relax.sourceforge.net/</url>
+    </dependency>
+    <dependency>
+      <groupId>msv</groupId>
+      <artifactId>relaxngDatatype</artifactId>
+      <version>20030807</version>
+      <url>http://www.thaiopensource.com/relaxng/jing.html</url>
+    </dependency>
+    <dependency>
+      <groupId>msv</groupId>
+      <artifactId>xsdlib</artifactId>
+      <version>20030807</version>
+      <url>http://wwws.sun.com/software/xml/developers/multischema/</url>
+    </dependency>
+    <dependency>   
+      <groupId>velocity</groupId>
+      <artifactId>velocity</artifactId>
+      <version>1.4-rc1</version>
+      <url>http://jakarta.apache.org/velocity</url>                      
+    </dependency> 
+    <dependency>   
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.0</version>
+      <url>http://jakarta.apache.org/commons/collections</url>
+    </dependency> 
+    <dependency>
+      <groupId>velocity-tools</groupId>
+      <artifactId>velocity-tools-generic</artifactId>
+      <version>1.1-rc1</version>
+      <url>http://jakarta.apache.org/velocity</url>
     </dependency>
   </dependencies>
 

@@ -18,6 +18,7 @@ import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.TimeInterval;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
@@ -91,7 +92,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
 
             Arrival[] pPhases = CommonAccess.getCommonAccess().getTravelTimes(evtLoc, staLoc, "ttp");
             MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
-            //firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
+            firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
 
             TimeInterval shift = recFunc.getShift();
             predictedDSS = new MemoryDataSetSeismogram[2];

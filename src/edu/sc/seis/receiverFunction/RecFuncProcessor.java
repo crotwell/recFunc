@@ -158,21 +158,9 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                     Arrival arrival = tauPTime.getArrival(0);
                     // convert radian per sec ray param into km per sec
                     float kmRayParam = (float)(arrival.getRayParam()/tauPTime.getTauModel().getRadiusOfEarth());
-                    HKStack stack = new HKStack(6.5f,
-                                                kmRayParam,
-                                                HKStack.getPercentMatch(saved),
-                                                5, .25f, 240,
-                                                1.6f, .0025f, 200,
-                                                saved);
 
-                    String prefix = "HKstack_";
-                    String postfix = ".raw";
-                    String channelIdString = ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id);
-                    File stackOutFile = new File(getEventDirectory(event),FissuresFormatter.filize(prefix+channelIdString+postfix));
-                    DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(stackOutFile)));
-                    stack.write(dos);
-                    dos.close();
-
+                    // find template generator to get directory to output rec func
+                    // images
                     if (lSeisTemplateGen == null) {
                         ChannelGroupLocalSeismogramProcess[] processes = Start.getWaveformArm().getMotionVectorArm().getProcesses();
                         for (int j = 0; j < processes.length; j++) {
@@ -187,86 +175,105 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                         }
                     }
 
-                    File imageDir = lSeisTemplateGen.getOutputFile(event, zeroChannel).getParentFile();
-                    imageDir.mkdirs();
-                    File outImageFile  = new File(imageDir, FissuresFormatter.filize(prefix+channelIdString+".png"));
-                    BufferedImage bufImage = stack.createStackImage();
-                    javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
-
-                    synchronized(lSeisTemplateGen) {
-                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, original[0], available[0], predicted.getCache(), cookieJar);
-                    }
-
-                    cookieJar.put("recFunc_hkstack_image_"+ITR_ITT, outImageFile.getName());
+                    String channelIdString = ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id);
                     String[] auxStrings = (String[])aux.toArray(new String[0]);
                     cookieJar.put("recFunc_pred_auxData"+ITR_ITT, auxStrings);
                     cookieJar.put("recFunc_percentMatch_"+ITR_ITT, ""+HKStack.getPercentMatch(saved));
 
-                    cookieJar.put("stack_"+ITR_ITT, stack);
-
+                    synchronized(lSeisTemplateGen) {
+                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, original[0], available[0], predicted.getCache(), cookieJar);
+                    }
                     RecFuncTemplate rfTemplate =new RecFuncTemplate();
-                    File velocityOutFile = new File(getEventDirectory(event),"Vel_"+prefix+channelIdString+".html");
+                    File velocityOutFile = new File(getEventDirectory(event),"Vel_"+channelIdString+".html");
                     rfTemplate.process(cookieJar.getContext(), velocityOutFile);
 
-                    File outHtmlFile  = new File(getEventDirectory(event),prefix+channelIdString+".html");
-                    BufferedWriter bw = new BufferedWriter(new FileWriter(outHtmlFile));
-                    bw.write("<html>");bw.newLine();
-                    bw.write("<head>");bw.newLine();
-                    bw.write("<title>"+channelIdString+"</title>");bw.newLine();
-                    bw.write("</head>");bw.newLine();
-                    bw.write("<body>");bw.newLine();
-                    bw.write("</br><pre>");bw.newLine();
-                    stack.writeReport(bw);bw.newLine();
-                    bw.write("</pre></br>");bw.newLine();
-                    it = aux.iterator();
-                    while (it.hasNext()) {
-                        Object key = it.next();
-                        Object val = predicted.getAuxillaryData(key);
-                        if (val instanceof Element) {
-                            Element e = (Element)val;
-                            StringWriter swriter = new StringWriter();
-                            edu.sc.seis.fissuresUtil.xml.Writer out = new edu.sc.seis.fissuresUtil.xml.Writer();
-                            out.setOutput(swriter);
-                            out.write(e);
-                            swriter.close();
-                            bw.write("<h3>"+key.toString()+"</h3>");bw.newLine();
-                            bw.write("<pre>");bw.newLine();
-                            bw.write(swriter.toString());bw.newLine();
-                            bw.write("</pre></br>");bw.newLine();
-                        } else {
-                            // oh well, use toString and hope for the best
-                            bw.write(key.toString()+" = "+val.toString()+"</br>");bw.newLine();
+                    if (ITR_ITT.equals("ITR")) {
+                        HKStack stack = new HKStack(6.5f,
+                                                    kmRayParam,
+                                                    HKStack.getPercentMatch(saved),
+                                                    10, .25f, 240,
+                                                    1.6f, .0025f, 200,
+                                                    saved);
+
+                        String prefix = "HKstack_";
+                        String postfix = ".raw";
+                        File stackOutFile = new File(getEventDirectory(event),FissuresFormatter.filize(prefix+channelIdString+postfix));
+                        DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(stackOutFile)));
+                        stack.write(dos);
+                        dos.close();
+
+
+                        File imageDir = lSeisTemplateGen.getOutputFile(event, zeroChannel).getParentFile();
+                        imageDir.mkdirs();
+                        File outImageFile  = new File(imageDir, FissuresFormatter.filize(prefix+channelIdString+".png"));
+                        BufferedImage bufImage = stack.createStackImage();
+                        javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
+
+
+
+                        cookieJar.put("recFunc_hkstack_image_"+ITR_ITT, outImageFile.getName());
+                        cookieJar.put("stack_"+ITR_ITT, stack);
+
+
+                        File outHtmlFile  = new File(getEventDirectory(event),prefix+channelIdString+".html");
+                        BufferedWriter bw = new BufferedWriter(new FileWriter(outHtmlFile));
+                        bw.write("<html>");bw.newLine();
+                        bw.write("<head>");bw.newLine();
+                        bw.write("<title>"+channelIdString+"</title>");bw.newLine();
+                        bw.write("</head>");bw.newLine();
+                        bw.write("<body>");bw.newLine();
+                        bw.write("</br><pre>");bw.newLine();
+                        stack.writeReport(bw);bw.newLine();
+                        bw.write("</pre></br>");bw.newLine();
+                        it = aux.iterator();
+                        while (it.hasNext()) {
+                            Object key = it.next();
+                            Object val = predicted.getAuxillaryData(key);
+                            if (val instanceof Element) {
+                                Element e = (Element)val;
+                                StringWriter swriter = new StringWriter();
+                                edu.sc.seis.fissuresUtil.xml.Writer out = new edu.sc.seis.fissuresUtil.xml.Writer();
+                                out.setOutput(swriter);
+                                out.write(e);
+                                swriter.close();
+                                bw.write("<h3>"+key.toString()+"</h3>");bw.newLine();
+                                bw.write("<pre>");bw.newLine();
+                                bw.write(swriter.toString());bw.newLine();
+                                bw.write("</pre></br>");bw.newLine();
+                            } else {
+                                // oh well, use toString and hope for the best
+                                bw.write(key.toString()+" = "+val.toString()+"</br>");bw.newLine();
+                            }
+                        }
+                        bw.write("<img src="+quote+outImageFile.getName()+quote+"/>");
+                        bw.write("</body>");bw.newLine();
+                        bw.write("</html>");bw.newLine();
+                        bw.close();
+
+                        int[] xyMax = stack.getMaxValueIndices();
+                        float max = stack.stack[xyMax[0]][xyMax[1]];
+                        appendToSummaryPage("<tr><td>"+getEventDirectory(event).getName()+"</td><td>"+channelIdString+"</td><td>"+stack.getPercentMatch()+"</td><td>"+(stack.getMinH()+xyMax[0]*stack.getStepH())+"</td><td>"+(stack.getMinK()+xyMax[1]*stack.getStepK())+"</td></tr>");
+
+                        // now update global per channel stack
+                        SumHKStack sum = SumHKStack.load(getParentDirectory(),
+                                                         predicted.getRequestFilter().channel_id,
+                                                         prefix,
+                                                         postfix,
+                                                         90);
+                        if (sum != null) {
+                            // at least on event meet the min percent match
+                            File sumStackOutFile = new File(getParentDirectory(),"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+postfix);
+                            if (sumStackOutFile.exists()) {sumStackOutFile.delete();}
+                            DataOutputStream sumdos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(sumStackOutFile)));
+                            sum.write(sumdos);
+                            sumdos.close();
+
+                            File outSumImageFile  = new File(getParentDirectory(),"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
+                            if (outSumImageFile.exists()) {outSumImageFile.delete();}
+                            BufferedImage bufSumImage = sum.createStackImage();
+                            javax.imageio.ImageIO.write(bufSumImage, "png", outSumImageFile);
                         }
                     }
-                    bw.write("<img src="+quote+outImageFile.getName()+quote+"/>");
-                    bw.write("</body>");bw.newLine();
-                    bw.write("</html>");bw.newLine();
-                    bw.close();
-
-                    int[] xyMax = stack.getMaxValueIndices();
-                    float max = stack.stack[xyMax[0]][xyMax[1]];
-                    appendToSummaryPage("<tr><td>"+getEventDirectory(event).getName()+"</td><td>"+channelIdString+"</td><td>"+stack.getPercentMatch()+"</td><td>"+(stack.getMinH()+xyMax[0]*stack.getStepH())+"</td><td>"+(stack.getMinK()+xyMax[1]*stack.getStepK())+"</td></tr>");
-
-                    // now update global per channel stack
-                    SumHKStack sum = SumHKStack.load(getParentDirectory(),
-                                                     predicted.getRequestFilter().channel_id,
-                                                     prefix,
-                                                     postfix,
-                                                     90);
-                    if (sum != null) {
-                        // at least on event meet the min percent match
-                        File sumStackOutFile = new File(getParentDirectory(),"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+postfix);
-                        if (sumStackOutFile.exists()) {sumStackOutFile.delete();}
-                        DataOutputStream sumdos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(sumStackOutFile)));
-                        sum.write(sumdos);
-                        sumdos.close();
-
-                        File outSumImageFile  = new File(getParentDirectory(),"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
-                        if (outSumImageFile.exists()) {outSumImageFile.delete();}
-                        BufferedImage bufSumImage = sum.createStackImage();
-                        javax.imageio.ImageIO.write(bufSumImage, "png", outSumImageFile);
-                    }
-
                 }
             } else {
                 logger.error("problem with recfunc: predicted is null");

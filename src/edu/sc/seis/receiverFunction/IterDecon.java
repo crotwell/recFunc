@@ -10,7 +10,7 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 7016 2004-02-07 04:01:07Z crotwell $
+ * @version $Id: IterDecon.java 7024 2004-02-07 18:01:44Z crotwell $
  */
 
 public class IterDecon {
@@ -66,10 +66,10 @@ public class IterDecon {
 
             residual = getResidual(f, predConvolve);
             float residualPower = power(residual);
-            System.out.println(bump+" amp= "+amps[bump]+" index= "+shifts[bump]+
-                                   " for length "+g.length+" with dt="+dt+
-                                   " error="+(100*residualPower/fPower)+
-                                   " improve="+100*(prevPower-residualPower)/fPower);
+//            System.out.println(bump+" amp= "+amps[bump]+" index= "+shifts[bump]+
+//                                   " for length "+g.length+" with dt="+dt+
+//                                   " error="+(100*residualPower/fPower)+
+//                                   " improve="+100*(prevPower-residualPower)/fPower);
             prevPower = residualPower;
         } // end of for (int bump=0; bump < maxBumps; bump++)
 

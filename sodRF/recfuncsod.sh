@@ -36,7 +36,6 @@ java -Djava.endorsed.dirs=${JACORB_LIB}  \
     -Dorg.omg.CORBA.ORBClass=org.jacorb.orb.ORB \
     -Dorg.omg.CORBA.ORBSingletonClass=org.jacorb.orb.ORBSingleton \
     -Djacorb.connection.client.pending_reply_timeout=${JACORB_TIMEOUT} \
-    -Djava.awt.headless=true \
     -Xmx128m \
     -cp ${RECFUNC}:${GEE}:${JACORB}:${JACORB_ANTLR}:${JACORB_AVALON}:${JACORB_CONCURRENT}:${JACORB_LOGKIT}:${JING}:${OPENMAP}:${SEEDCODEC}:${SOD}:${FISSURESIDL}:${FISSURESIMPL}:${FISSURESUTIL}:${XERCES}:${XMLAPI}:${XALAN}:${TAUP}:${LOG4J}:${HSQLDB}:${CLASSPATH} \
     edu.sc.seis.sod.Start $*

@@ -31,44 +31,49 @@ public class TestIterDecon {
         SacTimeSeries denom = new SacTimeSeries();
         denom.read(args[1]);
 
-        /*	int length = 64;
-          float[] num = new float[length];
-          float[] denom = new float[length];
-          int t=length/8;
-          num[t-1] = 6f;
-          num[t] = 10f;
-          num[t+1] = 7f;
-          num[t+8-1] = 1f;
-          num[t+8] = 2f;
-          num[t+8+1] = 1f;
-          num[t+16] = 1f;
-
-          denom[t-1] = 3f;
-          denom[t] = 7f;
-          denom[t+1] = 4f;
-          denom[t+8-1] = 1f;
-          denom[t+8] = 3f;
-          denom[t+8+1] = 1f;
-          denom[t+16] = 1f;
-        */
-
+        float shift = 10;
         IterDeconResult ans = decon.process(num.y, denom.y, num.delta);
         float[] predicted = ans.getPredicted();
-        predicted = decon.phaseShift(predicted, 10, num.delta);
-        predicted = decon.gaussianFilter(predicted, gwidth, num.delta);
+        predicted = decon.phaseShift(predicted, shift, num.delta);
+        //        predicted = decon.gaussianFilter(predicted, gwidth, num.delta);
         for (int i=0; i<num.y.length; i++) {
             // System.out.println(i+" "+num.y[i]+" "+denom.y[i]+" "+predicted[i]);
         } // end of for (int i=0; i<num.length; i++)
-        num.y = predicted;
-        num.write("recfunc.predicted");
+        SacTimeSeries predOut = new SacTimeSeries();
+        predOut.y = predicted;
+        predOut.npts = predOut.y.length;
+        predOut.iftype = predOut.ITIME; 
+        predOut.leven = predOut.TRUE; 
+        predOut.idep = predOut.IUNKN;
+        predOut.nzyear = num.nzyear;
+        predOut.nzjday = num.nzjday;
+        predOut.nzhour = num.nzhour;
+        predOut.nzmin = num.nzmin;
+        predOut.nzsec = num.nzsec;
+        predOut.nzmsec = num.nzmsec;
+        predOut.knetwk = num.knetwk;
+        predOut.kstnm = num.kstnm;
+        predOut.kcmpnm = "RRF";
+        predOut.delta = num.delta;
+        predOut.b = -1*shift;
+        predOut.e = predOut.b + (predOut.npts-1)*predOut.delta;
+        predOut.depmin = -12345;
+        predOut.depmax = -12345;
+        predOut.depmen = -12345;
+        predOut.write("recfunc.predicted");
+        System.out.println("before predicted[0] = "+predOut.y[0]);
+
+        predOut = new SacTimeSeries();
+        predOut.read("recfunc.predicted");
+        System.out.println("after predicted[0] = "+predOut.y[0]);
 
         float[] residual = ans.getResidual();
-        num.y = residual;
-        num.write("recfunc.residual");
+        predOut.y = residual;
+        predOut.write("recfunc.residual");
 
         float[][] corrSave = ans.getCorrSave();
-        num.y = corrSave[0];
-        num.write("recfunc.corr");
+        predOut.y = corrSave[0];
+        predOut.write("recfunc.corr");
 
     } // end of main ()
     

@@ -63,7 +63,7 @@ public class StackSummary {
                     if(sumStack == null) {
                         continue;
                     }
-                    String outStr = net + " " + station[j].get_code() + " "
+                    String outStr = StationIdUtil.toStringNoDates(station[j].get_id()) + " "
                             + station[j].my_location.latitude + " "
                             + station[j].my_location.longitude;
                     float peakH, peakK, peakVal = 0;

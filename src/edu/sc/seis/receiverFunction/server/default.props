@@ -63,8 +63,8 @@ hkStack.create=CREATE TABLE hkstack ( \
                    PRIMARY KEY (hkstack_id), \
                    FOREIGN KEY (recFunc_id) \
                    REFERENCES receiverFunction (recFunc_id) )
-hkStack.createSeq.create=CREATE SEQUENCE hkstackSeq
-hkStack.createSeq.nextVal=SELECT NEXTVAL ('hkstackSeq')
+hkStackSeq.create=CREATE SEQUENCE hkStackSeq
+hkStackSeq.nextVal=SELECT NEXTVAL ('hkStackSeq')
 
 hkStack.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
                    NATURAL JOIN station \
@@ -102,7 +102,7 @@ hkStack.put=INSERT INTO hkstack ( \
                    VALUES ( \
                    ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?)
                    
-hkstack.getForStation=SELECT * FROM network \
+hkStack.getForStation=SELECT * FROM network \
                    NATURAL JOIN station \
                    NATURAL JOIN site \
                    NATURAL JOIN channel \
@@ -112,6 +112,30 @@ hkstack.getForStation=SELECT * FROM network \
                    AND sta_code = ? \
                    AND percentMatch > ? \
                    AND receiverfunction.recfunc_id = hkstack.recfunc_id
+
+sumhkstack.create=CREATE TABLE sumhkstack ( \
+                   sumhkstack_id int, \
+                   channel_id int, \
+                   alpha float, \
+                   p float, \
+                   minPercentMatch float, \
+                   minH float, \
+                   stepH float, \
+                   numH int, \
+                   minK float, \
+                   stepK float, \
+                   numK int, \
+                   peakH float, \
+                   peakK float, \
+                   peakVal float, \
+                   data bytea, \
+                   insertTime timestamp, \
+                   PRIMARY KEY (sumhkstack_id), \
+                   FOREIGN KEY (channel_id) \
+                   REFERENCES channel (chan_id) )
+                   
+sumhkstack.createSeq.create=CREATE SEQUENCE sumhkstackSeq
+sumhkstack.createSeq.nextVal=SELECT NEXTVAL ('sumhkstackSeq')
 
 # specifies the database URL
 #    for hsqldb

@@ -71,7 +71,7 @@ public class JDBCHKStack  extends JDBCTable {
         this.jdbcChannel = jdbcChannel;
         this.jdbcRecFunc = jdbcRecFunc;
 
-        seq = new JDBCSequence(conn, "receiverFunctionSeq");
+        seq = new JDBCSequence(conn, "hkStackSeq");
         Statement stmt = conn.createStatement();
         if(!DBUtil.tableExists(getTableName(), conn)){
             stmt.executeUpdate(ConnMgr.getSQL("hkStack.create"));

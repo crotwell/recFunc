@@ -64,5 +64,6 @@ if __name__ == "__main__":
         buildJars(proj, options.clean)
         os.chdir('scripts')
         build.buildAllScripts(proj)
+        build.buildScripts(proj, 'geeRecFunc', 'edu.sc.seis.gee.Start', True)
         depCopy.copy(proj)
 

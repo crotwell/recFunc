@@ -33,6 +33,10 @@ public class StackSummary {
         Connection conn = ConnMgr.createConnection();
         jdbcHKStack = new JDBCHKStack(conn);
     }
+
+    public StackSummary(Connection conn) throws IOException, SQLException, ConfigurationException, TauModelException {
+        jdbcHKStack = new JDBCHKStack(conn);
+    }
     
     public void createSummary(String net, File parentDir, float minPercentMatch) throws FissuresException, NotFound, IOException, SQLException {
         JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel().getSiteTable().getStationTable();
@@ -61,8 +65,10 @@ public class StackSummary {
     
     public static void main(String[] args) {
     try {
-        StackSummary summary = new StackSummary();
+        ConnMgr.setDB(ConnMgr.POSTGRES);
+        Connection conn = ConnMgr.createConnection();
         Properties props = RecFuncCacheStart.loadProps(args);
+        StackSummary summary = new StackSummary(conn);
         summary.createSummary(args[0], new File("stackImages"), 90f);
     } catch(Exception e) {
         // TODO Auto-generated catch block

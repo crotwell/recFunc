@@ -6,12 +6,16 @@
 
 package edu.sc.seis.receiverFunction;
 
+import edu.sc.seis.fissuresUtil.xml.*;
+
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.NetworkAccess;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.iris.Fissures.IfSeismogramDC.RequestFilter;
 import edu.iris.Fissures.Orientation;
+import edu.iris.Fissures.model.MicroSecondDate;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
 import edu.sc.seis.TauP.Arrival;
@@ -19,15 +23,10 @@ import edu.sc.seis.TauP.TauP_Time;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.display.DisplayUtils;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
-import edu.sc.seis.fissuresUtil.xml.DataSet;
-import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
-import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
-import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
-import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.LocalSeismogramProcess;
-import edu.sc.seis.sod.subsetter.waveFormArm.SacFileProcessor;
+import edu.sc.seis.sod.subsetter.waveFormArm.SaveSeismogramToFile;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -37,10 +36,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
-import edu.iris.Fissures.model.MicroSecondDate;
-import edu.iris.Fissures.model.UnitImpl;
 
-public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogramProcess {
+public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeismogramProcess {
 
     public RecFuncProcessor(Element config)  throws ConfigurationException {
         super(config);
@@ -134,7 +131,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                                                              channel.my_site);
 
                     URLDataSetSeismogram saved =
-                        saveInDataSet(event, recFuncChannel, predicted.getCache());
+                        saveInDataSet(event, recFuncChannel, predicted.getCache(), SeismogramFileTypes.SAC);
                     Collection aux = predicted.getAuxillaryDataKeys();
                     Iterator it = aux.iterator();
                     while (it.hasNext()) {
@@ -171,7 +168,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                                                              channel.effective_time,
                                                              channel.my_site);
                     URLDataSetSeismogram saved =
-                        saveInDataSet(event, recFuncChannel, ((MemoryDataSetSeismogram)dss).getCache());
+                        saveInDataSet(event, recFuncChannel, ((MemoryDataSetSeismogram)dss).getCache(), SeismogramFileTypes.SAC);
                 }
             }
         } else {

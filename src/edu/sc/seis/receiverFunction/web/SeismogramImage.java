@@ -123,14 +123,14 @@ public class SeismogramImage extends HttpServlet {
             dataset.addParameter(DataSet.EVENT, event, emptyAudit);
             disp.add(new DataSetSeismogram[] {radialDSS, zDSS, aDSS, bDSS});
             MicroSecondTimeRange mstr = disp.getTimeConfig().getTime();
-            TimeInterval window = new TimeInterval(60, UnitImpl.SECOND);
+            TimeInterval window = new TimeInterval(120, UnitImpl.SECOND);
             disp.getTimeConfig().shaleTime(0,
                                            window.divideBy(mstr.getInterval())
-                                                   .convertTo(SEC_PRE_SEC)
+                                                   .convertTo(SEC_PER_SEC)
                                                    .get_value());
             System.out.println(window.divideBy(mstr.getInterval()));
-            disp.outputToPNG(out, dim);
             res.setContentType("image/png");
+            disp.outputToPNG(out, dim);
             out.close();
         } catch(NotFound e) {
             OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
@@ -145,7 +145,7 @@ public class SeismogramImage extends HttpServlet {
         }
     }
 
-    private UnitImpl SEC_PRE_SEC = UnitImpl.divide(UnitImpl.SECOND,
+    private static final UnitImpl SEC_PER_SEC = UnitImpl.divide(UnitImpl.SECOND,
                                                    UnitImpl.SECOND);
 
     AuditInfo[] emptyAudit = new AuditInfo[0];

@@ -108,7 +108,7 @@
         <dependency>
             <groupId>jcalendar</groupId>
             <artifactId>jcalendar</artifactId>
-            <version>0.6.1beta</version>
+            <version>0.76</version>
         </dependency>
         <dependency>
             <groupId>JacORB</groupId>
@@ -190,7 +190,7 @@
         </dependency>
         <dependency>
             <id>hsqldb</id>
-            <version>1.7.2-rc5</version>
+            <version>1.7.2-rc6b</version>
             <url>http://hsqldb.sourceforge.net</url>
         </dependency>
         <dependency>

@@ -142,6 +142,10 @@ public class StackSummary {
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StackSummary.class);
 
     public static void main(String[] args) {
+        if (args.length != 1) {
+            System.out.println("Usage: StackSummary netCode");
+            return;
+        }
         try {
             Properties props = RecFuncCacheStart.loadProps(args);
             ConnMgr.setDB(ConnMgr.POSTGRES);

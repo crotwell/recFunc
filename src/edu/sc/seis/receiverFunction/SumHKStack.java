@@ -133,15 +133,44 @@ public class SumHKStack {
         Statistics stat = new Statistics(peakVals);
         maxVariance = stat.var();
         // H is first index, K is second
-        double a = sum.getStack()[maxIndices[0]-1][maxIndices[1]];
-        double b = sum.getStack()[maxIndices[0]][maxIndices[1]];
-        double c = sum.getStack()[maxIndices[0]+1][maxIndices[1]];
-        HError = 2*maxVariance/((a-2*b+c)/sum.getStepH()*sum.getStepH());
-
-         a = sum.getStack()[maxIndices[0]][maxIndices[1]-1];
-         b = sum.getStack()[maxIndices[0]][maxIndices[1]];
-         c = sum.getStack()[maxIndices[0]][maxIndices[1]+1];
-        KError = 2*maxVariance/((a-2*b+c)/sum.getStepK()*sum.getStepK());
+        double a;
+        double b;
+        double c;
+        if (maxIndices[0] == 0) {
+            // off edge, shift by 1???
+            a = sum.getStack()[maxIndices[0]][maxIndices[1]];
+            b = sum.getStack()[maxIndices[0]+1][maxIndices[1]];
+            c = sum.getStack()[maxIndices[0]+2][maxIndices[1]];
+        } else if (maxIndices[0] == sum.getStack().length) {
+            //          off edge, shift by 1???
+            a = sum.getStack()[maxIndices[0]-2][maxIndices[1]];
+            b = sum.getStack()[maxIndices[0]-1][maxIndices[1]];
+            c = sum.getStack()[maxIndices[0]][maxIndices[1]];
+        } else {
+            // normal case in interior
+            a = sum.getStack()[maxIndices[0]-1][maxIndices[1]];
+            b = sum.getStack()[maxIndices[0]][maxIndices[1]];
+            c = sum.getStack()[maxIndices[0]+1][maxIndices[1]];
+        }
+        HError = -2*maxVariance/((a-2*b+c)/sum.getStepH()*sum.getStepH());
+        
+        if (maxIndices[1] == 0) {
+            // off edge, shift by 1???
+            a = sum.getStack()[maxIndices[0]][maxIndices[1]];
+            b = sum.getStack()[maxIndices[0]][maxIndices[1]+1];
+            c = sum.getStack()[maxIndices[0]][maxIndices[1]+2];
+        } else if (maxIndices[1] == sum.getStack()[0].length) {
+            // off edge, shift by 1???
+            a = sum.getStack()[maxIndices[0]][maxIndices[1]-2];
+            b = sum.getStack()[maxIndices[0]][maxIndices[1]-1];
+            c = sum.getStack()[maxIndices[0]][maxIndices[1]];
+        } else {
+            // normal case
+            a = sum.getStack()[maxIndices[0]][maxIndices[1]-1];
+            b = sum.getStack()[maxIndices[0]][maxIndices[1]];
+            c = sum.getStack()[maxIndices[0]][maxIndices[1]+1];
+        }
+        KError = -2*maxVariance/((a-2*b+c)/sum.getStepK()*sum.getStepK());
     }
 
     protected Channel channel;

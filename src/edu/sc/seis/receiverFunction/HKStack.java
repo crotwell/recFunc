@@ -8,14 +8,19 @@ package edu.sc.seis.receiverFunction;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.model.UnitRangeImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
+import edu.sc.seis.fissuresUtil.display.BorderedDisplay;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
+import edu.sc.seis.fissuresUtil.display.borders.Border;
+import edu.sc.seis.fissuresUtil.display.borders.UnitRangeBorder;
 import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.SeisDataChangeEvent;
 import edu.sc.seis.fissuresUtil.xml.SeisDataChangeListener;
 import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
 import edu.sc.seis.fissuresUtil.xml.XMLQuantity;
+import edu.sc.seis.sod.SodUtil;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -24,12 +29,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
+import javax.swing.JComponent;
 import org.w3c.dom.Element;
-import edu.sc.seis.sod.SodUtil;
 
 
 
-public class HKStack  {
+public class HKStack {
 
     protected HKStack(float alpha,
                       float p,
@@ -111,34 +116,18 @@ public class HKStack  {
         this.chanId = chanId;
     }
 
-    public BufferedImage createStackImage() {
+    /** returns the x and y indices for the max value in the stack. The
+     *  min x value is in index 0 and the y in index 1. The max x value is in
+     *  2 and the y in 3.
+     */
+    public int[] getMinMaxValueIndices() {
         float[][] stackOut = getStack();
-        int dataH = 2*stackOut.length;
-        int dataW = 2*stackOut[0].length;
-        int fullWidth = dataW+40;
-        int fullHeight = dataH+140;
-        BufferedImage bufImage = new BufferedImage(fullWidth,
-                                                   fullHeight,
-                                                   BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = bufImage.createGraphics();
-        g.setColor(Color.darkGray);
-        g.fillRect(0, 0, bufImage.getWidth(), bufImage.getHeight());
-        g.translate(0, 5);
-        FontMetrics fm = g.getFontMetrics();
-
-        String title = ChannelIdUtil.toStringNoDates(getChannelId());
-        g.setColor(Color.white);
-        g.drawString(title, (fullWidth-fm.stringWidth(title))/2, fm.getHeight());
-
-        g.translate(5, fm.getHeight()+fm.getDescent());
-
         float min = stackOut[0][0];
         int maxIndexX = 0;
         int maxIndexY = 0;
         int minIndexX = 0;
         int minIndexY = 0;
         float max = min;
-
         for (int j = 0; j < stackOut.length; j++) {
             for (int k = 0; k < stackOut[j].length; k++) {
                 if (stackOut[j][k] < min) {
@@ -153,34 +142,81 @@ public class HKStack  {
                 }
             }
         }
+        int[] xy = new int[4];
+        xy[0] = minIndexX;
+        xy[1] = minIndexY;
+        xy[2] = maxIndexX;
+        xy[3] = maxIndexY;
+        return xy;
+    }
 
-        for (int j = 0; j < stackOut.length; j++) {
-            //System.out.print(j+" : ");
-            for (int k = 0; k < stackOut[j].length; k++) {
-                int colorVal = makeImageable(min, max, stackOut[j][k]);
-                g.setColor(new Color(colorVal, colorVal, colorVal));
-                g.fillRect( 2*k, 2*j, 2, 2);
-                //System.out.print(colorVal+" ");
-            }
-            //System.out.println("");
-        }
+    public JComponent getStackComponent() {
+        BorderedDisplay bd = new BorderedDisplay(new HKStackImage(this));
+        UnitRangeBorder depthBorder = new UnitRangeBorder(Border.LEFT,
+                                                          Border.ASCENDING,
+                                                          "Depth",
+                                                          new UnitRangeImpl(getMinH(), getMinH()+getNumH()*getStepH(), UnitImpl.KILOMETER));
+        bd.add(depthBorder, bd.CENTER_LEFT);
+        UnitRangeBorder kBorder = new UnitRangeBorder(Border.TOP,
+                                                      Border.ASCENDING,
+                                                      "Vp/Vs",
+                                                      new UnitRangeImpl(getMinK(),
+                                                                        getMinK()+getNumK()*getStepK(),
+                                                                        UnitImpl.divide(UnitImpl.KILOMETER_PER_SECOND,UnitImpl.KILOMETER_PER_SECOND, "km/s/km/s")));
+        bd.add(kBorder, bd.TOP_CENTER);
+        return bd;
+    }
+
+    public BufferedImage createStackImage() {
+        float[][] stackOut = getStack();
+
+        int dataH = 2*stackOut.length;
+        int dataW = 2*stackOut[0].length;
+        int fullWidth = dataW+40;
+        int fullHeight = dataH+140;
+        BufferedImage bufImage = new BufferedImage(fullWidth,
+                                                   fullHeight,
+                                                   BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = bufImage.createGraphics();
+        FontMetrics fm = g.getFontMetrics();
+
+        g.setColor(Color.darkGray);
+        g.fillRect(0, 0, bufImage.getWidth(), bufImage.getHeight());
+        g.translate(0, 5);
+
+
+        String title = ChannelIdUtil.toStringNoDates(getChannelId());
+        g.setColor(Color.white);
+        g.drawString(title, (fullWidth-fm.stringWidth(title))/2, fm.getHeight());
+
+        g.translate(5, fm.getHeight()+fm.getDescent());
+
+        HKStackImage stackImage = new HKStackImage(this);
+        stackImage.paintComponent(g);
+
         g.translate(0, dataH);
+
+
+        int[] xy = getMinMaxValueIndices();
+
+        float min = stack[xy[0]][xy[1]];
+        float max = stack[xy[2]][xy[3]];
 
         g.setColor(Color.white);
         g.drawString("% match="+percentMatch, 0, fm.getHeight());
         g.drawString("    ", 0, 2*fm.getHeight());
         g.translate(0, 2*fm.getHeight());
-        g.drawString("Max H="+(getMinH()+maxIndexY*getStepH()), 0, fm.getHeight());
-        g.drawString("    K="+(getMinK()+maxIndexX*getStepK()), 0, 2*fm.getHeight());
+        g.drawString("Max H="+(getMinH()+xy[1]*getStepH()), 0, fm.getHeight());
+        g.drawString("    K="+(getMinK()+xy[0]*getStepK()), 0, 2*fm.getHeight());
         g.translate(0, 2*fm.getHeight());
 
-        int minColor = makeImageable(min, max, min);
+        int minColor = stackImage.makeImageable(min, max, min);
         g.setColor(new Color(minColor, minColor, minColor));
         g.fillRect(0, 0, 15, 15);
         g.setColor(Color.white);
         g.drawString("Min="+min, 0, 15+fm.getHeight());
 
-        int maxColor = makeImageable(min, max, max);
+        int maxColor = stackImage.makeImageable(min, max, max);
         g.setColor(new Color(maxColor, maxColor, maxColor));
         g.fillRect(dataW-20, 0, 15, 15);
         g.setColor(Color.white);
@@ -201,10 +237,6 @@ public class HKStack  {
         return Float.parseFloat(percentMatch);
     }
 
-    int makeImageable(float min, float max, float val) {
-        float absMax = Math.max(Math.abs(min), Math.abs(max));
-        return (int)SimplePlotUtil.linearInterp(-1*absMax, 0, absMax, 255, val);
-    }
 
     protected void calculate() {
         stack = new float[numH][numK];

@@ -20,7 +20,7 @@ import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 
 
 public class HKStack  {
-
+    
     public HKStack(float alpha,
                    float p,
                    float minH,
@@ -28,7 +28,8 @@ public class HKStack  {
                    int numH,
                    float minK,
                    float stepK,
-                   int numK) {
+                   int numK,
+                  DataSetSeismogram recFunc) {
         this.alpha = alpha;
         this.p = p;
         this.minH = minH;
@@ -37,11 +38,16 @@ public class HKStack  {
         this.minK = minK;
         this.stepK = stepK;
         this.numK = numK;
+        this.recFunc = recFunc;
+        calculate();
     }
-
-    public float[][] calculate(DataSetSeismogram recFunc) {
-        float[][] ans = new float[numH][numK];
+    
+    protected void calculate() {
+        stack = new float[numH][numK];
         float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
+        if (Float.isNaN(etaP)) {
+            System.out.println("Warning: Eta P is NaN alpha="+alpha+"  p="+p);
+        }
         Element shiftElement =
             (Element)recFunc.getAuxillaryData("recFunc.alignShift");
         QuantityImpl shift = (QuantityImpl)XMLQuantity.getQuantity(shiftElement);
@@ -58,22 +64,22 @@ public class HKStack  {
         for (int i = 0; i < numK; i++) {
             float beta = alpha/(minK + i*stepK);
             float etaS = (float) Math.sqrt(1/(beta*beta)-p*p);
+            if (Float.isNaN(etaS)) {
+                System.out.println("Warning: Eta S is NaN "+i+"  beta="+beta+"  p="+p);
+            }
             for (int j = 0; j < numH; j++) {
                 float h = minH + j*stepH;
                 double timePs = h * (etaS - etaP) + shift.value;
                 double timePpPs = h * (etaS + etaP) + shift.value;
                 double timePsPs = h * (2 * etaS) + shift.value;
-                ans[j][i] += getAmp(seis, timePs)
+                stack[j][i] += getAmp(seis, timePs)
                     + getAmp(seis, timePpPs)
                     - getAmp(seis, timePsPs);
             }
         }
-        return ans;
     }
-
-
-
-
+    
+    
     /** gets the amp at the given time offset from the start of the seismogram. */
     float getAmp(LocalSeismogramImpl seis, double time) {
         double sampOffset = time/seis.getSampling().getPeriod().convertTo(UnitImpl.SECOND).value;
@@ -81,13 +87,58 @@ public class HKStack  {
             throw new IllegalArgumentException("time "+time+" is outside of seismogram");
         }
         int offset = (int)Math.floor(sampOffset);
-
+        
         float valA = seis.get_as_floats()[offset];
         float valB = seis.get_as_floats()[offset+1];
         // linear interp
-        return (float)SimplePlotUtil.linearInterp(offset, valA, offset+1, valB, sampOffset);
+        float retVal = (float)SimplePlotUtil.linearInterp(offset, valA, offset+1, valB, sampOffset);
+        if (Float.isNaN(retVal)) {
+            System.out.println("Got a NaN for getAmp at "+time);
+        }
+        return retVal;
     }
-
+    
+    public DataSetSeismogram getRecFunc() {
+        return recFunc;
+    }
+    
+    public float[][] getStack() {
+        return stack;
+    }
+    
+    public float getP() {
+        return p;
+    }
+    
+    public float getAlpha() {
+        return alpha;
+    }
+    
+    public float getMinH() {
+        return minH;
+    }
+    
+    public float getStepH() {
+        return stepH;
+    }
+    
+    public float getNumH() {
+        return numH;
+    }
+    
+    public float getMinK() {
+        return minK;
+    }
+    
+    public float getStepK() {
+        return stepK;
+    }
+    
+    public float getnumK() {
+        return numK;
+    }
+    
+    float[][] stack;
     float p;
     float alpha;
     float minH;
@@ -96,19 +147,20 @@ public class HKStack  {
     float minK;
     float stepK;
     int numK;
-
+    DataSetSeismogram recFunc;
+    
     class DataGetter implements SeisDataChangeListener {
-
+        
         LinkedList data = new LinkedList();
-
+        
         LinkedList errors = new LinkedList();
-
+        
         boolean finished = false;
-
+        
         public boolean isFinished() {
             return finished;
         }
-
+        
         public synchronized LinkedList getData() {
             while (finished == false) {
                 try {
@@ -117,7 +169,7 @@ public class HKStack  {
             }
             return data;
         }
-
+        
         public synchronized void finished(SeisDataChangeEvent sdce) {
             LocalSeismogramImpl[] seis = sdce.getSeismograms();
             for (int i = 0; i < seis.length; i++) {
@@ -126,11 +178,11 @@ public class HKStack  {
             finished = true;
             notifyAll();
         }
-
+        
         public synchronized void error(SeisDataErrorEvent sdce) {
             errors.add(sdce);
         }
-
+        
         public synchronized void pushData(SeisDataChangeEvent sdce) {
             LocalSeismogramImpl[] seis = sdce.getSeismograms();
             for (int i = 0; i < seis.length; i++) {
@@ -139,4 +191,5 @@ public class HKStack  {
         }
     }
 }
+
 

@@ -8,10 +8,10 @@ package edu.sc.seis.receiverFunction;
 
 import edu.sc.seis.mockFissures.IfEvent.MockEventAccessOperations;
 import edu.sc.seis.mockFissures.IfNetwork.MockChannel;
-import java.util.Collection;
 import java.util.HashMap;
 import junit.framework.TestCase;
 import org.apache.velocity.VelocityContext;
+import edu.iris.Fissures.network.ChannelIdUtil;
 
 public class RecFuncTemplateTest extends TestCase {
 
@@ -19,15 +19,19 @@ public class RecFuncTemplateTest extends TestCase {
         RecFuncTemplate template = new RecFuncTemplate();
         VelocityContext context = new VelocityContext();
 
-        context.put( "name", new String("Velocity") );
         context.put("sod_event", MockEventAccessOperations.createEvent());
         context.put("sod_channel", MockChannel.createChannel());
+        context.put( "channelIdToString", ChannelIdUtil.toStringNoDates(MockChannel.createChannel().get_id()));
         context.put("recFunc_hkstack_image", "hkstack.png");
+        context.put("ChannelIdUtil", new ChannelIdUtil());
+
+        HKStack stack = new HKStack(1, 2, 90, 10, 1, 50, 1.6f, .025f, 50);
+        context.put("stack", stack);
         HashMap aux = new HashMap();
         aux.put("testA", "A");
         aux.put("testB", "B");
         context.put("recFunc_pred_auxData", aux);
-        template.process(context);
+        template.process(context, "testTemplate.html");
     }
 }
 

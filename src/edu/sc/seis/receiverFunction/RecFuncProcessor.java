@@ -38,8 +38,9 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
 
     public RecFuncProcessor(Element config)  throws ConfigurationException {
         super(config);
-        String gwidthStr = SodUtil.getNestedText(SodUtil.getElement(config, "gaussianWidth"));
-        if (gwidthStr != null) {
+        Element gElement = SodUtil.getElement(config, "gaussianWidth");
+        if (gElement != null) {
+            String gwidthStr = SodUtil.getNestedText(gElement);
             gwidth = Float.parseFloat(gwidthStr);
         }
         logger.info("Init RecFuncProcessor");
@@ -168,8 +169,11 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
 
                     cookieJar.put("recFunc_hkstack_image", outImageFile.getName());
                     cookieJar.put("recFunc_pred_auxData", aux);
+                    cookieJar.put("stack", stack);
+
                     RecFuncTemplate rfTemplate =new RecFuncTemplate();
-                    rfTemplate.process(cookieJar.getContext());
+                    File velocityOutFile = new File(getEventDirectory(event),"Vel_"+prefix+channelIdString+".html");
+                    rfTemplate.process(cookieJar.getContext(), velocityOutFile);
 
                     File outHtmlFile  = new File(getEventDirectory(event),prefix+channelIdString+".html");
                     BufferedWriter bw = new BufferedWriter(new FileWriter(outHtmlFile));

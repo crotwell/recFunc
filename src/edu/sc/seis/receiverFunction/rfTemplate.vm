@@ -1,13 +1,32 @@
 <html>
 <head>
-<title>$sod_channel</title>
+<title>$ChannelIdUtil.toStringNoDates($sod_channel.get_id()) Receiver Function</title>
 <body>
-</br>
-$recFunc_hkstack_image
+<br/>
+<h2>$ChannelIdUtil.toStringNoDates($sod_channel.get_id()) Receiver Function</h2>
+<br/>
+<img src="$recFunc_hkstack_image"/>
+<br/>
 
-#foreach ($a in $recFunc_pred_auxData )
-$a
+<table>
+#foreach ($a in $recFunc_pred_auxData.keySet() )
+<tr><td>$a</td><td>$recFunc_pred_auxData.get($a)</td></tr>
 #end
+</table>
+
+<table>
+<tr><td>percentMatch</td><td>$stack.percentMatch</td></tr>
+<tr><td>Amp</td><td>$stack.Amp</td></tr>
+<tr><td>ChannelId</td><td>$stack.ChannelId</td></tr>
+<tr><td>P</td><td>$stack.P</td></tr>
+<tr><td>Alpha</td><td>$stack.Alpha</td></tr>
+<tr><td>MinH</td><td>$stack.MinH</td></tr>
+<tr><td>StepH</td><td>$stack.StepH</td></tr>
+<tr><td>NumH</td><td>$stack.NumH</td></tr>
+<tr><td>MinK</td><td>$stack.MinK</td></tr>
+<tr><td>StepK</td><td>$stack.StepK</td></tr>
+<tr><td>NumK</td><td>$stack.NumK</td></tr>
+<table>
 
  </body>
  </html>

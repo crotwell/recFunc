@@ -6,7 +6,10 @@
 
 package edu.sc.seis.receiverFunction;
 
-import java.io.StringWriter;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.Properties;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -25,11 +28,15 @@ public class RecFuncTemplate {
 
     }
 
-    public void process(VelocityContext context) throws Exception {
-        StringWriter sw = new StringWriter();
+    public void process(VelocityContext context, String filename) throws Exception {
+        process(context, new File(filename));
+    }
+
+    public void process(VelocityContext context, File file) throws Exception {
+        Writer sw = new BufferedWriter(new FileWriter(file));
 
         template.merge( context, sw );
-        System.out.println(sw);
+        sw.close();
     }
 
 

@@ -10,6 +10,7 @@ import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
@@ -50,8 +51,10 @@ public class RFStationEvent extends Revlet {
             logger.debug("doGet called");
             res.setContentType("image/png");
             if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
-            CachedResult result = hkStack.getJDBCRecFunc().getWithoutSeismograms(new Integer(req.getParameter("rf")).intValue());
+            int rfid = new Integer(req.getParameter("rf")).intValue();
+            CachedResult result = hkStack.getJDBCRecFunc().getWithoutSeismograms(rfid);
             CacheEvent eq = new CacheEvent(result.event_attr, result.prefOrigin);
+            HKStack stack = hkStack.get(rfid);
             VelocityEvent velEvent = new VelocityEvent(new CacheEvent(result.event_attr, result.prefOrigin));
             VelocityStation sta = new VelocityStation(result.channels[0].my_site.my_station);
             
@@ -60,6 +63,7 @@ public class RFStationEvent extends Revlet {
             vContext.put("eq", velEvent);
             vContext.put("result", new VelocityCachedResult(result));
             vContext.put("rf", req.getParameter("rf"));
+            vContext.put("stack", stack);
             RevletContext context = new RevletContext("rfStationEvent.vm", vContext);
             return context;
         } catch(Exception e) {

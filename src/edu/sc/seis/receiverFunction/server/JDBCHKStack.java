@@ -242,8 +242,8 @@ public class JDBCHKStack  extends JDBCTable {
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCHKStack.class);
     
     public static void main(String[] args) {
-        if (args.length < 2) {
-            System.out.println("Usage: JDBCHKStack net station");
+        if (args.length < 1) {
+            System.out.println("Usage: JDBCHKStack net [station]");
             return;
         }
         try {

@@ -148,13 +148,14 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
    </channelAND>
 
     <printlineChannelProcessor/>
+<!--
                 <networkInfoTemplateGenerator>
                     <fileDir>SPstatus</fileDir>
                     <netConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/networks.xml"/>
                     <stationConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/stations.xml"/>
                     <channelConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/channels.xml"/>
                 </networkInfoTemplateGenerator>
-
+-->
     </networkArm>
 
 

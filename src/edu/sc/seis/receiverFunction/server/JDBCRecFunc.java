@@ -91,8 +91,9 @@ public class JDBCRecFunc extends JDBCTable {
                                         "gwidth, "+
                                         "maxbumps,  "+
                                         "tol, "+
-                                        "insertTime) "+
-                                        "VALUES(?,?,?,?, ?,?,?,?, ?,?,?,?, ?,?,?,?, ?,?,?)");
+                                        "insertTime, "+
+                                        "sodconfig_id ) "+
+                                        "VALUES(?,?,?,?, ?,?,?,?, ?,?,?,?, ?,?,?,?, ?,?,?,?)");
         isCachedStmt = conn.prepareStatement("SELECT recFunc_id from "+getTableName()+
                                              " WHERE origin_id = ? "+
                                              " AND chanZ_id = ? AND ( "+
@@ -132,8 +133,13 @@ public class JDBCRecFunc extends JDBCTable {
                    float transverseMatch,
                    int transverseBump,
                    int sodConfig_id) throws SQLException, IOException, NoPreferredOrigin, CodecException, UnsupportedFileTypeException, SeedFormatException {
+        
         logger.debug("put: "+eventAttr.name+" "+ChannelIdUtil.toStringNoDates(channels[0].get_id()));
-        int originDbId = jdbcOrigin.put(prefOrigin);
+        Connection conn = jdbcOrigin.getConnection();
+        boolean autoCommit = conn.getAutoCommit();
+        conn.setAutoCommit(false);
+        try {
+            int originDbId = jdbcOrigin.put(prefOrigin);
         int eventAttrDbId = jdbcEventAttr.put(eventAttr);
         int[] channelDbId = new int[channels.length];
         for(int i = 0; i < channels.length; i++) {
@@ -233,10 +239,33 @@ public class JDBCRecFunc extends JDBCTable {
         putStmt.setFloat(index++, config.tol);
         
         putStmt.setTimestamp(index++, ClockUtil.now().getTimestamp());
+        putStmt.setInt(index++, sodConfig_id);
+        
         putStmt.executeUpdate();
         logger.debug("insert: "+putStmt);
+        conn.commit();
         return id;
-        
+        } catch (SQLException e ) {
+            conn.rollback();
+            throw e;
+        } catch (IOException e ) {
+            conn.rollback();
+            throw e;
+        } catch (NoPreferredOrigin e ) {
+            conn.rollback();
+            throw e;
+        } catch (CodecException e ) {
+            conn.rollback();
+            throw e;
+        } catch (UnsupportedFileTypeException e ) {
+            conn.rollback();
+            throw e;
+        } catch (SeedFormatException e ) {
+            conn.rollback();
+            throw e;
+        } finally {
+            conn.setAutoCommit(autoCommit);
+        }
     }
     
     public int getDbId(Origin prefOrigin,

@@ -4,7 +4,7 @@ lines = f.readlines()
 dwilson = {}
 for l in lines:
   s = l.split()
-  dwilson["XM."+s[0]] = s[5]
+  dwilson["XM99."+s[0]] = s[5]
 f.close()
 
 f=open('depth_vpvs.txt', 'r')
@@ -16,8 +16,11 @@ for l in lines:
 f.close()
 
 print "EARS Wilson Station"
-for sta in dwilson.keys():
-  print ears[sta], dwilson[sta], sta
+dwilsonkeys = dwilson.keys()
+dwilsonkeys.sort()
+for sta in dwilsonkeys:
+    #  if abs(float(ears[sta]) - float(dwilson[sta])) > 10:
+    print dwilson[sta], ears[sta], sta
 
 
 

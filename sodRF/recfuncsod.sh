@@ -24,7 +24,7 @@ XMLAPI=$MAVEN/repository/xml-apis/jars/xml-apis-1.0.b2.jar
 JAICORE=$MAVEN/repository/jars/jai_core.jar
 JAICODEC=$MAVEN/repository/jars/jai_codec.jar
 HSQLDB=$MAVEN/repository/hsqldb/jars/hsqldb-20040212.jar
-OPENMAP=$MAVEN/repository/openmap/jars/openmap-4.5.4.jar
+OPENMAP=$MAVEN/repository/openmap/jars/openmap-4.6.jar
 JING=$MAVEN/repository/jing/jars/jing-20030619.jar
 SOD=$MAVEN/repository/sod/jars/sod-1.0Beta.jar
 

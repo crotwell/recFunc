@@ -69,13 +69,14 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                                                   staCode,
                                                   minPercentMatch,
                                                   smallestH);
-            
+            logger.debug("finish calc stack summary");
             OutputStream out = res.getOutputStream();
             if (sumStack == null) {
+                logger.warn("summary stack is null for "+net.getCode()+"."+staCode);
                 return;
             }
             BufferedImage image = sumStack.createStackImage();
-            
+            logger.debug("finish create image");
             res.setContentType("image/png");
             ImageIO.write(image, "png", out);
             out.close();

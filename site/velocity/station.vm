@@ -27,7 +27,7 @@
 </table>
 </br>
 
-<img src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$sta.getCode()&minPercentMatch=80&smallestH=25"/>
+<img src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=25"/>
 </br>
 </br>
 

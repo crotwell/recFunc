@@ -68,7 +68,7 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
     
     protected void repackageException(org.omg.CORBA.UserException e) {
         org.omg.CORBA.TRANSIENT t =
-            new org.omg.CORBA.TRANSIENT("Unable to resolve "+serverName+" "+serverDNS+" "+e.toString(),
+            new org.omg.CORBA.TRANSIENT("Unable to resolve "+serverName+" "+interfaceName+" "+serverDNS+" "+namingService.getNameServiceCorbaLoc()+" "+e.toString(),
                                         0,
                                         org.omg.CORBA.CompletionStatus.COMPLETED_NO);
         t.initCause(e);

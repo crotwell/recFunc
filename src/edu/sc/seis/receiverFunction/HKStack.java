@@ -481,7 +481,10 @@ public class HKStack implements Serializable {
     float minK;
     float stepK;
     int numK;
-    DataSetSeismogram recFunc;
+
+    // don't serialize the DSS
+    transient DataSetSeismogram recFunc;
+
     ChannelId chanId;
 
     class DataGetter implements SeisDataChangeListener {

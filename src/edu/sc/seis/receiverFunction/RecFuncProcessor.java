@@ -180,7 +180,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                         }
                     }
 
-                    File imageDir = lSeisTemplateGen.getOutputFile(event, channel);
+                    File imageDir = lSeisTemplateGen.getOutputFile(event, channel).getParentFile();
                     imageDir.mkdirs();
                     File outImageFile  = new File(imageDir, prefix+channelIdString+".png");
                     BufferedImage bufImage = stack.createStackImage();

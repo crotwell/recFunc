@@ -1,6 +1,12 @@
 package edu.sc.seis.receiverFunction;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import com.sun.rsasign.d;
+import edu.iris.Fissures.model.TimeInterval;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
+import edu.sc.seis.fissuresUtil.sac.SacToFissures;
 
 /**
  * TestIterDecon.java
@@ -30,11 +36,11 @@ public class TestIterDecon {
         SacTimeSeries denom = new SacTimeSeries();
         denom.read(args[1]);
 
-        float shift = 5;
+        float shift = 10;
 
         IterDeconResult ans = decon.process(num.y, denom.y, num.delta);
         float[] predicted = ans.getPredicted();
-        predicted = decon.phaseShift(predicted, shift, num.delta);
+        predicted = IterDecon.phaseShift(predicted, shift, num.delta);
 
         for (int i=0; i<num.y.length; i++) {
             System.out.println(i+" "+num.y[i]+" "+denom.y[i]+" "+predicted[i]);
@@ -44,11 +50,13 @@ public class TestIterDecon {
 
 
         SacTimeSeries predOut = new SacTimeSeries();
+        predOut.stla = denom.stla;
+        predOut.stlo = denom.stlo;
         predOut.y = predicted;
         predOut.npts = predOut.y.length;
-        predOut.iftype = predOut.ITIME;
-        predOut.leven = predOut.TRUE;
-        predOut.idep = predOut.IUNKN;
+        predOut.iftype = SacTimeSeries.ITIME;
+        predOut.leven = SacTimeSeries.TRUE;
+        predOut.idep = SacTimeSeries.IUNKN;
         predOut.nzyear = num.nzyear;
         predOut.nzjday = num.nzjday;
         predOut.nzhour = num.nzhour;
@@ -68,6 +76,14 @@ public class TestIterDecon {
         predOut.write(filename);
         setOSFileExtras(filename);
 
+        HKStack stack = new HKStack(6.3f, 0.06f, 1,
+                                    10, .25f, 200,
+                                    1.6f,.0025f, 200,
+                                    1/3f, 1/3f, 1/3f, SacToFissures.getSeismogram(predOut), SacToFissures.getChannel(predOut), new TimeInterval(shift, UnitImpl.SECOND));
+        BufferedImage bufSumImage = stack.createStackImage();
+        File outSumImageFile  = new File("stack.png");
+        javax.imageio.ImageIO.write(bufSumImage, "png", outSumImageFile);
+        
         float[] residual = ans.getResidual();
         predOut.y = residual;
         filename = "residual.SAC";
@@ -79,8 +95,6 @@ public class TestIterDecon {
         filename = "correlation0.SAC";
         predOut.write(filename);
         setOSFileExtras(filename);
-
-
     } // end of main ()
 
     private static void setOSFileExtras(String name) {

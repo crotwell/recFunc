@@ -501,7 +501,7 @@ public class HKStack implements Serializable {
         // linear interp
         float retVal = (float)SimplePlotUtil.linearInterp(offset, valA, offset+1, valB, sampOffset);
         if (Float.isNaN(retVal)) {
-            System.out.println("Got a NaN for getAmp at "+time);
+            logger.error("Got a NaN for HKStack.getAmp() at "+time);
         }
         return retVal;
     }
@@ -770,6 +770,8 @@ public class HKStack implements Serializable {
             }
         }
     }
+
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(HKStack.class);
 }
 
 

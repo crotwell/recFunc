@@ -60,13 +60,6 @@ public class HKStackImage extends JComponent {
             }
             //System.out.println("");
         }
-        Iterator it = markers.iterator();
-        while(it.hasNext()) {
-            Marker mark = (Marker)it.next();
-            System.out.println("Marker "+mark.getName()+" "+mark.getVpvs()+"-->"+Math.round(2*stack.getKIndexFloat(mark.getVpvs()))+"  "+mark.getDepth()+"-->"+ Math.round(2*stack.getHIndexFloat(mark.getDepth())));
-            g.setColor(mark.getColor());
-            g.fillRect(Math.round(2*stack.getKIndexFloat(mark.getVpvs())), Math.round(2*stack.getHIndexFloat(mark.getDepth())), 2, 2);
-        }
         g.setColor(Color.CYAN);
         TradeoffCurve tradeoff = new TradeoffCurve(stack);
         float[] curve = tradeoff.getH_Ps();
@@ -80,6 +73,14 @@ public class HKStackImage extends JComponent {
         curve = tradeoff.getH_PsPs();
         for (int k = 0; k < stackOut[0].length-1; k++) {
             g.drawLine(2*k, Math.round(2*stack.getHIndexFloat(curve[k])), 2*(k+1), 2*stack.getHIndex(curve[k+1]));
+        }
+        
+        Iterator it = markers.iterator();
+        while(it.hasNext()) {
+            Marker mark = (Marker)it.next();
+            System.out.println("Marker "+mark.getName()+" "+mark.getVpvs()+"-->"+Math.round(2*stack.getKIndexFloat(mark.getVpvs()))+"  "+mark.getDepth()+"-->"+ Math.round(2*stack.getHIndexFloat(mark.getDepth())));
+            g.setColor(mark.getColor());
+            g.fillRect(Math.round(2*stack.getKIndexFloat(mark.getVpvs())), Math.round(2*stack.getHIndexFloat(mark.getDepth())), 2, 2);
         }
         g.setColor(origColor);
     }

@@ -27,6 +27,9 @@ public class Crust2 {
     }
 
     public String getCode(int longitude, int latitude) {
+        if (longitude > 180 || latitude > 90 || longitude < -180 || latitude < -90) {
+            throw new RuntimeException("lat/lon out of range: long="+longitude+" lat="+latitude);
+        }
         String code = profiles[getLonIndex(longitude)][getLatIndex(latitude)];
         return code;
     }

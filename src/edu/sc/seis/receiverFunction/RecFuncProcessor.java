@@ -30,6 +30,7 @@ import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.Start;
 import edu.sc.seis.sod.status.FissuresFormatter;
+import edu.sc.seis.sod.status.StringTreeLeaf;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Iterator;
@@ -85,7 +86,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
         for (int i = 0; i < seismograms.length; i++) {
             if (seismograms[i].length == 0) {
                 // maybe no data after cut?
-                return new ChannelGroupLocalSeismogramResult(false, seismograms);
+                return new ChannelGroupLocalSeismogramResult(false, seismograms, new StringTreeLeaf(this, false, "zero seismograms for "+i+" component"));
             }
             if ( ! ChannelIdUtil.areEqual(available[i][0].channel_id, seismograms[i][0].channel_id)) {
                 // fix the dumb -farm or -spyder on pond available_data
@@ -100,7 +101,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
         if (chGrpSeismograms.length < 3) {
             logger.debug("chGrpSeismograms.length = "+chGrpSeismograms.length);
             // must not be all here yet
-            return new ChannelGroupLocalSeismogramResult(false, seismograms);
+            return new ChannelGroupLocalSeismogramResult(false, seismograms, new StringTreeLeaf(this, false, "Can't find 3 seismograms for motion vector"));
         }
 
         logger.info("RecFunc for "+ChannelIdUtil.toStringNoDates(channelGroup.getChannels()[0].get_id()));
@@ -108,7 +109,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
             if (chGrpSeismograms[i] == null) {
                 // must not be all here yet
                 System.out.println("chGrpSeismograms["+i+"] is null");
-                return new ChannelGroupLocalSeismogramResult(false, seismograms);
+                return new ChannelGroupLocalSeismogramResult(false, seismograms, new StringTreeLeaf(this, false, "seismogram "+i+" is null"));
             }
         }
 
@@ -287,12 +288,12 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
             // problem occurred
             SeisDataErrorEvent error = processor.getError();
             logger.error("problem with recfunc:", error.getCausalException());
-            return new ChannelGroupLocalSeismogramResult(false, seismograms);
+            return new ChannelGroupLocalSeismogramResult(false, seismograms, new StringTreeLeaf(this, false, "problem with recfunc", error.getCausalException()));
         }
         MicroSecondDate after = new MicroSecondDate();
         System.out.println("Save took "+after.subtract(before).convertTo(UnitImpl.SECOND));
         System.out.println("Done with "+ChannelIdUtil.toStringNoDates(zeroChannel.get_id()));
-        return new ChannelGroupLocalSeismogramResult(true, seismograms);
+        return new ChannelGroupLocalSeismogramResult(true, seismograms, new StringTreeLeaf(this, true));
     }
 
     public synchronized void appendToSummaryPage(String val) throws IOException {

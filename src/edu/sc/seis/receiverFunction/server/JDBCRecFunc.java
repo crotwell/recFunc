@@ -34,6 +34,7 @@ import edu.sc.seis.fissuresUtil.database.DBUtil;
 import edu.sc.seis.fissuresUtil.database.JDBCSequence;
 import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
@@ -58,14 +59,14 @@ import edu.sc.seis.sod.status.EventFormatter;
 public class JDBCRecFunc extends JDBCTable {
     
     public JDBCRecFunc(Connection conn,
-                       JDBCOrigin jdbcOrigin,
-                       JDBCEventAttr jdbcEventAttr,
+                       JDBCEventAccess jdbcEventAccess,
                        JDBCChannel jdbcChannel,
                        JDBCSodConfig jdbcSodConfig,
                        String dataDirectory) throws SQLException, ConfigurationException, Exception {
         super("receiverFunction", conn);
-        this.jdbcOrigin = jdbcOrigin;
-        this.jdbcEventAttr = jdbcEventAttr;
+        this.jdbcOrigin = jdbcEventAccess.getJDBCOrigin();
+        this.jdbcEventAttr = jdbcEventAccess.getJDBCAttr();
+        this.jdbcEventAccess = jdbcEventAccess;
         this.jdbcChannel = jdbcChannel;
         this.jdbcSodConfig = jdbcSodConfig;
         TableSetup.setup(getTableName(), conn, this, "edu/sc/seis/receiverFunction/server/default.props");
@@ -139,15 +140,23 @@ public class JDBCRecFunc extends JDBCTable {
         Connection conn = jdbcOrigin.getConnection();
         boolean autoCommit = conn.getAutoCommit();
         conn.setAutoCommit(false);
+        CacheEvent cacheEvent = new CacheEvent(eventAttr, prefOrigin);
+        int originDbId = -1;
+        int eventAttrDbId = -1;
         try {
-            int originDbId = jdbcOrigin.put(prefOrigin);
-        int eventAttrDbId = jdbcEventAttr.put(eventAttr);
+            int eventAccessDbId = jdbcEventAccess.put(cacheEvent, "", "", "");
+            try {
+                originDbId = jdbcOrigin.getDBId(prefOrigin);
+                eventAttrDbId = jdbcEventAttr.getDBId(eventAttr);
+            }catch (NotFound e) {
+                // should never happen since we just put the cacheEvent
+                throw new RuntimeException("origin or eventattr was not found after putting. "+cacheEvent.toString(), e);
+            }
         int[] channelDbId = new int[channels.length];
         for(int i = 0; i < channels.length; i++) {
             channelDbId[i] = jdbcChannel.put(channels[i]);
         }
 
-        CacheEvent cacheEvent = new CacheEvent(eventAttr, prefOrigin);
         File stationDir = getDir(cacheEvent, channels[0]);
         stationDir.mkdirs();
         File[] seisFile = new File[original.length];
@@ -434,6 +443,8 @@ public class JDBCRecFunc extends JDBCTable {
     private File dataDir;
     
     private EventFormatter eventFormatter;
+    
+    private JDBCEventAccess jdbcEventAccess;
     
     private JDBCOrigin jdbcOrigin;
     

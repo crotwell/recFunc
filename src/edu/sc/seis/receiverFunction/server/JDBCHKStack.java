@@ -35,6 +35,7 @@ import edu.sc.seis.fissuresUtil.database.DBUtil;
 import edu.sc.seis.fissuresUtil.database.JDBCSequence;
 import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
@@ -55,13 +56,11 @@ import edu.sc.seis.sod.status.EventFormatter;
  */
 public class JDBCHKStack extends JDBCTable {
 
-    public JDBCHKStack(Connection conn, JDBCOrigin jdbcOrigin,
-            JDBCEventAttr jdbcEventAttr, JDBCChannel jdbcChannel,
+    public JDBCHKStack(Connection conn, JDBCEventAccess jdbcEventAccess, JDBCChannel jdbcChannel,
             JDBCSodConfig jdbcSodConfig, JDBCRecFunc jdbcRecFunc)
             throws SQLException, ConfigurationException, TauModelException, Exception {
         super("hkstack", conn);
-        this.jdbcOrigin = jdbcOrigin;
-        this.jdbcEventAttr = jdbcEventAttr;
+        this.jdbcEventAccess = jdbcEventAccess;
         this.jdbcChannel = jdbcChannel;
         this.jdbcRecFunc = jdbcRecFunc;
         TableSetup.setup(getTableName(), conn, this, "edu/sc/seis/receiverFunction/server/default.props");
@@ -273,9 +272,7 @@ public class JDBCHKStack extends JDBCTable {
     private PreparedStatement uncalculated, calcByPercent, put,
             getForStation;
 
-    private JDBCOrigin jdbcOrigin;
-
-    private JDBCEventAttr jdbcEventAttr;
+    private JDBCEventAccess jdbcEventAccess;
 
     private JDBCChannel jdbcChannel;
 
@@ -321,19 +318,16 @@ public class JDBCHKStack extends JDBCTable {
         ConnMgr.setDB(ConnMgr.POSTGRES);
         Properties props = StackSummary.loadProps(args);
         Connection conn = ConnMgr.createConnection();
-        JDBCOrigin jdbcOrigin = new JDBCOrigin(conn);
-        JDBCEventAttr jdbcEventAttr = new JDBCEventAttr(conn);
+        JDBCEventAccess jdbcEventAccess = new JDBCEventAccess(conn);
         JDBCChannel jdbcChannel = new JDBCChannel(conn);
         JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
         JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn,
-                                                  jdbcOrigin,
-                                                  jdbcEventAttr,
+                                                  jdbcEventAccess,
                                                   jdbcChannel,
                                                   jdbcSodConfig,
                                                   RecFuncCacheImpl.getDataLoc());
         JDBCHKStack jdbcHKStack = new JDBCHKStack(conn,
-                                                  jdbcOrigin,
-                                                  jdbcEventAttr,
+                                                  jdbcEventAccess,
                                                   jdbcChannel,
                                                   jdbcSodConfig,
                                                   jdbcRecFunc);
@@ -404,12 +398,8 @@ public class JDBCHKStack extends JDBCTable {
         return jdbcChannel;
     }
 
-    public JDBCEventAttr getJDBCEventAttr() {
-        return jdbcEventAttr;
-    }
-
-    public JDBCOrigin getJDBCOrigin() {
-        return jdbcOrigin;
+    public JDBCEventAccess getJDBCEventAccess() {
+        return jdbcEventAccess;
     }
 
     public JDBCRecFunc getJDBCRecFunc() {

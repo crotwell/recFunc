@@ -22,6 +22,7 @@ import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
@@ -41,12 +42,11 @@ public class StackSummary {
 
     public StackSummary(Connection conn) throws IOException, SQLException,
             ConfigurationException, TauModelException, Exception {
-        JDBCOrigin jdbcOrigin = new JDBCOrigin(conn);
-        JDBCEventAttr jdbcEventAttr = new JDBCEventAttr(conn);
+        JDBCEventAccess jdbcEventAccess = new JDBCEventAccess(conn);
         JDBCChannel jdbcChannel  = new JDBCChannel(conn);
         JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
-        JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.getDataLoc());
-        jdbcHKStack = new JDBCHKStack(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
+        JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.getDataLoc());
+        jdbcHKStack = new JDBCHKStack(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
     }
 
     public void createSummary(String net,

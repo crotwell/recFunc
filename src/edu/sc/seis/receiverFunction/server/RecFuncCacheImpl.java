@@ -18,6 +18,7 @@ import edu.sc.seis.IfReceiverFunction.SodConfigNotFound;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
@@ -36,12 +37,11 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         ConnMgr.setURL(databaseURL);
         DATA_LOC = dataloc;
         Connection conn = ConnMgr.createConnection();
-        jdbcOrigin = new JDBCOrigin(conn);
-        jdbcEventAttr = new JDBCEventAttr(conn);
+        jdbcEventAccess = new JDBCEventAccess(conn);
         jdbcChannel  = new JDBCChannel(conn);
         jdbcSodConfig = new JDBCSodConfig(conn);
-        jdbcRecFunc = new JDBCRecFunc(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, jdbcSodConfig, DATA_LOC);
-        jdbcHKStack = new JDBCHKStack(conn,  jdbcOrigin, jdbcEventAttr, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
+        jdbcRecFunc = new JDBCRecFunc(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, DATA_LOC);
+        jdbcHKStack = new JDBCHKStack(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
     }
     
     Connection getConnection() {
@@ -198,10 +198,8 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     public static String getDataLoc() {
         return DATA_LOC;
     }
-    
-    private JDBCOrigin jdbcOrigin ;
-    
-    private JDBCEventAttr jdbcEventAttr;
+
+    private JDBCEventAccess jdbcEventAccess;
     
     private JDBCChannel jdbcChannel;
     

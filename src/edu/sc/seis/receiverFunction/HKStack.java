@@ -63,7 +63,7 @@ public class HKStack  {
                 double timePs = h * (etaS - etaP) + shift.value;
                 double timePpPs = h * (etaS + etaP) + shift.value;
                 double timePsPs = h * (2 * etaS) + shift.value;
-                ans[i][j] += getAmp(seis, timePs)
+                ans[j][i] += getAmp(seis, timePs)
                     + getAmp(seis, timePpPs)
                     - getAmp(seis, timePsPs);
             }

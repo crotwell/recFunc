@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<html>
+<header><title>$runName - Events for $fissures.formatStation($station.get_id())</title>
+<style media="all">@import "../../main.css";</style>
+<script type="text/javascript" src="../../tableRuler.js"> </script>
+<script type="text/javascript">
+window.onload=function(){
+        tableruler();
+        set_img_dir('../../images/')
+}
+</script>
+<script type="text/javascript" src="../../sorttable.js"> </script>
+</header>
+<body>
+<div id="Header">
+Events for $fissures.formatNetwork($station.get_id()) $fissures.formatStation($station.get_id())
+</div>
+<div id="Content">
+<table class="sortable ruler" id="eventTable">
+<tr class="title">
+<th><b>Region</b></th>
+<th><b>Time</b></th>
+<th><b>Magnitude</b></th>
+<th><b>% Match</b></th>
+<th><b>Depth</b></th>
+<th><b>Latitude</b></th>
+<th><b>Longitude</b></th>
+<th><b>Distance</b></th>
+<th><b>Azimuth</b></th>
+<th><b>Back Azimuth</b></th>
+</tr>
+#set( $extraRows = 10 )
+#foreach ( $ecp in $successful_station_events )
+<tr>
+#set ( $event = $ecp.event )
+#set ( $origin = $event.get_preferred_origin() )
+#set ( $eventDir = $fissures.formatDateForFile($origin) )
+<td><a href="../../$eventDir/$fissures.formatStation($station.get_id())/seismograms.html">$FERegion.getRegionName(${event.get_attributes().region})</a></td>
+<td>$velocity_date.format("MM/dd/yyyy HH:mm:ss ZZZ", $event.get_preferred_origin().getTime())</td>
+<td>
+#foreach ($m in $origin.Magnitudes)
+$fissures.formatMagnitude($m),
+#end</td>
+<td>$ecp.getCookieJar().get("recFunc.percentMatch")</td>
+<td>$fissures.formatQuantity($fissures.getDepth($origin.location))</td>
+<td>$fissures.getLatitude($origin.location)</td>
+<td>$fissures.getLongitude($origin.location)</td>
+<td>$fissures.formatQuantity($fissures.getDistance($station.location, $origin.location))</td>
+<td>$fissures.formatQuantity($fissures.getAzimuth($station.location, $origin.location))</td>
+<td>$fissures.formatQuantity($fissures.getBackAzimuth($station.location, $origin.location))</td>
+</tr>
+#set( $extraRows = $extraRows - 1 )
+#end
+#if ( $extraRows > 0 )
+#foreach ( $row in [1..$extraRows])
+<tr><td>&nbsp</td></tr>
+#end
+#end
+</table>
+</div>
+<div id="footer">
+<h2>Page last generated:</h2>$fissures.formatDate($fissures.now())<br/>
+</div>
+$menu
+</body>
+</html>
+
+
+

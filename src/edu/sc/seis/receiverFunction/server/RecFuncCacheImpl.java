@@ -13,6 +13,7 @@ import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.IfReceiverFunction.RecFuncCachePOA;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.IfReceiverFunction.SodConfigNotFound;
+import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
@@ -28,13 +29,14 @@ import edu.sc.seis.sod.ConfigurationException;
  */
 public class RecFuncCacheImpl extends RecFuncCachePOA {
     
-    public RecFuncCacheImpl() throws SQLException, ConfigurationException, IOException {
+    public RecFuncCacheImpl() throws IOException, SQLException, ConfigurationException, TauModelException {
         ConnMgr.setDB(ConnMgr.POSTGRES);
         Connection conn = ConnMgr.createConnection();
         jdbcOrigin = new JDBCOrigin(conn);
         jdbcEventAttr = new JDBCEventAttr(conn);
         jdbcChannel  = new JDBCChannel(conn);
         jdbcRecFunc = new JDBCRecFunc(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, "Ears/Data");
+        jdbcHKStack = new JDBCHKStack(conn);
     }
     
 	public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,
@@ -91,6 +93,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                   transverseBump,
                                                   sodConfig_id);
                 System.out.println("insert "+recFuncDbId);
+                jdbcHKStack.calc(recFuncDbId);
             }
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);
@@ -117,11 +120,13 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
 
 
     public int insertSodConfig(String config) {
-return -1;
+        System.err.println("NO IMPL insertSodConfig");
+        return -1;
     }
 
     public String getSodConfig(int sodConfig_id) throws SodConfigNotFound {
-return "NO IMPL";
+        System.err.println("NO IMPL getSodConfig");
+        return "NO IMPL";
     }
     
     private JDBCOrigin jdbcOrigin ;
@@ -132,4 +137,5 @@ return "NO IMPL";
     
     private JDBCRecFunc jdbcRecFunc;
     
+    private JDBCHKStack jdbcHKStack;
 }

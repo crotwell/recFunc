@@ -31,6 +31,7 @@ import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
+import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
@@ -60,12 +61,30 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
 
     public RecFuncProcessor(Element config)  throws ConfigurationException {
         super(config);
+        IterDeconConfig deconConfig = parseIterDeconConfig(config);
+        logger.info("Init RecFuncProcessor");
+    }
+    
+    public static IterDeconConfig parseIterDeconConfig(Element config) {
+        float gwidth = DEFAULT_GWIDTH;
+        int maxBumps = DEFAULT_MAXBUMPS;
+        float tol = DEFAULT_TOL;
         Element gElement = SodUtil.getElement(config, "gaussianWidth");
         if (gElement != null) {
             String gwidthStr = SodUtil.getNestedText(gElement);
             gwidth = Float.parseFloat(gwidthStr);
         }
-        logger.info("Init RecFuncProcessor");
+        Element bumpsElement = SodUtil.getElement(config, "maxBumps");
+        if (bumpsElement != null) {
+            String bumpsStr = SodUtil.getNestedText(bumpsElement);
+            maxBumps = Integer.parseInt(bumpsStr);
+        }
+        Element toleranceElement = SodUtil.getElement(config, "tolerance");
+        if (toleranceElement != null) {
+            String toleranceStr = SodUtil.getNestedText(toleranceElement);
+            tol = Integer.parseInt(toleranceStr);
+        }
+        return new IterDeconConfig(gwidth, maxBumps, tol);
     }
 
     /**
@@ -388,11 +407,15 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
     TauPUtil tauPTime;
     LocalSeismogramTemplateGenerator lSeisTemplateGen = null;
 
-    protected float gwidth = 2.5f;
-
-    protected float tol = .001f;
+    static float DEFAULT_GWIDTH = 2.5f;
+    static int DEFAULT_MAXBUMPS = 400;
+    static float DEFAULT_TOL = 0.001f;
     
-    protected int maxBumps = 400;
+    protected float gwidth;
+
+    protected float tol;
+    
+    protected int maxBumps;
     
     String modelName = "iasp91";
 

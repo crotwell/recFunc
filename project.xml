@@ -322,6 +322,13 @@
                 </includes>
             </resource>
             <resource>
+                <directory>src/edu/sc/seis/receiverFunction/server</directory>
+                <targetPath>edu/sc/seis/receiverFunction/server</targetPath>
+                <includes>
+                    <include>*.prop</include>
+                </includes>
+            </resource>
+            <resource>
                 <directory>src/edu/sc/seis/receiverFunction/crust2</directory>
                 <targetPath>edu/sc/seis/receiverFunction/crust2</targetPath>
                 <includes>

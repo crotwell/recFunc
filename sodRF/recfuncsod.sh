@@ -16,12 +16,12 @@ XERCES=$MAVEN/xerces/jars/xerces-2.4.0.jar
 XMLAPI=$MAVEN/xml-apis/jars/xml-apis-1.0.b2.jar
 JAICORE=$MAVEN/jars/jai_core.jar
 JAICODEC=$MAVEN/jars/jai_codec.jar
-HSQLDB=$MAVEN/hsqldb/jars/hsqldb-1.7.1.jar
+HSQLDB=$MAVEN/hsqldb/jars/hsqldb-20040212.jar
 GEE=$MAVEN/gee/jars/gee-2.0.4.jar
 JING=$MAVEN/jing/jars/jing-20030619.jar
 OPENMAP=$MAVEN/openmap/jars/openmap-4.5.4_USC1.jar
 SOD=$MAVEN/sod/jars/sod-1.0Beta.jar
-RECFUNC=$MAVEN/recFunc/jars/recFunc-1.0Beta.jar
+RECFUNC=$MAVEN/recFunc/jars/recFunc-1.0beta.jar
 
 $JACO -Djacorb.connection.client.pending_reply_timeout=120000 -Xmx256m -cp ${SEEDCODEC}:${SOD}:${RECFUNC}:${OPENMAP}:${GEE}:${JING}:${FISSURESIDL}:${FISSURESIMPL}:${FISSURESUTIL}:${XERCES}:${XMLAPI}:${XALAN}:${TAUP}:${LOG4J}:${HSQLDB}:${CLASSPATH} edu.sc.seis.sod.Start $*
 

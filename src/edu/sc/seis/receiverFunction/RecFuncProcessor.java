@@ -73,11 +73,11 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         
         if (chGrpSeismograms.length < 3) {
             logger.debug("chGrpSeismograms.length = "+chGrpSeismograms.length);
-            System.out.println("chGrpSeismograms.length = "+chGrpSeismograms.length);
             // must not be all here yet
             return seismograms;
         }
-        System.out.println("RecFunc for "+ChannelIdUtil.toStringNoDates(channel.get_id()));
+        
+        logger.info("RecFunc for "+ChannelIdUtil.toStringNoDates(channel.get_id()));
         for (int i=0; i<chGrpSeismograms.length; i++) {
             if (chGrpSeismograms[i] == null) {
                 // must not be all here yet
@@ -92,7 +92,6 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                                         recFunc);
         for (int i=0; i<chGrpSeismograms.length; i++) {
             logger.debug("Retrieving for "+chGrpSeismograms[i].getName());
-            System.out.println("Retrieving for "+chGrpSeismograms[i].getName());
             chGrpSeismograms[i].retrieveData(processor);
         }
         while ( ! processor.isRecFuncFinished()) {
@@ -105,8 +104,6 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         }
         if (processor.getError() == null) {
             if (processor.getPredicted() != null) {
-                System.out.println("No error for "+ChannelIdUtil.toStringNoDates(channel.get_id()));
-                
                 MemoryDataSetSeismogram predicted = processor.getPredicted();
                 dataset.remove(predicted); // to avoid duplicates
                 Channel recFuncChannel = new ChannelImpl(predicted.getRequestFilter().channel_id,
@@ -116,23 +113,14 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                                                          channel.effective_time,
                                                          channel.my_site);
                 
-                System.out.println("Before save "+ChannelIdUtil.toStringNoDates(channel.get_id()));
                 saveInDataSet(event, recFuncChannel, predicted.getCache());
-                System.out.println("After save "+predicted.getCache().length+" "+ChannelIdUtil.toStringNoDates(channel.get_id()));
-                
-                String[] seisNames = dataset.getDataSetSeismogramNames();
-                for (int i = 0; i < seisNames.length; i++) {
-                    System.out.println("Finished, seismograms are: "+seisNames[i]);
-                }
             } else {
-                System.out.println("problem with recfunc: predicted is null");
-                logger.warn("problem with recfunc: predicted is null");
+                logger.error("problem with recfunc: predicted is null");
             }
         } else {
             // problem occurred
             SeisDataErrorEvent error = processor.getError();
-            System.out.println("problem with recfunc:"+ error.getCausalException());
-            logger.warn("problem with recfunc:", error.getCausalException());
+            logger.error("problem with recfunc:", error.getCausalException());
         }
         return seismograms;
     }

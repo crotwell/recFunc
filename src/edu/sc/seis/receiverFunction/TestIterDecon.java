@@ -61,21 +61,34 @@ public class TestIterDecon {
         predOut.depmin = -12345;
         predOut.depmax = -12345;
         predOut.depmen = -12345;
-        predOut.write("recfunc.predicted");
-        System.out.println("before predicted[0] = "+predOut.y[0]);
-
-        predOut = new SacTimeSeries();
-        predOut.read("recfunc.predicted");
-        System.out.println("after predicted[0] = "+predOut.y[0]);
+        String filename = "recfunc.predicted";
+        predOut.write(filename);
+        setOSFileExtras(filename);
 
         float[] residual = ans.getResidual();
         predOut.y = residual;
-        predOut.write("recfunc.residual");
+        filename = "recfunc.residual";
+        predOut.write(filename);
+        setOSFileExtras(filename);
 
         float[][] corrSave = ans.getCorrSave();
         predOut.y = corrSave[0];
-        predOut.write("recfunc.corr");
+        filename = "recfunc.corr";
+        predOut.write(filename);
+        setOSFileExtras(filename);
+
 
     } // end of main ()
+
+    private static void setOSFileExtras(String name) {
+       try {
+            Class fmClass = Class.forName("com.apple.eio.FileManager");
+            com.apple.eio.FileManager.setFileCreator(name, GEE_CREATOR_CODE);
+        } catch (Exception e) {
+            
+       } // end of try-catch
+    }
+
+    protected static final int GEE_CREATOR_CODE = 0x47454520;
     
 }// TestIterDecon

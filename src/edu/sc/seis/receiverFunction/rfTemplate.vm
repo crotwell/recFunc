@@ -81,6 +81,7 @@ $fissures.formatMagnitude($m),
 <td>$velocity_date.format("MM/dd/yyyy HH:mm:ss ZZZ", $fissures.getRangeEnd($station.EffectiveTime))</td>
 </tr>
 </table>
+
 <h2>Seismograms</h2>
 <table>
 #foreach ($chanId in $allChanIds)
@@ -103,9 +104,10 @@ $chanContext.status <br/>
 <td><b>Radial RF</b><br/>
 </td>
 <td>
-<img src="${fissures.formatSite($channel.getSite().get_id())}_ITR.png"/>
+<img src="${fissures.formatSite($channel.getSite().get_id())}.ITR.png"/>
 </td>
 </tr>
+
 <tr>
 <td><b>Transverse RF</b><br/>
 </td>
@@ -114,6 +116,7 @@ $chanContext.status <br/>
 </td>
 </tr>
 </table>
+
 #if ( $recFunc_hkstack_image_ITR )
 <br/>
 <img src="$recFunc_hkstack_image_ITR"/>
@@ -127,7 +130,7 @@ $chanContext.status <br/>
 
 <table>
 <tr><td>percentMatch</td><td>$stack_ITR.percentMatch</td></tr>
-<tr><td>ChannelId</td><td>$stack_ITR.ChannelId</td></tr>
+<tr><td>ChannelId</td><td>$fissures.formatChannel($stack_ITR.ChannelId)</td></tr>
 <tr><td>P</td><td>$stack_ITR.P</td></tr>
 <tr><td>Alpha</td><td>$stack_ITR.Alpha</td></tr>
 <tr><td>MinH</td><td>$stack_ITR.MinH</td></tr>
@@ -146,4 +149,5 @@ $chanContext.status <br/>
 </body>
 </html>
 </template>
+
 

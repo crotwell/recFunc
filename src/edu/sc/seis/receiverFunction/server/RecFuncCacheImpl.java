@@ -3,17 +3,18 @@ package edu.sc.seis.receiverFunction.server;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.omg.CORBA.UNKNOWN;
-import edu.iris.Fissures.IfEvent.EventAccess;
+import edu.iris.Fissures.IfEvent.EventAttr;
+import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.sc.seis.IfReceiverFunction.RecFuncCachePOA;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
-import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
+import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
+import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
-import edu.sc.seis.sod.CommonAccess;
 
 
 /**
@@ -24,11 +25,12 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     
     public RecFuncCacheImpl() throws SQLException {
         Connection conn = ConnMgr.createConnection();
-        jdbcEventAccess = new JDBCEventAccess(conn);
+        jdbcOrigin = new JDBCOrigin(conn);
+        jdbcEventAttr = new JDBCEventAttr(conn);
         jdbcChannel  = new JDBCChannel(conn);
     }
     
-	public IterDeconConfig[] getCachedConfigs(EventAccess event,
+	public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,
 				                    ChannelId[] channel) {
 		
 	return null;
@@ -37,7 +39,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     /**
      *
      */
-    public LocalSeismogram[] get(EventAccess event,
+    public LocalSeismogram[] get(Origin prefOrigin,
 						        ChannelId[] channel,
 								IterDeconConfig config) {
         // TODO Auto-generated method stub
@@ -46,7 +48,8 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     /**
      *
      */
-    public void insert(EventAccess event,
+    public void insert(Origin prefOrigin,
+                       EventAttr eventAttr,
                        IterDeconConfig config,
                        Channel[] channels,
                        LocalSeismogram[] original,
@@ -56,7 +59,8 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                        float transverseError) {
         // TODO Auto-generated method stub
         try {
-            int eventDbId = jdbcEventAccess.put(event, CommonAccess.getCommonAccess().getORB().object_to_string(event), "server", "dns");
+            int eventDbId = jdbcOrigin.put(prefOrigin);
+            int eventyAttrDbId = jdbcEventAttr.put(eventAttr);
             int[] channelDbId = new int[channels.length];
             for(int i = 0; i < channels.length; i++) {
                 channelDbId[i] = jdbcChannel.put(channels[i]);
@@ -71,14 +75,16 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     /**
      *
      */
-    public boolean isCached(EventAccess event,
+    public boolean isCached(Origin prefOrigin,
             ChannelId[] channel,
             IterDeconConfig config) {
         // TODO Auto-generated method stub
         return false;
     }
     
-    JDBCEventAccess jdbcEventAccess;
+    JDBCEventAttr jdbcEventAttr;
+    
+    JDBCOrigin jdbcOrigin;
     
     JDBCChannel jdbcChannel;
 }

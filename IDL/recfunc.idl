@@ -22,20 +22,21 @@ module IfReceiverFunction {
 	
     interface RecFuncCache {
 
-        boolean isCached(in Fissures::IfEvent::EventAccess event, 
+        boolean isCached(in Fissures::IfEvent::Origin prefOrigin, 
         				    in ChannelIdSeq channel,
         				    in IterDeconConfig config);
         				    
         
-        IterDeconConfigSeq getCachedConfigs(in Fissures::IfEvent::EventAccess event, 
+        IterDeconConfigSeq getCachedConfigs(in Fissures::IfEvent::Origin prefOrigin, 
         				    in ChannelIdSeq channel);
 
         Fissures::IfSeismogramDC::LocalSeismogramSeq get(
-                           in Fissures::IfEvent::EventAccess event,
+                           in Fissures::IfEvent::Origin prefOrigin,
                            in ChannelIdSeq channel,
                            in IterDeconConfig config);
 					      
-        void insert(in Fissures::IfEvent::EventAccess event,
+        void insert(in Fissures::IfEvent::Origin prefOrigin,
+                    in Fissures::IfEvent::EventAttr event_attr,
 					      in IterDeconConfig config,
 					      in ChannelSeq channels,
 					      in Fissures::IfSeismogramDC::LocalSeismogramSeq original,

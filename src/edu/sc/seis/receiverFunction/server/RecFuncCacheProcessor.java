@@ -103,7 +103,8 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements WaveformV
         }
 
         IterDeconConfig config = new IterDeconConfig(gwidth, maxBumps, tol);
-        cache.insert(((ProxyEventAccessOperations)event).getCorbaObject(),
+        cache.insert(origin,
+                     event.get_attributes(),
                      config,
                      channelGroup.getChannels(),
                      singleSeismograms,

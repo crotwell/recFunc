@@ -20,7 +20,7 @@ dwilsonkeys = dwilson.keys()
 dwilsonkeys.sort()
 for sta in dwilsonkeys:
     #  if abs(float(ears[sta]) - float(dwilson[sta])) > 10:
-    print dwilson[sta], ears[sta], sta
+    print ears[sta], dwilson[sta],  sta
 
 
 

@@ -243,18 +243,22 @@ public class RecFuncTask  extends MouseAdapter implements GUITask {
                 
                 Arrival[] pPhases = CommonAccess.getCommonAccess().getTravelTimes(evtLoc, staLoc, "ttp");
                 MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
-                firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
-                TimeInterval shift = firstP.subtract(z.getBeginTime());
-                shift = (TimeInterval)shift.convertTo(UnitImpl.SECOND);
+                logger.debug("origin "+firstP);
+                firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
+                logger.debug("firstP "+firstP);
+                //TimeInterval shift = firstP.subtract(z.getBeginTime());
+                //shift = (TimeInterval)shift.convertTo(UnitImpl.SECOND);
+                TimeInterval shift = new TimeInterval(10, UnitImpl.SECOND);
+                
                 predicted = decon.phaseShift(predicted,
                                                  (float)shift.getValue(),
                                                  (float)period);
                 
                 logger.info("Finished with receiver funciton processing");
-                
+                logger.debug("rec func begin "+firstP.subtract(shift));
                 LocalSeismogramImpl predSeis =
                     new LocalSeismogramImpl("recFunc/"+z.get_id(),
-                                            z.getBeginTime().getFissuresTime(),
+                                            firstP.subtract(shift).getFissuresTime(),
                                             predicted.length,
                                             z.sampling_info,
                                             z.y_unit,

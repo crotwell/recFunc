@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>Network List</title>
+<link rel="stylesheet" type="text/css" href="usarray.css"/>
+</head>
+<body>
+	
+<div id="content" align="left">
+
+<table>
+<tr>
+<td class="odd">Code</td>
+<td class="even">Begin</td>
+<td class="even">Name</td>
+</tr>
+#foreach($net in $networkList)
+<tr>
+<td class="odd">$net.getId()</td>
+<td class="even">$fissures.formatTime($net.effective_time.start_time)</td>
+<td class="odd"><a href="stations.html?nwcode=${net}.getCode()&leapsecondsversion=${net}.getId().begin_time.leap_seconds_version&datetime=${net}.getId().begin_time.date_time">$net.name</a></td>
+</td>
+</tr>
+#end
+</table>
+
+
+<div id="footer2" align="center">
+  <a href="http://seis.sc.edu">
+    <img src="seislogo.gif" alt="Seismology at USC" title="USC"/>
+  </a>
+  <a href="http://www.iris.edu">
+    <img src="irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
+  </a>
+</div id="footer2">
+</div id="content">
+</body>
+</html>

@@ -63,6 +63,9 @@ hkstack.create=CREATE TABLE hkstack ( \
                    peakH float, \
                    peakK float, \
                    peakVal float, \
+                   weightPs float, \
+                   weightPpPs float, \
+                   weightPsPs float, \
                    data bytea, \
                    insertTime timestamp, \
                    PRIMARY KEY (hkstack_id), \
@@ -111,17 +114,24 @@ hkstack.put=INSERT INTO hkstack ( \
                    peakH , \
                    peakK , \
                    peakVal , \
+                   weightPs , \
+                   weightPpPs , \
+                   weightPsPs , \
                    data , \
                    insertTime) \
                    VALUES ( \
-                   ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?)
+                   ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?, ?,?,?)
 
 
 hkstack.get=SELECT * FROM  \
-                   receiverFunction \
-                   ,hkStack \
+                   network \
+                   NATURAL JOIN station \
+                   NATURAL JOIN site \
+                   NATURAL JOIN channel \
+                   JOIN  receiverFunction ON (chanz_id = chan_id ) \
+                   , hkStack \
                    WHERE  \
-                   receiverfunction.recfunc_id = hkstack.recfunc_id AND \
+                   hkstack.recfunc_id = receiverFunction.recfunc_id AND \
                    hkstack.recfunc_id = ?
 
 hkstack.getForStation=SELECT * FROM network \
@@ -150,6 +160,9 @@ sumhkstack.create=CREATE TABLE sumhkstack ( \
                    peakH float, \
                    peakK float, \
                    peakVal float, \
+                   weightPs float, \
+                   weightPpPs float, \
+                   weightPsPs float, \
                    data bytea, \
                    insertTime timestamp, \
                    PRIMARY KEY (sumhkstack_id), \

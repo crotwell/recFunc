@@ -6,7 +6,12 @@
 
 package edu.sc.seis.receiverFunction;
 
+import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.sc.seis.fissuresUtil.mockFissures.IfEvent.MockEventAccessOperations;
+import edu.sc.seis.fissuresUtil.mockFissures.IfNetwork.MockChannel;
+import edu.sc.seis.sod.CookieJar;
 import java.util.HashMap;
+import java.util.HashSet;
 import junit.framework.TestCase;
 import org.apache.velocity.VelocityContext;
 import edu.iris.Fissures.network.ChannelIdUtil;
@@ -17,7 +22,8 @@ public class RecFuncTemplateTest extends TestCase {
 
     public void testProcess() throws Exception {
         RecFuncTemplate template = new RecFuncTemplate();
-        VelocityContext context = new VelocityContext();
+
+        VelocityContext context = new VelocityContext(CookieJar.getCommonContext());
 
         context.put("sod_event", MockEventAccessOperations.createEvent());
         context.put("sod_channel", MockChannel.createChannel());
@@ -31,6 +37,11 @@ public class RecFuncTemplateTest extends TestCase {
         aux.put("testA", "A");
         aux.put("testB", "B");
         context.put("recFunc_pred_auxData", aux);
+        HashSet set = new HashSet();
+        set.add("setA");
+        set.add("setB");
+        context.put("set", set);
+
         template.process(context, "testTemplate.html");
     }
 }

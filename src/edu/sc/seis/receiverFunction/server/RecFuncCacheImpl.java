@@ -23,6 +23,7 @@ import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.sod.ConfigurationException;
 
 
@@ -115,8 +116,11 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                       transverseBump,
                                                       sodConfig_id);
                     System.out.println("insert " + recFuncDbId
-                            + " with weights of 1");
-                    jdbcHKStack.calc(recFuncDbId, 1, 1, 1);
+                            + " with weights of 1/3");
+                    float weightPs = 1/3f;
+                    float weightPpPs = 1/3f;
+                    float weightPsPs = 1 - weightPs - weightPpPs;
+                    jdbcHKStack.calcAndStore(recFuncDbId, weightPs, weightPpPs, weightPsPs);
                     conn.commit();
                 } catch(Throwable e) {
                     conn.rollback();

@@ -74,11 +74,11 @@ public class JDBCHKStack extends JDBCTable {
         tauPTime = TauPUtil.getTauPUtil(modelName);
     }
     
-    public HKStack get(int recfunc_id) throws SQLException, IOException {
+    public HKStack get(int recfunc_id) throws IOException, SQLException, NotFound {
        get.setInt(1, recfunc_id);
        ResultSet rs = get.executeQuery();
        if (rs.next()) {
-           byte[] stackBytes = rs.getBytes("stack");
+           byte[] stackBytes = rs.getBytes("data");
            int numH = rs.getInt("numH");
            int numK = rs.getInt("numK");
            float[][] data = new float[numH][numK];
@@ -89,6 +89,7 @@ public class JDBCHKStack extends JDBCTable {
                    data[i][j] = dos.readFloat();
                }
            }
+           Channel chan = JDBCChannel.extract(rs, jdbcChannel.getSiteTable(), jdbcChannel.getTimeTable(), jdbcChannel.getQuantityTable());
            return new HKStack(rs.getFloat("alpha"),
                               rs.getFloat("p"),
                               rs.getFloat("percentMatch"),
@@ -101,10 +102,12 @@ public class JDBCHKStack extends JDBCTable {
                               rs.getFloat("weightPs"),
                               rs.getFloat("weightPpPs"),
                               rs.getFloat("weightPsPs"),
-                              data);
+                              data,
+                              chan);
        } else {
+           System.out.println("get hkstack: "+get);
            rs.close();
-           return null;
+           throw new NotFound();
        }
     }
     
@@ -128,6 +131,9 @@ public class JDBCHKStack extends JDBCTable {
         peakH = stack.getMinH() + stack.getStepH() * indicies[0];
         peakK = stack.getMinK() + stack.getStepK() * indicies[1];
         peakVal = stack.getStack()[indicies[0]][indicies[1]];
+        put.setFloat(index++, stack.getWeightPs());
+        put.setFloat(index++, stack.getWeightPpPs());
+        put.setFloat(index++, stack.getWeightPsPs());
         put.setFloat(index++, peakH);
         put.setFloat(index++, peakK);
         put.setFloat(index++, peakVal);
@@ -212,6 +218,16 @@ public class JDBCHKStack extends JDBCTable {
             individualHK.add(stack);
         }
         return individualHK;
+    }
+    
+    void calcAndStore(int recFuncDbId,
+                      float weightPs,
+                      float weightPpPs,
+                      float weightPsPs) throws TauModelException,
+                 FileNotFoundException, FissuresException, NotFound, IOException,
+                 SQLException {
+        HKStack stack = calc(recFuncDbId, weightPs, weightPpPs, weightPsPs);
+        put(recFuncDbId, stack);
     }
 
     HKStack calc(int recFuncDbId,
@@ -331,12 +347,16 @@ public class JDBCHKStack extends JDBCTable {
 
     public static void main(String[] args) {
         if(args.length < 1) {
-            System.out.println("Usage: JDBCHKStack -all or net [station]");
+            System.out.println("Usage: JDBCHKStack -all or -net net [-sta station]");
             return;
         }
         float minPercentMatch = 80;
         try {
-            calcAndSave(args, minPercentMatch, true, false, 1, 1, 1);
+            System.out.println("calc with weights of 1/3");
+                       float weightPs = 1/3f;
+                       float weightPpPs = 1/3f;
+                       float weightPsPs = 1 - weightPs - weightPpPs;
+            calcAndSave(args, minPercentMatch, true, false, weightPs, weightPpPs, weightPsPs);
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);
         }
@@ -354,6 +374,7 @@ public class JDBCHKStack extends JDBCTable {
             ConfigurationException, Exception {
         ConnMgr.setDB(ConnMgr.POSTGRES);
         Properties props = StackSummary.loadProps(args);
+        ConnMgr.setURL(props.getProperty("URL"));
         Connection conn = ConnMgr.createConnection();
         JDBCEventAccess jdbcEventAccess = new JDBCEventAccess(conn);
         JDBCChannel jdbcChannel = new JDBCChannel(conn);
@@ -368,9 +389,23 @@ public class JDBCHKStack extends JDBCTable {
                                                   jdbcChannel,
                                                   jdbcSodConfig,
                                                   jdbcRecFunc);
-        String netCode = args[0];
-        if(args.length > 1) {
-            String staCode = args[1];
+        
+        String netCode = "";
+        String staCode = "";
+        for(int i = 0; i < args.length; i++) {
+            if (args[i].equals("-all")) {
+                netCode = args[i];
+            } else if (args[i].equals("-net")) {
+                netCode = args[i+1];
+            } else if (args[i].equals("-sta")) {
+                staCode = args[i+1];
+            }
+        }
+        if (staCode.length() > 0 && netCode.length() == 0 ) {
+            System.err.println("If using -sta, you must also use -net netCode");
+            return new ArrayList();
+        }
+        if(staCode.length() > 0) {
             System.out.println("calc for " + netCode + "." + staCode);
             if(forceAllCalc) {
                 return jdbcHKStack.calcAll(netCode,

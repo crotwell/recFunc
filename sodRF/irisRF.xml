@@ -127,14 +127,14 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <modelName>prem</modelName>
                 <phaseName>P</phaseName>
             </phaseExists>
-            <eventStationNOT>
-                <externalEventVectorSubsetter>
-                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                    <gaussianWidth>2.5</gaussianWidth>
-                </externalEventVectorSubsetter>
-            </eventStationNOT>
         </eventStationAND>
         
+        <eventVectorNOT>
+            <externalEventVectorSubsetter>
+                <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                <gaussianWidth>2.5</gaussianWidth>
+            </externalEventVectorSubsetter>
+        </eventVectorNOT>
             
             <requestGeneratorWrapper>
                 <phaseRequest>

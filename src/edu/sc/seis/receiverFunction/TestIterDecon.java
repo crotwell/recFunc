@@ -17,17 +17,23 @@ public class TestIterDecon {
 	
     }
     
-    public static void main (String[] args) {
+    public static void main (String[] args) throws java.io.IOException  {
 	if ( args.length != 2) {
 	    System.out.println("Usage: java TestIterDecon numer.sac denom.sac");
 	    System.exit(1);
 	} // end of if ()
 	
-	IterDecon decon = new IterDecon(4, true, .001f, 2f);
+	IterDecon decon = new IterDecon(1, true, .001f, 2f);
 	SacTimeSeries num = new SacTimeSeries();
 	num.read(args[0]);
 	SacTimeSeries denom = new SacTimeSeries();
 	denom.read(args[1]);
+
+	// pad to twice length
+	float[] padNum = new float[2*num.y.length];
+	System.arraycopy(num.y, 0, padNum, 0, num.y.length);
+	float[] padDenom = new float[2*denom.y.length];
+	System.arraycopy(denom.y, 0, padDenom, 0, denom.y.length);
 
 	/*	int length = 64;
 	float[] num = new float[length];
@@ -50,8 +56,9 @@ public class TestIterDecon {
 	denom[t+16] = 1f;
 	*/
 
-	IterDeconResult ans = decon.process(num.y, denom.y, num.delta);
+	IterDeconResult ans = decon.process(padNum, padDenom, num.delta);
 	float[] predicted = ans.getPredicted();
+	System.out.println(num.y.length+" points");
 	for (int i=0; i<num.y.length; i++) {
 	    System.out.println(num.y[i]+" "+denom.y[i]+" "+predicted[i]);
 	} // end of for (int i=0; i<num.length; i++)

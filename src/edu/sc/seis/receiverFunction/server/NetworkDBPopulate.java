@@ -22,7 +22,7 @@ public class NetworkDBPopulate {
                                                                          fisName);
         NetworkAccess[] nets = netDC.a_finder().retrieve_by_code(args[0]);
         JDBCNetwork jdbcNet = new JDBCNetwork();
-        jdbcNet.put(nets[0].get_attributes());
-        System.out.println("Done "+args[0]);
+        int dbid = jdbcNet.put(nets[0].get_attributes());
+        System.out.println("Done "+args[0]+" "+dbid);
     }
 }

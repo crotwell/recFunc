@@ -98,7 +98,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
             try {
                 System.out.println("Sleeping "+ChannelIdUtil.toStringNoDates(channel.get_id()));
                 
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
             }
         }

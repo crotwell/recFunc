@@ -19,6 +19,11 @@ xsi:noNamespaceSchemaLocation="http://www.seis.sc.edu/xschema/sod/1.0"
   <properties>
 
     <property>
+      <name>edu.sc.seis.sod.waveformarm.threads</name>
+      <value>1</value>
+    </property>
+
+    <property>
       <name>edu.sc.seis.sod.databasetype</name>
       <value>edu.sc.seis.sod.database.HSqlDbManager</value>
     </property>
@@ -173,6 +178,16 @@ xsi:noNamespaceSchemaLocation="http://www.seis.sc.edu/xschema/sod/1.0"
 
     <printlineSeismogramProcess/>
 
+<!--
+    <sacFileProcessor>
+        <dataDirectory>SP_rf2003</dataDirectory>
+        <eventDirLabel>
+             <originTime>yyyy_DDD_HH_mm_ss</originTime>
+             _N
+        </eventDirLabel>
+    </sacFileProcessor>
+
+-->
     <externalSeismogramProcess>
         <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
         <dataDirectory>SP_rf2003</dataDirectory>
@@ -181,8 +196,6 @@ xsi:noNamespaceSchemaLocation="http://www.seis.sc.edu/xschema/sod/1.0"
                      _N
                 </eventDirLabel>
     </externalSeismogramProcess>
-<!--
--->
 
     </localSeismogramArm>
 

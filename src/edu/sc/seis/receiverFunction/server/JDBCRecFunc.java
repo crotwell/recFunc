@@ -123,7 +123,14 @@ public class JDBCRecFunc extends JDBCTable {
                                                       cacheEvent,
                                                       fileType);
         }
-        Channel zeroChannel = channels[0];
+        int zChanNum = 0;
+        for(int i = 0; i < channels.length; i++) {
+            if (channels[i].get_code().endsWith("Z")) {
+                zChanNum = i;
+                break;
+            }
+        }
+        Channel zeroChannel = channels[zChanNum];
         ChannelId radialChannelId = new ChannelId(zeroChannel.get_id().network_id,
                                                   zeroChannel.get_id().station_code,
                                                   zeroChannel.get_id().site_code,
@@ -161,14 +168,32 @@ public class JDBCRecFunc extends JDBCTable {
         int id = seq.next();
         putStmt.setInt(index++, id);
         putStmt.setInt(index++, originDbId);
-        
         putStmt.setInt(index++, eventAttrDbId);
-        putStmt.setInt(index++, channelDbId[0] );
-        putStmt.setString(index++, seisFile[0].getName() );
-        putStmt.setInt(index++, channelDbId[1]);
-        putStmt.setString(index++, seisFile[1].getName());
-        putStmt.setInt(index++, channelDbId[2]);
-        putStmt.setString(index++, seisFile[2].getName());
+        
+        // put Z chan in right colum, let horizontals be a and b
+        // assume seismograms and channels are in common order
+        switch(zChanNum) {
+            case 0:
+                putStmt.setInt(index++, channelDbId[1] );
+                putStmt.setString(index++, seisFile[1].getName() );
+                putStmt.setInt(index++, channelDbId[2]);
+                putStmt.setString(index++, seisFile[2].getName());
+                break;
+            case 1:
+                putStmt.setInt(index++, channelDbId[0] );
+                putStmt.setString(index++, seisFile[0].getName() );
+                putStmt.setInt(index++, channelDbId[2]);
+                putStmt.setString(index++, seisFile[2].getName());
+                break;
+            case 2:
+                putStmt.setInt(index++, channelDbId[0] );
+                putStmt.setString(index++, seisFile[0].getName() );
+                putStmt.setInt(index++, channelDbId[1]);
+                putStmt.setString(index++, seisFile[1].getName());
+                break;
+        }
+        putStmt.setInt(index++, channelDbId[zChanNum]);
+        putStmt.setString(index++, seisFile[zChanNum].getName());
         putStmt.setString(index++, radialFile.getName());
         putStmt.setFloat(index++, radialError);
         putStmt.setString(index++, transverseFile.getName());

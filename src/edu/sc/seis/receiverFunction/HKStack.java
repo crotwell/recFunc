@@ -122,14 +122,11 @@ public class HKStack {
      *  min x value is in index 0 and the y in index 1. The max x value is in
      *  2 and the y in 3.
      */
-    public int[] getMinMaxValueIndices() {
+    public int[] getMinValueIndices() {
         float[][] stackOut = getStack();
         float min = stackOut[0][0];
-        int maxIndexX = 0;
-        int maxIndexY = 0;
         int minIndexX = 0;
         int minIndexY = 0;
-        float max = min;
         for (int j = 0; j < stackOut.length; j++) {
             for (int k = 0; k < stackOut[j].length; k++) {
                 if (stackOut[j][k] < min) {
@@ -137,6 +134,25 @@ public class HKStack {
                     minIndexX = j;
                     minIndexY = k;
                 }
+            }
+        }
+        int[] xy = new int[2];
+        xy[0] = minIndexX;
+        xy[1] = minIndexY;
+        return xy;
+    }
+
+    /** returns the x and y indices for the max value in the stack. The
+     *  min x value is in index 0 and the y in index 1. The max x value is in
+     *  2 and the y in 3.
+     */
+    public int[] getMaxValueIndices() {
+        float[][] stackOut = getStack();
+        float max = stackOut[0][0];
+        int maxIndexX = 0;
+        int maxIndexY = 0;
+        for (int j = 0; j < stackOut.length; j++) {
+            for (int k = 0; k < stackOut[j].length; k++) {
                 if (stackOut[j][k] > max) {
                     max = stackOut[j][k];
                     maxIndexX = j;
@@ -144,11 +160,9 @@ public class HKStack {
                 }
             }
         }
-        int[] xy = new int[4];
-        xy[0] = minIndexX;
-        xy[1] = minIndexY;
-        xy[2] = maxIndexX;
-        xy[3] = maxIndexY;
+        int[] xy = new int[2];
+        xy[0] = maxIndexX;
+        xy[1] = maxIndexY;
         return xy;
     }
 
@@ -221,17 +235,18 @@ public class HKStack {
             g.translate(0, size.height);
 
 
-            int[] xy = getMinMaxValueIndices();
+            int[] xyMin = getMinValueIndices();
+            int[] xyMax = getMaxValueIndices();
 
-            float min = stack[xy[0]][xy[1]];
-            float max = stack[xy[2]][xy[3]];
+            float min = stack[xyMin[0]][xyMin[1]];
+            float max = stack[xyMax[2]][xyMax[3]];
 
             g.setColor(Color.white);
             g.drawString("% match="+percentMatch, 0, fm.getHeight());
             g.drawString("    ", 0, 2*fm.getHeight());
             g.translate(0, 2*fm.getHeight());
-            g.drawString("Max H="+(getMinH()+xy[3]*getStepH()), 0, fm.getHeight());
-            g.drawString("    K="+(getMinK()+xy[2]*getStepK()), 0, 2*fm.getHeight());
+            g.drawString("Max H="+(getMinH()+xyMax[0]*getStepH()), 0, fm.getHeight());
+            g.drawString("    K="+(getMinK()+xyMax[1]*getStepK()), 0, 2*fm.getHeight());
             g.translate(0, 2*fm.getHeight());
 
             int minColor = HKStackImage.makeImageable(min, max, min);
@@ -288,18 +303,18 @@ public class HKStack {
         } else {
             seis = (LocalSeismogramImpl)data.get(0);
         }
-        for (int i = 0; i < numK; i++) {
-            float beta = alpha/(minK + i*stepK);
+        for (int kIndex = 0; kIndex < numK; kIndex++) {
+            float beta = alpha/(minK + kIndex*stepK);
             float etaS = (float) Math.sqrt(1/(beta*beta)-p*p);
             if (Float.isNaN(etaS)) {
-                System.out.println("Warning: Eta S is NaN "+i+"  beta="+beta+"  p="+p);
+                System.out.println("Warning: Eta S is NaN "+kIndex+"  beta="+beta+"  p="+p);
             }
-            for (int j = 0; j < numH; j++) {
-                float h = minH + j*stepH;
+            for (int hIndex = 0; hIndex < numH; hIndex++) {
+                float h = minH + hIndex*stepH;
                 double timePs = h * (etaS - etaP) + shift.value;
                 double timePpPs = h * (etaS + etaP) + shift.value;
                 double timePsPs = h * (2 * etaS) + shift.value;
-                stack[j][i] += getAmp(seis, timePs)
+                stack[hIndex][kIndex] += getAmp(seis, timePs)
                     + getAmp(seis, timePpPs)
                     - getAmp(seis, timePsPs);
             }

@@ -29,21 +29,28 @@ public class HKStackImage extends JComponent {
 
         float[][] stackOut = stack.getStack();
 
-        int[] xy = stack.getMinMaxValueIndices();
+        int[] xyMin = stack.getMinValueIndices();
+        int[] xyMax = stack.getMaxValueIndices();
 
-        float min = stack.stack[xy[0]][xy[1]];
-        float max = stack.stack[xy[2]][xy[3]];
+        float min = stack.stack[xyMin[0]][xyMin[1]];
+        float max = stack.stack[xyMax[2]][xyMax[3]];
 
         for (int j = 0; j < stackOut.length; j++) {
             //System.out.print(j+" : ");
             for (int k = 0; k < stackOut[j].length; k++) {
-                int colorVal = makeImageable(min, max, stackOut[j][k]);
-                g.setColor(new Color(colorVal, colorVal, colorVal));
-                g.fillRect( 2*k, 2*j, 2, 2);
+                if (j== xyMax[2] && k==xyMax[3]) {
+                    g.setColor(Color.red);
+                } else {
+                    int colorVal = makeImageable(min, max, stackOut[j][k]);
+                    g.setColor(new Color(colorVal, colorVal, colorVal));
+                }
+                g.fillRect( 2*k, 2*(stackOut.length-j-1), 2, 2);
                 //System.out.print(colorVal+" ");
             }
             //System.out.println("");
         }
+        g.setColor(Color.green);
+        g.drawRect(0, 0, 2*stackOut[0].length-1, 2*stackOut.length-1);
     }
 
     static int makeImageable(float min, float max, float val) {

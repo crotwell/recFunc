@@ -1,13 +1,11 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,18 +16,13 @@ import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
-import edu.sc.seis.TauP.TauP_Time;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
-import edu.sc.seis.fissuresUtil.cache.EventUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
-import edu.sc.seis.fissuresUtil.display.AlphaSeisSorter;
-import edu.sc.seis.fissuresUtil.display.DisplayUtils;
 import edu.sc.seis.fissuresUtil.display.MicroSecondTimeRange;
 import edu.sc.seis.fissuresUtil.display.MultiSeismogramWindowDisplay;
-import edu.sc.seis.fissuresUtil.display.SeismogramDisplay;
 import edu.sc.seis.fissuresUtil.display.SeismogramSorter;
 import edu.sc.seis.fissuresUtil.display.configuration.SeismogramDisplayConfiguration;
 import edu.sc.seis.fissuresUtil.display.registrar.PhaseAlignedTimeConfig;
@@ -38,13 +31,11 @@ import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSet;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.StdDataSetParamNames;
-import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.sod.ConfigurationException;
-import edu.sc.seis.sod.process.waveform.SeismogramImageProcess;
 
 /**
  * @author crotwell Created on Feb 24, 2005
@@ -67,9 +58,7 @@ public class SeismogramImage extends HttpServlet {
                                       jdbcChannel,
                                       jdbcSodConfig,
                                       RecFuncCacheImpl.getDataLoc());
-        TauP_Time taup = new TauP_Time("prem");
-        taup.setPhaseNames(new String[] {"ttp"});
-        relTime.setTauP(taup);
+        relTime.setPhaseName("ttp");
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -99,7 +88,6 @@ public class SeismogramImage extends HttpServlet {
             dataset.addParameter(channelParamName,
                                  stack.channels[0],
                                  emptyAudit);
-            
             LocalSeismogramImpl zSeis = (LocalSeismogramImpl)stack.original[0];
             MemoryDataSetSeismogram zDSS = new MemoryDataSetSeismogram(zSeis,
                                                                        zSeis.getName());
@@ -109,7 +97,6 @@ public class SeismogramImage extends HttpServlet {
             dataset.addParameter(channelParamName,
                                  stack.channels[0],
                                  emptyAudit);
-            
             LocalSeismogramImpl aSeis = (LocalSeismogramImpl)stack.original[1];
             MemoryDataSetSeismogram aDSS = new MemoryDataSetSeismogram(aSeis,
                                                                        aSeis.getName());
@@ -119,25 +106,29 @@ public class SeismogramImage extends HttpServlet {
             dataset.addParameter(channelParamName,
                                  stack.channels[1],
                                  emptyAudit);
-            
             LocalSeismogramImpl bSeis = (LocalSeismogramImpl)stack.original[2];
             MemoryDataSetSeismogram bDSS = new MemoryDataSetSeismogram(bSeis,
                                                                        bSeis.getName());
             channelParamName = StdDataSetParamNames.CHANNEL
-            + ChannelIdUtil.toString(stack.channels[2].get_id());
-            System.out.println("Chan: "+channelParamName+"  seis:"+ChannelIdUtil.toString(bDSS.getRequestFilter().channel_id));
+                    + ChannelIdUtil.toString(stack.channels[2].get_id());
+            System.out.println("Chan: "
+                    + channelParamName
+                    + "  seis:"
+                    + ChannelIdUtil.toString(bDSS.getRequestFilter().channel_id));
             dataset.addParameter(channelParamName,
                                  stack.channels[2],
                                  emptyAudit);
             dataset.addDataSetSeismogram(bDSS, emptyAudit);
-    
             Origin o = stack.prefOrigin;
             dataset.addParameter(DataSet.EVENT, event, emptyAudit);
             disp.add(new DataSetSeismogram[] {radialDSS, zDSS, aDSS, bDSS});
             MicroSecondTimeRange mstr = disp.getTimeConfig().getTime();
             TimeInterval window = new TimeInterval(60, UnitImpl.SECOND);
-            disp.getTimeConfig().shaleTime(0, window.divideBy(mstr.getInterval()).convertTo(SEC_PRE_SEC).get_value());
-            System.out.println( window.divideBy(mstr.getInterval()));
+            disp.getTimeConfig().shaleTime(0,
+                                           window.divideBy(mstr.getInterval())
+                                                   .convertTo(SEC_PRE_SEC)
+                                                   .get_value());
+            System.out.println(window.divideBy(mstr.getInterval()));
             disp.outputToPNG(out, dim);
             res.setContentType("image/png");
             out.close();
@@ -154,7 +145,8 @@ public class SeismogramImage extends HttpServlet {
         }
     }
 
-    private UnitImpl SEC_PRE_SEC = UnitImpl.divide(UnitImpl.SECOND, UnitImpl.SECOND);
+    private UnitImpl SEC_PRE_SEC = UnitImpl.divide(UnitImpl.SECOND,
+                                                   UnitImpl.SECOND);
 
     AuditInfo[] emptyAudit = new AuditInfo[0];
 

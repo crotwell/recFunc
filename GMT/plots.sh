@@ -91,8 +91,8 @@ rm XM99ears_wilson_H.ps
 #
 echo EARS and Wilson vs lon for XM99
 #
-grep 'XM99' depth_vpvs.txt | perl -nae 'print "$F[2] $F[3]\n"' - | psxy -K -JX6i -R-112/-101/0/80 -Sc.2 -G0 -B1:"Longitude":/10:"Thickness"::."EARS vs Wilson":WeSn > XM99ears_wilson_lon_H.ps
-perl -nae 'print "$F[2] $F[5]\n"' ../DavidWilson/ristrastationvels.txt | psxy -O -JX -R -Sd.2   >> XM99ears_wilson_lon_H.ps
+perl -nae 'print "10$F[2] $F[5]\n"' ../DavidWilson/ristrastationvels.txt | psxy -K -JX6i -R-111/-103/0/200 -Sd.2 -G200/21/21  > XM99ears_wilson_lon_H.ps
+grep 'XM99' depth_vpvs.txt | perl -nae 'print "$F[2] $F[3]\n"' - | psxy -O -JX -R -Sc.2 -G200/20/200 -B1:"Longitude":/50:"Thickness"::."EARS vs Wilson":WeSn >> XM99ears_wilson_lon_H.ps
 pstopdf XM99ears_wilson_lon_H.ps
 rm XM99ears_wilson_lon_H.ps
 
@@ -118,9 +118,9 @@ echo done california
 echo Ears H usa map
 #
 psbasemap -K  -X1i -Y1i -JM10i -R-125/-65/22/50  -B10 -U  > usa_H.ps
-grdimage crust2_180.grd -Credblue.cpt -JM -R -K -O >> usa_H.ps
+grdimage crust2_180.grd -Ccrust2.cpt -JM -R -K -O >> usa_H.ps
 pscoast -K -O -A10000 -JM -R   -W -Di -N2 -N1  >> usa_H.ps
-cat depth_vpvs.txt |   perl -nae '$d = $F[3];print "$F[2] $F[1] $d\n"' - | psxy -K -O -JM -R -Credblue.cpt -St0.35 >> usa_H.ps
+cat depth_vpvs.txt |   perl -nae '$d = $F[3];print "$F[2] $F[1] $d\n"' - | psxy -K -O -JM -R -Ccrust2.cpt -St0.45 >> usa_H.ps
 #cat depth_vpvs.txt | grep US |  perl -nae '$d = $F[3]-$F[9];print "$F[2] $F[1] $d\n"' - | psxy -K -O -JM -R -Cdiffcrust2.cpt -St0.35 >> usa_H.ps
 
 pstext -O -JM -R >> usa_H.ps <<END
@@ -129,6 +129,11 @@ END
 pstopdf usa_H.ps
 rm usa_H.ps
 echo done usa
+
+# scale for world and usa
+psscale -D6.5i/2i/7.5c/1.25c -B10 -Ccrust2.cpt   > scale_H.ps
+pstopdf scale_H.ps
+rm scale_H.ps
 
 #
 echo Ears H map GSN
@@ -151,10 +156,11 @@ rm gsn_world_H.ps
 echo Ears H map
 #
 psbasemap -K  -X1i -Y1i -JQ0/10i -R-180/180/-90/90  -B20 -U  > world_H.ps
-grdimage crust2_180.grd -Credblue.cpt -JQ -R -K -O >> world_H.ps
+#grdimage crust2_180.grd -Credblue.cpt -JQ -R -K -O >> world_H.ps
+grdimage crust2_180.grd -Ccrust2.cpt -JQ -R -K -O >> world_H.ps
 pscoast -K -O -A10000 -JQ -R   -W -Di    >> world_H.ps
-cat depth_vpvs.txt |  perl -nae '$d = $F[3];print "$F[2] $F[1] $d\n"' - | psxy -K -O -JQ -R -Credblue.cpt -St0.35 >> world_H.ps
-cat depth_vpvs.txt |  perl -nae '$d = $F[3];print "$F[2] $F[1] $d\n"' - | psxy -K -O -JQ -R  -St0.35 >> world_H.ps
+cat depth_vpvs.txt |  perl -nae '$d = $F[3];print "$F[2] $F[1] $d\n"' - | psxy -K -O -JQ -R -Ccrust2.cpt -St0.45 >> world_H.ps
+#cat depth_vpvs.txt |  perl -nae '$d = $F[3];print "$F[2] $F[1] $d\n"' - | psxy -K -O -JQ -R  -St0.35 >> world_H.ps
 #cat depth_vpvs.txt  | perl -nae '$d = $F[3]-$F[9];print "$F[2] $F[1] $d\n"' - | psxy -K -O -JQ -R -Cdiffcrust2.cpt -St0.35 >> world_H.ps
 
 pstext -O -JQ -R >> world_H.ps <<END

@@ -206,6 +206,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <someCoverage/>
             </ORAvailableDataWrapper>
             
+            <threeComponentData/>
+
             <ORWaveformProcessWrapper>
                 <phaseSignalToNoise>
                     <modelName>prem</modelName>
@@ -226,7 +228,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                         <unit>SECOND</unit>
                         <value>-5</value>
                     </longOffsetEnd>
-                    <ratio>2.7</ratio>
+                    <ratio>1.0</ratio>
                 </phaseSignalToNoise>
             </ORWaveformProcessWrapper>
             
@@ -278,6 +280,9 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                     <value>120</value>
                 </endOffset>
             </phaseCut>
+
+            <threeComponentData/>
+
             <seismogramImageProcess>  
                 <seismogramConfig>
                     <template>jar:edu/sc/seis/receiverFunction/rfTemplate.vm</template>
@@ -309,6 +314,11 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <prefix>pre_</prefix>
                 <fileType>pdf</fileType>
             </seismogramImageProcess>
+
+            <externalWaveformVectorProcess>
+                <classname>edu.sc.seis.receiverFunction.crust2.Crust2Process</classname>
+            </externalWaveformVectorProcess>
+
             <externalWaveformVectorProcess>
                 <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
                 <fileType>sac</fileType>

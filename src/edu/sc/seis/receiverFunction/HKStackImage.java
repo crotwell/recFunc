@@ -23,9 +23,6 @@ public class HKStackImage extends JComponent {
         Graphics2D g = (Graphics2D)graphics;
 
         float[][] stackOut = stack.getStack();
-        int dataH = 2*stackOut.length;
-        int dataW = 2*stackOut[0].length;
-
 
         int[] xy = stack.getMinMaxValueIndices();
 
@@ -44,7 +41,7 @@ public class HKStackImage extends JComponent {
         }
     }
 
-    int makeImageable(float min, float max, float val) {
+    static int makeImageable(float min, float max, float val) {
         float absMax = Math.max(Math.abs(min), Math.abs(max));
         return (int)SimplePlotUtil.linearInterp(-1*absMax, 0, absMax, 255, val);
     }

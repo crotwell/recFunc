@@ -131,13 +131,21 @@ public class SumHKStack {
             return null;
         }
     }
-    
+
     public double getHVariance() {
         return hVariance;
     }
 
     public double getKVariance() {
         return kVariance;
+    }
+    
+    public double getHStdDev() {
+        return Math.sqrt(hVariance);
+    }
+
+    public double getKStdDev() {
+        return Math.sqrt(kVariance);
     }
     
     public float getMinPercentMatch() {

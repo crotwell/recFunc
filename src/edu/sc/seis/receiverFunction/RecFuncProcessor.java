@@ -62,11 +62,11 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
      * @exception Exception if an error occurs
      */
     public ChannelGroupLocalSeismogramResult process(EventAccessOperations event,
-                                           ChannelGroup channelGroup,
-                                           RequestFilter[][] original,
-                                           RequestFilter[][] available,
-                                           LocalSeismogramImpl[][] seismograms,
-                                           CookieJar cookieJar) throws Exception {
+                                                     ChannelGroup channelGroup,
+                                                     RequestFilter[][] original,
+                                                     RequestFilter[][] available,
+                                                     LocalSeismogramImpl[][] seismograms,
+                                                     CookieJar cookieJar) throws Exception {
         // save original seismograms, return value is ignored
         for (int i = 0; i < seismograms.length; i++) {
             LocalSeismogramResult saveToFileSeis = super.process(event,
@@ -200,6 +200,8 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                     cookieJar.put("recFunc_hkstack_image_"+ITR_ITT, outImageFile.getName());
                     String[] auxStrings = (String[])aux.toArray(new String[0]);
                     cookieJar.put("recFunc_pred_auxData"+ITR_ITT, auxStrings);
+                    cookieJar.put("recFunc_percentMatch_"+ITR_ITT, ""+HKStack.getPercentMatch(saved));
+
                     cookieJar.put("stack_"+ITR_ITT, stack);
 
                     RecFuncTemplate rfTemplate =new RecFuncTemplate();
@@ -334,6 +336,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
     private static Logger logger = Logger.getLogger(RecFuncProcessor.class);
 
 }
+
 
 
 

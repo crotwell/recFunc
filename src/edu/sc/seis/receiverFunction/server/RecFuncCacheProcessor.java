@@ -110,7 +110,7 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
                                                          firstP.subtract(shift),
                                                          singleSeismograms[0],
                                                          UnitImpl.DIMENSONLESS);
-                cookieJar.put("recFunc_percentMatch_"+chanCode, ""+HKStack.getPercentMatch(predictedDSS[i]));
+                cookieJar.put("recFunc_percentMatch_"+chanCode, ""+ans[i].getPercentMatch());
             }
             while(true) {
                 try {

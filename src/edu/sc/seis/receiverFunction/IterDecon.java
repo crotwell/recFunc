@@ -10,7 +10,7 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 7399 2004-03-04 02:42:12Z crotwell $
+ * @version $Id: IterDecon.java 7622 2004-03-15 02:39:16Z crotwell $
  */
 
 public class IterDecon {
@@ -65,7 +65,7 @@ public class IterDecon {
             amps[bump] = corr[shifts[bump]]; // note don't normalize by dt here
 
             predicted = buildDecon(amps, shifts, g.length, gwidthFactor, dt);
-            float[] predConvolve = Cmplx.convolve(predicted, denominator);
+            float[] predConvolve = convolve(predicted, denominator);
 
             residual = getResidual(f, predConvolve);
             float residualPower = power(residual);
@@ -98,7 +98,7 @@ public class IterDecon {
 
     /** computes the correlation of f and g normalized by the zero-lag
      *  autocorrelation of g. */
-    float[] correlate(float[] fdata, float[] gdata) {
+    public static float[] correlate(float[] fdata, float[] gdata) {
         float zeroLag = power(gdata);
 
         //System.out.println("g autocorrelation at  = "+zeroLag);
@@ -112,6 +112,10 @@ public class IterDecon {
         //  System.out.println("correlation at "+i+" = "+corr[i]);
         //}
         return corr;
+    }
+
+    public float[] convolve(float[] x, float[] y) {
+        return Cmplx.convolve(x, y);
     }
 
     void subtractSpike(float[] data, int shift, float amp) {
@@ -130,6 +134,7 @@ public class IterDecon {
         return gaussianFilter(buildSpikes(amps, shifts, n), gwidthFactor, dt);
     }
 
+    /** returns the residual, ie x-y */
     public static float[] getResidual(float[] x, float[] y) {
         float[] r = new float[x.length];
         for (int i=0; i<x.length; i++) {
@@ -186,10 +191,15 @@ public class IterDecon {
      *  The 1D gaussian is: f(x) = 1/(2*PI*sigma) e^(-x^2/(q * sigma^2))
      *  and the impluse response is: g(x) = 1/(2*PI)e^(-sigma^2 * u^2 / 2)
      *
+     * If gwidthFactor is zero, does not filter.
      */
     public static float[] gaussianFilter(float[] x,
                                          float gwidthFactor,
                                          float dt) {
+        // gwidthFactor of zero means no filter
+        if (gwidthFactor == 0) {
+            return x;
+        }
         float[] forward = new float[x.length];
         System.arraycopy(x, 0, forward, 0, x.length);
         NativeFFT.forward(forward);

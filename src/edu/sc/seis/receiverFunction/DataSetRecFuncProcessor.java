@@ -209,7 +209,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                                     begin.getFissuresTime(),
                                     data.length,
                                     refSeismogram.sampling_info,
-                                    refSeismogram.y_unit,
+                                    unit,
                                     recFuncChanId,
                                     data);
         predSeis.setName(name);

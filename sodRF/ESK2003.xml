@@ -11,6 +11,11 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
     </property>
 
     <property>
+      <name>edu.sc.seis.sod.databasename</name>
+      <value>ESKSodDB</value>
+    </property>
+
+    <property>
       <name>edu.sc.seis.sod.databasetype</name>
       <value>edu.sc.seis.sod.database.HSqlDbManager</value>
     </property>
@@ -61,8 +66,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 <!-- Only take events from Apr-June -->
         <eventTimeRange>
         <timeRange>
-            <startTime>19991108T00:00:00.001Z</startTime>
-            <endTime>19991108T23:59:59.999Z</endTime>
+            <startTime>19990101T00:00:00.001Z</startTime>
+            <endTime>20001108T23:59:59.999Z</endTime>
         </timeRange>
         </eventTimeRange>
 
@@ -127,8 +132,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         <stationCode>ESK</stationCode>
         <stationEffectiveTimeOverlap>
            <effectiveTimeOverlap>
-               <min>20030101T00:00:00.001Z</min>
-               <max>20041231T23:59:59.999Z</max>
+               <min>19990101T00:00:00.001Z</min>
+               <max>20001231T23:59:59.999Z</max>
            </effectiveTimeOverlap>
         </stationEffectiveTimeOverlap>
     </stationAND>
@@ -141,8 +146,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
         <channelEffectiveTimeOverlap>
         <effectiveTimeOverlap>
-            <min>20030101T00:00:00.001Z</min>
-            <max>20041231T23:59:59.999Z</max>
+            <min>20000101T00:00:00.001Z</min>
+            <max>20001231T23:59:59.999Z</max>
         </effectiveTimeOverlap>
         </channelEffectiveTimeOverlap>
 
@@ -182,7 +187,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         <endPhase>ttp</endPhase>
         <endOffset>
             <unit>SECOND</unit>
-            <value>90</value>
+            <value>120</value>
         </endOffset>
     </phaseRequest>
 
@@ -204,7 +209,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         <endPhase>ttp</endPhase>
         <endOffset>
             <unit>SECOND</unit>
-            <value>90</value>
+            <value>120</value>
         </endOffset>
     </phaseCut>
     <rMean/>
@@ -213,6 +218,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
     <externalSeismogramProcess>
         <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
+        <fileType>sac</fileType>
         <dataDirectory>ESK_recfunc</dataDirectory>
                 <eventDirLabel><originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/></eventDirLabel>
     </externalSeismogramProcess>

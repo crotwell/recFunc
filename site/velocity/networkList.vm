@@ -10,14 +10,15 @@
 <table>
 <tr>
 <td class="odd">Code</td>
-<td class="even">Begin</td>
 <td class="even">Name</td>
 </tr>
 #foreach($net in $networkList)
 <tr>
-<td class="odd">$net.getId()</td>
-<td class="even">$fissures.formatTime($net.effective_time.start_time)</td>
-<td class="odd"><a href="stations.html?nwcode=${net}.getCode()&leapsecondsversion=${net}.getId().begin_time.leap_seconds_version&datetime=${net}.getId().begin_time.date_time">$net.name</a></td>
+<td class="odd">$net.getCodeWithYear()</td>
+#set( $netid = $net.get_id() )
+#set( $leaps = $netid.begin_time.leap_seconds_version )
+#set( $netbegin = $netid.begin_time.date_time )
+<td class="even"><a href="stations.html?nwcode=${net.getCode()}&datetime=${net.getRawBeginDate()}&leapsecondsversion=$net.getRawBeginLeapSeconds()">$net.name</a></td>
 </td>
 </tr>
 #end

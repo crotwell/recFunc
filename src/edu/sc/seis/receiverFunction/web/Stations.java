@@ -27,6 +27,10 @@ import edu.sc.seis.sod.ConfigurationException;
  */
 public class Stations extends Revlet {
     
+    public Stations() throws SQLException, ConfigurationException, Exception {
+        this("jdbc:postgresql:ears", System.getProperty("user.home")+"/CacheServer/Ears/Data");
+    }
+    
     public Stations(String databaseURL, String dataloc) throws SQLException, ConfigurationException, Exception {
         ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(databaseURL);
@@ -55,7 +59,7 @@ public class Stations extends Revlet {
         for(int i = 0; i < stations.length; i++) {
             stationList.add(new VelocityStation(stations[i]));
         }
-        RevletContext context = new RevletContext("stations.vm");
+        RevletContext context = new RevletContext("stationList.vm");
         context.put("staionList", stationList);
         return context;
     }

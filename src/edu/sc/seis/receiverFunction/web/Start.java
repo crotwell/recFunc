@@ -40,12 +40,12 @@ public class Start {
         servletStrings.add(rfstationEvent);
         
         ServletHandler sh = new ServletFromSet(servletStrings);
-//        sh.addServlet("Networks",
-//                      netHTML,
-//                      "edu.sc.seis.viewResult.NetworkList");
-//        sh.addServlet("StationEqViewer",
-//                      staForNet,
-//                      "edu.sc.seis.viewResult.StationList");
+        sh.addServlet(netHTML,
+                      netHTML,
+                      "edu.sc.seis.receiverFunction.web.Networks");
+        sh.addServlet(staForNet,
+                      staForNet,
+                      "edu.sc.seis.receiverFunction.web.Stations");
 //        sh.addServlet("rfStationEvent",
 //                      rfstationEvent,
 //                      "edu.sc.seis.receiverFunction.web.RFStationEvent");

@@ -8,7 +8,7 @@ package edu.sc.seis.receiverFunction;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 10258 2004-08-31 14:02:39Z groves $
+ * @version $Id: IterDecon.java 10601 2004-09-17 19:23:26Z crotwell $
  */
 
 public class IterDecon {
@@ -48,7 +48,9 @@ public class IterDecon {
         float[] predicted = new float[0];
 
         float[][] corrSave = new float[maxBumps][];
-        for ( int bump=0; bump < maxBumps; bump++) {
+        float improvement = 100;
+        int bump;
+        for ( bump=0; bump < maxBumps && improvement > tol ; bump++) {
 
             // correlate the signals
             float[] corr = correlateNorm(residual, g);
@@ -67,6 +69,7 @@ public class IterDecon {
 
             residual = getResidual(f, predConvolve);
             float residualPower = power(residual);
+            improvement = 100*(prevPower-residualPower)/fPower;
             prevPower = residualPower;
         } // end of for (int bump=0; bump < maxBumps; bump++)
 
@@ -84,7 +87,8 @@ public class IterDecon {
                                                      corrSave,
                                                      buildSpikes(amps, shifts, g.length),
                                                      prevPower,
-                                                     fPower);
+                                                     fPower,
+                                                     bump);
         return result;
     }
 
@@ -251,6 +255,8 @@ public class IterDecon {
     protected boolean useAbsVal;
     protected float tol;
     protected float gwidthFactor;
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(IterDecon.class);
 
 }// IterDecon
 

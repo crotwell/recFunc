@@ -47,7 +47,7 @@ public class SumHKStack {
             throw new IllegalArgumentException("Cannot create SumStack with empty array");
         }
         for (int i = 0; i < individuals.length; i++) {
-            if (individuals[i].getMinH() != individuals[0].getMinH()) {
+            if (! individuals[i].getMinH().equals(individuals[0].getMinH())) {
                 throw new IllegalArgumentException("Cannot create SumStack with different minH, "+individuals[i].getMinH() +"!="+ individuals[0].getMinH());
             }
             if (individuals[i].getMinK() != individuals[0].getMinK()) {

@@ -8,6 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import edu.iris.Fissures.IfNetwork.Channel;
+import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.network.NetworkIdUtil;
+import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.JDBCSequence;
 import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
@@ -30,7 +33,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
                          conn,
                          this,
                          "edu/sc/seis/receiverFunction/server/default.props");
-        TableSetup.setup("htstackToSummary", conn, this, "edu/sc/seis/receiverFunction/server/default.props");
+        TableSetup.setup("hkstackToSummary", conn, new Object(), "edu/sc/seis/receiverFunction/server/default.props");
     }
     
     public int calc(int netDbId, String stationCode, float percentMatch) throws SQLException {
@@ -57,30 +60,57 @@ public class JDBCSummaryHKStack extends JDBCTable {
     }
     
     public int put(SumHKStack summary) throws SQLException, NotFound, IOException {
+        try {
         int index = 1;
         int hksummary_id = hksummarySeq.next();
         put.setInt(index++, hksummary_id);
-        put.setInt(index++, jdbcHKStack.getJDBCChannel().getDBId(summary.getChannel().get_id()));
-        put.setInt(index++, jdbcHKStack.getJDBCChannel().getDBId(summary.getChannel().get_id()));
-        put.setInt(index++, jdbcHKStack.getJDBCChannel().getDBId(summary.getChannel().get_id()));
-        put.setFloat(index++, summary.getSum().getAlpha());
-        put.setFloat(index++, summary.getMinPercentMatch());
-        put.setFloat(index++, summary.getSmallestH());
-        put.setInt(index++, summary.getSum().getNumH());
-        put.setFloat(index++, summary.getSum().getStepH());
-        
-        put.setFloat(index++, summary.getSum().getMinK());
-        put.setInt(index++, summary.getSum().getNumK());
-        put.setFloat(index++, summary.getSum().getStepK());
+        populateStmt(put, index, summary);
+        put.executeUpdate();
+        return hksummary_id;
+        } catch (SQLException e) {
+            System.out.println("stmt = "+put);
+            throw e;
+        }
+    }
 
-        put.setFloat(index++, summary.getSum().getMaxValueH());
-        put.setFloat(index++, summary.getSum().getMaxValueK());
-        put.setFloat(index++, summary.getSum().getMaxValue());
-
-        put.setFloat(index++, summary.getSum().getWeightPs());
-        put.setFloat(index++, summary.getSum().getWeightPpPs());
-        put.setFloat(index++, summary.getSum().getWeightPsPs());
+    
+    public int update(int hksummary_id, SumHKStack summary) throws SQLException, NotFound, IOException {
+        try {
+        int index = 1;
+        populateStmt(update, index, summary);
+        update.setInt(index++, hksummary_id);
+        update.executeUpdate();
+        return hksummary_id;
+        } catch (SQLException e) {
+            System.out.println("stmt = "+put);
+            throw e;
+        }
+    }
+    
+    void populateStmt(PreparedStatement stmt, int index, SumHKStack summary) throws SQLException, NotFound, IOException {
+        stmt.setInt(index++, jdbcHKStack.getJDBCChannel().getDBId(summary.getChannel().get_id()));
+        stmt.setInt(index++, jdbcHKStack.getJDBCChannel().getDBId(summary.getChannel().get_id()));
+        stmt.setInt(index++, jdbcHKStack.getJDBCChannel().getDBId(summary.getChannel().get_id()));
+        stmt.setFloat(index++, summary.getSum().getAlpha());
+        stmt.setFloat(index++, summary.getMinPercentMatch());
+        stmt.setFloat(index++, summary.getSmallestH());
+        stmt.setFloat(index++, summary.getSum().getStepH());
+        stmt.setInt(index++, summary.getSum().getNumH());
+        System.out.println("populateStmt numH="+summary.getSum().getNumH());
         
+        stmt.setFloat(index++, summary.getSum().getMinK());
+        stmt.setFloat(index++, summary.getSum().getStepK());
+        stmt.setInt(index++, summary.getSum().getNumK());
+
+        stmt.setFloat(index++, summary.getSum().getMaxValueH());
+        stmt.setFloat(index++, summary.getSum().getMaxValueK());
+        stmt.setFloat(index++, summary.getSum().getMaxValue());
+
+        stmt.setFloat(index++, summary.getSum().getWeightPs());
+        stmt.setFloat(index++, summary.getSum().getWeightPpPs());
+        stmt.setFloat(index++, summary.getSum().getWeightPsPs());
+        
+        System.out.println("populateStmt before data, stmt="+stmt);
         float[][] data = summary.getSum().getStack();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(out);
@@ -90,22 +120,21 @@ public class JDBCSummaryHKStack extends JDBCTable {
             }
         }
         byte[] valBytes = out.toByteArray();
-        put.setBytes(index++, valBytes);
+        stmt.setBytes(index++, valBytes);
+        stmt.setTimestamp(index++, ClockUtil.now().getTimestamp());
         
-        put.setFloat(index++, (float)summary.getHVariance());
-        put.setFloat(index++, (float)summary.getKVariance());
-        
-        put.executeUpdate();
-        return hksummary_id;
+        stmt.setFloat(index++, (float)summary.getHVariance());
+        stmt.setFloat(index++, (float)summary.getKVariance());
     }
     
     public SumHKStack extract(ResultSet rs) throws NotFound, SQLException, IOException {
         Channel chan = jdbcHKStack.getJDBCChannel().get(rs.getInt("chanZ_id"));
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
+        System.out.println("numH="+numH+"  numK="+numK);
         float[][] data = jdbcHKStack.extractData(rs, numH, numK);
         HKStack stack = new HKStack(rs.getFloat("alpha"),
-                                  rs.getFloat("p"),
+                                  0,
                                   rs.getFloat("minPercentMatch"),
                                   rs.getFloat("minH"),
                                   rs.getFloat("stepH"),
@@ -119,16 +148,28 @@ public class JDBCSummaryHKStack extends JDBCTable {
                                   data,
                                   chan);
         SumHKStack sum = new SumHKStack(rs.getFloat("minPercentMatch"),
-                                        rs.getFloat("smallestH"),
+                                        rs.getFloat("minH"),
                                         stack,
                                         rs.getFloat("hVariance"),
                                         rs.getFloat("kVariance"));
         return sum;
     }
     
+    public int getDbIdForStation(NetworkId net, String station_code ) throws SQLException, NotFound {
+        int index = 1;
+        getForStation.setInt(index++, jdbcHKStack.getJDBCChannel().getNetworkTable().getDBId(net));
+        getForStation.setString(index++, station_code);
+        System.out.println("getDbIdForStation: "+getForStation);
+        ResultSet rs = getForStation.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("hksummary_id");
+        }
+        throw new NotFound("No Summary stack for "+NetworkIdUtil.toString(net)+" "+station_code);
+    }
+    
     JDBCHKStack jdbcHKStack;
     
     JDBCSequence hksummarySeq;
     
-    PreparedStatement uncalculated, get, put;
+    PreparedStatement uncalculated, get, put, update, getForStation;
 }

@@ -68,21 +68,28 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             float smallestH = new Float(req.getParameter("smallestH")).floatValue();
             
             SumHKStack sumStack;
-            if(req.getParameter("nocalc").equals("true")) {
-                System.out.println("BAD, just for testing...");
-                sumStack = jdbcSumHKStack.get(1);
-            } else {
+            try {
+                int dbid = jdbcSumHKStack.getDbIdForStation(net.get_id(), staCode);
+                sumStack = jdbcSumHKStack.get(dbid);
+                System.out.println("Got summary plot from database "+dbid);
+            }catch (NotFound e) {
                 sumStack = jdbcHKStack.sum(net.getCode(),
                                            staCode,
                                            minPercentMatch,
                                            smallestH);
-               // jdbcSumHKStack.put(sumStack);
-                logger.debug("finish calc stack summary");
+               int dbid = jdbcSumHKStack.put(sumStack);
+               
+               logger.debug("finish calc stack summary: "+dbid+"  numH="+sumStack.getSum().getNumH());
             }
+                
+            logger.info("before check for null");
             OutputStream out = res.getOutputStream();
             if (sumStack == null) {
                 logger.warn("summary stack is null for "+net.getCode()+"."+staCode);
                 return;
+            }
+            if (sumStack.getSum() == null || sumStack.getSum().getStack().length == 0) {
+                logger.warn("summary hkstack is null for "+net.getCode()+"."+staCode);
             }
             BufferedImage image = sumStack.createStackImage();
             logger.debug("finish create image");

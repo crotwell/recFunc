@@ -139,9 +139,9 @@ hkstack.getForStation=SELECT * FROM network \
                    AND percentMatch > ? \
                    AND receiverfunction.recfunc_id = hkstack.recfunc_id
 
-hkstackToSummary.create=CREATE TABLE $tablename ( \
-					hkstack_id, \
-					hksummary_id, \
+hkstackToSummary.create=CREATE TABLE hkstackToSummary ( \
+					hkstack_id int , \
+					hksummary_id int , \
 					FOREIGN KEY (hkstack_id) REFERENCES hkstack (hkstack_id) , \
 					FOREIGN KEY (hksummary_id) REFERENCES hksummary (hksummary_id) )
 					
@@ -181,7 +181,7 @@ hksummary.create=CREATE TABLE $tablename ( \
                    REFERENCES channel (chan_id) \
                    )
 	
-hksummary.put=INSERT INTO $tablename ( \
+hksummary.put=INSERT INTO hksummary ( \
                    hksummary_id , \
                    chanA_id , \
                    chanB_id , \
@@ -205,9 +205,32 @@ hksummary.put=INSERT INTO $tablename ( \
                    hVariance , \
                    kVariance  \
                    ) \
-                   VALUES ( ?, ?, ?, ?, ?   ?, ?, ?, ?, ?   ?, ?, ?, ?, ?   ?, ?, ?, ?, ?  ?, ?)
+                   VALUES ( ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,  ?, ?)
                    
-hksummery.get=SELECT * from $tablename \
+hksummary.get=SELECT * from $tablename \
+                   WHERE hksummary_id = ?
+                   
+hksummary.update=UPDATE $tablename SET chanA_id = ? , \
+                   chanB_id = ? , \
+                   chanZ_id = ? , \
+                   alpha = ? , \
+                   minPercentMatch = ? , \
+                   minH = ? , \
+                   stepH = ? , \
+                   numH = ? , \
+                   minK = ? , \
+                   stepK = ? , \
+                   numK = ? , \
+                   peakH = ? , \
+                   peakK = ? , \
+                   peakVal = ? , \
+                   weightPs = ? , \
+                   weightPpPs = ? , \
+                   weightPsPs = ? , \
+                   data = ? , \
+                   insertTime = ? , \
+                   hVariance = ? , \
+                   kVariance = ? \
                    WHERE hksummary_id = ?
                    
 hksummary.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
@@ -231,6 +254,12 @@ hksummary.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
                        AND sta_code = ? \
                        AND receiverFunction.itr_match >= hksummary.minPercentMatch \
                        AND hksummary.minPercentMatch = ? \
-
-hksummary.put=INSERT INTO hksummary
+                       
+hksummary.getForStation=SELECT * from network \
+                   NATURAL JOIN station \
+                   NATURAL JOIN site \
+                   NATURAL JOIN channel \
+                   JOIN  $tablename  ON (chanz_id = chan_id ) \
+                   WHERE net_id = ? \
+                   AND sta_code = ? 
 

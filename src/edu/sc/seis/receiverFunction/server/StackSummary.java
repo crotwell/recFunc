@@ -47,6 +47,7 @@ public class StackSummary {
         JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
         JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.getDataLoc());
         jdbcHKStack = new JDBCHKStack(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
+        jdbcSummary = new JDBCSummaryHKStack(jdbcHKStack);
     }
 
     public void createSummary(String net,
@@ -124,6 +125,13 @@ public class StackSummary {
                                               station.station_code,
                                               minPercentMatch,
                                               smallestH);
+        try {
+            int dbid = jdbcSummary.getDbIdForStation(station.network_id, station.station_code);
+            jdbcSummary.update(dbid, sumStack);
+        } catch (NotFound e) {
+            jdbcSummary.put(sumStack);
+        }
+        
         saveImage(sumStack,
                    station,
                    parentDir,
@@ -200,7 +208,9 @@ public class StackSummary {
     }
     
     JDBCHKStack jdbcHKStack;
-
+    
+    JDBCSummaryHKStack jdbcSummary;
+    
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StackSummary.class);
 
     public static void main(String[] args) {

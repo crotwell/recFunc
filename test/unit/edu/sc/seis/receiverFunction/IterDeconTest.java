@@ -11,6 +11,7 @@ import edu.sc.seis.receiverFunction.IterDecon;
 import java.io.DataInputStream;
 import junit.framework.TestCase;
 import junitx.framework.ArrayAssert;
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
 // JUnitDoclet end import
 
 /**
@@ -381,28 +382,14 @@ public class IterDeconTest
         assertEquals(18f, iterdecon.power(data), 0.00001f);
     }
 
-    public void testCorrelation() {
+    public void testCorrelationNorm() {
         float[] fData = { 0, 0, 2, 0, 0, 0, 0, 0};
-        float[] gData = { 0, 1, 0, 0, 0, 0, 0, 0};
-        float[] corr = iterdecon.correlate(fData, gData);
+        float[] gData = { 0, 2, 0, 0, 0, 0, 0, 0};
+        float[] corr = iterdecon.correlateNorm(fData, gData);
         assertEquals("lag 0", 0f, corr[0], 0.00001f);
-        assertEquals("lag 1", 2f, corr[1], 0.00001f);
+        assertEquals("lag 1", 1f, corr[1], 0.00001f);
         assertEquals("lag 2", 0f, corr[2], 0.00001f);
         assertEquals("lag 3", 0f, corr[3], 0.00001f);
-    }
-
-    public void testConvolve() {
-        float[] fData = { 0, 0, 2, 0, 0, 0, 0, 0};
-        float[] gData = { 0, 1, 0, 0, 0, 0, 0, 0};
-        float[] corr = iterdecon.convolve(fData, gData, 1);
-        assertEquals("lag 0", 0f, corr[0], 0.00001f);
-        assertEquals("lag 1", 0f, corr[1], 0.00001f);
-        assertEquals("lag 2", 0f, corr[2], 0.00001f);
-        assertEquals("lag 3", 2f, corr[3], 0.00001f);
-        assertEquals("lag 4", 0f, corr[4], 0.00001f);
-        assertEquals("lag 5", 0f, corr[5], 0.00001f);
-        assertEquals("lag 6", 0f, corr[6], 0.00001f);
-        assertEquals("lag 7", 0f, corr[7], 0.00001f);
     }
 
     public void testIterDeconIdentity() throws Exception {

@@ -91,7 +91,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
 
             Arrival[] pPhases = CommonAccess.getCommonAccess().getTravelTimes(evtLoc, staLoc, "ttp");
             MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
-            firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
+            //firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
 
             TimeInterval shift = recFunc.getShift();
             predictedDSS = new MemoryDataSetSeismogram[2];
@@ -130,7 +130,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                 String radOrTrasName = (i==0)?"Radial":"Transverse";
                 String rOrT = (i==0)?"R":"T";
                 MemoryDataSetSeismogram tmpDSS = saveTimeSeries(ans[i].getNumerator(),
-                                                                chanCode+" "+radOrTrasName+" "+localSeis[0].channel_id.station_code,
+                                                                "RotGCP_"+chanCode+" "+radOrTrasName+" "+localSeis[0].channel_id.station_code,
                                                                 chanCode.substring(0,2)+rOrT,
                                                                 localSeis[0].getBeginTime(),
                                                                 localSeis[0]);
@@ -155,7 +155,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                 sdce.getSource().getDataSet().addDataSetSeismogram(tmpDSS, audit);
                 tmpDSS = saveTimeSeries(ans[i].getSpikes(),
                                         chanCode+" spikes "+localSeis[0].channel_id.station_code,
-                                        chanCode+"_spike",
+                                        chanCode+"_spikes",
                                         firstP.subtract(shift),
                                         localSeis[0]);
                 sdce.getSource().getDataSet().addDataSetSeismogram(tmpDSS, audit);

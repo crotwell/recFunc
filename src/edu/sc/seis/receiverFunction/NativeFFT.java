@@ -1,6 +1,6 @@
 package edu.sc.seis.receiverFunction;
 
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
+
 
 /**
  * NativeFFT.java
@@ -73,33 +73,66 @@ public class NativeFFT {
         } // end of if ()
     }
 
-    public static void main(String[] args) throws Exception {
-        NativeFFT nFFT = new NativeFFT();
-        int length = 8;
-        float[] data = new float[length];
-        data[length/2] = 1;
-        float[] data2 = new float[length];
-        System.arraycopy(data, 0, data2, 0, data.length);
-        int errorCode;
 
-        for ( int i=0; i<data.length; i++) {
-            System.out.println("pre  data["+i+"]="+data[i]);
-        } // end of for ()
-        errorCode = NativeFFT.realFFT(data);
-        if ( errorCode != 0) {
-            throw new Exception("Error "+errorCode+" in native fft");
-        } // end of if ()
+    public static float[] correlate(float[] x, float[] y) {
 
-        for ( int i=0; i<data.length; i++) {
-            System.out.println("post  data["+i+"]="+data[i]);
-        } // end of for ()
+        float[] xforward = new float[x.length];
+        System.arraycopy(x, 0, xforward, 0, x.length);
+        forward(xforward);
 
-        Cmplx[] out2 = Cmplx.fft(data2);
-        for ( int i=0; i<out2.length; i++) {
-            System.out.println("post  out2["+i+"]="+out2[i].r+", "+out2[i].i);
-        } // end of for ()
+        float[] yforward = new float[y.length];
+        System.arraycopy(y, 0, yforward, 0, y.length);
+        forward(yforward);
 
-    } // end of main()
+        float[] ans = new float[x.length];
+        // handle 0 and nyquist
+        ans[0] = xforward[0] * yforward[0];
+        ans[1] = xforward[1] * yforward[1];
+
+        float a, b, c, d;
+        for (int j = 2; j < x.length; j+=2) {
+            a = xforward[j];
+            b = xforward[j+1];
+            c = yforward[j];
+            d = yforward[j+1];
+            ans[j]   = a * c + b * d;
+            ans[j+1] = -a * d + b * c;
+        }
+        inverse(ans);
+
+        return ans;
+    }
+
+    public static float[] convolve(float[] x, float[] y, float delta) {
+        float[] xforward = new float[x.length];
+        System.arraycopy(x, 0, xforward, 0, x.length);
+        forward(xforward);
+
+        float[] yforward = new float[y.length];
+        System.arraycopy(y, 0, yforward, 0, y.length);
+        forward(yforward);
+
+        float[] ans = new float[x.length];
+        // handle 0 and nyquist
+        ans[0] = xforward[0] * yforward[0];
+        ans[1] = xforward[1] * yforward[1];
+
+        float a, b, c, d;
+        for (int j = 2; j < x.length; j+=2) {
+            a = xforward[j];
+            b = xforward[j+1];
+            c = yforward[j];
+            d = yforward[j+1];
+            ans[j]   = a * c - b * d;
+            ans[j+1] = a * d + b * c;
+        }
+        inverse(ans);
+
+        for (int i = 0; i < ans.length; i++) {
+            ans[i] *= delta;
+        }
+        return ans;
+    }
 
 
 } // NativeFFT

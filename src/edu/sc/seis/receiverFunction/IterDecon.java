@@ -12,7 +12,7 @@ import java.util.List;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 7772 2004-03-23 22:15:41Z crotwell $
+ * @version $Id: IterDecon.java 7777 2004-03-24 03:04:54Z crotwell $
  */
 
 public class IterDecon {
@@ -55,7 +55,7 @@ public class IterDecon {
         for ( int bump=0; bump < maxBumps; bump++) {
 
             // correlate the signals
-            float[] corr = correlate(residual, g);
+            float[] corr = correlateNorm(residual, g);
             corrSave[bump] = corr;
 
             //  find the peak in the correlation
@@ -68,7 +68,7 @@ public class IterDecon {
             amps[bump] = corr[shifts[bump]]/dt; // why normalize by dt here?
 
             predicted = buildDecon(amps, shifts, g.length, gwidthFactor, dt);
-            float[] predConvolve = convolve(predicted, denominator, dt);
+            float[] predConvolve = NativeFFT.convolve(predicted, denominator, dt);
 
             residual = getResidual(f, predConvolve);
             float residualPower = power(residual);
@@ -76,24 +76,28 @@ public class IterDecon {
             //                                   " for length "+g.length+" with dt="+dt+
             //                                   " error="+(100*residualPower/fPower)+
             //                                   " improve="+100*(prevPower-residualPower)/fPower);
+            //            if (prevPower - residualPower < tol) {
+            //                prevPower = residualPower;
+            //                break;
+            //            }
             prevPower = residualPower;
         } // end of for (int bump=0; bump < maxBumps; bump++)
 
         IterDeconResult result = new IterDeconResult(maxBumps,
-                                   useAbsVal,
-                                   tol,
-                                   gwidthFactor,
-                                   numerator,
-                                   denominator,
-                                   dt,
-                                   amps,
-                                   shifts,
-                                   residual,
-                                   predicted,
-                                   corrSave,
-                                   buildSpikes(amps, shifts, g.length),
-                                   prevPower,
-                                   fPower);
+                                                     useAbsVal,
+                                                     tol,
+                                                     gwidthFactor,
+                                                     numerator,
+                                                     denominator,
+                                                     dt,
+                                                     amps,
+                                                     shifts,
+                                                     residual,
+                                                     predicted,
+                                                     corrSave,
+                                                     buildSpikes(amps, shifts, g.length),
+                                                     prevPower,
+                                                     fPower);
 
         System.out.println("predicted[0]="+predicted[0]+"  amps[0]="+amps[0]+
                                " power="+prevPower+"  % match="+result.getPercentMatch());
@@ -102,11 +106,11 @@ public class IterDecon {
 
     /** computes the correlation of f and g normalized by the zero-lag
      *  autocorrelation of g. */
-    public static float[] correlate(float[] fdata, float[] gdata) {
+    public static float[] correlateNorm(float[] fdata, float[] gdata) {
         float zeroLag = power(gdata);
 
         //System.out.println("g autocorrelation at  = "+zeroLag);
-        float[] corr = Cmplx.correlate(fdata, gdata);
+        float[] corr = NativeFFT.correlate(fdata, gdata);
 
         float temp =1 / zeroLag;
         for (int i=0; i<corr.length; i++) {
@@ -116,10 +120,6 @@ public class IterDecon {
         //  System.out.println("correlation at "+i+" = "+corr[i]);
         //}
         return corr;
-    }
-
-    public float[] convolve(float[] x, float[] y, float delta) {
-        return Cmplx.convolve(x, y, delta);
     }
 
     void subtractSpike(float[] data, int shift, float amp) {

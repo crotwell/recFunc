@@ -29,7 +29,7 @@ public class TestIterDecon {
             System.exit(1);
         } // end of if ()
 
-        float gwidth = 2.5f;
+        float gwidth = 3.0f;
         IterDecon decon = new IterDecon(100, true, .001f, gwidth);
         SacTimeSeries num = new SacTimeSeries();
         num.read(args[0]);
@@ -43,7 +43,7 @@ public class TestIterDecon {
         predicted = decon.phaseShift(predicted, shift, num.delta);
 
         for (int i=0; i<num.y.length; i++) {
-            // System.out.println(i+" "+num.y[i]+" "+denom.y[i]+" "+predicted[i]);
+            System.out.println(i+" "+num.y[i]+" "+denom.y[i]+" "+predicted[i]);
         } // end of for (int i=0; i<num.length; i++)
 
 

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+  <pomVersion>3</pomVersion>
+  <name>recFunc</name>
+  <id>recFunc</id>
+  <organization>
+    <name>Seismology at the University of South Carolina</name>
+    <url>http://www.seis.sc.edu</url>
+    <logo>http://www.seis.sc.edu/images/header.gif</logo>
+  </organization>
+  <currentVersion>1.0Beta</currentVersion>
+  <inceptionYear>2002</inceptionYear>
+
+  <package>edu.sc.seis.receiverFunction</package>
+  <shortDescription>
+Caclulation of seismic receiver functions.
+</shortDescription>
+  <gumpRepositoryId>${pom.artifactId}</gumpRepositoryId>
+  <description> 
+Caclulation of seismic receiver functions based on the time-domain iterative 
+deconvolution method of Ammon.
+</description>
+  
+  <url>http://www.seis.sc.edu/software/${pom.artifactId}</url>
+  <siteAddress>www.seis.sc.edu</siteAddress>
+  <siteDirectory>/seis/raid1/Apache/htdocs/software/${pom.artifactId}</siteDirectory>
+  <distributionSite>www.seis.sc.edu</distributionSite>
+  <distributionDirectory>/seis/raid1/Apache/htdocs/software/mavenRepository</distributionDirectory>
+  <mailingList>
+  </mailingList>
+
+  <repository>
+    <connection>scm:cvs:local:anonymous@cvs.seis.sc.edu:/opt/local/Internal/CvsRoot:${pom.artifactId}</connection>
+        <url>http://www.seis.sc.edu/cgi-bin/viewcvs.cgi/${pom.artifactId}</url>
+    </repository>
+
+
+  <developers>
+    <developer>
+      <name>Philip Crotwell</name>
+      <id>crotwell</id>
+      <email>crotwell@seis.sc.edu</email>
+      <organization>University of South Carolina</organization>
+      <roles>
+      <role>Module Maintainer</role>
+      <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Srinivasa Telukutla</name>
+      <id>telukutl</id>
+      <email>telukutl@seis.sc.edu</email>
+      <organization>University of South Carolina</organization>
+      <roles>
+      <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Charlie Groves</name>
+      <id>groves</id>
+      <email>groves@seis.sc.edu</email>
+      <organization>University of South Carolina</organization>
+      <roles>
+      <role>Java Developer</role>
+      </roles>
+    </developer>
+    </developers>
+
+  <dependencies>
+<!-- hopefully temporary Java3D support -->
+    <dependency>
+      <id>j3dcore</id>
+      <version>1.0</version>
+      <jar>j3dcore.jar</jar>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+<!-- hopefully temporary Java3D support -->
+    <dependency>
+      <id>j3dutils</id>
+      <version>1.0</version>
+      <jar>j3dutils.jar</jar>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+<!-- hopefully temporary Java3D support -->
+    <dependency>
+      <id>vecmath</id>
+      <version>1.0</version>
+      <jar>vecmath.jar</jar>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <id>classics</id>
+      <version>1.0</version>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+<!-- JacOrb
+    <dependency>
+      <id>JacORB</id>
+      <version>1.4.1</version>
+      <url>www.jacorb.org</url>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+-->
+    <dependency>
+      <id>OB</id>
+      <version>4.1.0</version>
+      <url>www.orbacus.com</url>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>OBNaming</id>
+      <version>4.1.0</version>
+      <url>www.orbacus.com</url>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>gee</id>
+      <version>1.1Beta</version>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>sod</id>
+      <version>1.0Beta</version>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>fissuresUtil</id>
+      <version>1.0Beta</version>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>fissuresImpl</id>
+      <version>1.1Beta</version>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>fissuresIDL</id>
+      <version>1.0</version>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>SeedCodec</id>
+      <version>1.0Beta</version>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>TauP</id>
+      <version>1.1.4</version>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>Geotools1</id>
+      <version>1.2</version>
+      <jar>geotools1.2.jar</jar>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>junit</id>
+      <version>3.8</version>
+      <type>test</type>
+      <url>http://junit.org/</url>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>hsqldb</id>
+      <version>1.7.1</version>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>xerces</id>
+      <version>2.2.0</version>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>xml-apis</id>
+      <version>1.0.b2</version>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>xalan</id>
+      <version>2.4.1</version>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>log4j</id>
+      <version>1.2.6</version>
+      <properties>
+	<jnlp.jar>true</jnlp.jar>
+      </properties>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <nagEmailAddress>crotwell@seis.sc.edu</nagEmailAddress>
+    <unitTestSourceDirectory>test</unitTestSourceDirectory>
+    <sourceDirectory>src</sourceDirectory>
+  </build>
+
+</project>
+

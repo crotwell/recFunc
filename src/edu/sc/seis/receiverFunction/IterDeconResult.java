@@ -25,7 +25,9 @@ public class IterDeconResult {
                            float[] residual,
                            float[] predicted,
                            float[][] corrSave,
-                          float[] spikes) {
+                           float[] spikes,
+                           float resultPower,
+                           float numeratorPower) {
         this.maxBumps = maxBumps;
         this.useAbsVal = useAbsVal;
         this.tol = tol;
@@ -39,56 +41,58 @@ public class IterDeconResult {
         this.predicted = predicted;
         this.corrSave = corrSave;
         this.spikes = spikes;
+        this.resultPower = resultPower;
+        this.numeratorPower = numeratorPower;
     }
-    
+
     public int getMaxBumps() {
         return maxBumps;
     }
-    
+
     public boolean isUseAbsVal() {
         return useAbsVal;
     }
-    
+
     public float getTol() {
         return tol;
     }
-    
+
     public float getGWidth() {
         return gwidth;
     }
-    
+
     public float[] getNumerator() {
         return numerator;
     }
-    
+
     public float[] getDenominator() {
         return denominator;
     }
-    
+
     public float getDelta() {
         return dt;
     }
-    
+
     public float[] getAmps() {
         return amps;
     }
-    
+
     public int[] getShifts() {
         return shifts;
     }
-    
+
     public float[] getResidual() {
         return residual;
     }
-    
+
     public float[] getPredicted() {
         return predicted;
     }
-    
+
     public float[][] getCorrSave() {
         return corrSave;
     }
-            
+
     /**
      * Sets AlignShift
      *
@@ -97,7 +101,7 @@ public class IterDeconResult {
     public void setAlignShift(TimeInterval alignShift) {
         this.alignShift = alignShift;
     }
-    
+
     /**
      * Returns AlignShift
      *
@@ -106,37 +110,49 @@ public class IterDeconResult {
     public TimeInterval getAlignShift() {
         return alignShift;
     }
-    
+
     public float[] getSpikes() {
         return spikes;
     }
-    
+
+    public float getResultPower() {
+        return resultPower;
+    }
+
+    public float getNumeratorPower() {
+        return numeratorPower;
+    }
+
     TimeInterval alignShift;
-    
+
     float[][] corrSave;
-    
+
     int maxBumps;
-    
+
     boolean useAbsVal;
-    
+
     float tol;
-    
+
     float gwidth;
-    
+
     float[] numerator;
-    
+
     float[] denominator;
-    
+
     float dt;
-    
+
     float[] amps;
-    
+
     int[] shifts;
-    
+
     float[] residual;
-    
+
     float[] predicted;
-    
+
     float[] spikes;
-    
+
+    float resultPower;
+
+    float numeratorPower;
+
 } // IterDeconResult

@@ -7,6 +7,8 @@
 package edu.sc.seis.receiverFunction;
 
 
+import edu.sc.seis.fissuresUtil.xml.*;
+
 import edu.iris.Fissures.AuditInfo;
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
@@ -19,17 +21,12 @@ import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
-import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
-import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
-import edu.sc.seis.fissuresUtil.xml.SeisDataChangeEvent;
-import edu.sc.seis.fissuresUtil.xml.SeisDataChangeListener;
-import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
 import edu.sc.seis.vsnexplorer.CommonAccess;
 import edu.sc.seis.vsnexplorer.configurator.ConfigurationException;
 import org.apache.log4j.Logger;
-import edu.sc.seis.fissuresUtil.xml.XMLQuantity;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import edu.sc.seis.fissuresUtil.xml.DataSetToXML;
+import org.w3c.dom.Text;
 
 public class DataSetRecFuncProcessor implements SeisDataChangeListener {
     DataSetRecFuncProcessor(DataSetSeismogram[] seis,
@@ -43,8 +40,8 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
         finished = new boolean[seis.length];
         localSeis = new LocalSeismogramImpl[seis.length];
     }
-    
-    
+
+
     /**
      * Method error
      *
@@ -54,7 +51,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
     public void error(SeisDataErrorEvent sdce) {
         error = sdce;
     }
-    
+
     /**
      * Method finished
      *
@@ -75,27 +72,27 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
             logger.error("problem: ", error.getCausalException());
             return;
         }
-        
+
         Channel[] channel = new Channel[seis.length];
         for (int i = 0; i < seis.length; i++) {
             channel[i] =
                 seis[i].getDataSet().getChannel(seis[i].getRequestFilter().channel_id);
         }
-        
+
         try {
             ans = recFunc.process(event,
                                   channel,
                                   localSeis);
-            
+
             Channel chan = channel[0];
             Location staLoc = chan.my_site.my_station.my_location;
             Origin origin = event.get_preferred_origin();
             Location evtLoc = origin.my_location;
-            
+
             Arrival[] pPhases = CommonAccess.getCommonAccess().getTravelTimes(evtLoc, staLoc, "ttp");
             MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
             firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
-            
+
             TimeInterval shift = recFunc.getShift();
             predictedDSS = new MemoryDataSetSeismogram[2];
             for (int i = 0; i < ans.length; i++) {
@@ -107,17 +104,23 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                                                  chanCode,
                                                  firstP.subtract(shift),
                                                  localSeis[0]);
-                
-                Element alignElement = DataSetToXML.getDocumentBuilder().newDocument().createElement("timeInterval");
+
+                Document d = DataSetToXML.getDocumentBuilder().newDocument();
+                Element alignElement = d.createElement("timeInterval");
                 XMLQuantity.insert(alignElement, shift);
                 predictedDSS[i].addAuxillaryData("recFunc.alignShift", alignElement);
+                Element percentMatchElement = d.createElement("percentMatch");
+                Text t = d.createTextNode(""+(100*ans[i].getResultPower()/ans[i].getNumeratorPower()));
+                percentMatchElement.appendChild(t);
+                predictedDSS[i].addAuxillaryData("recFunc.percentMatch", percentMatchElement);
+
                 AuditInfo[] audit = new AuditInfo[1];
                 audit[0] =
                     new AuditInfo("Calculated receiver function",
                                   System.getProperty("user.name"));
                 sdce.getSource().getDataSet().addDataSetSeismogram(predictedDSS[i],
                                                                    audit);
-                
+
                 MemoryDataSetSeismogram tmpDSS = saveTimeSeries(ans[i].getNumerator(),
                                                                 chanCode+" numerator "+localSeis[0].channel_id.station_code,
                                                                 chanCode+"_num",
@@ -142,8 +145,8 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                                         firstP.subtract(shift),
                                         localSeis[0]);
                 sdce.getSource().getDataSet().addDataSetSeismogram(tmpDSS, audit);
-                
-                
+
+
             }
             logger.debug("Processing finished OK "+chan.my_site.my_station.name);
         } catch (ConfigurationException ce) {
@@ -155,7 +158,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
             recFuncFinished = true;
         }
     }
-    
+
     MemoryDataSetSeismogram saveTimeSeries(float[] data,
                                            String name,
                                            String chanCode,
@@ -166,7 +169,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                                                 refSeismogram.channel_id.site_code,
                                                 chanCode,
                                                 refSeismogram.channel_id.begin_time);
-        
+
         LocalSeismogramImpl predSeis =
             new LocalSeismogramImpl("recFunc/"+chanCode+"/"+localSeis[0].get_id(),
                                     begin.getFissuresTime(),
@@ -178,9 +181,9 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
         predSeis.setName(name);
         return new MemoryDataSetSeismogram(predSeis,
                                            name);
-        
+
     }
-    
+
     /**
      * Method pushData
      *
@@ -194,7 +197,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
             logger.info("pushData event has zero length localSeismogram array");
         }
     }
-    
+
     int getIndex(DataSetSeismogram s) {
         for (int i=0; i<seis.length; i++) {
             if (seis[i] == s) {
@@ -203,39 +206,39 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
         }
         throw new IllegalArgumentException("Can't find index for this seismogram");
     }
-    
+
     public boolean isRecFuncFinished() {
         return recFuncFinished;
     }
-    
+
     public MemoryDataSetSeismogram[] getPredicted() {
         return predictedDSS;
     }
-    
+
     public SeisDataErrorEvent getError() {
         return error;
     }
-    
+
     DataSetSeismogram[] seis;
-    
+
     EventAccessOperations event;
-    
+
     Origin origin;
-    
+
     boolean[] finished;
-    
+
     LocalSeismogramImpl[] localSeis;
-    
+
     RecFunc recFunc;
-    
+
     IterDeconResult[] ans = null;
-    
+
     MemoryDataSetSeismogram[] predictedDSS = null;
-    
+
     boolean recFuncFinished = false;
-    
+
     SeisDataErrorEvent error = null;
-    
+
     static Logger logger = Logger.getLogger(DataSetRecFuncProcessor.class);
-    
+
 }

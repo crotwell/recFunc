@@ -25,6 +25,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import org.w3c.dom.Element;
+import edu.sc.seis.sod.SodUtil;
 
 
 
@@ -160,8 +161,13 @@ public class HKStack  {
         g.translate(0, dataH);
 
         g.setColor(Color.white);
-        g.drawString("Min H="+(getMinH()+minIndexY*getStepH()), 0, fm.getHeight());
-        g.drawString("    K="+(getMinK()+minIndexX*getStepK()), 0, 2*fm.getHeight());
+        String percentMatch = "?";
+        if (recFunc != null) {
+            Element e = (Element)recFunc.getAuxillaryData("recFunc.percentMatch");
+            percentMatch = SodUtil.getNestedText(e);
+        }
+        g.drawString("% match="+percentMatch, 0, fm.getHeight());
+        g.drawString("    ", 0, 2*fm.getHeight());
         g.translate(0, 2*fm.getHeight());
         g.drawString("Max H="+(getMinH()+maxIndexY*getStepH()), 0, fm.getHeight());
         g.drawString("    K="+(getMinK()+maxIndexX*getStepK()), 0, 2*fm.getHeight());

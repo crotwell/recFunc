@@ -9,27 +9,35 @@
 
 module IfReceiverFunction {
 
+	typedef sequence<Fissures::IfNetwork::Channel> ChannelSeq;
 	typedef sequence<Fissures::IfNetwork::ChannelId> ChannelIdSeq;
+	
+	struct IterDeconConfig {
+		float gwidth;
+		long maxBumps;
+		float tol;
+	};
+	
+    typedef sequence<IterDeconConfig> IterDeconConfigSeq;
 	
     interface RecFuncCache {
 
         boolean isCached(in Fissures::IfEvent::EventAccess event, 
         				    in ChannelIdSeq channel,
-        				    in float gwidth,
-        				    in long maxBumps,
-        				    in float tol);
+        				    in IterDeconConfig config);
+        				    
+        
+        IterDeconConfigSeq getCachedConfigs(in Fissures::IfEvent::EventAccess event, 
+        				    in ChannelIdSeq channel);
 
         Fissures::IfSeismogramDC::LocalSeismogramSeq get(
                            in Fissures::IfEvent::EventAccess event,
                            in ChannelIdSeq channel,
-                           in float gwidth,
-                           in long maxBumps,
-                           in float tol);
+                           in IterDeconConfig config);
 					      
         void insert(in Fissures::IfEvent::EventAccess event,
-					      in float gwidth,
-					      in long maxBumps,
-					      in float tol,
+					      in IterDeconConfig config,
+					      in ChannelSeq channels,
 					      in Fissures::IfSeismogramDC::LocalSeismogramSeq original,
 					      in Fissures::IfSeismogramDC::LocalSeismogram radial,
 					      in float radialError,

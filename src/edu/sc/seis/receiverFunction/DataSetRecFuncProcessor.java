@@ -106,7 +106,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                 float[] predicted = ans[i].getPredicted();
                 String chanCode = (i==0)?"ITR":"ITT"; // ITR for radial
                 // ITT for tangential
-                predictedDSS[i] = saveTimeSeries(predicted,
+                predictedDSS[i] = RecFunc.saveTimeSeries(predicted,
                                                  "receiver function "+localSeis[0].channel_id.station_code,
                                                  chanCode,
                                                  firstP.subtract(shift),
@@ -137,31 +137,31 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
 
                 String radOrTrasName = (i==0)?"Radial":"Transverse";
                 String rOrT = (i==0)?"R":"T";
-                MemoryDataSetSeismogram tmpDSS = saveTimeSeries(ans[i].getNumerator(),
+                MemoryDataSetSeismogram tmpDSS = RecFunc.saveTimeSeries(ans[i].getNumerator(),
                                                                 "RotGCP_"+chanCode+" "+radOrTrasName+" "+localSeis[0].channel_id.station_code,
                                                                 chanCode.substring(0,2)+rOrT,
                                                                 localSeis[0].getBeginTime(),
                                                                 localSeis[0]);
                 sdce.getSource().getDataSet().addDataSetSeismogram(tmpDSS, audit);
-                tmpDSS = saveTimeSeries(ans[i].getNumerator(),
+                tmpDSS = RecFunc.saveTimeSeries(ans[i].getNumerator(),
                                         chanCode+" numerator "+localSeis[0].channel_id.station_code,
                                         chanCode+"_num",
                                         localSeis[0].getBeginTime(),
                                         localSeis[0]);
                 sdce.getSource().getDataSet().addDataSetSeismogram(tmpDSS, audit);
-                tmpDSS = saveTimeSeries(ans[i].getDenominator(),
+                tmpDSS = RecFunc.saveTimeSeries(ans[i].getDenominator(),
                                         chanCode+" denominator "+localSeis[0].channel_id.station_code,
                                         chanCode+"_denom",
                                         localSeis[0].getBeginTime(),
                                         localSeis[0]);
                 sdce.getSource().getDataSet().addDataSetSeismogram(tmpDSS, audit);
-                tmpDSS = saveTimeSeries(ans[i].getResidual(),
+                tmpDSS = RecFunc.saveTimeSeries(ans[i].getResidual(),
                                         chanCode+" residual "+localSeis[0].channel_id.station_code,
                                         chanCode+"_resid",
                                         localSeis[0].getBeginTime(),
                                         localSeis[0]);
                 sdce.getSource().getDataSet().addDataSetSeismogram(tmpDSS, audit);
-                tmpDSS = saveTimeSeries(ans[i].getSpikes(),
+                tmpDSS = RecFunc.saveTimeSeries(ans[i].getSpikes(),
                                         chanCode+" spikes "+localSeis[0].channel_id.station_code,
                                         chanCode+"_spikes",
                                         firstP.subtract(shift),
@@ -184,40 +184,6 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
         Text t = d.createTextNode(text);
         element.appendChild(t);
         return element;
-    }
-
-    MemoryDataSetSeismogram saveTimeSeries(float[] data,
-                                           String name,
-                                           String chanCode,
-                                           MicroSecondDate begin,
-                                           LocalSeismogramImpl refSeismogram) {
-        return saveTimeSeries(data, name, chanCode, begin, refSeismogram, UnitImpl.createUnitImpl(refSeismogram.y_unit));
-    }
-
-    MemoryDataSetSeismogram saveTimeSeries(float[] data,
-                                           String name,
-                                           String chanCode,
-                                           MicroSecondDate begin,
-                                           LocalSeismogramImpl refSeismogram,
-                                          UnitImpl unit) {
-        ChannelId recFuncChanId = new ChannelId(refSeismogram.channel_id.network_id,
-                                                refSeismogram.channel_id.station_code,
-                                                refSeismogram.channel_id.site_code,
-                                                chanCode,
-                                                refSeismogram.channel_id.begin_time);
-
-        LocalSeismogramImpl predSeis =
-            new LocalSeismogramImpl("recFunc/"+chanCode+"/"+localSeis[0].get_id(),
-                                    begin.getFissuresTime(),
-                                    data.length,
-                                    refSeismogram.sampling_info,
-                                    unit,
-                                    recFuncChanId,
-                                    data);
-        predSeis.setName(name);
-        return new MemoryDataSetSeismogram(predSeis,
-                                           name);
-
     }
 
     /**

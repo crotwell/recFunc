@@ -13,6 +13,7 @@ import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
+import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.SamplingImpl;
 import edu.iris.Fissures.model.TimeInterval;
@@ -23,26 +24,38 @@ import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
 import edu.sc.seis.fissuresUtil.bag.Rotate;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
+import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
+import edu.sc.seis.sod.ChannelGroup;
 
 public class RecFunc {
 
     /** uses a default shift of 10 seconds. */
-    RecFunc(TauPUtil timeCalc, IterDecon decon) {
+    public RecFunc(TauPUtil timeCalc, IterDecon decon) {
         this(timeCalc, decon, new TimeInterval(10, UnitImpl.SECOND));
 
     }
 
-    RecFunc(TauPUtil timeCalc, IterDecon decon, TimeInterval shift) {
+    public RecFunc(TauPUtil timeCalc, IterDecon decon, TimeInterval shift) {
         this(timeCalc, decon, shift, new TimeInterval(100, UnitImpl.SECOND));
     }
 
-    RecFunc(TauPUtil timeCalc, IterDecon decon, TimeInterval shift, TimeInterval pad) {
+    public RecFunc(TauPUtil timeCalc, IterDecon decon, TimeInterval shift, TimeInterval pad) {
         this.timeCalc = timeCalc;
         this.decon = decon;
         this.shift = shift;
         this.pad = pad;
     }
 
+    public IterDeconResult[] process(EventAccessOperations event,
+                                     ChannelGroup channelGroup,
+                                     LocalSeismogramImpl[] localSeis)
+        throws NoPreferredOrigin,
+        TauModelException,
+        IncompatibleSeismograms,
+        FissuresException {
+        return process(event, channelGroup.getChannels(), localSeis);
+    }
+    
     public IterDeconResult[] process(EventAccessOperations event,
                                      Channel[] channel,
                                      LocalSeismogramImpl[] localSeis)
@@ -161,6 +174,40 @@ public class RecFunc {
         return shift;
     }
 
+    public static MemoryDataSetSeismogram saveTimeSeries(float[] data,
+                                           String name,
+                                           String chanCode,
+                                           MicroSecondDate begin,
+                                           LocalSeismogramImpl refSeismogram) {
+        return saveTimeSeries(data, name, chanCode, begin, refSeismogram, UnitImpl.createUnitImpl(refSeismogram.y_unit));
+    }
+
+    public static MemoryDataSetSeismogram saveTimeSeries(float[] data,
+                                           String name,
+                                           String chanCode,
+                                           MicroSecondDate begin,
+                                           LocalSeismogramImpl refSeismogram,
+                                          UnitImpl unit) {
+        ChannelId recFuncChanId = new ChannelId(refSeismogram.channel_id.network_id,
+                                                refSeismogram.channel_id.station_code,
+                                                refSeismogram.channel_id.site_code,
+                                                chanCode,
+                                                refSeismogram.channel_id.begin_time);
+
+        LocalSeismogramImpl predSeis =
+            new LocalSeismogramImpl("recFunc/"+chanCode+"/"+refSeismogram.get_id(),
+                                    begin.getFissuresTime(),
+                                    data.length,
+                                    refSeismogram.sampling_info,
+                                    unit,
+                                    recFuncChanId,
+                                    data);
+        predSeis.setName(name);
+        return new MemoryDataSetSeismogram(predSeis,
+                                           name);
+
+    }
+    
     TauPUtil timeCalc;
 
     IterDecon decon;

@@ -377,9 +377,10 @@ public class HKStack implements Serializable {
                 double timePs = h * (etaS - etaP) + shift.value;
                 double timePpPs = h * (etaS + etaP) + shift.value;
                 double timePsPs = h * (2 * etaS) + shift.value;
-                stack[hIndex][kIndex] += getAmp(seis, timePs)
-                    + getAmp(seis, timePpPs)
-                    - getAmp(seis, timePsPs);
+                
+                stack[hIndex][kIndex] += weightPs * getAmp(seis, timePs)
+                    + weightPpPs * getAmp(seis, timePpPs)
+                    - weightPsPs * getAmp(seis, timePsPs);
             }
         }
     }
@@ -552,6 +553,10 @@ public class HKStack implements Serializable {
     float stepK;
     int numK;
 
+    float weightPs = 1;
+    float weightPpPs = 1;
+    float weightPsPs = 1;
+    
     transient static Crust2 crust2 = null;
     static {
         try {

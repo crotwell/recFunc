@@ -30,6 +30,7 @@ import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
 import org.apache.log4j.Logger;
 import edu.iris.dmc.seedcodec.CodecException;
 import java.io.IOException;
+import edu.iris.Fissures.FissuresException;
 
 public class RecFunc {
 
@@ -56,7 +57,8 @@ public class RecFunc {
         throws NoPreferredOrigin,
         TauModelException,
         PhaseNonExistent,
-        IncompatibleSeismograms {
+        IncompatibleSeismograms,
+        FissuresException {
 
         LocalSeismogramImpl n = null, e = null, z = null;
         for (int i=0; i<localSeis.length; i++) {

@@ -35,6 +35,7 @@ import javax.swing.JFrame;
 import java.awt.Dimension;
 import java.io.Writer;
 import java.io.BufferedWriter;
+import edu.iris.Fissures.FissuresException;
 
 
 
@@ -69,7 +70,7 @@ public class HKStack {
                    float minK,
                    float stepK,
                    int numK,
-                   DataSetSeismogram recFunc) {
+                   DataSetSeismogram recFunc)  throws FissuresException {
         this(alpha,p, percentMatch, minH ,stepH ,numH ,minK ,stepK ,numK );
         this.recFunc = recFunc;
         calculate();
@@ -283,7 +284,7 @@ public class HKStack {
     }
 
 
-    protected void calculate() {
+    protected void calculate()  throws FissuresException {
         stack = new float[numH][numK];
         float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
         if (Float.isNaN(etaP)) {
@@ -322,7 +323,7 @@ public class HKStack {
 
 
     /** gets the amp at the given time offset from the start of the seismogram. */
-    float getAmp(LocalSeismogramImpl seis, double time) {
+    float getAmp(LocalSeismogramImpl seis, double time)  throws FissuresException {
         double sampOffset = time/seis.getSampling().getPeriod().convertTo(UnitImpl.SECOND).value;
         if (sampOffset < 0 || sampOffset > seis.getNumPoints()-2) {
             throw new IllegalArgumentException("time "+time+" is outside of seismogram");

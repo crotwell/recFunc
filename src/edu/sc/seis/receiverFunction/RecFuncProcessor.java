@@ -11,7 +11,6 @@ import java.io.*;
 
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfNetwork.Channel;
-import edu.iris.Fissures.IfNetwork.NetworkAccess;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.iris.Fissures.IfSeismogramDC.RequestFilter;
 import edu.iris.Fissures.Orientation;
@@ -26,6 +25,7 @@ import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.display.DisplayUtils;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
+import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.process.waveformArm.LocalSeismogramProcess;
 import edu.sc.seis.sod.process.waveformArm.SaveSeismogramToFile;
 import java.awt.image.BufferedImage;
@@ -38,6 +38,10 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
 
     public RecFuncProcessor(Element config)  throws ConfigurationException {
         super(config);
+        String gwidthStr = SodUtil.getNestedText(SodUtil.getElement(config, "gaussianWidth"));
+        if (gwidthStr != null) {
+            gwidth = Float.parseFloat(gwidthStr);
+        }
         logger.info("Init RecFuncProcessor");
     }
 
@@ -57,13 +61,14 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                                          Channel channel,
                                          RequestFilter[] original,
                                          RequestFilter[] available,
-                                         LocalSeismogramImpl[] seismograms) throws Exception {
+                                         LocalSeismogramImpl[] seismograms,
+                                         CookieJar cookieJar) throws Exception {
         // save original seismograms, return value is ignored
         LocalSeismogramImpl[] saveToFileSeis = super.process(event,
-                                                    channel,
-                                                    original,
-                                                    available,
-                                                    seismograms);
+                                                             channel,
+                                                             original,
+                                                             available,
+                                                             seismograms, cookieJar);
         saveToFileSeis = null;
 
         if (seismograms.length == 0) {
@@ -71,7 +76,6 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
             return seismograms;
         }
         if (recFunc == null) {
-            float gwidth = 3.0f;
             tauPTime = new TauP_Time("iasp91");
             recFunc = new RecFunc(tauPTime,
                                   new IterDecon(100, true, .001f, gwidth));
@@ -161,6 +165,11 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                     File outImageFile  = new File(getEventDirectory(event),prefix+channelIdString+".png");
                     BufferedImage bufImage = stack.createStackImage();
                     javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
+
+                    cookieJar.put("recFunc_hkstack_image", outImageFile.getName());
+                    cookieJar.put("recFunc_pred_auxData", aux);
+                    RecFuncTemplate rfTemplate =new RecFuncTemplate();
+                    rfTemplate.process(cookieJar.getContext());
 
                     File outHtmlFile  = new File(getEventDirectory(event),prefix+channelIdString+".html");
                     BufferedWriter bw = new BufferedWriter(new FileWriter(outHtmlFile));
@@ -278,6 +287,8 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
     RecFunc recFunc;
     DataSetRecFuncProcessor processor;
     TauP_Time tauPTime;
+
+    float gwidth = 3.0f;
 
     static BufferedWriter summaryPage = null;
 

@@ -11,6 +11,7 @@ import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.IfNetwork.StationId;
 import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
@@ -48,7 +49,10 @@ public class StackSummary {
     
     public void createSummary(StationId station, File parentDir, float minPercentMatch) throws FissuresException, NotFound, IOException, SQLException {
         SumHKStack sumStack = jdbcHKStack.sum(station.network_id.network_code, station.station_code, minPercentMatch);
-        if (sumStack == null) { return; }
+        if (sumStack == null) { 
+            logger.info("No hk plots for "+StationIdUtil.toStringNoDates(station)+" with match > "+minPercentMatch);
+            return; 
+        }
         BufferedImage image = sumStack.createStackImage();
         
         File outSumImageFile  = new File(parentDir,"SumHKStack_"+minPercentMatch+"_"+FissuresFormatter.filize(ChannelIdUtil.toStringNoDates(sumStack.getChannel().get_id())+".png"));
@@ -57,6 +61,8 @@ public class StackSummary {
     }
     
     JDBCHKStack jdbcHKStack;
+ 
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StackSummary.class);
     
     public static void main(String[] args) {
     try {

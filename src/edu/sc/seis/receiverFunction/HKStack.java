@@ -56,7 +56,10 @@ public class HKStack implements Serializable {
                       int numH,
                       float minK,
                       float stepK,
-                      int numK) {
+                      int numK,
+                      float weightPs,
+                      float weightPpPs,
+                      float weightPsPs) {
         this.alpha = alpha;
         this.p = p;
         this.percentMatch = percentMatch;
@@ -66,6 +69,9 @@ public class HKStack implements Serializable {
         this.minK = minK;
         this.stepK = stepK;
         this.numK = numK;
+        this.weightPs = weightPs;
+        this.weightPpPs = weightPpPs;
+        this.weightPsPs = weightPsPs;
     }
 
     public HKStack(float alpha,
@@ -77,8 +83,12 @@ public class HKStack implements Serializable {
                    float minK,
                    float stepK,
                    int numK,
+                   float weightPs,
+                   float weightPpPs,
+                   float weightPsPs,
                    DataSetSeismogram recFunc)  throws FissuresException {
-        this(alpha,p, percentMatch, minH ,stepH ,numH ,minK ,stepK ,numK );
+        this(alpha,p, percentMatch, minH ,stepH ,numH ,minK ,stepK ,numK, weightPs,
+             weightPpPs, weightPsPs );
         this.recFunc = recFunc;
         this.chan = recFunc.getDataSet().getChannel(recFunc.getRequestFilter().channel_id);
         calculate();
@@ -93,10 +103,14 @@ public class HKStack implements Serializable {
                    float minK,
                    float stepK,
                    int numK,
+                   float weightPs,
+                   float weightPpPs,
+                   float weightPsPs,
                    LocalSeismogramImpl recFuncSeis,
                    Channel chan,
                    TimeInterval shift)  throws FissuresException {
-        this(alpha,p, percentMatch, minH ,stepH ,numH ,minK ,stepK ,numK );
+        this(alpha,p, percentMatch, minH ,stepH ,numH ,minK ,stepK ,numK, weightPs,
+             weightPpPs, weightPsPs );
         this.recFunc = new MemoryDataSetSeismogram(recFuncSeis);
         this.chan = chan;
         calculate(recFuncSeis, shift);
@@ -111,8 +125,12 @@ public class HKStack implements Serializable {
                    float minK,
                    float stepK,
                    int numK,
+                   float weightPs,
+                   float weightPpPs,
+                   float weightPsPs,
                    float[][] stack) {
-        this(alpha,p, percentMatch ,minH ,stepH ,numH ,minK ,stepK ,numK );
+        this(alpha,p, percentMatch ,minH ,stepH ,numH ,minK ,stepK ,numK, weightPs,
+             weightPpPs, weightPsPs );
         this.recFunc = null;
         this.stack = stack;
     }
@@ -126,9 +144,13 @@ public class HKStack implements Serializable {
                    float minK,
                    float stepK,
                    int numK,
+                   float weightPs,
+                   float weightPpPs,
+                   float weightPsPs,
                    float[][] stack,
                    DataSetSeismogram recFunc) {
-        this(alpha,p, percentMatch ,minH ,stepH ,numH ,minK ,stepK ,numK, stack );
+        this(alpha,p, percentMatch ,minH ,stepH ,numH ,minK ,stepK ,numK, weightPs,
+             weightPpPs, weightPsPs, stack );
         this.recFunc = recFunc;
         this.chan = recFunc.getDataSet().getChannel(recFunc.getRequestFilter().channel_id);
     }
@@ -142,9 +164,13 @@ public class HKStack implements Serializable {
                    float minK,
                    float stepK,
                    int numK,
+                   float weightPs,
+                   float weightPpPs,
+                   float weightPsPs,
                    float[][] stack,
                    Channel chan) {
-        this(alpha,p, percentMatch ,minH ,stepH ,numH ,minK ,stepK ,numK, stack );
+        this(alpha,p, percentMatch ,minH ,stepH ,numH ,minK ,stepK ,numK, weightPs,
+             weightPpPs, weightPsPs, stack );
         this.chan = chan;
     }
 
@@ -461,6 +487,18 @@ public class HKStack implements Serializable {
         return numK;
     }
 
+    public float getWeightPpPs() {
+        return weightPpPs;
+    }
+    
+    public float getWeightPs() {
+        return weightPs;
+    }
+    
+    public float getWeightPsPs() {
+        return weightPsPs;
+    }
+    
     /** Writes the HKStack report to a string.
      */
     public void writeReport(BufferedWriter out) throws IOException {
@@ -531,7 +569,8 @@ public class HKStack implements Serializable {
         int iDim = in.readInt();
         int jDim = in.readInt();
         float[][] stack = new float[iDim][jDim];
-        HKStack out = new HKStack(alpha, p, percentMatch, minH, stepH, numH, minK, stepK, numK, stack);
+        System.out.println("WARNING: weights are assumed to be  1");
+        HKStack out = new HKStack(alpha, p, percentMatch, minH, stepH, numH, minK, stepK, numK, 1, 1, 1, stack);
         for (int i = 0; i < stack.length; i++) {
             for (int j = 0; j < stack[0].length; j++) {
                 stack[i][j] = in.readFloat();

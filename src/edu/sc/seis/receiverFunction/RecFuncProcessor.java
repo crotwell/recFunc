@@ -245,6 +245,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                                                     HKStack.getPercentMatch(saved),
                                                     10, .25f, 240,
                                                     1.6f, .0025f, 200,
+                                                    1, 1, 1,
                                                     saved);
 
                         String prefix = "HKstack_";

@@ -101,8 +101,8 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                   transverseMatch,
                                                   transverseBump,
                                                   sodConfig_id);
-                System.out.println("insert "+recFuncDbId);
-                jdbcHKStack.calc(recFuncDbId);
+                System.out.println("insert "+recFuncDbId+" with weights of 1");
+                jdbcHKStack.calc(recFuncDbId, 1, 1, 1);
             }
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);

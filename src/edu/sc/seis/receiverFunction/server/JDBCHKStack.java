@@ -129,7 +129,7 @@ public class JDBCHKStack  extends JDBCTable {
         return hkstack_id;
     }
     
-    public ArrayList calc(String netCode, String staCode, float percentMatch) throws FileNotFoundException, FissuresException, NotFound, IOException, SQLException, TauModelException {
+    public ArrayList calc(String netCode, String staCode, float percentMatch, boolean save) throws FileNotFoundException, FissuresException, NotFound, IOException, SQLException, TauModelException {
         
         // get all uncalculated rows
         uncalculatedStmt.setString(1, netCode);
@@ -141,14 +141,19 @@ public class JDBCHKStack  extends JDBCTable {
         while (rs.next()) {
             int recFuncDbId = rs.getInt(1);
             System.out.println("Calc for "+recFuncDbId);
-            HKStack stack = calc(recFuncDbId);
-            int hkstack_id = put(recFuncDbId, stack);
+            HKStack stack = calc(recFuncDbId, 1, 1, 1);
+            if (save) {
+                int hkstack_id = put(recFuncDbId, stack);
+            }
             individualHK.add(stack);
         }
         return individualHK;
     }
     
-    HKStack calc(int recFuncDbId) throws TauModelException, FileNotFoundException, FissuresException, NotFound, IOException, SQLException {
+    HKStack calc(int recFuncDbId,
+                 float weightPs,
+                 float weightPpPs,
+                 float weightPsPs) throws TauModelException, FileNotFoundException, FissuresException, NotFound, IOException, SQLException {
         CachedResult cachedResult = jdbcRecFunc.get(recFuncDbId);
         String[] pPhases = { "P" };
         Arrival[] arrivals =
@@ -160,6 +165,7 @@ public class JDBCHKStack  extends JDBCTable {
                                     cachedResult.radialMatch,
                                     getDefaultMinH(), .25f, 240,
                                     1.6f, .0025f, 200,
+                                    weightPs, weightPpPs, weightPsPs,
                                     (LocalSeismogramImpl)cachedResult.radial,
                                     cachedResult.channels[0],
                                     RecFunc.getDefaultShift());
@@ -204,7 +210,7 @@ public class JDBCHKStack  extends JDBCTable {
             }
         }
         
-        
+        System.out.println("WARNING: Weights are assumed to be 1");
         HKStack out = new HKStack(rs.getFloat("alpha"),
                                   rs.getFloat("p"),
                                   rs.getFloat("percentMatch"),
@@ -214,6 +220,7 @@ public class JDBCHKStack  extends JDBCTable {
                                   rs.getFloat("minK"),
                                   rs.getFloat("stepK"),
                                   numK,
+                                  1,1,1,
                                   data,
                                   channels[0]);
         return out;
@@ -251,6 +258,10 @@ public class JDBCHKStack  extends JDBCTable {
             return;
         }
         float minPercentMatch = 80;
+        calcAndSave(args, minPercentMatch, true);
+    }
+    
+    public static void calcAndSave(String[] args, float minPercentMatch, boolean save) {
         try {
             ConnMgr.setDB(ConnMgr.POSTGRES);
             Properties props = RecFuncCacheStart.loadProps(args);
@@ -265,7 +276,7 @@ public class JDBCHKStack  extends JDBCTable {
             if (args.length > 1) {
                 String staCode = args[1];
                 System.out.println("calc for "+netCode+"."+staCode);
-                jdbcHKStack.calc(netCode, staCode, minPercentMatch);
+                jdbcHKStack.calc(netCode, staCode, minPercentMatch, save);
             } else {
                 // do all or for a net
                 JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel().getSiteTable().getStationTable();
@@ -279,7 +290,7 @@ public class JDBCHKStack  extends JDBCTable {
                         for(int j = 0; j < station.length; j++) {
                             System.out.println("calc for "+netId[i].network_code+"."+station[j].get_code());
                             try {
-                            jdbcHKStack.calc(netId[i].network_code, station[j].get_code(), minPercentMatch);
+                            jdbcHKStack.calc(netId[i].network_code, station[j].get_code(), minPercentMatch, save);
                             } catch (IllegalArgumentException e) {
                                 System.out.println("Problem with receiver function, skipping station. "+e);
                                 GlobalExceptionHandler.handle(e); 

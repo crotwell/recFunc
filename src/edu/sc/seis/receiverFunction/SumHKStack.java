@@ -82,6 +82,9 @@ public class SumHKStack {
                           individuals[0].getMinK(),
                           individuals[0].getStepK(),
                           individuals[0].getNumK(),
+                          individuals[0].getWeightPs(),
+                          individuals[0].getWeightPpPs(),
+                          individuals[0].getWeightPsPs(),
                           stack,
                           chan);
         calcVariance();   

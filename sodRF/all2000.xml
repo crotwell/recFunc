@@ -168,7 +168,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                     <phaseName>P</phaseName>
                     <shortOffsetBegin>
                         <unit>SECOND</unit>
-                        <value>-5</value>
+                        <value>-1</value>
                     </shortOffsetBegin>
                     <shortOffsetEnd>
                         <unit>SECOND</unit>
@@ -182,37 +182,11 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                         <unit>SECOND</unit>
                         <value>-5</value>
                     </longOffsetEnd>
-                    <ratio>1.0</ratio>
+                    <ratio>2.0</ratio>
                 </phaseSignalToNoise>
             </ORWaveformProcessWrapper>
             
             <printlineSeismogramProcess/>
-
-            <ANDWaveformProcessWrapper>
-               <alwaysSuccess>
-                <phaseSignalToNoise>
-                    <modelName>prem</modelName>
-                    <phaseName>P</phaseName>
-                    <shortOffsetBegin>
-                        <unit>SECOND</unit>
-                        <value>-5</value>
-                    </shortOffsetBegin>
-                    <shortOffsetEnd>
-                        <unit>SECOND</unit>
-                        <value>5</value>
-                    </shortOffsetEnd>
-                    <longOffsetBegin>
-                        <unit>SECOND</unit>
-                        <value>-105</value>
-                    </longOffsetBegin>
-                    <longOffsetEnd>
-                        <unit>SECOND</unit>
-                        <value>-5</value>
-                    </longOffsetEnd>
-                    <ratio>0.0</ratio>
-                </phaseSignalToNoise>
-               </alwaysSuccess>
-            </ANDWaveformProcessWrapper>
             
             <phaseCut>
                 <beginPhase>P</beginPhase>

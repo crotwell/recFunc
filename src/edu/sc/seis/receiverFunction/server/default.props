@@ -105,10 +105,11 @@ hkstack.getForStation=SELECT * FROM network \
                    NATURAL JOIN site \
                    NATURAL JOIN channel \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
-                   NATURAL JOIN hkStack \
+                   ,hkStack \
                    WHERE net_code = ? \
                    AND sta_code = ? \
-                   AND percentMatch > ?
+                   AND percentMatch > ? \
+                   AND receiverfunction.recfunc_id = hkstack.recfunc_id
 
 # specifies the database URL
 #    for hsqldb

@@ -6,7 +6,7 @@ JACORB=$MAVEN/JacORB/jars/JacORB-2.0beta3.jar
 
 SEEDCODEC=$MAVEN/SeedCodec/jars/SeedCodec-1.0Beta.jar
 FISSURESUTIL=$MAVEN/fissuresUtil/jars/fissuresUtil-1.0.3beta.jar
-FISSURESIMPL=$MAVEN/fissuresImpl/jars/fissuresImpl-1.1.2betta.jar
+FISSURESIMPL=$MAVEN/fissuresImpl/jars/fissuresImpl-1.1.2beta.jar
 FISSURESIDL=$MAVEN/fissuresIDL/jars/fissuresIDL-1.0.jar
 LOG4J=$MAVEN/log4j/jars/log4j-1.2.8.jar
 TAUP=$MAVEN/TauP/jars/TauP-1.1.4.jar
@@ -16,7 +16,7 @@ XMLAPI=$MAVEN/xml-apis/jars/xml-apis-1.0.b2.jar
 JAICORE=$MAVEN/jars/jai_core.jar
 JAICODEC=$MAVEN/jars/jai_codec.jar
 HSQLDB=$MAVEN/hsqldb/jars/hsqldb-1.7.1.jar
-GEE=$MAVEN/gee/jars/gee-2.0.3beta.jar
+GEE=$MAVEN/gee/jars/gee-2.0.2.jar
 JING=$MAVEN/jing/jars/jing-20030619.jar
 OPENMAP=$MAVEN/openmap/jars/openmap-4.5.4_USC1.jar
 SOD=$MAVEN/sod/jars/sod-1.0Beta.jar

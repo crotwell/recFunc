@@ -82,6 +82,11 @@
             <jar>etopo10.jar</jar>
         </dependency>
         <dependency>
+            <groupId>mapData</groupId>
+            <artifactId>vmap_po_thinned</artifactId>
+            <jar>vmap_po_thinned.jar</jar>
+        </dependency>
+        <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>7.4.1-jdbc3</version>
@@ -107,7 +112,7 @@
         </dependency>
         <dependency>
             <id>gee</id>
-            <version>2.0.9beta</version>
+            <version>2.1.0beta</version>
         </dependency>
         <dependency>
             <id>sod</id>

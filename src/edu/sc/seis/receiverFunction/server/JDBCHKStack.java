@@ -274,7 +274,11 @@ public class JDBCHKStack  extends JDBCTable {
                             try {
                             jdbcHKStack.calc(netId[i].network_code, station[j].get_code(), minPercentMatch);
                             } catch (IllegalArgumentException e) {
-                                System.out.println("Problem with receiver function, skipping station.");
+                                System.out.println("Problem with receiver function, skipping station. "+e);
+                                GlobalExceptionHandler.handle(e); 
+                            } catch (FileNotFoundException e) {
+                                System.out.println("Problem with receiver function, skipping station. "+e);
+                                GlobalExceptionHandler.handle(e); 
                             }
                         }
                     }

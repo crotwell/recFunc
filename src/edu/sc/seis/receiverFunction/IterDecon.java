@@ -10,7 +10,7 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 3384 2003-03-05 14:56:01Z crotwell $
+ * @version $Id: IterDecon.java 3421 2003-03-13 15:20:36Z crotwell $
  */
 
 public class IterDecon {
@@ -179,7 +179,7 @@ public class IterDecon {
 	    omega = i*d_omega;
 	    gauss = Math.exp(-omega*omega / gwidth);
 	    forward[i].r *= gauss;
-	    forward[i].r *= gauss;
+	    forward[i].i *= gauss;
 	}
 	
 	float[] ans = Cmplx.fftInverse(forward, x.length);

@@ -16,6 +16,8 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
+import edu.sc.seis.fissuresUtil.display.mouse.SDMouseAdapter;
+import edu.sc.seis.fissuresUtil.display.mouse.SDMouseEvent;
 
 /**
  * RecFuncTask.java
@@ -27,30 +29,30 @@ import org.apache.log4j.Logger;
  * @version
  */
 
-public class RecFuncTask  extends MouseAdapter implements GUITask {
+public class RecFuncTask  extends SDMouseAdapter implements GUITask {
     public RecFuncTask (){
-        
+
     }
-    
+
     public void configure(java.util.Map params) throws ConfigurationException {
         configParams = params;
         float gwidth = 3.0f;
         recFunc = new RecFunc(CommonAccess.getCommonAccess().getTravelTimeCalc(),
                               new IterDecon(100, true, .001f, gwidth));
     }
-    
+
     public void invoke() {
-        GlobalToolBar.setMouseListener(this);
+        GlobalToolBar.add(this);
     }
-    
-    
+
+
     /** Gets the GUI for this Task. Used for interacting with the user
      before and after invoking this Task's action.
      */
     public JComponent getGUI() throws Exception {
         return new JPanel();
     }
-    
+
     /** True if this GUI has a "more options" funtionality. More options
      *  appear in a separate panel below the main gui, and can be shown/hidden
      *  with a "Show More Options" and "Hide More Options" button that is
@@ -60,17 +62,17 @@ public class RecFuncTask  extends MouseAdapter implements GUITask {
         // TODO
         return false;
     }
-    
+
     /** Gets the "More Options" GUI component.
      */
     public JComponent getMoreOptionsGUI() {
         // TODO
         return null;
     }
-    
+
     public void destroy(){}
-    
-    public void mouseClicked(MouseEvent me) {
+
+    public void mouseClicked(SDMouseEvent me){
         try {
             if(me.getComponent() instanceof BasicSeismogramDisplay){
                 BasicSeismogramDisplay display =
@@ -95,7 +97,7 @@ public class RecFuncTask  extends MouseAdapter implements GUITask {
             CommonAccess.getCommonAccess().handleException(e);
         }
     }
-    
+
     void temp() {
         //        try {
         //
@@ -108,17 +110,17 @@ public class RecFuncTask  extends MouseAdapter implements GUITask {
         //        } catch (IncompatibleSeismograms e) {
         //
         //        } // end of try-catch
-        
+
     }
-    
+
     Map configParams;
-    
-    
-    
+
+
+
     IterDecon decon;
-    
+
     RecFunc recFunc;
-    
+
     Logger logger = Logger.getLogger(RecFuncTask.class);
-    
+
 }// RecFuncTask

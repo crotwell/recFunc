@@ -7,7 +7,56 @@
         <title>EARS Earthquake Explorer</title>
         <description>EARS for RISTRA, XM99</description>
         <appendActivityId>DataExplorer</appendActivityId>
+        <menubar>
+            <menu>
+                <name>File</name>
+                <menuItem><taskid>recFuncView</taskid></menuItem>
+            </menu>
+        </menubar>
     </activity>
+    <task>
+        <id>TimeForEarthquakeSCEPP_DMC</id>
+        <name>Rec Func View</name>
+        <class>edu.sc.seis.receiverFunction.browser.EventSeismogramRFTask</class>
+        <taskconfig>
+            <name>showEventsTask</name>
+            <value>ShowEvents</value>
+        </taskconfig>
+        <taskconfig>
+            <name>loadSeismogramTask</name>
+            <value>CustomTimeWindowALL</value>
+        </taskconfig>
+        <taskconfig>
+            <name>channelChooserTask</name>
+            <value>StationsFromSCEPP_DMC</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.width</name>
+            <value>450</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.height</name>
+            <value>250</value>
+        </taskconfig>
+        <taskconfig>
+            <name>NoStationWithDataMessage</name>
+            <value>Either no stations were selected or the selected stations are not active for this earthquake</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>QuakeFromIRIS</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>ShowEvents</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>WorldMap</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>StationsFromSCEPP_DMC</taskid>
+            </toolitem>
+        </toolbar>
+	</task>
     <task>
         <id>StationsFromSCEPP_DMC</id>
         <name>Station Chooser</name>

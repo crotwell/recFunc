@@ -101,7 +101,7 @@ public class IterDeconTest
         // JUnitDoclet begin method phaseShift
         float[] data = new float[128];
         
-        data[49] = 1;
+        data[49] = .5f;
         
         IterDeconResult out = iterdecon.process(data, data, 1.0f);
         iterdecon.gaussianFilter(out.predicted, 3.0f, 1.0f);

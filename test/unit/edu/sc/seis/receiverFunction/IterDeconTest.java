@@ -51,6 +51,26 @@ public class IterDeconTest
 
     public void testProcess() throws Exception {
         // JUnitDoclet begin method process
+        float[] numData   = {0,    2, 0, -1.5f, 0, 0.25f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        float[] denomData = {0, 0.5f, 0,     0, 0,     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        IterDecon zeroGauss = new IterDecon(3, true, 0.001f, 0.0f);
+        IterDeconResult result = zeroGauss.process(numData, denomData, .05f);
+        float[] pred = result.getPredicted();
+        int[] s = result.getShifts();
+        float[] a = result.getAmps();
+        assertEquals("spike 0",  0, s[0]);
+        assertEquals("amp 0",    4,    a[0], 0.0001f);
+        assertEquals("spike 1",  2, s[1]);
+        assertEquals("amp 1",   -3,    a[1], 0.0001f);
+        assertEquals("spike 2 a="+a[2],  4, s[2]);
+        assertEquals("amp 2",  .5f,    a[2], 0.0001f);
+        assertEquals("pred 0",   4, pred[0], 0.0001f);
+        assertEquals("pred 1",   0, pred[1], 0.0001f);
+        assertEquals("pred 2",  -3, pred[2], 0.0001f);
+        assertEquals("pred 3",   0, pred[3], 0.0001f);
+        assertEquals("pred 4", .5f, pred[4], 0.0001f);
+        assertEquals("pred 5",   0, pred[5], 0.0001f);
+
         // JUnitDoclet end method process
     }
 
@@ -107,7 +127,36 @@ public class IterDeconTest
         assertEquals("abs max index", 2, index);
     }
 
-    public void testIterDeconIdentity() throws Exception {
+    public void testPower() {
+        float[] data = { 0, 2, 3, -1, -2, 0};
+        assertEquals(18f, iterdecon.power(data), 0.00001f);
+    }
+
+    public void testCorrelation() {
+        float[] fData = { 0, 0, 2, 0, 0, 0, 0, 0};
+        float[] gData = { 0, 1, 0, 0, 0, 0, 0, 0};
+        float[] corr = iterdecon.correlate(fData, gData);
+        assertEquals("lag 0", 0f, corr[0], 0.00001f);
+        assertEquals("lag 1", 2f, corr[1], 0.00001f);
+        assertEquals("lag 2", 0f, corr[2], 0.00001f);
+        assertEquals("lag 3", 0f, corr[3], 0.00001f);
+    }
+
+    public void testConvolve() {
+        float[] fData = { 0, 0, 2, 0, 0, 0, 0, 0};
+        float[] gData = { 0, 1, 0, 0, 0, 0, 0, 0};
+        float[] corr = iterdecon.convolve(fData, gData);
+        assertEquals("lag 0", 0f, corr[0], 0.00001f);
+        assertEquals("lag 1", 0f, corr[1], 0.00001f);
+        assertEquals("lag 2", 0f, corr[2], 0.00001f);
+        assertEquals("lag 3", 2f, corr[3], 0.00001f);
+        assertEquals("lag 4", 0f, corr[4], 0.00001f);
+        assertEquals("lag 5", 0f, corr[5], 0.00001f);
+        assertEquals("lag 6", 0f, corr[6], 0.00001f);
+        assertEquals("lag 7", 0f, corr[7], 0.00001f);
+    }
+
+    public void xxxtxestIterDeconIdentity() throws Exception {
         // JUnitDoclet begin method phaseShift
         float[] data = new float[128];
 

@@ -40,6 +40,8 @@ import edu.sc.seis.fissuresUtil.xml.SeisDataChangeEvent;
 import edu.sc.seis.fissuresUtil.xml.SeisDataChangeListener;
 import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
 import edu.sc.seis.fissuresUtil.xml.XMLQuantity;
+import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.compare.WilsonRistra;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 import edu.sc.seis.sod.SodUtil;
@@ -264,7 +266,18 @@ public class HKStack implements Serializable {
             int vpvsIndex = (int)Math.round((vpvs-minK)/stepK);
             System.out.println("Crust2 "+StationIdUtil.toString(chan.my_site.my_station.get_id())+" depth="+
                               profile.getLayer(7).topDepth+" "+depthIndex+"  VpVs="+vpvs+" "+vpvsIndex);
-            stackImage.addMarker(vpvsIndex, depthIndex);
+            stackImage.addMarker("Crust2", vpvsIndex, depthIndex, Color.blue);
+        }
+        if (wilson != null) {
+            StationResult result = wilson.getResult(chan.my_site.my_station.get_id());
+            if (result != null) {
+                int depthIndex = (int)Math.round((result.getH()-minH)/stepH);
+                double vpvs = result.getVpVs();
+                int vpvsIndex = (int)Math.round((vpvs-minK)/stepK);
+                System.out.println("Wilson "+StationIdUtil.toString(chan.my_site.my_station.get_id())+" depth="+
+                                   result.getH()+" "+depthIndex+"  VpVs="+vpvs+" "+vpvsIndex);
+                stackImage.addMarker("Wilson", vpvsIndex, depthIndex, Color.ORANGE);
+            }
         }
         BorderedDisplay bd = new BorderedDisplay(stackImage);
         UnitRangeImpl depthRange = new UnitRangeImpl(getMinH()+startHIndex*getStepH(),
@@ -619,16 +632,27 @@ public class HKStack implements Serializable {
     float weightPsPs = 1;
     
     transient static Crust2 crust2 = null;
+    transient static WilsonRistra wilson = null;
+    
     static {
         try {
             crust2 = new Crust2();
         } catch (IOException e) {
             GlobalExceptionHandler.handle("Couldn't load Crust2.0", e);
         }
+        try {
+            wilson = new WilsonRistra();
+        } catch (IOException e) {
+            GlobalExceptionHandler.handle("Couldn't load Wilson RISTRA", e);
+        }
     }
-    
+
     public static Crust2 getCrust2() {
         return crust2;
+    }
+
+    public static WilsonRistra getWilsonRistra() {
+        return wilson;
     }
 
     // don't serialize the DSS

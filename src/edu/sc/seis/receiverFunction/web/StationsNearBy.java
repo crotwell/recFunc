@@ -98,6 +98,7 @@ public class StationsNearBy extends Revlet {
         context.put("lat", lat + "");
         context.put("lon", lon + "");
         context.put("delta", delta + "");
+        context.put("summary", summary);
         return context;
     }
 

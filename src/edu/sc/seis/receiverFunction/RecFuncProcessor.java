@@ -23,14 +23,15 @@ import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauP_Time;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.display.DisplayUtils;
+import edu.sc.seis.sod.ChannelGroup;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.Start;
+import edu.sc.seis.sod.process.waveformArm.ChannelGroupLocalSeismogramProcess;
 import edu.sc.seis.sod.process.waveformArm.LocalSeismogramProcess;
 import edu.sc.seis.sod.process.waveformArm.LocalSeismogramTemplateGenerator;
 import edu.sc.seis.sod.process.waveformArm.SaveSeismogramToFile;
-import edu.sc.seis.sod.status.waveformArm.WaveformArmMonitor;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Iterator;
@@ -38,7 +39,7 @@ import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;
 import org.w3c.dom.Element;
 
-public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeismogramProcess {
+public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGroupLocalSeismogramProcess {
 
     public RecFuncProcessor(Element config)  throws ConfigurationException {
         super(config);
@@ -62,37 +63,42 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
      * @param cookies a <code>CookieJar</code> value
      * @exception Exception if an error occurs
      */
-    public LocalSeismogramImpl[] process(EventAccessOperations event,
-                                         Channel channel,
-                                         RequestFilter[] original,
-                                         RequestFilter[] available,
-                                         LocalSeismogramImpl[] seismograms,
-                                         CookieJar cookieJar) throws Exception {
+    public LocalSeismogramImpl[][] process(EventAccessOperations event,
+                                           ChannelGroup channelGroup,
+                                           RequestFilter[][] original,
+                                           RequestFilter[][] available,
+                                           LocalSeismogramImpl[][] seismograms,
+                                           CookieJar cookieJar) throws Exception {
         // save original seismograms, return value is ignored
-        LocalSeismogramImpl[] saveToFileSeis = super.process(event,
-                                                             channel,
-                                                             original,
-                                                             available,
-                                                             seismograms, cookieJar);
-        saveToFileSeis = null;
-
-        if (seismograms.length == 0) {
-            // maybe no data after cut?
-            return seismograms;
+        for (int i = 0; i < seismograms.length; i++) {
+            LocalSeismogramImpl[] saveToFileSeis = super.process(event,
+                                                                 channelGroup.getChannels()[i],
+                                                                 original[i],
+                                                                 available[i],
+                                                                 seismograms[i],
+                                                                 cookieJar);
+            saveToFileSeis = null;
         }
+
         if (recFunc == null) {
             tauPTime = new TauP_Time("iasp91");
             recFunc = new RecFunc(tauPTime,
                                   new IterDecon(100, true, .001f, gwidth));
         }
-        if ( ! ChannelIdUtil.areEqual(available[0].channel_id, seismograms[0].channel_id)) {
-            // fix the dumb -farm or -spyder on pond available_data
-            available[0].channel_id = seismograms[0].channel_id;
+        for (int i = 0; i < seismograms.length; i++) {
+            if (seismograms[i].length == 0) {
+                // maybe no data after cut?
+                return seismograms;
+            }
+            if ( ! ChannelIdUtil.areEqual(available[i][0].channel_id, seismograms[i][0].channel_id)) {
+                // fix the dumb -farm or -spyder on pond available_data
+                available[i][0].channel_id = seismograms[i][0].channel_id;
+            }
         }
 
         DataSet dataset = getDataSet(event);
         DataSetSeismogram[] chGrpSeismograms =
-            DisplayUtils.getComponents(dataset, available[0]);
+            DisplayUtils.getComponents(dataset, available[0][0]);
 
         if (chGrpSeismograms.length < 3) {
             logger.debug("chGrpSeismograms.length = "+chGrpSeismograms.length);
@@ -100,7 +106,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
             return seismograms;
         }
 
-        logger.info("RecFunc for "+ChannelIdUtil.toStringNoDates(channel.get_id()));
+        logger.info("RecFunc for "+ChannelIdUtil.toStringNoDates(channelGroup.getChannels()[0].get_id()));
         for (int i=0; i<chGrpSeismograms.length; i++) {
             if (chGrpSeismograms[i] == null) {
                 // must not be all here yet
@@ -117,9 +123,10 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
             logger.debug("Retrieving for "+chGrpSeismograms[i].getName());
             chGrpSeismograms[i].retrieveData(processor);
         }
+        Channel zeroChannel = channelGroup.getChannels()[0];
         while ( ! processor.isRecFuncFinished()) {
             try {
-                System.out.println("Sleeping "+ChannelIdUtil.toStringNoDates(channel.get_id()));
+                System.out.println("Sleeping "+ChannelIdUtil.toStringNoDates(zeroChannel.get_id()));
 
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -134,11 +141,11 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                     MemoryDataSetSeismogram predicted = processor.getPredicted()[i];
                     dataset.remove(predicted); // to avoid duplicates
                     Channel recFuncChannel = new ChannelImpl(predicted.getRequestFilter().channel_id,
-                                                             "receiver function fake channel for "+ChannelIdUtil.toStringNoDates(channel.get_id()),
+                                                             "receiver function fake channel for "+ChannelIdUtil.toStringNoDates(zeroChannel.get_id()),
                                                              new Orientation(0, 0),
-                                                             channel.sampling_info,
-                                                             channel.effective_time,
-                                                             channel.my_site);
+                                                             zeroChannel.sampling_info,
+                                                             zeroChannel.effective_time,
+                                                             zeroChannel.my_site);
 
                     URLDataSetSeismogram saved =
                         saveInDataSet(event, recFuncChannel, predicted.getCache(), SeismogramFileTypes.SAC);
@@ -178,19 +185,19 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                         }
                     }
 
-                    File imageDir = lSeisTemplateGen.getOutputFile(event, channel).getParentFile();
+                    File imageDir = lSeisTemplateGen.getOutputFile(event, zeroChannel).getParentFile();
                     imageDir.mkdirs();
                     File outImageFile  = new File(imageDir, prefix+channelIdString+".png");
                     BufferedImage bufImage = stack.createStackImage();
                     javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
 
                     synchronized(lSeisTemplateGen) {
-                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, original, available, predicted.getCache(), cookieJar);
+                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, original[0], available[0], predicted.getCache(), cookieJar);
                     }
 
                     // put the answer in the site context as the result is shared
                     // by all channels from that site, helps with velocity template
-                    VelocityContext siteContext = (VelocityContext)cookieJar.getSiteContext(event, channel.my_site);
+                    VelocityContext siteContext = (VelocityContext)cookieJar.getSiteContext(event, zeroChannel.my_site);
                     siteContext.put("recFunc_hkstack_image_"+ITR_ITT, outImageFile.getName());
                     siteContext.put("recFunc_pred_auxData"+ITR_ITT, aux);
                     siteContext.put("stack_"+ITR_ITT, stack);
@@ -285,9 +292,9 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                     Channel recFuncChannel = new ChannelImpl(dss.getRequestFilter().channel_id,
                                                              "receiver function fake channel for "+ChannelIdUtil.toStringNoDates(dss.getRequestFilter().channel_id),
                                                              new Orientation(0, 0),
-                                                             channel.sampling_info,
-                                                             channel.effective_time,
-                                                             channel.my_site);
+                                                             zeroChannel.sampling_info,
+                                                             zeroChannel.effective_time,
+                                                             zeroChannel.my_site);
                     URLDataSetSeismogram saved =
                         saveInDataSet(event, recFuncChannel, ((MemoryDataSetSeismogram)dss).getCache(), SeismogramFileTypes.SAC);
                 }
@@ -299,7 +306,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
         }
         MicroSecondDate after = new MicroSecondDate();
         System.out.println("Save took "+after.subtract(before).convertTo(UnitImpl.SECOND));
-        System.out.println("Done with "+ChannelIdUtil.toStringNoDates(channel.get_id()));
+        System.out.println("Done with "+ChannelIdUtil.toStringNoDates(zeroChannel.get_id()));
         return seismograms;
     }
 

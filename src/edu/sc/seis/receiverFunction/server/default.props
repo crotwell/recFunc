@@ -56,7 +56,7 @@ hkStack.create=CREATE TABLE hkstack ( \
                    peakH float, \
                    peakK float, \
                    peakVal float, \
-                   data float[][], \
+                   data bytea, \
                    insertTime timestamp, \
                    PRIMARY KEY (hkstack_id), \
                    FOREIGN KEY (recFunc_id) \

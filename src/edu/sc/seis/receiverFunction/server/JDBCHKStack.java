@@ -156,7 +156,7 @@ public class JDBCHKStack  extends JDBCTable {
         calcByPercentStmt.setString(1, netCode);
         calcByPercentStmt.setString(2, staCode);
         calcByPercentStmt.setFloat(3, percentMatch);
-        ResultSet rs = uncalculatedStmt.executeQuery();
+        ResultSet rs = calcByPercentStmt.executeQuery();
        return calcStmt(rs, save, weightPs, weightPpPs, weightPsPs);
     }
     

@@ -80,16 +80,16 @@ public class RecFunc {
         Origin origin = event.get_preferred_origin();
         Location evtLoc = origin.my_location;
 //
-//        PhaseCut phaseCut;
+        //        PhaseCut phaseCut;
 //
-//        phaseCut =
-//            new PhaseCut(timeCalc,
-//                         "P", new TimeInterval(-15, UnitImpl.SECOND),
-//                         "P", new TimeInterval(90, UnitImpl.SECOND));
+        //        phaseCut =
+        //            new PhaseCut(timeCalc,
+        //                         "P", new TimeInterval(-15, UnitImpl.SECOND),
+        //                         "P", new TimeInterval(90, UnitImpl.SECOND));
 //
-//        n = phaseCut.cut(staLoc, origin, n);
-//        e = phaseCut.cut(staLoc, origin, e);
-//        z = phaseCut.cut(staLoc, origin, z);
+        //        n = phaseCut.cut(staLoc, origin, n);
+        //        e = phaseCut.cut(staLoc, origin, e);
+        //        z = phaseCut.cut(staLoc, origin, z);
 
         float[][] rotated = Rotate.rotateGCP(e, n, staLoc, evtLoc);
 
@@ -105,8 +105,9 @@ public class RecFunc {
 
         SamplingImpl samp = SamplingImpl.createSamplingImpl(z.sampling_info);
         double period = samp.getPeriod().convertTo(UnitImpl.SECOND).getValue();
+        UnitImpl sec_per_sec = UnitImpl.divide(UnitImpl.SECOND, UnitImpl.SECOND, "sec per sec");
 
-        int padLength = (int)Math.ceil(pad.divideBy(samp.getPeriod()).convertTo(UnitImpl.COUNT).get_value());
+        int padLength = (int)Math.ceil(pad.divideBy(samp.getPeriod()).convertTo(sec_per_sec).get_value());
         float[] tmp = new float[zdata.length+padLength];
         System.arraycopy(zdata, 0, tmp, 0, zdata.length);
         zdata = tmp;

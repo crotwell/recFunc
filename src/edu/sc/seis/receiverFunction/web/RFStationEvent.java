@@ -59,9 +59,9 @@ public class RFStationEvent extends Revlet {
             VelocityStation sta = staLoc.locate(req);
             
             VelocityContext vContext = new VelocityContext();
-            vContext.put("station", sta);
+            vContext.put("sta", sta);
             vContext.put("eq", velEvent);
-            RevletContext context = new RevletContext("RFStationEvent", vContext);
+            RevletContext context = new RevletContext("rfStationEvent.vm", vContext);
             return context;
         } catch(Exception e) {
             e.printStackTrace();

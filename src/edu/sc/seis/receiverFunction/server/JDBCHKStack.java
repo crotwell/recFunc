@@ -138,25 +138,29 @@ public class JDBCHKStack  extends JDBCTable {
         while (rs.next()) {
             int recFuncDbId = rs.getInt(1);
             System.out.println("Calc for "+recFuncDbId);
-            CachedResult cachedResult = jdbcRecFunc.get(recFuncDbId);
-            String[] pPhases = { "P" };
-            Arrival[] arrivals =
-                tauPTime.calcTravelTimes(cachedResult.channels[0].my_site.my_station, cachedResult.prefOrigin, pPhases);
-            // convert radian per sec ray param into km per sec
-            float kmRayParam = (float)(arrivals[0].getRayParam()/tauPTime.getTauModel().getRadiusOfEarth());
-            HKStack stack = new HKStack(6.5f,
-                                        kmRayParam,
-                                        cachedResult.radialMatch,
-                                        10, .25f, 240,
-                                        1.6f, .0025f, 200,
-                                        (LocalSeismogramImpl)cachedResult.radial,
-                                        cachedResult.channels[0],
-                                        RecFunc.getDefaultShift());
-            int hkstack_id = put(recFuncDbId, stack);
-            individualHK.add(stack);
-            System.out.println("Stack calc for "+ChannelIdUtil.toStringNoDates(cachedResult.channels[0]));
+            individualHK.add(calc(recFuncDbId));
         }
         return individualHK;
+    }
+    
+    HKStack calc(int recFuncDbId) throws TauModelException, FileNotFoundException, FissuresException, NotFound, IOException, SQLException {
+        CachedResult cachedResult = jdbcRecFunc.get(recFuncDbId);
+        String[] pPhases = { "P" };
+        Arrival[] arrivals =
+            tauPTime.calcTravelTimes(cachedResult.channels[0].my_site.my_station, cachedResult.prefOrigin, pPhases);
+        // convert radian per sec ray param into km per sec
+        float kmRayParam = (float)(arrivals[0].getRayParam()/tauPTime.getTauModel().getRadiusOfEarth());
+        HKStack stack = new HKStack(6.5f,
+                                    kmRayParam,
+                                    cachedResult.radialMatch,
+                                    10, .25f, 240,
+                                    1.6f, .0025f, 200,
+                                    (LocalSeismogramImpl)cachedResult.radial,
+                                    cachedResult.channels[0],
+                                    RecFunc.getDefaultShift());
+        int hkstack_id = put(recFuncDbId, stack);
+        System.out.println("Stack calc for "+ChannelIdUtil.toStringNoDates(cachedResult.channels[0]));
+        return stack;
     }
     
     public SumHKStack sum(String netCode, String staCode, float percentMatch) throws FissuresException, NotFound, IOException, SQLException, SQLException {

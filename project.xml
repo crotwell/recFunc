@@ -2,38 +2,37 @@
 
 <project>
   <pomVersion>3</pomVersion>
-  <name>recFunc</name>
   <id>recFunc</id>
+  <name>recFunc</name>
+  <currentVersion>1.0Beta</currentVersion>
   <organization>
     <name>Seismology at the University of South Carolina</name>
     <url>http://www.seis.sc.edu</url>
     <logo>http://www.seis.sc.edu/images/header.gif</logo>
   </organization>
-  <currentVersion>1.0Beta</currentVersion>
   <inceptionYear>2002</inceptionYear>
 
   <package>edu.sc.seis.receiverFunction</package>
-  <shortDescription>
-Caclulation of seismic receiver functions.
-</shortDescription>
   <gumpRepositoryId>${pom.artifactId}</gumpRepositoryId>
   <description> 
 Caclulation of seismic receiver functions based on the time-domain iterative 
 deconvolution method of Ammon.
 </description>
+  <shortDescription>
+Caclulation of seismic receiver functions.
+</shortDescription>
   
   <url>http://www.seis.sc.edu/software/${pom.artifactId}</url>
   <siteAddress>www.seis.sc.edu</siteAddress>
   <siteDirectory>/seis/raid1/Apache/htdocs/software/${pom.artifactId}</siteDirectory>
-  <distributionSite>www.seis.sc.edu</distributionSite>
   <distributionDirectory>/seis/raid1/Apache/htdocs/software/mavenRepository</distributionDirectory>
-  <mailingList>
-  </mailingList>
 
   <repository>
     <connection>scm:cvs:local:anonymous@cvs.seis.sc.edu:/opt/local/Internal/CvsRoot:${pom.artifactId}</connection>
         <url>http://www.seis.sc.edu/cgi-bin/viewcvs.cgi/${pom.artifactId}</url>
     </repository>
+  <mailingLists>
+  </mailingLists>
 
 
   <developers>
@@ -234,8 +233,10 @@ deconvolution method of Ammon.
 
   <build>
     <nagEmailAddress>crotwell@seis.sc.edu</nagEmailAddress>
-    <unitTestSourceDirectory>test/unit</unitTestSourceDirectory>
     <sourceDirectory>src</sourceDirectory>
+    <unitTestSourceDirectory>test/unit</unitTestSourceDirectory>
+    <resources>
+    </resources>
   </build>
 
 </project>

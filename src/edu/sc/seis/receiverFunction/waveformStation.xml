@@ -51,6 +51,12 @@ Events for $fissures.formatNetwork($station.get_id()) $fissures.formatStation($s
 <img src="../../../Iris_recfunc/SumHKStack_90.0_${network.get_code()}.${station.get_code()}.__.ITR.png" />
 <br/>
 <br/>
+<img src="../../../Iris_recfunc/SumHKStack_80.0_${network.get_code()}.${station.get_code()}.00.ITR.png" />
+<br/>
+<br/>
+<img src="../../../Iris_recfunc/SumHKStack_80.0_${network.get_code()}.${station.get_code()}.__.ITR.png" />
+<br/>
+<br/>
 <table class="sortable ruler" id="eventTable">
 <tr class="title">
 <th><b>Region</b></th>

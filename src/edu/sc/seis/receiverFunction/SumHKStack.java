@@ -49,6 +49,10 @@ public class SumHKStack {
         return channel;
     }
 
+    public HKStack getSum() {
+        return sum;
+    }
+    
     void calculate(Channel chan) {
         float[][] stack = new float[individuals[0].getStack().length][individuals[0].getStack()[0].length];
         for (int i = 0; i < stack.length; i++) {

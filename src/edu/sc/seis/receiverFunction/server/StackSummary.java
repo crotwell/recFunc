@@ -1,8 +1,12 @@
 package edu.sc.seis.receiverFunction.server;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -39,19 +43,30 @@ public class StackSummary {
                 .getStationTable();
         JDBCNetwork jdbcNetwork = jdbcStation.getNetTable();
         NetworkId[] netId = jdbcNetwork.getAllNetworkIds();
+        File textSummary = new File(parentDir, "depth_vpvs.txt");
+        textSummary.mkdirs();
+        BufferedWriter textSumm = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(textSummary)));
         for(int i = 0; i < netId.length; i++) {
             if(netId[i].network_code.equals(net)) {
                 Station[] station = jdbcStation.getAllStations(netId[i]);
                 for(int j = 0; j < station.length; j++) {
-                    createSummary(station[j].get_id(),
+                    SumHKStack sumStack = createSummary(station[j].get_id(),
                                   parentDir,
                                   minPercentMatch);
+
+                    float peakH, peakK, peakVal = 0;
+                    int[] indicies = sumStack.getSum().getMaxValueIndices();
+                    peakH = sumStack.getSum().getMinH()+sumStack.getSum().getStepH()*indicies[0];
+                    peakK = sumStack.getSum().getMinK()+sumStack.getSum().getStepK()*indicies[1];
+                    peakVal = sumStack.getSum().getStack()[indicies[0]][indicies[1]];
+                    
+                    textSumm.write(net+" "+station[j].get_code()+" "+peakH+" "+peakK+" "+peakVal);
                 }
             }
         }
     }
 
-    public void createSummary(StationId station,
+    public SumHKStack createSummary(StationId station,
                               File parentDir,
                               float minPercentMatch) throws FissuresException,
             NotFound, IOException, SQLException {
@@ -62,7 +77,7 @@ public class StackSummary {
             logger.info("No hk plots for "
                     + StationIdUtil.toStringNoDates(station) + " with match > "
                     + minPercentMatch);
-            return;
+            return null;
         }
         BufferedImage image = sumStack.createStackImage();
         parentDir.mkdirs();
@@ -77,6 +92,7 @@ public class StackSummary {
             outSumImageFile.delete();
         }
         javax.imageio.ImageIO.write(image, "png", outSumImageFile);
+        return sumStack;
     }
 
     JDBCHKStack jdbcHKStack;

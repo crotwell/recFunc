@@ -178,7 +178,7 @@ public class JDBCHKStack  extends JDBCTable {
             SumHKStack sumStack = new SumHKStack((HKStack[])individualHK.toArray(new HKStack[0]),
                                                  temp.getChannel(),
                                                  percentMatch);
-        return sumStack;
+            return sumStack;
         } else {
             return null;
         }

@@ -76,7 +76,7 @@ public class JDBCRecFunc extends JDBCTable {
                                         "VALUES(?,?,?,?, ?,?,?,?, ?,?,?,?, ?,?,?,?)");
     }
     
-    public void put(Origin prefOrigin,
+    public int put(Origin prefOrigin,
                     EventAttr eventAttr,
                     IterDeconConfig config,
                     Channel[] channels,
@@ -135,6 +135,7 @@ public class JDBCRecFunc extends JDBCTable {
             putStmt.setFloat(index++, config.gwidth);
             putStmt.setInt(index++, config.maxBumps);
             putStmt.setFloat(index++, config.tol);
+            return id;
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);
             throw new UNKNOWN(e.toString());
@@ -142,19 +143,19 @@ public class JDBCRecFunc extends JDBCTable {
         
     }
     
-    File dataDir;
+    private File dataDir;
     
-    EventFormatter eventFormatter;
+    private EventFormatter eventFormatter;
     
-    JDBCOrigin jdbcOrigin;
+    private JDBCOrigin jdbcOrigin;
     
-    JDBCEventAttr jdbcEventAttr;
+    private JDBCEventAttr jdbcEventAttr;
     
-    JDBCChannel jdbcChannel;
+    private JDBCChannel jdbcChannel;
     
-    SeismogramFileTypes fileType = SeismogramFileTypes.SAC;
+    private SeismogramFileTypes fileType = SeismogramFileTypes.SAC;
     
-    PreparedStatement putStmt;
+    private PreparedStatement putStmt;
 
     private JDBCSequence seq;
 }

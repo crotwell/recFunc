@@ -59,13 +59,16 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                        float transverseError) {
         // TODO Auto-generated method stub
         try {
-            int eventDbId = jdbcOrigin.put(prefOrigin);
-            int eventyAttrDbId = jdbcEventAttr.put(eventAttr);
-            int[] channelDbId = new int[channels.length];
-            for(int i = 0; i < channels.length; i++) {
-                channelDbId[i] = jdbcChannel.put(channels[i]);
-            }
-            System.out.println("insert "+eventDbId+"  "+channelDbId[0]);
+            int recFuncDbId = jdbcRecFunc.put(prefOrigin,
+                       eventAttr,
+                       config,
+                       channels,
+                       original,
+                       radial,
+                       radialError,
+                       tansverse,
+                       transverseError);
+            System.out.println("insert "+recFuncDbId);
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);
             throw new UNKNOWN(e.toString());
@@ -82,9 +85,5 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         return false;
     }
     
-    JDBCEventAttr jdbcEventAttr;
-    
-    JDBCOrigin jdbcOrigin;
-    
-    JDBCChannel jdbcChannel;
+    JDBCRecFunc jdbcRecFunc;
 }

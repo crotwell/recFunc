@@ -388,11 +388,11 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
     TauPUtil tauPTime;
     LocalSeismogramTemplateGenerator lSeisTemplateGen = null;
 
-    protected float gwidth = 3.0f;
+    protected float gwidth = 2.5f;
 
     protected float tol = .001f;
     
-    protected int maxBumps = 100;
+    protected int maxBumps = 400;
     
     String modelName = "iasp91";
 

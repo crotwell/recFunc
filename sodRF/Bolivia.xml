@@ -289,7 +289,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <eventDirLabel>
                     <originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/>
                 </eventDirLabel>
-                <gaussianWidth>3.0</gaussianWidth>
+                <gaussianWidth>2.5</gaussianWidth>
             </externalWaveformVectorProcess>
             
             <localSeismogramTemplateGenerator>

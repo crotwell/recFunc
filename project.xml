@@ -236,6 +236,14 @@ Caclulation of seismic receiver functions.
     <sourceDirectory>src</sourceDirectory>
     <unitTestSourceDirectory>test/unit</unitTestSourceDirectory>
     <resources>
+      <resource>
+        <directory>src/edu/sc/seis/receiverFunction</directory>
+        <targetPath>edu/sc/seis/receiverFunction</targetPath>
+        <includes>
+          <include>*.prop</include>
+        </includes>
+      </resource>
+
     </resources>
   </build>
 

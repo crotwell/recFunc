@@ -254,6 +254,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             </seismogramImageProcess>
             
             <rMean/>
+            <rTrend/>
             <taper/>
             <responseGainProcessor/>
             
@@ -268,6 +269,11 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <filterType>NONCAUSAL</filterType>
             </filter>
             
+            <seismogramImageProcess>  
+                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
+                <prefix>pre_</prefix>
+                <fileType>pdf</fileType>
+            </seismogramImageProcess>
             <externalChannelGroupSeismogramProcess>
                 <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
                 <fileType>sac</fileType>

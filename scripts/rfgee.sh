@@ -32,9 +32,10 @@ GEEMAC=$MAVEN_HOME/repository/geeMac/jars/geeMac-1.1Beta.jar
 RECFUNC=$MAVEN_HOME/repository/recFunc/jars/recFunc-1.0Beta.jar
 GEE=$MAVEN_HOME/repository/gee/jars//gee-1.1Beta.jar
 
+NATIVEFFTDIR=../native
 
 # use orbacus
-java -cp ${RECFUNC}:${GEE}:${GT2SHP}:${GEEMAC}:${CLASSICS}:${HSQLDB}:${XMLAPI}:${XERCES}:${XALAN}:${TAUP}:${LOG4J}:${SEEDCODEC}:${FISSURESIDL}:${FISSURESIMPL}:${FISSURESUTIL}:${GEOTOOLS}:${GT2CORE}:${GT2DCORE}:${GT2GUI}:${GT2REND}:${GT2CTS}:${GT2RESOURCE}:${JTS}:${OPENGIS}:${OB}:${OBNAMING}:${JAICORE}:${JAICODEC}:${CLASSPATH} edu.sc.seis.vsnexplorer.Start -props ./recfunc.prop
+java -Djava.library.path=$NATIVEFFTDIR -cp ${RECFUNC}:${GEE}:${GT2SHP}:${GEEMAC}:${CLASSICS}:${HSQLDB}:${XMLAPI}:${XERCES}:${XALAN}:${TAUP}:${LOG4J}:${SEEDCODEC}:${FISSURESIDL}:${FISSURESIMPL}:${FISSURESUTIL}:${GEOTOOLS}:${GT2CORE}:${GT2DCORE}:${GT2GUI}:${GT2REND}:${GT2CTS}:${GT2RESOURCE}:${JTS}:${OPENGIS}:${OB}:${OBNAMING}:${JAICORE}:${JAICODEC}:${CLASSPATH} edu.sc.seis.vsnexplorer.Start -props ./recfunc.prop
 
 echo done.
 

@@ -7,6 +7,7 @@
 package edu.sc.seis.receiverFunction;
 
 import edu.sc.seis.fissuresUtil.xml.*;
+import java.io.*;
 
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfNetwork.Channel;
@@ -18,31 +19,20 @@ import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
+import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauP_Time;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.display.DisplayUtils;
-import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.process.waveFormArm.LocalSeismogramProcess;
 import edu.sc.seis.sod.process.waveFormArm.SaveSeismogramToFile;
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
 
 public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeismogramProcess {
 
@@ -62,12 +52,12 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
      * @param cookies a <code>CookieJar</code> value
      * @exception Exception if an error occurs
      */
-    public LocalSeismogram[] process(EventAccessOperations event,
+    public LocalSeismogramImpl[] process(EventAccessOperations event,
                                      NetworkAccess network,
                                      Channel channel,
                                      RequestFilter[] original,
                                      RequestFilter[] available,
-                                     LocalSeismogram[] seismograms,
+                                     LocalSeismogramImpl[] seismograms,
                                      CookieJar cookies) throws Exception {
         // save original seismograms
         super.process(event,
@@ -77,6 +67,10 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                       available,
                       seismograms,
                       cookies);
+        if (seismograms.length == 0) {
+            // maybe no data after cut?
+            return seismograms;
+        }
         if (recFunc == null) {
             float gwidth = 3.0f;
             tauPTime = new TauP_Time("iasp91");
@@ -293,5 +287,6 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
     private static Logger logger = Logger.getLogger(RecFuncProcessor.class);
 
 }
+
 
 

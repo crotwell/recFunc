@@ -239,7 +239,7 @@ public class HKStack {
             int[] xyMax = getMaxValueIndices();
 
             float min = stack[xyMin[0]][xyMin[1]];
-            float max = stack[xyMax[2]][xyMax[3]];
+            float max = stack[xyMax[0]][xyMax[1]];
 
             g.setColor(Color.white);
             g.drawString("% match="+percentMatch, 0, fm.getHeight());

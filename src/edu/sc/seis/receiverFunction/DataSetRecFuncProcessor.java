@@ -152,8 +152,10 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
         } catch (ConfigurationException ce) {
             logger.error("Unable to get travel time calculator", ce);
             CommonAccess.getCommonAccess().handleException("Unable to get travel time calculator", ce);
-        } catch (Exception ee) {
-            logger.error("Problem shifting receiver function to align P wave", ee);
+            this.error = new SeisDataErrorEvent(ce, seis[0], this);
+        } catch (Throwable ee) {
+            logger.error("Problem", ee);
+            this.error = new SeisDataErrorEvent(ee, seis[0], this);
         } finally {
             recFuncFinished = true;
         }
@@ -192,9 +194,14 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
      */
     public void pushData(SeisDataChangeEvent sdce) {
         if (sdce.getSeismograms().length != 0) {
-            localSeis[getIndex(sdce.getSource())] = sdce.getSeismograms()[0];
+            if (sdce.getSeismograms()[0].getNumPoints() != 0) {
+                localSeis[getIndex(sdce.getSource())] = sdce.getSeismograms()[0];
+            } else {
+                this.error = new SeisDataErrorEvent(new Exception("seismogram has zero data points"), sdce.getSource(), this);
+            }
         } else {
             logger.info("pushData event has zero length localSeismogram array");
+            this.error = new SeisDataErrorEvent(new Exception("pushData event has zero length localSeismogram array"), sdce.getSource(), this);
         }
     }
 

@@ -102,6 +102,9 @@ public class RecFunc {
             throw new IncompatibleSeismograms("data is not of same length "+
                                                   rotated[0].length+" "+zdata.length);
         }
+        if (zdata.length == 0) {
+            throw new IncompatibleSeismograms("data is of zero length ");
+        }
         SamplingImpl samp = SamplingImpl.createSamplingImpl(z.sampling_info);
         double period = samp.getPeriod().convertTo(UnitImpl.SECOND).getValue();
 

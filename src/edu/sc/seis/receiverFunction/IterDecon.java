@@ -10,7 +10,7 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 7219 2004-02-19 15:01:07Z crotwell $
+ * @version $Id: IterDecon.java 7399 2004-03-04 02:42:12Z crotwell $
  */
 
 public class IterDecon {
@@ -41,7 +41,10 @@ public class IterDecon {
         // compute the power in the "numerator" for error scaling
         float fPower = power(f);
         float prevPower = fPower;
-
+        float gPower = power(g);
+        if (fPower == 0 || gPower == 0) {
+            throw new IllegalArgumentException("Power of numerator and denominator must be non-zero: num="+fPower+" denom="+gPower);
+        }
         float[] residual = f;
         float[] predicted = new float[0];
 
@@ -96,10 +99,8 @@ public class IterDecon {
     /** computes the correlation of f and g normalized by the zero-lag
      *  autocorrelation of g. */
     float[] correlate(float[] fdata, float[] gdata) {
-        float zeroLag = 0;
-        for (int i=0; i<gdata.length; i++) {
-            zeroLag += gdata[i]*gdata[i];
-        }
+        float zeroLag = power(gdata);
+
         //System.out.println("g autocorrelation at  = "+zeroLag);
         float[] corr = Cmplx.correlate(fdata, gdata);
 
@@ -146,7 +147,7 @@ public class IterDecon {
         return maxIndex;
     }
 
-    public static int getMinIndex(float[] data) {
+    public static final int getMinIndex(float[] data) {
         int index = 0;
         for (int i=1; i<data.length/2; i++) {
             if (data[i] < data[index]) {
@@ -156,7 +157,7 @@ public class IterDecon {
         return index;
     }
 
-    public static int getMaxIndex(float[] data) {
+    public static final int getMaxIndex(float[] data) {
         int index = 0;
         for (int i=1; i<data.length/2; i++) {
             if (data[i] > data[index]) {
@@ -166,13 +167,13 @@ public class IterDecon {
         return index;
     }
 
-    public static void zero(float[] data) {
+    public static final void zero(float[] data) {
         for (int i=0; i<data.length; i++) {
             data[i] = 0;
         } // end of for (int i=0; i<data.length; i++)
     }
 
-    public static float power(float[] data) {
+    public static final float power(float[] data) {
         float power=0;
         for (int i=0; i<data.length; i++) {
             power += data[i]*data[i];

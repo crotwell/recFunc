@@ -28,6 +28,13 @@
 #end
 </table>
 
+<p>$numNinty with match > 90 and $numEighty with match > 80.</p>
+
+<ul>
+#foreach( $marker in $markerList)
+ <li>$marker.getName()  H=$marker.getDepth()  Vp/Vs=$marker.getVpvs()</li>
+#end
+</ul>
 
 <img class="dataimg" src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=25"/>
 

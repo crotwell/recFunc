@@ -16,6 +16,7 @@ import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.iris.Fissures.IfSeismogramDC.RequestFilter;
 import edu.iris.Fissures.Orientation;
 import edu.iris.Fissures.model.MicroSecondDate;
+import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
@@ -181,7 +182,13 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                     cookieJar.put("recFunc_percentMatch_"+ITR_ITT, ""+HKStack.getPercentMatch(saved));
 
                     synchronized(lSeisTemplateGen) {
-                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, original[0], available[0], predicted.getCache(), cookieJar);
+                        RequestFilter[] zoomP = new RequestFilter[1];
+                        MicroSecondDate oTime = new MicroSecondDate(event.get_preferred_origin().origin_time);
+                        zoomP[0] = new RequestFilter(recFuncChannel.get_id(),
+                                                     oTime.subtract(new TimeInterval(5, UnitImpl.SECOND)).getFissuresTime(),
+                                                     oTime.add(new TimeInterval(30, UnitImpl.SECOND)).getFissuresTime());
+                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP, zoomP, predicted.getCache(), cookieJar);
+                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP, predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PDF);
                     }
                     RecFuncTemplate rfTemplate =new RecFuncTemplate();
                     File velocityOutFile = new File(getEventDirectory(event),"Vel_"+channelIdString+".html");

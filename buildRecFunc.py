@@ -40,6 +40,10 @@ def buildDist(proj, name, clean=False):
 
 def buildName(proj): return proj.name + '-' + time.strftime('%y%m%d')
 
+build.genericScripts.update({'geeRecFunc':'edu.sc.seis.gee.Start',
+                             'sumStackCalc':'edu.sc.seis.receiverFunction.server.StackSummary',
+                             'stackCalc':'edu.sc.seis.receiverFunction.server.JDBCHKStack'})
+
 if __name__ == "__main__":
     proj = ProjectParser.ProjectParser('./project.xml')
     parser = OptionParser()
@@ -63,9 +67,6 @@ if __name__ == "__main__":
     else :
         buildJars(proj, options.clean)
         os.chdir('scripts')
-        build.buildAllScripts(proj)
-        build.buildScripts(proj, 'geeRecFunc', 'edu.sc.seis.gee.Start', True)
-        build.buildScripts(proj, 'sumStackCalc', 'edu.sc.seis.receiverFunction.server.StackSummary', True)
-        build.buildScripts(proj, 'stackCalc', 'edu.sc.seis.receiverFunction.server.JDBCHKStack', True)
+        build.buildAllScripts(proj, True)
         depCopy.copy(proj)
 

@@ -134,13 +134,13 @@ public class HKStack {
             for (int k = 0; k < stackOut[j].length; k++) {
                 if (stackOut[j][k] < min) {
                     min = stackOut[j][k];
-                    minIndexX = k;
-                    minIndexY = j;
+                    minIndexX = j;
+                    minIndexY = k;
                 }
                 if (stackOut[j][k] > max) {
                     max = stackOut[j][k];
-                    maxIndexX = k;
-                    maxIndexY = j;
+                    maxIndexX = j;
+                    maxIndexY = k;
                 }
             }
         }
@@ -155,15 +155,15 @@ public class HKStack {
     public JComponent getStackComponent() {
         BorderedDisplay bd = new BorderedDisplay(new HKStackImage(this));
         UnitRangeBorder depthLeftBorder = new UnitRangeBorder(Border.LEFT,
-                                                              Border.ASCENDING,
+                                                              Border.DESCENDING,
                                                               "Depth",
                                                               new UnitRangeImpl(getMinH(), getMinH()+getNumH()*getStepH(), UnitImpl.KILOMETER));
         bd.add(depthLeftBorder, bd.CENTER_LEFT);
         UnitRangeBorder depthRightBorder = new UnitRangeBorder(Border.RIGHT,
-                                                               Border.ASCENDING,
+                                                               Border.DESCENDING,
                                                                "Depth",
                                                                new UnitRangeImpl(getMinH(), getMinH()+getNumH()*getStepH(), UnitImpl.KILOMETER));
-        bd.add(depthRightBorder, bd.CENTER_LEFT);
+        bd.add(depthRightBorder, bd.CENTER_RIGHT);
         UnitRangeBorder kTopBorder = new UnitRangeBorder(Border.TOP,
                                                          Border.ASCENDING,
                                                          "Vp/Vs",
@@ -184,29 +184,11 @@ public class HKStack {
     public BufferedImage createStackImage() {
         float[][] stackOut = getStack();
 
-        int dataH = 2*stackOut.length;
-        int dataW = 2*stackOut[0].length;
-        int fullWidth = dataW+40;
-        int fullHeight = dataH+140;
-        BufferedImage bufImage = new BufferedImage(fullWidth,
-                                                   fullHeight,
-                                                   BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = bufImage.createGraphics();
-        FontMetrics fm = g.getFontMetrics();
-
-        g.setColor(Color.darkGray);
-        g.fillRect(0, 0, bufImage.getWidth(), bufImage.getHeight());
-        g.translate(0, 5);
-
-
-        String title = ChannelIdUtil.toStringNoDates(getChannelId());
-        g.setColor(Color.white);
-        g.drawString(title, (fullWidth-fm.stringWidth(title))/2, fm.getHeight());
-
-        g.translate(5, fm.getHeight()+fm.getDescent());
 
         JComponent comp =  getStackComponent();
         JFrame frame = null;
+        Graphics2D g = null;
+        BufferedImage bufImage = null;
         try {
             if(comp.getRootPane() == null){//This won't display if it's not in a root pane
                 frame = new JFrame();//so this plan that is so crazy it might
@@ -214,46 +196,66 @@ public class HKStack {
                 frame.pack();
             }
             Dimension size = comp.getSize();
-            BufferedImage bImg = new BufferedImage(size.width, size.height,
-                                                   BufferedImage.TYPE_INT_RGB);
+
+            int fullWidth = size.width+40;
+            int fullHeight = size.height+140;
+            bufImage = new BufferedImage(fullWidth,
+                                         fullHeight,
+                                         BufferedImage.TYPE_INT_RGB);
+            g = bufImage.createGraphics();
+            FontMetrics fm = g.getFontMetrics();
+
+            g.setColor(Color.darkGray);
+            g.fillRect(0, 0, bufImage.getWidth(), bufImage.getHeight());
+            g.translate(0, 5);
+
+
+            String title = ChannelIdUtil.toStringNoDates(getChannelId());
+            g.setColor(Color.white);
+            g.drawString(title, (fullWidth-fm.stringWidth(title))/2, fm.getHeight());
+
+            g.translate(5, fm.getHeight()+fm.getDescent());
+
             comp.print(g);
+
+            g.translate(0, size.height);
+
+
+            int[] xy = getMinMaxValueIndices();
+
+            float min = stack[xy[0]][xy[1]];
+            float max = stack[xy[2]][xy[3]];
+
+            g.setColor(Color.white);
+            g.drawString("% match="+percentMatch, 0, fm.getHeight());
+            g.drawString("    ", 0, 2*fm.getHeight());
+            g.translate(0, 2*fm.getHeight());
+            g.drawString("Max H="+(getMinH()+xy[3]*getStepH()), 0, fm.getHeight());
+            g.drawString("    K="+(getMinK()+xy[2]*getStepK()), 0, 2*fm.getHeight());
+            g.translate(0, 2*fm.getHeight());
+
+            int minColor = HKStackImage.makeImageable(min, max, min);
+            g.setColor(new Color(minColor, minColor, minColor));
+            g.fillRect(0, 0, 15, 15);
+            g.setColor(Color.white);
+            g.drawString("Min="+min, 0, 15+fm.getHeight());
+
+            int maxColor = HKStackImage.makeImageable(min, max, max);
+            g.setColor(new Color(maxColor, maxColor, maxColor));
+            g.fillRect(size.width-20, 0, 15, 15);
+            g.setColor(Color.white);
+            String maxString = "Max="+max;
+            int stringWidth = fm.stringWidth(maxString);
+            g.drawString(maxString, size.width-5-stringWidth, 15+fm.getHeight());
+
         } finally {
+            if (g != null) {
+                g.dispose();
+            }
             if (frame != null) {
                 frame.dispose();
             }
         }
-
-        g.translate(0, dataH);
-
-
-        int[] xy = getMinMaxValueIndices();
-
-        float min = stack[xy[0]][xy[1]];
-        float max = stack[xy[2]][xy[3]];
-
-        g.setColor(Color.white);
-        g.drawString("% match="+percentMatch, 0, fm.getHeight());
-        g.drawString("    ", 0, 2*fm.getHeight());
-        g.translate(0, 2*fm.getHeight());
-        g.drawString("Max H="+(getMinH()+xy[1]*getStepH()), 0, fm.getHeight());
-        g.drawString("    K="+(getMinK()+xy[0]*getStepK()), 0, 2*fm.getHeight());
-        g.translate(0, 2*fm.getHeight());
-
-        int minColor = HKStackImage.makeImageable(min, max, min);
-        g.setColor(new Color(minColor, minColor, minColor));
-        g.fillRect(0, 0, 15, 15);
-        g.setColor(Color.white);
-        g.drawString("Min="+min, 0, 15+fm.getHeight());
-
-        int maxColor = HKStackImage.makeImageable(min, max, max);
-        g.setColor(new Color(maxColor, maxColor, maxColor));
-        g.fillRect(dataW-20, 0, 15, 15);
-        g.setColor(Color.white);
-        String maxString = "Max="+max;
-        int stringWidth = fm.stringWidth(maxString);
-        g.drawString(maxString, dataW-5-stringWidth, 15+fm.getHeight());
-
-        g.dispose();
         return bufImage;
     }
 

@@ -11,11 +11,16 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JComponent;
+import java.awt.Dimension;
 
 public class HKStackImage extends JComponent {
 
     HKStackImage(HKStack stack) {
         this.stack = stack;
+        float[][] stackOut = stack.getStack();
+        Dimension imageSize = new Dimension(2*stackOut[0].length, 2*stackOut.length);
+        setMinimumSize(imageSize);
+        setPreferredSize(imageSize);
     }
 
 

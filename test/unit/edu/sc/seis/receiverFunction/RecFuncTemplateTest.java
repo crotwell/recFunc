@@ -10,8 +10,8 @@ import java.util.HashMap;
 import junit.framework.TestCase;
 import org.apache.velocity.VelocityContext;
 import edu.iris.Fissures.network.ChannelIdUtil;
-import edu.sc.seis.mockFissures.IfEvent.MockEventAccessOperations;
-import edu.sc.seis.mockFissures.IfNetwork.MockChannel;
+import edu.sc.seis.fissuresUtil.mockFissures.IfEvent.MockEventAccessOperations;
+import edu.sc.seis.fissuresUtil.mockFissures.IfNetwork.MockChannel;
 
 public class RecFuncTemplateTest extends TestCase {
 

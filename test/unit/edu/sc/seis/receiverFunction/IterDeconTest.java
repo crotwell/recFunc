@@ -51,7 +51,7 @@ public class IterDeconTest
         // JUnitDoclet end method testcase.tearDown
     }
 
-    public void testProcess() throws Exception {
+    public void testNoGauussProcess() throws Exception {
         float[] numData   = new float[2048];
         numData[100] = 2;
         numData[200] = -1.5f;
@@ -77,31 +77,39 @@ public class IterDeconTest
         assertEquals("zeroGauss pred 101",   0, pred[3], 0.0001f);
         assertEquals("zeroGauss pred 200", .5f, pred[200], 0.0001f);
         assertEquals("zeroGauss pred 201",   0, pred[5], 0.0001f);
+    }
+
+    public void testWithGauussProcess() throws Exception {
 
         // with gaussian filter
-        numData   = new float[2048];
+        float[] numData   = new float[2048];
+
         numData[100] = 2;
         numData[200] = -1.5f;
         numData[300] = .25f;
-        denomData = new float[numData.length];
+        float[] denomData = new float[numData.length];
         denomData[100] = .5f;
 
-        result = iterdecon.process(numData, denomData, .05f);
-        pred = result.getPredicted();
-        s = result.getShifts();
-        a = result.getAmps();
+        IterDeconResult result = iterdecon.process(numData, denomData, .05f);
+        float[] pred = result.getPredicted();
+        int[] s = result.getShifts();
+        float[] a = result.getAmps();
         assertEquals("gauss spike 0",  0, s[0]);
         assertEquals("gauss amp 0",    4,    a[0], 0.0001f);
         assertEquals("gauss spike 1",  100, s[1]);
         assertEquals("gauss amp 1",   -3,    a[1], 0.0001f);
         assertEquals("gauss spike 2 a="+a[2],  200, s[2]);
         assertEquals("gauss amp 2",  .5f,    a[2], 0.0001f);
-        assertEquals("gauss pred 0",   0.33851373, pred[0], 0.0001f); // 4
-        assertEquals("gauss pred 100",  -0.25388527, pred[100], 0.0001f); // -3
-        assertEquals("gauss pred 200", .5f, pred[200], 0.0001f); // .5
+        assertEquals("gauss pred 0",   4f*0.08462843f, pred[0], 0.0001f); // 4
+        assertEquals("gauss pred 100",  -3f*0.08462843f, pred[100], 0.0001f); // -3
+        assertEquals("gauss pred 200", .5f*0.08462843f, pred[200], 0.0001f); // .5
+
+    }
+
+    public void testFakeCrustProcess() throws Exception {
 
         // with more complex demon
-        denomData = new float[2048];
+        float[] denomData = new float[2048];
         denomData[100] = .15f;
         denomData[101] = .5f;
         denomData[102] = .9f;
@@ -126,34 +134,36 @@ public class IterDeconTest
         float timePpPs = h * (etaS + etaP);
         float timePsPs = h * (2 * etaS);
 
-        numData   = new float[denomData.length];
+        float[] numData   = new float[denomData.length];
         System.arraycopy(denomData, 0, numData, 0, denomData.length);
         // scale num by 1/3
         for (int i = 0; i < numData.length; i++) {
             numData[i] *= .33f;
         }
         float[] temp = new float[numData.length];
-        System.arraycopy(numData, 0, temp, 0, numData.length);
+        System.arraycopy(denomData, 0, temp, 0, numData.length);
         IterDecon.phaseShift(temp, timePs, 0.05f);
         // scale num by 1/5
         for (int i = 0; i < temp.length; i++) {
-            numData[i] += .50f*temp[i];
+            numData[i] += .33f*.50f*temp[i];
         }
-        IterDecon.phaseShift(temp, timePpPs-timePs, 0.05f);
+        System.arraycopy(denomData, 0, temp, 0, numData.length);
+        IterDecon.phaseShift(temp, timePpPs, 0.05f);
         // scale num
         for (int i = 0; i < temp.length; i++) {
-            numData[i] += .3f*temp[i];
+            numData[i] += .33f*.3f*temp[i];
         }
-        IterDecon.phaseShift(temp, timePsPs-timePpPs-timePs, 0.05f);
+        System.arraycopy(denomData, 0, temp, 0, numData.length);
+        IterDecon.phaseShift(temp, timePsPs, 0.05f);
         // scale num
         for (int i = 0; i < temp.length; i++) {
-            numData[i] += .2f*temp[i];
+            numData[i] += .33f*.2f*temp[i];
         }
 
-        result = iterdecon.process(numData, denomData, .05f);
-        pred = result.getPredicted();
-        s = result.getShifts();
-        a = result.getAmps();
+        IterDeconResult result = iterdecon.process(numData, denomData, .05f);
+        float[] pred = result.getPredicted();
+        int[] s = result.getShifts();
+        float[] a = result.getAmps();
         assertEquals("fake data spike 0",  0, s[0]);
         assertEquals("fake data amp 0",    .33,    a[0], 0.0001f);
         assertEquals("fake data spike 1",  timePs, s[1], 0.1f);

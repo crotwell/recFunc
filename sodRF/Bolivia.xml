@@ -89,6 +89,20 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <networkCode>II</networkCode>
             <networkCode>IU</networkCode>
         </networkOR>
+        <stationEffectiveTimeOverlap>
+             <startTime>19940601T00:00:00.001Z</startTime>
+             <endTime>19940631T23:59:59.999Z</endTime>
+        </stationEffectiveTimeOverlap>
+        <siteAND>
+            <siteOR>
+                <siteCode/>
+                <siteCode>00</siteCode>
+            </siteOR>
+            <siteEffectiveTimeOverlap>
+                <startTime>19940601T00:00:00.001Z</startTime>
+                <endTime>19940631T23:59:59.999Z</endTime>
+            </siteEffectiveTimeOverlap>
+        </siteAND>
         
         <channelAND>
             <!-- Accept any channel with B band code -->
@@ -96,6 +110,10 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <bandCode>B</bandCode>
             </channelOR>
             <gainCode>H</gainCode>
+            <channelEffectiveTimeOverlap>
+                <startTime>19940601T00:00:00.001Z</startTime>
+                <endTime>19940631T23:59:59.999Z</endTime>
+            </channelEffectiveTimeOverlap>
         </channelAND>
         
         <printlineChannelProcessor/>

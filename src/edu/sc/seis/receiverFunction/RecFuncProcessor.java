@@ -29,6 +29,8 @@ import org.w3c.dom.Element;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
 import edu.sc.seis.TauP.Arrival;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogramProcess {
 
@@ -119,6 +121,12 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
 
                     URLDataSetSeismogram saved =
                         saveInDataSet(event, recFuncChannel, predicted.getCache());
+                    Collection aux = predicted.getAuxillaryDataKeys();
+                    Iterator it = aux.iterator();
+                    while (it.hasNext()) {
+                        Object key = it.next();
+                        saved.addAuxillaryData(key, predicted.getAuxillaryData(key));
+                    }
                     DistAz distAz = DisplayUtils.calculateDistAz(saved);
                     tauPTime.calculate(distAz.delta);
                     Arrival arrival = tauPTime.getArrival(0);

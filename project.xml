@@ -192,6 +192,12 @@ deconvolution method of Ammon.
       <version>3.0</version>       
       <url>http://jakarta.apache.org/commons/collections</url>
     </dependency>
+
+    <dependency>
+      <id>mockFissures</id>
+      <version>0.2</version>
+      <type>test</type>
+    </dependency>
   </dependencies>
 
   <build>
@@ -204,6 +210,7 @@ deconvolution method of Ammon.
         <targetPath>edu/sc/seis/receiverFunction</targetPath>
         <includes>
           <include>*.prop</include>
+          <include>*.vm</include>
         </includes>
       </resource>
     </resources>

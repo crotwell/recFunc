@@ -9,7 +9,7 @@
 
 setenv DYLD_LIBRARY_PATH `pwd`
 
-javah -classpath ../target/recFunc-1.0beta.jar edu.sc.seis.receiverFunction.NativeFFT
+javah -classpath ../target/classes edu.sc.seis.receiverFunction.NativeFFT
 
 cc -c \
 -I/System/Library/Frameworks/JavaVM.framework/Headers \

@@ -274,9 +274,7 @@ public class JDBCRecFunc extends JDBCTable {
 
         Origin origin = jdbcOrigin.get(rs.getInt("origin_id"));
         EventAttr eventAttr = jdbcEventAttr.get(rs.getInt("eventAttr_id"));
-        Channel[] channels = new Channel[] {jdbcChannel.get(rs.getInt("chanA_id")),
-                                            jdbcChannel.get(rs.getInt("chanB_id")),
-                                            jdbcChannel.get(rs.getInt("chanZ_id"))};
+        Channel[] channels = extractChannels(rs);
         CacheEvent cacheEvent = new CacheEvent(eventAttr, origin);
         File stationDir = getDir(cacheEvent, channels[0]);
         
@@ -316,6 +314,12 @@ public class JDBCRecFunc extends JDBCTable {
                                                rs.getInt("sodConfig_id"),
                                                insertTime.getFissuresTime());
         return result;   
+    }
+    
+    public Channel[] extractChannels(ResultSet rs) throws SQLException, NotFound {
+        return new Channel[] {jdbcChannel.get(rs.getInt("chanA_id")),
+                              jdbcChannel.get(rs.getInt("chanB_id")),
+                              jdbcChannel.get(rs.getInt("chanZ_id"))};
     }
     
     public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,

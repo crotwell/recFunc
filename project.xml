@@ -331,6 +331,14 @@
                 </includes>
             </resource>
             <resource>
+                <directory>src/edu/sc/seis/receiverFunction/compare</directory>
+                <targetPath>edu/sc/seis/receiverFunction/compare</targetPath>
+                <includes>
+                    <include>*.prop</include>
+                    <include>*.props</include>
+                </includes>
+            </resource>
+            <resource>
                 <directory>src/edu/sc/seis/receiverFunction/server</directory>
                 <targetPath>edu/sc/seis/receiverFunction/server</targetPath>
                 <includes>

@@ -202,7 +202,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                         lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP, predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PDF, phases, true);
                     }
                     RecFuncTemplate rfTemplate =new RecFuncTemplate();
-                    File velocityOutFile = new File(getEventDirectory(event),"Vel_"+channelIdString+".html");
+                    File velocityOutFile = new File(getEventDirectory(event),FissuresFormatter.filize("Vel_"+channelIdString+".html"));
                     rfTemplate.process(cookieJar.getContext(), velocityOutFile);
 
                     if (ITR_ITT.equals("ITR")) {
@@ -215,7 +215,8 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
 
                         String prefix = "HKstack_";
                         String postfix = ".raw";
-                        File stackOutFile = new File(getEventDirectory(event),FissuresFormatter.filize(prefix+channelIdString+postfix));
+                        File stackOutFile = new File(getEventDirectory(event),
+                                                     FissuresFormatter.filize(prefix+channelIdString+postfix));
                         DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(stackOutFile)));
                         stack.write(dos);
                         dos.close();
@@ -233,7 +234,8 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                         cookieJar.put("stack_"+ITR_ITT, stack);
 
 
-                        File outHtmlFile  = new File(getEventDirectory(event),prefix+channelIdString+".html");
+                        File outHtmlFile  = new File(getEventDirectory(event),
+                                                     FissuresFormatter.filize(prefix+channelIdString+".html"));
                         BufferedWriter bw = new BufferedWriter(new FileWriter(outHtmlFile));
                         bw.write("<html>");bw.newLine();
                         bw.write("<head>");bw.newLine();

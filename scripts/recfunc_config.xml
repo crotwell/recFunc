@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<!-- $Id: recfunc_config.xml 3899 2003-05-15 22:37:34Z crotwell $ -->
+<!-- $Id: recfunc_config.xml 3972 2003-05-21 13:57:50Z crotwell $ -->
 
 <vsnconfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation='vsnconfigurator.xsd'>
@@ -881,6 +881,9 @@
            </toolitem>
            <toolitem>
                 <taskid>recfunc</taskid>
+           </toolitem>
+           <toolitem>
+                <taskid>SeismogramInfo</taskid>
            </toolitem>
    </toolbar>
 </task>
@@ -2366,6 +2369,12 @@
         <id>SeismogramInfo</id>
         <name>Seismogram Info</name>
         <class>edu.sc.seis.vsnexplorer.task.SeismogramInfoTask</class>
+     <toggle/>       
+     <icon>mag-up.png</icon>      
+     <taskconfig>
+        <name>gee.task.buttonGroupId</name>
+        <value>zoomSeismograms</value>
+     </taskconfig>
         <taskconfig>
                 <name>numPoints</name>
                 <value>true</value>
@@ -2442,7 +2451,7 @@
 
    <task>
      <id>recfunc</id>
-     <name>Zoom In</name>
+     <name>Rec Func</name>
      <class>edu.sc.seis.receiverFunction.RecFuncTask</class>
      <tooltip>Receiver Function</tooltip>
      <toggle/>       

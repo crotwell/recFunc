@@ -42,6 +42,7 @@ def buildName(proj): return proj.name + '-' + time.strftime('%y%m%d')
 
 build.genericScripts.update({'geeRecFunc':'edu.sc.seis.gee.Start',
                              'sumStackCalc':'edu.sc.seis.receiverFunction.server.StackSummary',
+                             'weightSumStackCalc':'edu.sc.seis.receiverFunction.server.WeightTrial',
                              'stackCalc':'edu.sc.seis.receiverFunction.server.JDBCHKStack'})
 
 if __name__ == "__main__":

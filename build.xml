@@ -21,6 +21,8 @@
 
        <path id="myclasspath" >
           <pathelement location="${build}" />
+          <pathelement location="${fissuresIDLjar}" />
+          <pathelement location="${fissuresImpljar}" />
           <pathelement location="${fissuresUtiljar}" />
           <pathelement location="${log4j}" />
           <pathelement location="${junit}" />

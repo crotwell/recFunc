@@ -1,6 +1,7 @@
 package edu.sc.seis.receiverFunction;
 
 import java.awt.Color;
+import java.text.DecimalFormat;
 
 
 /**
@@ -26,8 +27,17 @@ public class Marker {
     public double getVpvs() {
         return vpvs;
     }
+    public String formatDepth() {
+        return depthFormat.format(getDepth());
+    }
+    public String formatVpvs() {
+        return vpvsFormat.format(getVpvs());
+    }
     private String name;
     private double vpvs;
     private double depth;
     private Color color;
+    
+    private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
+    private static DecimalFormat depthFormat = new DecimalFormat("0.##");
 }

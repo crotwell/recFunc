@@ -42,7 +42,9 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
 	public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,
 				                    ChannelId[] channel) {
 	    try {
-            return jdbcRecFunc.getCachedConfigs(prefOrigin, channel);
+	        synchronized (jdbcRecFunc.getConnection()) {
+	            return jdbcRecFunc.getCachedConfigs(prefOrigin, channel);
+	        }
         } catch(NotFound e) {
             logger.info("NotFound: ", e);
             return new IterDeconConfig[0];
@@ -59,7 +61,9 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
 						        ChannelId[] channel,
 								IterDeconConfig config) {
         try {
-            return jdbcRecFunc.get(prefOrigin, channel, config);
+            synchronized (jdbcRecFunc.getConnection()) {
+                return jdbcRecFunc.get(prefOrigin, channel, config);
+            }
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);
             throw new org.omg.CORBA.UNKNOWN(e.toString());
@@ -111,7 +115,9 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                             ChannelId[] channel,
                             IterDeconConfig config) {
         try {
-            int tmp = jdbcRecFunc.getDbId(prefOrigin, channel, config);
+            synchronized (jdbcRecFunc.getConnection()) {
+                int tmp = jdbcRecFunc.getDbId(prefOrigin, channel, config);
+            }
             return true;
         } catch(NotFound e) {
             return false;

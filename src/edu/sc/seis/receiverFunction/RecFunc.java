@@ -52,6 +52,7 @@ public class RecFunc {
         FissuresException {
 
         LocalSeismogramImpl n = null, e = null, z = null;
+        String foundChanCodes = "";
         for (int i=0; i<localSeis.length; i++) {
             if (localSeis[i].channel_id.channel_code.endsWith("N")) {
                 n = localSeis[i];
@@ -60,11 +61,12 @@ public class RecFunc {
             }if (localSeis[i].channel_id.channel_code.endsWith("Z")) {
                 z = localSeis[i];
             }
+            foundChanCodes += localSeis[i].channel_id.channel_code+" ";
         }
         if (n == null || e == null || z == null) {
             logger.error("problem one seismogram component is null ");
-            throw new NullPointerException("problem one seismogram component is null "+
-                                               (n != null)+" "+(e != null)+" "+(z != null));
+            throw new NullPointerException("problem one seismogram component is null, "+foundChanCodes+" "+
+                                               " "+(n != null)+" "+(e != null)+" "+(z != null));
         }
 
 

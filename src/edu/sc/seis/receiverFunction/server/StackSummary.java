@@ -90,7 +90,7 @@ public class StackSummary {
                             + sumStack.getSum().getStepK() * indicies[1];
                     peakVal = sumStack.getSum().getStack()[indicies[0]][indicies[1]];
                     outStr += " " + peakH + " " + peakK + " " + peakVal+" "+sumStack.getIndividuals().length;
-                    outStr += " "+sumStack.getHError()+" "+sumStack.getKError();
+                    outStr += " "+(2*Math.sqrt(sumStack.getHVariance()))+" "+(2*Math.sqrt(sumStack.getKVariance()));
                     
                     double depth = crust2.getCrustThickness();
                     double vpvs = crust2.getPWaveAvgVelocity()

@@ -73,7 +73,7 @@ public class StackSummary {
                     peakK = sumStack.getSum().getMinK()
                             + sumStack.getSum().getStepK() * indicies[1];
                     peakVal = sumStack.getSum().getStack()[indicies[0]][indicies[1]];
-                    outStr += " " + peakH + " " + peakK + " " + peakVal;
+                    outStr += " " + peakH + " " + peakK + " " + peakVal+" "+sumStack.getIndividuals().length;
                     Crust2 crust2 = HKStack.getCrust2();
                     if(crust2 != null) {
                         Crust2Profile profile = crust2.getClosest(station[j].my_location.longitude,

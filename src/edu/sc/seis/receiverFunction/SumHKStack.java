@@ -58,6 +58,10 @@ public class SumHKStack {
         return sum;
     }
     
+    public HKStack[] getIndividuals() {
+        return individuals;
+    }
+    
     void calculate(Channel chan) {
         int smallestHIndex = (int)Math.round((smallestH-individuals[0].getMinH())/individuals[0].getStepH());
         float[][] stack = new float[individuals[0].getStack().length-smallestHIndex][individuals[0].getStack()[0].length];

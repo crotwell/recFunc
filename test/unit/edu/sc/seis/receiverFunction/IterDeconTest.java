@@ -56,6 +56,17 @@ extends TestCase
   
   public void testPhaseShift() throws Exception {
     // JUnitDoclet begin method phaseShift
+      float[] data = new float[1024];
+      data[10] = 1;
+      float[] out = iterdecon.phaseShift(data, 1.0f, 1.0f);
+      float[] oldout = iterdecon.oldphaseShift(data, 1.0f, 1.0f);
+      //      for ( int i=0; i<data.length; i++) {
+      //  System.out.println("data="+data[i]+"  out="+out[i]+"  oldout="+oldout[i]);
+      //  } // end of for ()
+      
+      assertEquals(out[10], data[9], .001);
+      assertEquals(out[11], data[10], .001);
+      assertEquals(out[12], data[11], .001);
     // JUnitDoclet end method phaseShift
   }
   
@@ -69,14 +80,12 @@ extends TestCase
   
   public void testGaussianFilter() throws Exception {
     // JUnitDoclet begin method phaseShift
-      float[] tmp = new float[100];
-      for ( int i=0; i<tmp.length; i++) {
-          tmp[i] = 10;
-      } // end of for ()
+      float[] tmp = new float[8];
+      tmp[3] = 1;
       
       float[] out = iterdecon.gaussianFilter(tmp, 3.0f, 0.05f);
       for ( int i=0; i<out.length; i++) {
-          System.out.println(i+"  tmp="+tmp[i]+"  out="+out[i]);
+          System.out.println("gfilter "+i+"  tmp="+tmp[i]+"  out="+out[i]);
       } // end of for ()
       
     // JUnitDoclet end method phaseShift

@@ -81,9 +81,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         <!-- Print out a line for each successful event -->
         <printLineEventProcess/>
         
-        <eventStatusTemplate>
-            <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/eventStatus.xml"/>
-        </eventStatusTemplate>
+        <eventStatusTemplate
+            xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/eventStatus.xml"/>
     </eventArm>
     
     <networkArm>
@@ -281,15 +280,13 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <gaussianWidth>3.0</gaussianWidth>
             </externalChannelGroupSeismogramProcess>
             
-            <localSeismogramTemplateGenerator>  
-                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
-            </localSeismogramTemplateGenerator>
+            <localSeismogramTemplateGenerator  
+                xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
             
         </motionVectorArm>
         
-        <waveformEventTemplateGenerator>
-            <waveformConfig xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml"/>
-        </waveformEventTemplateGenerator>
+        <waveformEventTemplateGenerator
+            xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml"/>
         <waveformNetworkStatus>
             <template>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformNetwork.xml</template>
             <networkListTemplate>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformNetworks.xml</networkListTemplate>

@@ -65,5 +65,7 @@ if __name__ == "__main__":
         os.chdir('scripts')
         build.buildAllScripts(proj)
         build.buildScripts(proj, 'geeRecFunc', 'edu.sc.seis.gee.Start', True)
+        build.buildScripts(proj, 'sumStackCalc', 'edu.sc.seis.receiverFunction.server.StackSummary', True)
+        build.buildScripts(proj, 'stackCalc', 'edu.sc.seis.receiverFunction.server.JDBCHKStack', True)
         depCopy.copy(proj)
 

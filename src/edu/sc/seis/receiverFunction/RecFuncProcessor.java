@@ -335,13 +335,17 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
     }
 
     void doSumHKStack(MemoryDataSetSeismogram predicted,
-                      File parentDir, ChannelId chan, String prefix, String postfix, float minPercentMatch) throws IOException {
+                      File parentDir,
+                      ChannelId chan,
+                      String prefix,
+                      String postfix,
+                      float minPercentMatch) throws IOException {
         // now update global per channel stack
         SumHKStack sum = SumHKStack.load(parentDir,
                                          predicted.getRequestFilter().channel_id,
                                          prefix,
                                          postfix,
-                                         90);
+                                         minPercentMatch);
         if (sum != null) {
             // at least on event meet the min percent match
             File sumStackOutFile = new File(parentDir,"SumHKStack_"+minPercentMatch+"_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+postfix);

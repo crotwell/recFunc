@@ -157,7 +157,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                         saved.addAuxillaryData(key, predicted.getAuxillaryData(key));
                     }
                     DistAz distAz = DisplayUtils.calculateDistAz(saved);
-                    tauPTime.calculate(distAz.delta);
+                    tauPTime.calculate(distAz.getDelta());
                     Arrival arrival = tauPTime.getArrival(0);
                     // convert radian per sec ray param into km per sec
                     float kmRayParam = (float)(arrival.getRayParam()/tauPTime.getTauModel().getRadiusOfEarth());

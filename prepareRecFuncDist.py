@@ -15,7 +15,7 @@ def buildDist(proj, name=None):
     scripts = buildSodScripts.buildAll(proj)
     scriptsWithTarLoc = [(script, 'bin/'+script) for script in scripts]
     if name is None: name = proj.name + '-' + time.strftime('%y%m%d')
-    distBuilder.buildDist(proj, [], True, extras, scriptsWithTarLoc, name)
+    distBuilder.buildDist(proj, extras, name)
 
 if __name__ == "__main__":
     buildDist(ProjectParser.ProjectParser('./project.xml'))

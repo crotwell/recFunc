@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.sod.status.FissuresFormatter;
 
 public class SumHKStack {
@@ -83,6 +84,7 @@ public class SumHKStack {
                           individuals[0].getNumK(),
                           stack,
                           chan);
+        calcVariance();   
     }
 
     public static SumHKStack load(File parentDir, Channel chan, String prefix, String postfix, float minPercentMatch) throws IOException {
@@ -113,11 +115,42 @@ public class SumHKStack {
             return null;
         }
     }
+    
+    public double getHError() {
+        return HError;
+    }
+
+    public double getKError() {
+        return KError;
+    }
+    
+    protected void calcVariance() {
+        float[] peakVals = new float[individuals.length];
+        int[] maxIndices = sum.getMaxValueIndices();
+        for (int s = 0; s < individuals.length; s++) {
+            peakVals[s] = individuals[s].getStack()[maxIndices[0]][maxIndices[1]];
+        }
+        Statistics stat = new Statistics(peakVals);
+        maxVariance = stat.var();
+        // H is first index, K is second
+        double a = sum.getStack()[maxIndices[0]-1][maxIndices[1]];
+        double b = sum.getStack()[maxIndices[0]][maxIndices[1]];
+        double c = sum.getStack()[maxIndices[0]+1][maxIndices[1]];
+        HError = 2*maxVariance/((a-2*b+c)/sum.getStepH()*sum.getStepH());
+
+         a = sum.getStack()[maxIndices[0]][maxIndices[1]-1];
+         b = sum.getStack()[maxIndices[0]][maxIndices[1]];
+         c = sum.getStack()[maxIndices[0]][maxIndices[1]+1];
+        KError = 2*maxVariance/((a-2*b+c)/sum.getStepK()*sum.getStepK());
+    }
 
     protected Channel channel;
     protected HKStack[] individuals;
     protected HKStack sum;
     protected float minPercentMatch;
     protected float smallestH;
+    protected double maxVariance;
+    protected double HError;
+    protected double KError;
 }
 

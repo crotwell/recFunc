@@ -180,6 +180,8 @@ public class JDBCHKStack  extends JDBCTable {
         while(rs.next()) {
             individualHK.add(extract(rs));
         }
+        rs.close();
+        rs = null;
         if (individualHK.size() != 0) {
             HKStack temp = (HKStack)individualHK.get(0);
             SumHKStack sumStack = new SumHKStack((HKStack[])individualHK.toArray(new HKStack[0]),

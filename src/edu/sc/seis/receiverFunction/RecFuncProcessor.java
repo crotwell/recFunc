@@ -11,7 +11,9 @@ import edu.sc.seis.sod.process.waveformArm.*;
 import java.io.*;
 
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
+import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
+import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.iris.Fissures.IfSeismogramDC.RequestFilter;
 import edu.iris.Fissures.Orientation;
@@ -22,8 +24,9 @@ import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
-import edu.sc.seis.TauP.TauP_Time;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
+import edu.sc.seis.fissuresUtil.bag.TauPUtil;
+import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.display.DisplayUtils;
 import edu.sc.seis.sod.ChannelGroup;
 import edu.sc.seis.sod.ConfigurationException;
@@ -80,7 +83,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
         }
 
         if (recFunc == null) {
-            tauPTime = new TauP_Time("iasp91");
+            tauPTime = new TauPUtil(modelName);
             recFunc = new RecFunc(tauPTime,
                                   new IterDecon(100, true, .001f, gwidth));
         }
@@ -117,7 +120,8 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
         processor =
             new DataSetRecFuncProcessor(chGrpSeismograms,
                                         event,
-                                        recFunc);
+                                        recFunc,
+                                        tauPTime);
         for (int i=0; i<chGrpSeismograms.length; i++) {
             logger.debug("Retrieving for "+chGrpSeismograms[i].getName());
             chGrpSeismograms[i].retrieveData(processor);
@@ -155,10 +159,13 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                         saved.addAuxillaryData(key, predicted.getAuxillaryData(key));
                     }
                     DistAz distAz = DisplayUtils.calculateDistAz(saved);
-                    tauPTime.calculate(distAz.getDelta());
-                    Arrival arrival = tauPTime.getArrival(0);
+                    Origin origin = CacheEvent.extractOrigin(event);
+
+                    Arrival[] arrivals =
+                        tauPTime.calcTravelTimes(recFuncChannel.my_site.my_station, origin, phases);
+
                     // convert radian per sec ray param into km per sec
-                    float kmRayParam = (float)(arrival.getRayParam()/tauPTime.getTauModel().getRadiusOfEarth());
+                    float kmRayParam = (float)(arrivals[0].getRayParam()/tauPTime.getTauModel().getRadiusOfEarth());
 
                     // find template generator to get directory to output rec func
                     // images
@@ -184,12 +191,12 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                     synchronized(lSeisTemplateGen) {
                         RequestFilter[] zoomP = new RequestFilter[1];
                         MicroSecondDate oTime = new MicroSecondDate(event.get_preferred_origin().origin_time);
-                        MicroSecondDate pTime = oTime.add(new TimeInterval(arrival.getTime(), UnitImpl.SECOND));
+                        MicroSecondDate pTime = oTime.add(new TimeInterval(arrivals[0].getTime(), UnitImpl.SECOND));
                         zoomP[0] = new RequestFilter(recFuncChannel.get_id(),
                                                      pTime.subtract(new TimeInterval(5, UnitImpl.SECOND)).getFissuresTime(),
                                                      pTime.add(new TimeInterval(30, UnitImpl.SECOND)).getFissuresTime());
-                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP, zoomP, predicted.getCache(), cookieJar);
-                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP, predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PDF);
+                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP,predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PNG, phases);
+                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP, predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PDF, phases);
                     }
                     RecFuncTemplate rfTemplate =new RecFuncTemplate();
                     File velocityOutFile = new File(getEventDirectory(event),"Vel_"+channelIdString+".html");
@@ -262,25 +269,19 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                         float max = stack.stack[xyMax[0]][xyMax[1]];
                         appendToSummaryPage("<tr><td>"+getEventDirectory(event).getName()+"</td><td>"+channelIdString+"</td><td>"+stack.getPercentMatch()+"</td><td>"+(stack.getMinH()+xyMax[0]*stack.getStepH())+"</td><td>"+(stack.getMinK()+xyMax[1]*stack.getStepK())+"</td></tr>");
 
-                        // now update global per channel stack
-                        SumHKStack sum = SumHKStack.load(getParentDirectory(),
-                                                         predicted.getRequestFilter().channel_id,
-                                                         prefix,
-                                                         postfix,
-                                                         90);
-                        if (sum != null) {
-                            // at least on event meet the min percent match
-                            File sumStackOutFile = new File(getParentDirectory(),"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+postfix);
-                            if (sumStackOutFile.exists()) {sumStackOutFile.delete();}
-                            DataOutputStream sumdos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(sumStackOutFile)));
-                            sum.write(sumdos);
-                            sumdos.close();
+                        doSumHKStack(predicted,
+                                     getParentDirectory(),
+                                     predicted.getRequestFilter().channel_id,
+                                     prefix+90,
+                                     postfix,
+                                     90);
 
-                            File outSumImageFile  = new File(getParentDirectory(),"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
-                            if (outSumImageFile.exists()) {outSumImageFile.delete();}
-                            BufferedImage bufSumImage = sum.createStackImage();
-                            javax.imageio.ImageIO.write(bufSumImage, "png", outSumImageFile);
-                        }
+                        doSumHKStack(predicted,
+                                     getParentDirectory(),
+                                     predicted.getRequestFilter().channel_id,
+                                     prefix+80,
+                                     postfix,
+                                     80);
                     }
                 }
             } else {
@@ -333,16 +334,43 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
         summaryPage.flush();
     }
 
+    void doSumHKStack(MemoryDataSetSeismogram predicted,
+                      File parentDir, ChannelId chan, String prefix, String postfix, float minPercentMatch) throws IOException {
+        // now update global per channel stack
+        SumHKStack sum = SumHKStack.load(parentDir,
+                                         predicted.getRequestFilter().channel_id,
+                                         prefix,
+                                         postfix,
+                                         90);
+        if (sum != null) {
+            // at least on event meet the min percent match
+            File sumStackOutFile = new File(parentDir,"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+postfix);
+            if (sumStackOutFile.exists()) {sumStackOutFile.delete();}
+            DataOutputStream sumdos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(sumStackOutFile)));
+            sum.write(sumdos);
+            sumdos.close();
+
+            File outSumImageFile  = new File(parentDir,"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
+            if (outSumImageFile.exists()) {outSumImageFile.delete();}
+            BufferedImage bufSumImage = sum.createStackImage();
+            javax.imageio.ImageIO.write(bufSumImage, "png", outSumImageFile);
+        }
+    }
+
     boolean isDataComplete(LocalSeismogram seis) {
         return processor.isRecFuncFinished();
     }
 
     RecFunc recFunc;
     DataSetRecFuncProcessor processor;
-    TauP_Time tauPTime;
+    TauPUtil tauPTime;
     LocalSeismogramTemplateGenerator lSeisTemplateGen = null;
 
     float gwidth = 3.0f;
+
+    String modelName = "iasp91";
+
+    String[] phases = { "P", "Pms", "PPvms", "PSvms"};
 
     static BufferedWriter summaryPage = null;
 

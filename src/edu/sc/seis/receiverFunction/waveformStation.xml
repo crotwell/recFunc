@@ -56,6 +56,7 @@ Events for $fissures.formatNetwork($station.get_id()) $fissures.formatStation($s
 <br/>
 <img src="../../../Iris_recfunc/SumHKStack_80.0_${network.get_code()}.${station.get_code()}.__.ITR.png" />
 <br/>
+$fissures.isNull( $successful_event_channel_groups )
 <br/>
 <table class="sortable ruler" id="eventTable">
 <tr class="title">
@@ -79,7 +80,7 @@ $fissures.isNull(event)
 #set ( $origin = $event.get_preferred_origin() )
 $fissures.isNull($origin)
 #set ( $eventDir = $fissures.formatDateForFile($origin) )
-<td><a href="../../$eventDir/$fissures.formatStation($station.get_id())/seismograms.html">$FERegion.getRegionName(${event.get_attributes().region})</a></td>
+<td><a href="../../Events/$eventDir/$fissures.formatStation($station.get_id())/seismograms.html">$FERegion.getRegionName(${event.get_attributes().region})</a></td>
 <td>$fissures.isNull($origin) $fissures.formatDate( $origin.getTime() )</td>
 <td>
 #foreach ($m in $origin.Magnitudes)

@@ -78,6 +78,13 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
        </eventFinder>
 
+       <originPointDistance>
+          <latitude>35</latitude>
+          <longitude>-82</longitude>
+          <unit>DEGREE</unit>
+          <min>30</min>
+          <max>105</max>
+       </originPointDistance>
 
 <!-- Print out a line for each successful event -->
     <printLineEventProcess/>

@@ -57,6 +57,11 @@
     </developers>
     <dependencies>
         <dependency>
+            <groupId>cormorant</groupId>
+            <artifactId>cormorant</artifactId>
+            <version>0.1beta</version>
+        </dependency>
+        <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
             <version>1.0</version>
@@ -216,7 +221,7 @@
         </dependency>
         <dependency>
             <id>hsqldb</id>
-            <version>1.7.3</version>
+            <version>1.7.3_USC1</version>
             <url>http://hsqldb.sourceforge.net</url>
         </dependency>
         <dependency>

@@ -123,11 +123,24 @@ public class StackSummary {
                                               station.station_code,
                                               minPercentMatch,
                                               smallestH);
+        saveImage(sumStack,
+                   station,
+                   parentDir,
+                   minPercentMatch,
+                   smallestH);
+        return sumStack;
+    }
+    
+    public static void saveImage(SumHKStack sumStack,
+                          StationId station,
+                          File parentDir,
+                          float minPercentMatch,
+                          float smallestH) throws IOException {
         if(sumStack == null) {
             logger.info("No hk plots for "
                     + StationIdUtil.toStringNoDates(station) + " with match > "
                     + minPercentMatch);
-            return null;
+            return;
         }
         BufferedImage image = sumStack.createStackImage();
         parentDir.mkdirs();
@@ -142,7 +155,6 @@ public class StackSummary {
             outSumImageFile.delete();
         }
         javax.imageio.ImageIO.write(image, "png", outSumImageFile);
-        return sumStack;
     }
 
     JDBCHKStack jdbcHKStack;

@@ -128,9 +128,16 @@ public class JDBCHKStack  extends JDBCTable {
         }
         return hkstack_id;
     }
-    
+
     public ArrayList calc(String netCode, String staCode, float percentMatch, boolean save) throws FileNotFoundException, FissuresException, NotFound, IOException, SQLException, TauModelException {
-        
+        return calc(netCode, staCode, percentMatch, save, 1, 1, 1);
+    }
+    
+    public ArrayList calc(String netCode, String staCode, float percentMatch, boolean save,
+                          float weightPs,
+                          float weightPpPs,
+                          float weightPsPs) throws FileNotFoundException, FissuresException, NotFound, IOException, SQLException, TauModelException {
+            
         // get all uncalculated rows
         uncalculatedStmt.setString(1, netCode);
         uncalculatedStmt.setString(2, staCode);
@@ -141,7 +148,7 @@ public class JDBCHKStack  extends JDBCTable {
         while (rs.next()) {
             int recFuncDbId = rs.getInt(1);
             System.out.println("Calc for "+recFuncDbId);
-            HKStack stack = calc(recFuncDbId, 1, 1, 1);
+            HKStack stack = calc(recFuncDbId, weightPs, weightPpPs, weightPsPs);
             if (save) {
                 int hkstack_id = put(recFuncDbId, stack);
             }
@@ -258,11 +265,18 @@ public class JDBCHKStack  extends JDBCTable {
             return;
         }
         float minPercentMatch = 80;
-        calcAndSave(args, minPercentMatch, true);
+        try {
+        calcAndSave(args, minPercentMatch, true, 1, 1, 1);
+        }catch(Exception e) {
+            GlobalExceptionHandler.handle(e);   
+        }
     }
     
-    public static void calcAndSave(String[] args, float minPercentMatch, boolean save) {
-        try {
+    public static ArrayList calcAndSave(String[] args, float minPercentMatch, boolean save,
+                                   float weightPs,
+                                   float weightPpPs,
+                                   float weightPsPs) throws FileNotFoundException, FissuresException, NotFound, IOException, TauModelException, SQLException, ConfigurationException {
+        
             ConnMgr.setDB(ConnMgr.POSTGRES);
             Properties props = RecFuncCacheStart.loadProps(args);
             Connection conn = ConnMgr.createConnection();
@@ -276,13 +290,15 @@ public class JDBCHKStack  extends JDBCTable {
             if (args.length > 1) {
                 String staCode = args[1];
                 System.out.println("calc for "+netCode+"."+staCode);
-                jdbcHKStack.calc(netCode, staCode, minPercentMatch, save);
+                return jdbcHKStack.calc(netCode, staCode, minPercentMatch, save, weightPs,
+                                 weightPpPs, weightPsPs);
             } else {
                 // do all or for a net
                 JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel().getSiteTable().getStationTable();
                 JDBCNetwork jdbcNetwork = jdbcStation.getNetTable();
                 NetworkId[] netId = jdbcNetwork.getAllNetworkIds();
                 System.out.println("Found "+netId.length+" networks.");
+                ArrayList out = new ArrayList();
                 for(int i = 0; i < netId.length; i++) {
                     System.out.println("Network: "+NetworkIdUtil.toString(netId[i]));
                     if(netCode.equals("-all") || netId[i].network_code.equals(netCode)) {
@@ -290,7 +306,8 @@ public class JDBCHKStack  extends JDBCTable {
                         for(int j = 0; j < station.length; j++) {
                             System.out.println("calc for "+netId[i].network_code+"."+station[j].get_code());
                             try {
-                            jdbcHKStack.calc(netId[i].network_code, station[j].get_code(), minPercentMatch, save);
+                                out.addAll( jdbcHKStack.calc(netId[i].network_code, station[j].get_code(), minPercentMatch, save, weightPs,
+                                             weightPpPs, weightPsPs));
                             } catch (IllegalArgumentException e) {
                                 System.out.println("Problem with receiver function, skipping station. "+e);
                                 GlobalExceptionHandler.handle(e); 
@@ -301,10 +318,8 @@ public class JDBCHKStack  extends JDBCTable {
                         }
                     }
                 }
+                return out;
             }
-        }catch(Exception e) {
-            GlobalExceptionHandler.handle(e);   
-        }
     }
     
     public JDBCChannel getJDBCChannel() {

@@ -115,7 +115,15 @@ hkstack.put=INSERT INTO hkstack ( \
                    insertTime) \
                    VALUES ( \
                    ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?)
-                   
+
+
+hkstack.get=SELECT * FROM  \
+                   receiverFunction \
+                   ,hkStack \
+                   WHERE  \
+                   receiverfunction.recfunc_id = hkstack.recfunc_id AND \
+                   hkstack.recfunc_id = ?
+
 hkstack.getForStation=SELECT * FROM network \
                    NATURAL JOIN station \
                    NATURAL JOIN site \

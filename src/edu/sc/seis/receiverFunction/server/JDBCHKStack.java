@@ -56,20 +56,58 @@ import edu.sc.seis.sod.status.EventFormatter;
  */
 public class JDBCHKStack extends JDBCTable {
 
-    public JDBCHKStack(Connection conn, JDBCEventAccess jdbcEventAccess, JDBCChannel jdbcChannel,
-            JDBCSodConfig jdbcSodConfig, JDBCRecFunc jdbcRecFunc)
-            throws SQLException, ConfigurationException, TauModelException, Exception {
+    public JDBCHKStack(Connection conn, JDBCEventAccess jdbcEventAccess,
+            JDBCChannel jdbcChannel, JDBCSodConfig jdbcSodConfig,
+            JDBCRecFunc jdbcRecFunc) throws SQLException,
+            ConfigurationException, TauModelException, Exception {
         super("hkstack", conn);
         this.jdbcEventAccess = jdbcEventAccess;
         this.jdbcChannel = jdbcChannel;
         this.jdbcRecFunc = jdbcRecFunc;
-        TableSetup.setup(getTableName(), conn, this, "edu/sc/seis/receiverFunction/server/default.props");
+        TableSetup.setup(getTableName(),
+                         conn,
+                         this,
+                         "edu/sc/seis/receiverFunction/server/default.props");
         dataDir = new File(RecFuncCacheImpl.getDataLoc());
         dataDir.mkdirs();
         eventFormatter = new EventFormatter(true);
         tauPTime = TauPUtil.getTauPUtil(modelName);
     }
-
+    
+    public HKStack get(int recfunc_id) throws SQLException, IOException {
+       get.setInt(1, recfunc_id);
+       ResultSet rs = get.executeQuery();
+       if (rs.next()) {
+           byte[] stackBytes = rs.getBytes("stack");
+           int numH = rs.getInt("numH");
+           int numK = rs.getInt("numK");
+           float[][] data = new float[numH][numK];
+           ByteArrayInputStream out = new ByteArrayInputStream(stackBytes);
+           DataInputStream dos = new DataInputStream(out);
+           for(int i = 0; i < data.length; i++) {
+               for(int j = 0; j < data[i].length; j++) {
+                   data[i][j] = dos.readFloat();
+               }
+           }
+           return new HKStack(rs.getFloat("alpha"),
+                              rs.getFloat("p"),
+                              rs.getFloat("percentMatch"),
+                              rs.getFloat("minH"),
+                              rs.getFloat("stepH"),
+                              numH,
+                              rs.getFloat("minK"),
+                              rs.getFloat("stepK"),
+                              numK,
+                              rs.getFloat("weightPs"),
+                              rs.getFloat("weightPpPs"),
+                              rs.getFloat("weightPsPs"),
+                              data);
+       } else {
+           rs.close();
+           return null;
+       }
+    }
+    
     public int put(int recfunc_id, HKStack stack) throws SQLException,
             IOException {
         int hkstack_id = hkstackSeq.next();
@@ -269,8 +307,7 @@ public class JDBCHKStack extends JDBCTable {
         return out;
     }
 
-    private PreparedStatement uncalculated, calcByPercent, put,
-            getForStation;
+    private PreparedStatement uncalculated, calcByPercent, put, get, getForStation;
 
     private JDBCEventAccess jdbcEventAccess;
 

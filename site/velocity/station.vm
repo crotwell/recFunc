@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>Station $net.getCode() $stacode</title>
+<link rel="stylesheet" type="text/css" href="usarray.css"/>
+</head>
+<body>
+	
+<div id="content" align="left">
+
+<b>Network: </b>$net.getCodeWithYear() - $net.name<br/>
+
+<table>
+<tr>
+<td class="odd">Station</td>
+<td class="even">Name</td>
+<td class="odd">(Lat, Lon)</td>
+<td class="odd">Start / End</td>
+</tr>
+#foreach($sta in $stationList)
+<tr>
+<td class="odd">$sta.getCode()</td>
+<td class="even">$sta.getName()</td>
+<td class="odd">($sta.getLatitude(), $sta.getLongitude())</td>
+<td class="odd">$sta.getStart() / $sta.getEnd()</td>
+</tr>
+#end
+</table>
+
+
+#set( $sta = $stationList.get(0) )
+<table>
+<tr>
+<td class="odd">Radial Match</td>
+<td class="even">Distance</td>
+<td class="odd">Baz</td>
+<td class="odd">FERegion</td>
+<td class="even">Time</td>
+<td class="odd">Lat/Lon</td>
+<td class="even">Depth</td>
+<td class="odd">Magnitude</td>
+
+</tr>
+#foreach($eq in $eventList)
+<tr>
+<td class="even">$eq.getParam("itr_match")</td>
+<td class="even">$sta.getDistanceDeg($eq)</td>
+<td class="even">$sta.getBaz($eq)</td>
+#set( $recFunc_id = $eq.getParam("recFunc_id") )
+<td class="odd"><a href="http://roo:8084/hkstackimage.png?rf=$recFunc_id">$eq.getRegion()</a></td>
+<td class="even">$eq.getTimePrecise()</td>
+<td class="odd">($eq.getLatitude(), $eq.getLongitude())</td>
+<td class="even">$eq.getDepth()</td>
+<td class="even">$eq.getAllMagnitudes()</td>
+</tr>
+#end
+</table>
+
+
+
+<div id="footer2" align="center">
+  <a href="http://seis.sc.edu">
+    <img src="seislogo.gif" alt="Seismology at USC" title="USC"/>
+  </a>
+  <a href="http://www.iris.edu">
+    <img src="irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
+  </a>
+</div id="footer2">
+</div id="content">
+</body>
+</html>

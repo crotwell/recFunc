@@ -19,6 +19,9 @@ import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
+import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.IfNetwork.StationId;
+import edu.iris.Fissures.IfParameterMgr.ParameterRef;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.network.ChannelIdUtil;
@@ -48,6 +51,7 @@ import edu.sc.seis.fissuresUtil.sac.SacToFissures;
 import edu.sc.seis.fissuresUtil.xml.SeismogramFileTypes;
 import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.UnsupportedFileTypeException;
+import edu.sc.seis.rev.velocity.VelocityEvent;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.status.EventFormatter;
 
@@ -121,6 +125,13 @@ public class JDBCRecFunc extends JDBCTable {
                                                " AND tol = ? ");
         getByDbIdStmt = conn.prepareStatement("SELECT * from "+getTableName()+
                                               " WHERE recfunc_id = ? ");
+        getOriginByStation = conn.prepareStatement("SELECT * FROM network "+
+                   "NATURAL JOIN station "+
+                   "NATURAL JOIN site "+
+                   "NATURAL JOIN channel "+
+                   "JOIN  receiverFunction ON (chanz_id = chan_id ) "+
+                   "WHERE net_id = ? "+
+                   "AND sta_code = ? ");
     }
     
     public int put(Origin prefOrigin,
@@ -375,6 +386,26 @@ public class JDBCRecFunc extends JDBCTable {
         }
         return (IterDeconConfig[])out.toArray(new IterDeconConfig[0]);
     }
+
+    public CacheEvent[] getSuccessfulEvents(int netDbId, String stationCode) throws SQLException, NotFound {
+        getOriginByStation.setInt(1, netDbId);
+        getOriginByStation.setString(2, stationCode);
+        ResultSet rs = getOriginByStation.executeQuery();
+        ArrayList out = new ArrayList();
+        while(rs.next()) {
+            Origin o = jdbcOrigin.get(rs.getInt("origin_id"));
+            EventAttr attr = jdbcEventAttr.get(rs.getInt("eventAttr_id"));
+            CacheEvent event = new CacheEvent(attr, o);
+            ParameterRef[] parms = o.parm_ids;
+            ParameterRef[] newParms = new ParameterRef[parms.length+2];
+            System.arraycopy(parms, 0, newParms, 0, parms.length);
+            newParms[newParms.length-2] = new ParameterRef("itr_match", ""+rs.getFloat("itr_match"));
+            newParms[newParms.length-1] = new ParameterRef("recFunc_id", ""+rs.getInt("recFunc_id"));
+            o.parm_ids = newParms;
+            out.add(event);
+        }
+        return (CacheEvent[])out.toArray(new CacheEvent[0]);
+    }
     
     protected int populateGetStmt(PreparedStatement stmt, 
                                    Origin prefOrigin,
@@ -456,7 +487,7 @@ public class JDBCRecFunc extends JDBCTable {
 
     private SeismogramFileTypes fileType = SeismogramFileTypes.SAC;
     
-    private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt, getByDbIdStmt;
+    private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt, getByDbIdStmt, getOriginByStation;
     
     private JDBCSequence receiverFunctionSeq;
     

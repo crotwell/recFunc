@@ -17,29 +17,25 @@ import edu.sc.seis.sod.status.FissuresFormatter;
  * @author crotwell
  * Created on Feb 10, 2005
  */
-public class Networks extends Revlet {
+public class NetworkList extends Revlet {
 
-    public Networks() throws SQLException {
+    public NetworkList() throws SQLException {
         jdbcNetwork = new JDBCNetwork();
-        defContext = new VelocityContext();
-        defContext.put("fissures", new FissuresFormatter());
     }
-    /**
-     *
-     */
+    
     public RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
-        RevletContext context = new RevletContext("networkList.vm", defContext);
+        RevletContext context = new RevletContext("networkList.vm");
         ArrayList netList = new ArrayList();
-        NetworkAttr[] nets = jdbcNetwork.getAllNetworkAttrs();
+        int[] netdbids = jdbcNetwork.getAllNetworkDBIds();
+        NetworkAttr[] nets = new NetworkAttr[netdbids.length];
         for(int i = 0; i < nets.length; i++) {
-            netList.add(new VelocityNetwork(nets[i]));
+            nets[i] = jdbcNetwork.get(netdbids[i]);
+            netList.add(new VelocityNetwork(nets[i], netdbids[i]));
         }
         context.put("networkList", netList);
         return context;
     }
-    
-    VelocityContext defContext;
     
     JDBCNetwork jdbcNetwork;
 }

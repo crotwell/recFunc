@@ -28,24 +28,29 @@ public class Start {
         ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(props.getProperty("sod.dburl"));
         
-        String netHTML = "/networks.html";
-        String staForNet = "/stations.html";
+        String netHTML = "/networkList.html";
+        String staForNet = "/stationList.html";
+        String station = "/station.html";
         String rfstationEvent = "/rfStationEvent.html";
         String rfstationEventImage = "/hkstackimage.png";
         
         Set servletStrings = new HashSet();
         servletStrings.add(netHTML);
         servletStrings.add(staForNet);
+        servletStrings.add(station);
         servletStrings.add(rfstationEventImage);
         servletStrings.add(rfstationEvent);
         
         ServletHandler sh = new ServletFromSet(servletStrings);
         sh.addServlet(netHTML,
                       netHTML,
-                      "edu.sc.seis.receiverFunction.web.Networks");
+                      "edu.sc.seis.receiverFunction.web.NetworkList");
         sh.addServlet(staForNet,
                       staForNet,
-                      "edu.sc.seis.receiverFunction.web.Stations");
+                      "edu.sc.seis.receiverFunction.web.StationList");
+        sh.addServlet(station,
+                      station,
+                      "edu.sc.seis.receiverFunction.web.Station");
 //        sh.addServlet("rfStationEvent",
 //                      rfstationEvent,
 //                      "edu.sc.seis.receiverFunction.web.RFStationEvent");

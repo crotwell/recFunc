@@ -18,7 +18,7 @@
 #set( $netid = $net.get_id() )
 #set( $leaps = $netid.begin_time.leap_seconds_version )
 #set( $netbegin = $netid.begin_time.date_time )
-<td class="even"><a href="stations.html?nwcode=${net.getCode()}&datetime=${net.getRawBeginDate()}&leapsecondsversion=$net.getRawBeginLeapSeconds()">$net.name</a></td>
+<td class="even"><a href="stationList.html?netdbid=${net.getDbId()}">$net.name</a></td>
 </td>
 </tr>
 #end

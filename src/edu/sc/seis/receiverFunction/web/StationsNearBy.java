@@ -89,6 +89,8 @@ public class StationsNearBy extends Revlet {
         HashMap summary = new HashMap();
         while(it.hasNext()) {
             VelocityStation sta = (VelocityStation)it.next();
+            sta.setDbId(jdbcChannel.getStationTable().getDBId(sta.get_id()));
+            sta.getNet().setDbId(jdbcChannel.getNetworkTable().getDBId(sta.getNet().get_id()));
             int dbid = jdbcSumHKStack.getDbIdForStation(sta.my_network.get_id(), sta.get_code());
             SumHKStack sumStack = jdbcSumHKStack.get(dbid);
             summary.put(sta, sumStack);

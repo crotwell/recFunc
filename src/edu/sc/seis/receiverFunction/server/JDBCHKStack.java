@@ -166,7 +166,7 @@ public class JDBCHKStack  extends JDBCTable {
         return stack;
     }
     
-    public SumHKStack sum(String netCode, String staCode, float percentMatch, float smallestH) throws FissuresException, NotFound, IOException, SQLException, SQLException {
+    public SumHKStack sum(String netCode, String staCode, float percentMatch, float smallestH) throws FissuresException, NotFound, IOException, SQLException {
         ArrayList individualHK = new ArrayList();
         int index = 1;
         getForStationStmt.setString(index++, netCode);
@@ -190,8 +190,8 @@ public class JDBCHKStack  extends JDBCTable {
         }
     }
     
-    HKStack extract(ResultSet rs) throws FileNotFoundException, FissuresException, NotFound, IOException, SQLException {
-        CachedResult rfCache = jdbcRecFunc.extract(rs);
+    HKStack extract(ResultSet rs) throws FissuresException, NotFound, IOException, SQLException {
+        Channel[] channels = jdbcRecFunc.extractChannels(rs);
         byte[] dataBytes = rs.getBytes("data");
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
@@ -214,7 +214,7 @@ public class JDBCHKStack  extends JDBCTable {
                                   rs.getFloat("stepK"),
                                   numK,
                                   data,
-                                  rfCache.channels[0]);
+                                  channels[0]);
         return out;
     }
     

@@ -43,10 +43,18 @@ public class StackSummary {
     public StackSummary(Connection conn) throws IOException, SQLException,
             ConfigurationException, TauModelException, Exception {
         JDBCEventAccess jdbcEventAccess = new JDBCEventAccess(conn);
-        JDBCChannel jdbcChannel  = new JDBCChannel(conn);
+        JDBCChannel jdbcChannel = new JDBCChannel(conn);
         JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
-        JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.getDataLoc());
-        jdbcHKStack = new JDBCHKStack(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
+        JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn,
+                                                  jdbcEventAccess,
+                                                  jdbcChannel,
+                                                  jdbcSodConfig,
+                                                  RecFuncCacheImpl.getDataLoc());
+        jdbcHKStack = new JDBCHKStack(conn,
+                                      jdbcEventAccess,
+                                      jdbcChannel,
+                                      jdbcSodConfig,
+                                      jdbcRecFunc);
         jdbcSummary = new JDBCSummaryHKStack(jdbcHKStack);
     }
 
@@ -67,20 +75,21 @@ public class StackSummary {
             if(net.equals("-all") || netId[i].network_code.equals(net)) {
                 Station[] station = jdbcStation.getAllStations(netId[i]);
                 for(int j = 0; j < station.length; j++) {
-                    System.out.println("calc for "+StationIdUtil.toStringNoDates(station[j].get_id()));
-
-                    Crust2Profile crust2 = HKStack.getCrust2().getClosest(station[j].my_location.longitude,
-                                                                          station[j].my_location.latitude);
+                    System.out.println("calc for "
+                            + StationIdUtil.toStringNoDates(station[j].get_id()));
+                    Crust2Profile crust2 = HKStack.getCrust2()
+                            .getClosest(station[j].my_location.longitude,
+                                        station[j].my_location.latitude);
                     double crust2H = crust2.getCrustThickness();
                     SumHKStack sumStack;
-                    if (crust2H > smallestH+5) {
+                    if(crust2H > smallestH + 5) {
                         sumStack = createSummary(station[j].get_id(),
                                                  parentDir,
                                                  minPercentMatch,
                                                  smallestH);
                     } else {
-                        float modSmallestH = (float)(crust2H-5);
-                        if (modSmallestH < JDBCHKStack.getDefaultMinH()) {
+                        float modSmallestH = (float)(crust2H - 5);
+                        if(modSmallestH < JDBCHKStack.getDefaultMinH()) {
                             modSmallestH = JDBCHKStack.getDefaultMinH();
                         }
                         sumStack = createSummary(station[j].get_id(),
@@ -91,22 +100,26 @@ public class StackSummary {
                     if(sumStack == null) {
                         continue;
                     }
-                    String outStr = StationIdUtil.toStringNoDates(station[j].get_id()) + " "
-                            + station[j].my_location.latitude + " "
+                    String outStr = StationIdUtil.toStringNoDates(station[j].get_id())
+                            + " "
+                            + station[j].my_location.latitude
+                            + " "
                             + station[j].my_location.longitude;
                     float peakH, peakK, peakVal = 0;
                     int[] indicies = sumStack.getSum().getMaxValueIndices();
                     peakH = sumStack.getSum().getMaxValueH();
                     peakK = sumStack.getSum().getMaxValueK();
                     peakVal = sumStack.getSum().getMaxValue();
-                    outStr += " " + peakH + " " + peakK + " " + peakVal+" "+sumStack.getIndividuals().length;
-                    outStr += " "+(float)(2*Math.sqrt(sumStack.getHVariance()))+" "+(float)(2*Math.sqrt(sumStack.getKVariance()));
-                    
+                    outStr += " " + peakH + " " + peakK + " " + peakVal + " "
+                            + sumStack.getIndividuals().length;
+                    outStr += " "
+                            + (float)(2 * Math.sqrt(sumStack.getHVariance()))
+                            + " "
+                            + (float)(2 * Math.sqrt(sumStack.getKVariance()));
                     double depth = crust2.getCrustThickness();
                     double vpvs = crust2.getPWaveAvgVelocity()
-                        / crust2.getSWaveAvgVelocity();
+                            / crust2.getSWaveAvgVelocity();
                     outStr += " " + depth + " " + vpvs;
-                    
                     textSumm.write(outStr);
                     textSumm.newLine();
                     textSumm.flush();
@@ -119,36 +132,37 @@ public class StackSummary {
     public SumHKStack createSummary(StationId station,
                                     File parentDir,
                                     float minPercentMatch,
-                                    float smallestH)
-            throws FissuresException, NotFound, IOException, SQLException {
+                                    float smallestH) throws FissuresException,
+            NotFound, IOException, SQLException {
         SumHKStack sumStack = jdbcHKStack.sum(station.network_id.network_code,
                                               station.station_code,
                                               minPercentMatch,
                                               smallestH);
-        if (sumStack.getChannel() == null) {
-            System.out.println("Channel is null for "+StationIdUtil.toStringNoDates(station));
+        if(sumStack == null) {
+            System.out.println("stack is null for "
+                    + StationIdUtil.toStringNoDates(station));
         } else {
-        try {
-            int dbid = jdbcSummary.getDbIdForStation(station.network_id, station.station_code);
-            jdbcSummary.update(dbid, sumStack);
-        } catch (NotFound e) {
-            jdbcSummary.put(sumStack);
+            try {
+                int dbid = jdbcSummary.getDbIdForStation(station.network_id,
+                                                         station.station_code);
+                jdbcSummary.update(dbid, sumStack);
+            } catch(NotFound e) {
+                jdbcSummary.put(sumStack);
+            }
         }
-        }
-        
-//        saveImage(sumStack,
-//                   station,
-//                   parentDir,
-//                   minPercentMatch,
-//                   smallestH);
+        //        saveImage(sumStack,
+        //                   station,
+        //                   parentDir,
+        //                   minPercentMatch,
+        //                   smallestH);
         return sumStack;
     }
-    
+
     public static void saveImage(SumHKStack sumStack,
-                          StationId station,
-                          File parentDir,
-                          float minPercentMatch,
-                          float smallestH) throws IOException {
+                                 StationId station,
+                                 File parentDir,
+                                 float minPercentMatch,
+                                 float smallestH) throws IOException {
         if(sumStack == null) {
             logger.info("No hk plots for "
                     + StationIdUtil.toStringNoDates(station) + " with match > "
@@ -169,56 +183,50 @@ public class StackSummary {
         }
         javax.imageio.ImageIO.write(image, "png", outSumImageFile);
     }
-    
-    public static Properties loadProps(String[] args) {
-        
-        Properties props = System.getProperties();
 
+    public static Properties loadProps(String[] args) {
+        Properties props = System.getProperties();
         ConnMgr.addPropsLocation("edu/sc/seis/receiverFunction/server/");
-        
         // get some defaults
-        String propFilename=
-            "rfcache.prop";
-        String defaultsFilename=
-            "edu/sc/seis/receiverFunction/server/"+propFilename;
-        
-        for (int i=0; i<args.length-1; i++) {
-            if (args[i].equals("-props")) {
+        String propFilename = "rfcache.prop";
+        String defaultsFilename = "edu/sc/seis/receiverFunction/server/"
+                + propFilename;
+        for(int i = 0; i < args.length - 1; i++) {
+            if(args[i].equals("-props")) {
                 // override with values in local directory,
                 // but still load defaults with original name
-                propFilename = args[i+1];
+                propFilename = args[i + 1];
             }
         }
-        
         try {
-            props.load((StackSummary.class).getClassLoader().getResourceAsStream( defaultsFilename ));
-        } catch (IOException e) {
-            System.err.println("Could not load defaults. "+e);
+            props.load((StackSummary.class).getClassLoader()
+                    .getResourceAsStream(defaultsFilename));
+        } catch(IOException e) {
+            System.err.println("Could not load defaults. " + e);
         }
         try {
             FileInputStream in = new FileInputStream(propFilename);
             props.load(in);
             in.close();
-        } catch (FileNotFoundException f) {
-            System.err.println(" file missing "+f+" using defaults");
-        } catch (IOException f) {
-            System.err.println(f.toString()+" using defaults");
+        } catch(FileNotFoundException f) {
+            System.err.println(" file missing " + f + " using defaults");
+        } catch(IOException f) {
+            System.err.println(f.toString() + " using defaults");
         }
-        
         // configure logging from properties...
         PropertyConfigurator.configure(props);
         logger.info("Logging configured");
         return props;
     }
-    
+
     JDBCHKStack jdbcHKStack;
-    
+
     JDBCSummaryHKStack jdbcSummary;
-    
+
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StackSummary.class);
 
     public static void main(String[] args) {
-        if (args.length == 0 ) {
+        if(args.length == 0) {
             System.out.println("Usage: StackSummary netCode");
             return;
         }
@@ -233,13 +241,14 @@ public class StackSummary {
             int smallestH = 25;
             String netArg = "";
             for(int i = 0; i < args.length; i++) {
-                if (args[i].equals("-net")) {
-                    netArg = args[i+1];
-                } else if (args[i].equals("-all")) {
+                if(args[i].equals("-net")) {
+                    netArg = args[i + 1];
+                } else if(args[i].equals("-all")) {
                     netArg = args[i];
                 }
             }
-            summary.createSummary(netArg, new File("stackImages"+smallestH+"_"+minPercentMatch), minPercentMatch, smallestH);
+            summary.createSummary(netArg, new File("stackImages" + smallestH
+                    + "_" + minPercentMatch), minPercentMatch, smallestH);
         } catch(Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

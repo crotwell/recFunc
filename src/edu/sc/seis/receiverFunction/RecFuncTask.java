@@ -4,20 +4,19 @@ import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.sc.seis.fissuresUtil.display.BasicSeismogramDisplay;
 import edu.sc.seis.fissuresUtil.display.DisplayUtils;
+import edu.sc.seis.fissuresUtil.display.mouse.SDMouseAdapter;
+import edu.sc.seis.fissuresUtil.display.mouse.SDMouseEvent;
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.xml.DataSet;
 import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.gee.CommonAccess;
 import edu.sc.seis.gee.configurator.ConfigurationException;
 import edu.sc.seis.gee.task.GUITask;
 import edu.sc.seis.gee.task.GlobalToolBar;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
-import edu.sc.seis.fissuresUtil.display.mouse.SDMouseAdapter;
-import edu.sc.seis.fissuresUtil.display.mouse.SDMouseEvent;
 
 /**
  * RecFuncTask.java
@@ -94,7 +93,7 @@ public class RecFuncTask  extends SDMouseAdapter implements GUITask {
                 }
             }
         } catch(NoPreferredOrigin e) {
-            CommonAccess.getCommonAccess().handleException(e);
+            GlobalExceptionHandler.handle(e);
         }
     }
 

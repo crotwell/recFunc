@@ -18,9 +18,9 @@ import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.TimeInterval;
-import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.gee.CommonAccess;
 import edu.sc.seis.gee.configurator.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -165,7 +165,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
             logger.debug("Processing finished OK "+chan.my_site.my_station.name);
         } catch (ConfigurationException ce) {
             logger.error("Unable to get travel time calculator", ce);
-            CommonAccess.getCommonAccess().handleException("Unable to get travel time calculator", ce);
+            GlobalExceptionHandler.handle("Unable to get travel time calculator", ce);
             this.error = new SeisDataErrorEvent(ce, seis[0], this);
         } catch (Throwable ee) {
             logger.error("Problem", ee);

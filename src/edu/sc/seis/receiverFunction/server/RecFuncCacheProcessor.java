@@ -2,6 +2,7 @@ package edu.sc.seis.receiverFunction.server;
 
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.SystemException;
+import org.omg.CORBA.UNKNOWN;
 import org.omg.CORBA.UserException;
 import org.omg.CosNaming.NamingContextPackage.InvalidName;
 import org.w3c.dom.Element;
@@ -23,6 +24,7 @@ import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.ProxyEventAccessOperations;
+import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.namingService.FissuresNamingService;
@@ -137,7 +139,20 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
                                  ans[1].getBump(),
                                  sodconfig_id);
                     break;
+                } catch (UNKNOWN e) {
+                    System.err.println(ClockUtil.now()+" Corba UNKNOWN while sending result to database, will not retry."+
+                                       e);
+                    GlobalExceptionHandler.handle("Corba UNKNOWN while sending result to database, will not retry.",
+                                                  e);
+                    WaveformVectorResult result = new WaveformVectorResult(seismograms,
+                                                                           new StringTreeLeaf(this,
+                                                                                              false,
+                                                                                              "UNKNOWN on cache.insert",
+                                                                                              e));
+                    return result;
                 } catch(Throwable e) {
+                    System.err.println(ClockUtil.now()+" Problem while sending result to database, will retry in 1 minute..."+
+                                       e);
                     GlobalExceptionHandler.handle("Problem while sending result to database, will retry in 1 minute...",
                                                   e);
                     try {

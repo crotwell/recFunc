@@ -145,8 +145,6 @@ public class EventSeismogramRFTask extends EventSeismogramTask {
     
     String dns = "edu/sc/seis";
     
-    String interfaceName = "IfReceiverFunction";
-    
     String serverName = "Ears";
     
     NSRecFuncCache cache;

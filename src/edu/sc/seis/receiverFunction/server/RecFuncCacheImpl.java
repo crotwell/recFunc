@@ -89,25 +89,52 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                        int transverseBump,
                        int sodConfig_id) {
         try {
-            synchronized (jdbcRecFunc.getConnection()) {
-                int recFuncDbId = jdbcRecFunc.put(prefOrigin,
-                                                  eventAttr,
-                                                  config,
-                                                  channels,
-                                                  original,
-                                                  radial,
-                                                  radialMatch,
-                                                  radialBump,
-                                                  tansverse,
-                                                  transverseMatch,
-                                                  transverseBump,
-                                                  sodConfig_id);
-                System.out.println("insert "+recFuncDbId+" with weights of 1");
-                jdbcHKStack.calc(recFuncDbId, 1, 1, 1);
+            Connection conn = jdbcRecFunc.getConnection();
+            synchronized(conn) {
+                boolean autocommit = conn.getAutoCommit();
+                try {
+                    if(autocommit) {
+                        conn.setAutoCommit(false);
+                    }
+                    int recFuncDbId = jdbcRecFunc.put(prefOrigin,
+                                                      eventAttr,
+                                                      config,
+                                                      channels,
+                                                      original,
+                                                      radial,
+                                                      radialMatch,
+                                                      radialBump,
+                                                      tansverse,
+                                                      transverseMatch,
+                                                      transverseBump,
+                                                      sodConfig_id);
+                    System.out.println("insert " + recFuncDbId
+                            + " with weights of 1");
+                    jdbcHKStack.calc(recFuncDbId, 1, 1, 1);
+                    conn.commit();
+                } catch(Throwable e) {
+                    conn.rollback();
+                    GlobalExceptionHandler.handle("Problem with "
+                            + ChannelIdUtil.toString(channels[0].get_id())
+                            + " for origin time="
+                            + prefOrigin.origin_time.date_time, e);
+                    throw new UNKNOWN(e.toString(),
+                                      12,
+                                      CompletionStatus.COMPLETED_MAYBE);
+                } finally {
+                    if(autocommit) {
+                        conn.setAutoCommit(autocommit);
+                    }
+                }
             }
-        } catch(Throwable e) {
-            GlobalExceptionHandler.handle("Problem with "+ChannelIdUtil.toString(channels[0].get_id())+" for origin time="+prefOrigin.origin_time.date_time, e);
-            throw new UNKNOWN(e.toString(), 12, CompletionStatus.COMPLETED_MAYBE);
+        } catch(SQLException e) {
+            // why would get and set AutoCommit throw?
+            GlobalExceptionHandler.handle("AutoCommit problem "
+                    + ChannelIdUtil.toString(channels[0].get_id())
+                    + " for origin time=" + prefOrigin.origin_time.date_time, e);
+            throw new UNKNOWN(e.toString(),
+                              12,
+                              CompletionStatus.COMPLETED_MAYBE);
         }
     }
     

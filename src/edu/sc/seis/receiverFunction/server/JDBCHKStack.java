@@ -117,6 +117,7 @@ public class JDBCHKStack  extends JDBCTable {
        
         while (rs.next()) {
             int recFuncDbId = rs.getInt(1);
+            System.out.println("Calc for "+recFuncDbId);
             CachedResult cachedResult = jdbcRecFunc.get(recFuncDbId);
             String[] pPhases = { "P" };
             Arrival[] arrivals =
@@ -194,13 +195,18 @@ public class JDBCHKStack  extends JDBCTable {
     private TauPUtil tauPTime;
     
     public static void main(String[] args) {
+        if (args.length < 2) {
+            System.out.println("Usage: JDBCHKStack net station");
+        }
         try {
             ConnMgr.setDB(ConnMgr.POSTGRES);
             Properties props = RecFuncCacheStart.loadProps(args);
             Connection conn = ConnMgr.createConnection();
             JDBCHKStack jdbcHKStack = new JDBCHKStack(conn);
-            System.out.println("calc for IC.HIA");
-            jdbcHKStack.calc("IC", "HIA", 90.0f);
+            String netCode = args[0];
+            String staCode = args[1];
+            System.out.println("calc for "+netCode+"."+staCode);
+            jdbcHKStack.calc(netCode, staCode, 90.0f);
             
         }catch(Exception e) {
             GlobalExceptionHandler.handle(e);   

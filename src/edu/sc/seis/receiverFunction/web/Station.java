@@ -17,6 +17,7 @@ import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.Marker;
+import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.WilsonRistra;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
@@ -24,6 +25,7 @@ import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
+import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.rev.velocity.VelocityEvent;
@@ -52,6 +54,7 @@ public class Station extends Revlet {
         jdbcSodConfig = new JDBCSodConfig(conn);
         jdbcRecFunc = new JDBCRecFunc(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, DATA_LOC);
         jdbcHKStack = new JDBCHKStack(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
+        jdbcSummaryHKStack = new JDBCSummaryHKStack(jdbcHKStack);
     }
     /**
      *
@@ -94,7 +97,7 @@ public class Station extends Revlet {
             Crust2Profile profile = crust2.getClosest(sta.my_location.longitude,
                                                       sta.my_location.latitude);
             double vpvs = profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity();
-            markerList.add(new Marker("Crust2", vpvs, profile.getCrustThickness(), Color.blue));
+            markerList.add(new Marker("Crust2.0", vpvs, profile.getCrustThickness(), Color.blue));
             if (profile.getCrustThickness() < smallestH + 10) {
                 smallestH = (float)profile.getCrustThickness() - 10;
             }
@@ -103,9 +106,11 @@ public class Station extends Revlet {
             StationResult result = wilson.getResult(sta.get_id());
             if (result != null) {
                 double vpvs = result.getVpVs();
-                markerList.add(new Marker("Wilson", result.getVpVs(), result.getH(), Color.GREEN));
+                markerList.add(new Marker("Wilson et. al.", result.getVpVs(), result.getH(), Color.GREEN));
             }
         }
+        int summaryDbId = jdbcSummaryHKStack.getDbIdForStation(net.get_id(), staCode);
+        SumHKStack summary = jdbcSummaryHKStack.get(summaryDbId);
         
         RevletContext context = new RevletContext("station.vm");
         context.put("stationList", stationList);
@@ -116,6 +121,7 @@ public class Station extends Revlet {
         context.put("numEighty", ""+numEighty);
         context.put("markerList", markerList);
         context.put("smallestH", smallestH+"");
+        context.put("summary", summary);
         return context;
     }
 
@@ -149,6 +155,8 @@ public class Station extends Revlet {
     JDBCChannel jdbcChannel;
     
     JDBCHKStack jdbcHKStack;
+    
+    JDBCSummaryHKStack jdbcSummaryHKStack;
     
     JDBCRecFunc jdbcRecFunc;
     

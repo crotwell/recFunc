@@ -62,6 +62,9 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
     public RecFuncProcessor(Element config)  throws ConfigurationException {
         super(config);
         IterDeconConfig deconConfig = parseIterDeconConfig(config);
+        gwidth = deconConfig.gwidth;
+        maxBumps = deconConfig.maxBumps;
+        tol = deconConfig.tol;
         logger.info("Init RecFuncProcessor");
     }
     
@@ -82,7 +85,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
         Element toleranceElement = SodUtil.getElement(config, "tolerance");
         if (toleranceElement != null) {
             String toleranceStr = SodUtil.getNestedText(toleranceElement);
-            tol = Integer.parseInt(toleranceStr);
+            tol = Float.parseFloat(toleranceStr);
         }
         return new IterDeconConfig(gwidth, maxBumps, tol);
     }

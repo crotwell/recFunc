@@ -44,7 +44,7 @@ public class StackSummary {
         JDBCNetwork jdbcNetwork = jdbcStation.getNetTable();
         NetworkId[] netId = jdbcNetwork.getAllNetworkIds();
         File textSummary = new File(parentDir, "depth_vpvs.txt");
-        textSummary.mkdirs();
+        parentDir.mkdirs();
         BufferedWriter textSumm = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(textSummary)));
         for(int i = 0; i < netId.length; i++) {
             if(netId[i].network_code.equals(net)) {

@@ -141,14 +141,14 @@ deconvolution method of Ammon.
     </dependency>
     <dependency>
       <id>fissuresUtil</id>
-      <version>1.0.5Beta</version>
+      <version>1.0.6Beta</version>
       <properties>
 	<jnlp.jar>true</jnlp.jar>
       </properties>
     </dependency>
     <dependency>
       <id>fissuresImpl</id>
-      <version>1.1.3beta</version>
+      <version>1.1.4beta</version>
       <properties>
 	<jnlp.jar>true</jnlp.jar>
       </properties>

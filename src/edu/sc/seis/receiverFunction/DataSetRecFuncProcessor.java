@@ -124,6 +124,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                                                                audit);
             
         } catch (ConfigurationException ce) {
+            logger.warn("Unable to get travel time calculator", ce);
             CommonAccess.getCommonAccess().handleException("Unable to get travel time calculator", ce);
         } catch (Exception ee) {
             logger.warn("Problem shifting receiver function to align P wave", ee);
@@ -161,6 +162,10 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
     
     public MemoryDataSetSeismogram getPredicted() {
         return predictedDSS;
+    }
+    
+    public SeisDataErrorEvent getError() {
+        return error;
     }
     
     DataSetSeismogram[] seis;

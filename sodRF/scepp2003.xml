@@ -7,7 +7,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
     <property>
       <name>edu.sc.seis.sod.waveformarm.threads</name>
-      <value>1</value>
+      <value>2</value>
     </property>
 
     <property>
@@ -61,7 +61,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 <!-- Only take events from Apr-June -->
         <eventTimeRange>
         <timeRange>
-            <startTime>20030925T00:00:00.001Z</startTime>
+            <startTime>20030101T00:00:00.001Z</startTime>
             <endTime>20041231T23:59:59.999Z</endTime>
         </timeRange>
         </eventTimeRange>

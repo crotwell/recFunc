@@ -35,6 +35,7 @@ module IfReceiverFunction {
         float transverseMatch;
         long transverseBump;
         long sodConfigId;
+        Fissures::Time insertTime;
 	};
 	
     typedef sequence<IterDeconConfig> IterDeconConfigSeq;

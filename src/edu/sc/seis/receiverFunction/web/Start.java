@@ -67,9 +67,14 @@ public class Start {
                                               "edu.sc.seis.receiverFunction.web.SeismogramImage",
                                               servletStrings,
                                               sh);
-        edu.sc.seis.rev.RevUtil.populateJetty("/comparePriorResult.html",
-                                              "/comparePriorResult.html",
+        edu.sc.seis.rev.RevUtil.populateJetty("/comparePriorResult",
+                                              "/comparePriorResult",
                                               "edu.sc.seis.receiverFunction.web.ComparePriorResult",
+                                              servletStrings,
+                                              sh);
+        edu.sc.seis.rev.RevUtil.populateJetty("/comparePriorResultTxt",
+                                              "/comparePriorResultTxt",
+                                              "edu.sc.seis.receiverFunction.web.ComparePriorResultTxt",
                                               servletStrings,
                                               sh);
         edu.sc.seis.rev.Start.runREV(args, sh);

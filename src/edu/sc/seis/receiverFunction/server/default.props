@@ -44,6 +44,8 @@ receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
                                    
 receiverFunction.index_origin=create index receiverfunction_origin_idx on receiverfunction ( origin_id )
 
+receiverFunction.index_chanz=create index receiverfunction_chanz_idx on receiverfunction ( chanz_id )
+
 receiverFunction.getOriginByStation=SELECT * FROM network \
     NATURAL JOIN station \
     NATURAL JOIN site \
@@ -52,8 +54,8 @@ receiverFunction.getOriginByStation=SELECT * FROM network \
     WHERE net_id = ? \
     AND sta_code = ?
                    
-receiverFunction.getOriginByStationByPercent=SELECT count(*) FROM network \
-    NATURAL JOIN station \
+receiverFunction.getOriginByStationByPercent=SELECT count(*) FROM  \
+    station \
     NATURAL JOIN site \
     NATURAL JOIN channel \
     JOIN  receiverFunction ON (chanz_id = chan_id ) \

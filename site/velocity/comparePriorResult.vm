@@ -1,3 +1,39 @@
+#macro( tablerow $items )
+    #set( $row = "" )
+    #set( $td = "$tdodd" )
+	#foreach( $i in $items)
+		#set( $row = "${row}${td}${i}${tdend}" )
+		#if($td == $tdodd) 
+		    #set( $td = "$tdeven")
+		#else
+		    #set( $td = "$tdodd")
+		#end
+	#end
+${tr}$row${trend}
+#end
+#macro( tablehead $items )
+    #set( $row = "" )
+    #set( $td = "$tdhead" )
+	#foreach( $i in $items)
+		#set( $row = "${row}${td}${i}${tdend}" )
+	#end
+${tr}$row${trend}
+#end
+#macro( link $href $name )
+#if ( !$viewType || $viewType == "html" )
+<a href=\"$href\">$name</a>
+#else
+$name
+#end
+#end
+
+#set( $tdhead = '<td class="headodd">' )
+#set( $tdeven = '<td class="even">' )
+#set( $tdodd = '<td class="odd">' )
+#set( $tdend = '</td>' )
+#set( $tr = '<tr>' )
+#set( $trend = "</tr>" )
+
 <html>
 <head>
 <title>Comparison with Prior Result $name</title>
@@ -7,62 +43,26 @@
 	
 <div id="content">
 
-<img src="earslogo2.gif"/><br/>
+<img src="earslogo.png"/><br/>
 
 <p><b>Comparison with Prior Result $name</p>
-<p>$ref.getName()</p>
-<p>$ref.getReference()</p>
-<p><a href="$ref.getURL()">$ref.getURL()</a></p>
-<p>$ref.getMethod()</p>
+<p>Bibliographic Entry: $ref.getReference()</p>
+<p>Reference URL: <a href="$ref.getURL()">$ref.getURL()</a></p>
+<p>Study type: $ref.getMethod()</p>
+
+<p>View results as <a href="$req.getRequestURL()Txt?$req.getQueryString()">text</a></p>
 
 <table>
-<tr>
-<td class="headodd"></td>
-<td class="headodd"></td>
-<td class="headodd"></td>
-<td class="headodd"></td>
-<td class="headodd" colspan="6">EARS</td>
-<td class="headodd" colspan="5">$name</td>
-</tr>
-<tr>
-<td class="headodd">Net</td>
-<td class="headodd">Station</td>
-<td class="headodd">Name</td>
-<td class="headodd">Lat/Lon</td>
+<tr><td colspan="4"/><td colspan="6">EARS</td><td colspan="5">$name</td></tr>
 
-<td class="headodd">Est. Thick</td>
-<td class="headodd">Est. Vp/Vs</td>
-<td class="headodd">Assumed Vp</td>
-<td class="headodd">Vs</td>
-<td class="headodd">Poissons Ratio</td>
-<td class="headodd">Num EQ</td>
+#set( $items = [ "Net", "Station", "Name", "Lat/Lon", "Est. Thick", "Est. Vp/Vs", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Thick", "Vp/Vs", "Vp", "Vs", "Poissons Ratio" ] )
+#tablehead( $items )
 
-<td class="headodd">Thick</td>
-<td class="headodd">Vp/Vs</td>
-<td class="headodd">Vp</td>
-<td class="headodd">Vs</td>
-<td class="headodd">Poissons Ratio</td>
-</tr>
 #foreach($sta in $stationList)
-<tr>
-<td class="odd">$sta.getNet().getCodeWithYear()</td>
-<td class="even">$sta.getCode()</td>
-<td class="odd"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()">$sta.getName()</a></td>
-<td class="even">$sta.getLatitude()/$sta.getLongitude()</td>
-
-<td class="odd">$!summary.get($sta).getSum().getMaxValueH()</td>
-<td class="even">$!summary.get($sta).getSum().getMaxValueK()</td>
-<td class="odd">$!summary.get($sta).getSum().getAlpha()</td>
-<td class="even">$!summary.get($sta).getSum().getVs()</td>
-<td class="odd">$!summary.get($sta).getSum().getPoissonsRatio()</td>
-<td class="odd">$!numEQ.get($sta)</td>
-
-<td class="even">$!prior.get($sta).formatH()</td>
-<td class="odd">$!prior.get($sta).formatVpVs()</td>
-<td class="even">$!prior.get($sta).formatVp()</td>
-<td class="odd">$!prior.get($sta).formatVs()</td>
-<td class="even">$!prior.get($sta).formatPoissonsRatio()</td>
-</tr>
+#set( $staurl = "station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()" )
+#set( $stalink = "#link( $staurl $sta.getName() )" )
+#set( $items = [ "$sta.getNet().getCodeWithYear()", "$sta.getCode()", $stalink, "$sta.getLatitude()/$sta.getLongitude()", "$!summary.get($sta).getSum().formatMaxValueH()", "$!summary.get($sta).getSum().formatMaxValueK()", "$!summary.get($sta).getSum().formatAlpha()", "$!summary.get($sta).getSum().formatVs()", "$!summary.get($sta).getSum().formatPoissonsRatio()", "$!numEQ.get($sta)", "$!prior.get($sta).formatH()", "$!prior.get($sta).formatVpVs()", "$!prior.get($sta).formatVp()", "$!prior.get($sta).formatVs()", "$!prior.get($sta).formatPoissonsRatio()" ] )
+#tablerow( $items )
 #end
 </table>
 

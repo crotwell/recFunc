@@ -1,0 +1,38 @@
+#macro( tablerow $items )
+#set( $row = "" )
+#set( $td = "$tdodd" )
+#foreach( $i in $items)
+#set( $row = "${row}${td}${i}${tdend}" )
+#if($td == $tdodd)
+#set( $td = "$tdeven")
+#else
+#set( $td = "$tdodd")
+#end
+#end
+${tr}$row${trend}
+#end
+#macro( tablehead $items )
+#set( $row = "" )
+#set( $td = "$tdhead" )
+#foreach( $i in $items)
+#set( $row = "${row}${td}${i}${tdend}" )
+#end
+${tr}$row${trend}
+#end
+##
+#set( $tdhead = '' )
+#set( $tdeven = '' )
+#set( $tdodd = '' )
+#set( $tdend = '' )
+#set( $tr = '' )
+#set( $trend = "" )
+#set( $tdend = ',' )
+##
+#set($items = [ "", "", "", "", "EARS", "", "", "", "", "", $name, "", "", "", "" ] )
+#tablehead( $items )
+#set( $items = [ "Net", "Station", "Name", "Lat/Lon", "Est. Thick", "Est. Vp/Vs", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Thick", "Vp/Vs", "Vp", "Vs", "Poissons Ratio" ] )
+#tablehead( $items )
+#foreach($sta in $stationList)##
+#set( $items = [ "$sta.getNet().getCodeWithYear()", "$sta.getCode()", $name, "$sta.getLatitude()/$sta.getLongitude()", "$!summary.get($sta).getSum().formatMaxValueH()", "$!summary.get($sta).getSum().formatMaxValueK()", "$!summary.get($sta).getSum().formatAlpha()", "$!summary.get($sta).getSum().formatVs()", "$!summary.get($sta).getSum().formatPoissonsRatio()", "$!numEQ.get($sta)", "$!prior.get($sta).formatH()", "$!prior.get($sta).formatVpVs()", "$!prior.get($sta).formatVp()", "$!prior.get($sta).formatVs()", "$!prior.get($sta).formatPoissonsRatio()" ] )
+#tablerow( $items )
+#end

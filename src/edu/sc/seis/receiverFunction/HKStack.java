@@ -15,6 +15,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -255,10 +256,18 @@ public class HKStack implements Serializable {
         return peakH;
     }
     
+    public String formatMaxValueH() {
+        return depthFormat.format(getMaxValueH());
+    }
+    
     public float getMaxValueK() {
         int[] indicies = getMaxValueIndices();
         float peakK = getMinK() + getStepK() * indicies[1];
         return peakK;
+    }
+    
+    public String formatMaxValueK() {
+        return vpvsFormat.format(getMaxValueK());
     }
     
     public float getMaxValue() {
@@ -271,8 +280,16 @@ public class HKStack implements Serializable {
         return getAlpha()/getMaxValueK();
     }
     
+    public String formatVs() {
+        return vpvsFormat.format(getVs());
+    }
+    
     public float getPoissonsRatio() {
         return (float)PoissonsRatio.calcPoissonsRatio(getMaxValueK());
+    }
+    
+    public String formatPoissonsRatio() {
+        return vpvsFormat.format(getPoissonsRatio());
     }
     
     public JComponent getStackComponent() {
@@ -515,13 +532,25 @@ public class HKStack implements Serializable {
     public float getP() {
         return p;
     }
+    
+    public String formatP() {
+        return vpvsFormat.format(getP());
+    }
 
     public float getAlpha() {
         return alpha;
     }
+    
+    public String formatAlpha() {
+        return vpvsFormat.format(getAlpha());
+    }
 
     public float getPercentMatch() {
         return percentMatch;
+    }
+    
+    public String formatPercentMatch() {
+        return vpvsFormat.format(getPercentMatch());
     }
 
     public float getMinH() {
@@ -552,12 +581,24 @@ public class HKStack implements Serializable {
         return weightPpPs;
     }
     
+    public String formatWeightPpPs() {
+        return vpvsFormat.format(getWeightPpPs());
+    }
+    
     public float getWeightPs() {
         return weightPs;
     }
     
+    public String formatWeightPs() {
+        return vpvsFormat.format(getWeightPs());
+    }
+    
     public float getWeightPsPs() {
         return weightPsPs;
+    }
+    
+    public String formatWeightPsPs() {
+        return vpvsFormat.format(getWeightPsPs());
     }
     
     /** Writes the HKStack report to a string.
@@ -683,6 +724,10 @@ public class HKStack implements Serializable {
     transient DataSetSeismogram recFunc;
 
     Channel chan;
+    
+    private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
+
+    private static DecimalFormat depthFormat = new DecimalFormat("0.##");
 
     class DataGetter implements SeisDataChangeListener {
 

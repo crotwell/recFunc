@@ -59,13 +59,16 @@ public class StationList extends Revlet {
                                     HttpServletResponse res) throws Exception {
         RevletContext context = new RevletContext(getVelocityTemplate());
         ArrayList stationList = getStations(req, context);
+        logger.debug("getStations done");
         HashMap summary = getSummaries(stationList);
+        logger.debug("getSummaries done");
         HashMap numEQ = new HashMap();
         Iterator it = stationList.iterator();
         while(it.hasNext()) {
             VelocityStation sta = (VelocityStation)it.next();
             numEQ.put(sta, new Integer(jdbcRecFunc.countSeccessfulEvents(sta.getNet().getDbId(), sta.get_code(), 80.0f)));
         }
+        logger.debug("count successful events done");
         context.put("stationList", stationList);
         context.put("summary", summary);
         context.put("numEQ", numEQ);
@@ -125,4 +128,7 @@ public class StationList extends Revlet {
     JDBCSodConfig jdbcSodConfig;
     
     JDBCSummaryHKStack jdbcSumHKStack;
+
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StationList.class);
+    
 }

@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import edu.iris.Fissures.IfNetwork.Station;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.receiverFunction.compare.JDBCStationResult;
 import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
@@ -23,12 +25,14 @@ public class ComparePriorResult extends StationList {
             Exception {
         super();
         jdbcStationResult = new JDBCStationResult(jdbcChannel.getNetworkTable());
+        crust2 = new Crust2();
     }
     
     public ComparePriorResult(String databaseURL, String dataloc)
             throws SQLException, ConfigurationException, Exception {
         super(databaseURL, dataloc);
         jdbcStationResult = new JDBCStationResult(jdbcChannel.getNetworkTable());
+        crust2 = new Crust2();
     }
 
     public ArrayList getStations(HttpServletRequest req, RevletContext context)
@@ -36,17 +40,28 @@ public class ComparePriorResult extends StationList {
         ArrayList stations = new ArrayList();
         String name = RevUtil.get("name", req);
         context.put("name", name);
-        StationResult[] results = jdbcStationResult.getAll(name);
-        if (results.length != 0) {
-            context.put("ref", results[0].getRef());
-        }
         HashMap prior = new HashMap();
         context.put("prior", prior);
-        for(int i = 0; i < results.length; i++) {
-            int[] dbids = jdbcChannel.getStationTable().getDBIds(results[i].getNetworkId(), results[i].getStationCode());
-            VelocityStation station = new VelocityStation(jdbcChannel.getStationTable().get(dbids[0]));
-            stations.add(station);
-            prior.put(station, results[i]);
+        StationResult[] results;
+        if (name.equals("crust2.0")) {
+            Station[] allsta = jdbcChannel.getStationTable().getAllStations();
+            context.put("ref", Crust2.getReference());
+            for(int i = 0; i < allsta.length; i++) {
+                VelocityStation station = new VelocityStation(allsta[i], jdbcChannel.getStationTable().getDBId(allsta[i].get_id()));
+                stations.add(station);
+                prior.put(station, crust2.getStationResult(station));
+            }
+        } else {
+            results = jdbcStationResult.getAll(name);
+            if (results.length != 0) {
+                context.put("ref", results[0].getRef());
+            }
+            for(int i = 0; i < results.length; i++) {
+                int[] dbids = jdbcChannel.getStationTable().getDBIds(results[i].getNetworkId(), results[i].getStationCode());
+                VelocityStation station = new VelocityStation(jdbcChannel.getStationTable().get(dbids[0]));
+                stations.add(station);
+                prior.put(station, results[i]);
+            }
         }
         return stations;
     }
@@ -55,5 +70,9 @@ public class ComparePriorResult extends StationList {
         return "comparePriorResult.vm";
     }
     
+    static Crust2 crust2 = null;
+    
     JDBCStationResult jdbcStationResult;
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ComparePriorResult.class);
 }

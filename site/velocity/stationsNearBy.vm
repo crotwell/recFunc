@@ -1,0 +1,40 @@
+<html>
+<head>
+<title>Stations within $delta degrees of ($lat, $lon)</title>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+	
+<div id="content">
+
+<img src="earslogo2.gif"/><br/>
+
+<p><b>Stations within $delta degrees of ($lat, $lon)</p>
+
+<table>
+<tr>
+<td class="headodd"Station</td>
+<td class="headodd">Name</td>
+<td class="headodd">Lat/Lon</td>
+</tr>
+#foreach($sta in $stationList)
+<tr>
+<td class="odd">$sta.getNet().getCode() $sta.getCode()</td>
+<td class="even"><a href="station.html?netdbid=$net.getDbId()&stacode=$sta.getCode()">$sta.getName()</a></td>
+<td class="odd">$sta.getLatitude()/$sta.getLongitude()</td>
+</tr>
+#end
+</table>
+
+
+<div id="footer2" align="center">
+  <a href="http://seis.sc.edu">
+    <img src="seislogo.gif" alt="Seismology at USC" title="USC"/>
+  </a>
+  <a href="http://www.iris.edu">
+    <img src="irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
+  </a>
+</div>
+</div>
+</body>
+</html>

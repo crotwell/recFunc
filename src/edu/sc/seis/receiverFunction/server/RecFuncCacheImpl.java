@@ -11,6 +11,7 @@ import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.sc.seis.IfReceiverFunction.RecFuncCachePOA;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
+import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
@@ -81,9 +82,16 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
      *
      */
     public boolean isCached(Origin prefOrigin,
-            ChannelId[] channel,
-            IterDeconConfig config) {
-        // TODO Auto-generated method stub
+                            ChannelId[] channel,
+                            IterDeconConfig config) {
+        try {
+            int tmp = jdbcRecFunc.getDbId(prefOrigin, channel, config);
+            return true;
+        } catch(NotFound e) {
+            return false;
+        } catch(Exception e) {
+            GlobalExceptionHandler.handle(e);
+        }
         return false;
     }
 

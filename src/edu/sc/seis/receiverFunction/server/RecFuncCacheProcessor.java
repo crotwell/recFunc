@@ -40,7 +40,7 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements WaveformV
         String modelName = "prem";
         taup = new TauPUtil(modelName);
         recFunc = new RecFunc(taup,
-                              new IterDecon(100, true, tol, gwidth));
+                              new IterDecon(maxBumps, true, tol, gwidth));
     }
     
     
@@ -99,12 +99,6 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements WaveformV
     }
     
     RecFuncCacheOperations cache = new RecFuncCacheImpl();
-    
-    float gwidth = 2.5f;
-    
-    float tol = .001f;
-    
-    int maxBumps = 100;
     
     TauPUtil taup;
     

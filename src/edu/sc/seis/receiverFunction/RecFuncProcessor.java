@@ -100,7 +100,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
         if (recFunc == null) {
             tauPTime = new TauPUtil(modelName);
             recFunc = new RecFunc(tauPTime,
-                                  new IterDecon(100, true, .001f, gwidth));
+                                  new IterDecon(maxBumps, true, tol, gwidth));
         }
         for (int i = 0; i < seismograms.length; i++) {
             if (seismograms[i].length == 0) {
@@ -388,8 +388,12 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
     TauPUtil tauPTime;
     LocalSeismogramTemplateGenerator lSeisTemplateGen = null;
 
-    float gwidth = 3.0f;
+    protected float gwidth = 3.0f;
 
+    protected float tol = .001f;
+    
+    protected int maxBumps = 100;
+    
     String modelName = "iasp91";
 
     String[] phases = { };

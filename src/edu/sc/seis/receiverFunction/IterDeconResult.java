@@ -24,7 +24,8 @@ public class IterDeconResult {
                            int[] shifts,
                            float[] residual,
                            float[] predicted,
-                           float[][] corrSave) {
+                           float[][] corrSave,
+                          float[] spikes) {
         this.maxBumps = maxBumps;
         this.useAbsVal = useAbsVal;
         this.tol = tol;
@@ -37,6 +38,7 @@ public class IterDeconResult {
         this.residual = residual;
         this.predicted = predicted;
         this.corrSave = corrSave;
+        this.spikes = spikes;
     }
     
     public int getMaxBumps() {
@@ -105,6 +107,10 @@ public class IterDeconResult {
         return alignShift;
     }
     
+    public float[] getSpikes() {
+        return spikes;
+    }
+    
     TimeInterval alignShift;
     
     float[][] corrSave;
@@ -130,5 +136,7 @@ public class IterDeconResult {
     float[] residual;
     
     float[] predicted;
+    
+    float[] spikes;
     
 } // IterDeconResult

@@ -70,7 +70,7 @@ Events for $fissures.formatNetwork($station.get_id()) $fissures.formatStation($s
 #foreach ($m in $origin.Magnitudes)
 $fissures.formatMagnitude($m),
 #end</td>
-<td>$ecp.getCookieJar().get("recFunc_percentMatch_ITR")</td>
+<td>$!ecp.getCookieJar().get("recFunc_percentMatch_ITR")</td>
 <td>$fissures.formatQuantity($fissures.getDepth($origin))</td>
 <td>$fissures.getLatitude($origin)</td>
 <td>$fissures.getLongitude($origin)</td>
@@ -96,9 +96,7 @@ $fissures.formatMagnitude($m),
 <td>$fissures.formatQuantity($fissures.getDepth($origin))</td>
 <td>$fissures.getLatitude($origin)</td>
 <td>$fissures.getLongitude($origin)</td>
-<td>
-#set ( $distance = $fissures.getDistance( [ $station , $origin ] ) )
-$distance $fissures.formatQuantity($fissures.getDistance( [ $station , $origin ] ))</td>
+<td>$fissures.formatQuantity($fissures.getDistance( [ $station , $origin ] ))</td>
 <td>$fissures.formatQuantity($fissures.getAzimuth( [ $station, $origin ]))</td>
 <td>$fissures.formatQuantity($fissures.getBackAzimuth( [ $station, $origin ] ))</td>
 </tr>

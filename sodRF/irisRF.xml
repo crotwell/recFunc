@@ -232,6 +232,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <seismogramImageProcess>  
                 <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
                 <prefix>orig_</prefix>
+                <fileType>pdf</fileType>
             </seismogramImageProcess>
             
             <phaseCut>
@@ -249,6 +250,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <seismogramImageProcess>  
                 <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
                 <prefix>cut_</prefix>
+                <fileType>pdf</fileType>
             </seismogramImageProcess>
             
             <rMean/>

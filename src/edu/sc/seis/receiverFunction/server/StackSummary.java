@@ -23,6 +23,8 @@ import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
 import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
+import edu.sc.seis.receiverFunction.crust2.Crust2;
+import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.status.FissuresFormatter;
 
@@ -53,17 +55,30 @@ public class StackSummary {
                     SumHKStack sumStack = createSummary(station[j].get_id(),
                                   parentDir,
                                   minPercentMatch);
-
+                    
+                    String outStr = net+" "+station[j].get_code();
+                    
                     float peakH, peakK, peakVal = 0;
                     int[] indicies = sumStack.getSum().getMaxValueIndices();
                     peakH = sumStack.getSum().getMinH()+sumStack.getSum().getStepH()*indicies[0];
                     peakK = sumStack.getSum().getMinK()+sumStack.getSum().getStepK()*indicies[1];
                     peakVal = sumStack.getSum().getStack()[indicies[0]][indicies[1]];
+                    outStr +=" "+peakH+" "+peakK+" "+peakVal;
+
+                    Crust2 crust2 = HKStack.getCrust2();
+                    if (crust2 != null) {
+                        Crust2Profile profile = crust2.getClosest(station[i].my_location.longitude,
+                                                                  station[i].my_location.latitude);
+                        double depth = profile.getLayer(7).topDepth;
+                        double vpvs = profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity();
+                        outStr+=" "+depth+" "+vpvs;
+                    }
                     
-                    textSumm.write(net+" "+station[j].get_code()+" "+peakH+" "+peakK+" "+peakVal);
+                    textSumm.write(outStr);
                 }
             }
         }
+        textSumm.close();
     }
 
     public SumHKStack createSummary(StationId station,

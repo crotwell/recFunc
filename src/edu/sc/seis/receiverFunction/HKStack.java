@@ -543,6 +543,10 @@ public class HKStack implements Serializable {
             GlobalExceptionHandler.handle("Couldn't load Crust2.0", e);
         }
     }
+    
+    public static Crust2 getCrust2() {
+        return crust2;
+    }
 
     // don't serialize the DSS
     transient DataSetSeismogram recFunc;

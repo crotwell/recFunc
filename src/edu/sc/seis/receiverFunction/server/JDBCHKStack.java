@@ -173,11 +173,15 @@ public class JDBCHKStack  extends JDBCTable {
         while(rs.next()) {
             individualHK.add(extract(rs));
         }
-        HKStack temp = (HKStack)individualHK.get(0);
-        SumHKStack sumStack = new SumHKStack((HKStack[])individualHK.toArray(new HKStack[0]),
-                                             temp.getChannel(),
-                                             percentMatch);
+        if (individualHK.size() != 0) {
+            HKStack temp = (HKStack)individualHK.get(0);
+            SumHKStack sumStack = new SumHKStack((HKStack[])individualHK.toArray(new HKStack[0]),
+                                                 temp.getChannel(),
+                                                 percentMatch);
         return sumStack;
+        } else {
+            return null;
+        }
     }
     
     HKStack extract(ResultSet rs) throws FileNotFoundException, FissuresException, NotFound, IOException, SQLException {

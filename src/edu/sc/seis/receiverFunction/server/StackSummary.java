@@ -48,6 +48,7 @@ public class StackSummary {
     
     public void createSummary(StationId station, File parentDir, float minPercentMatch) throws FissuresException, NotFound, IOException, SQLException {
         SumHKStack sumStack = jdbcHKStack.sum(station.network_id.network_code, station.station_code, minPercentMatch);
+        if (sumStack == null) { return; }
         BufferedImage image = sumStack.createStackImage();
         
         File outSumImageFile  = new File(parentDir,"SumHKStack_"+minPercentMatch+"_"+FissuresFormatter.filize(ChannelIdUtil.toStringNoDates(sumStack.getChannel().get_id())+".png"));

@@ -42,6 +42,9 @@ public class HKStackImage extends JComponent {
     }
 
     static int makeImageable(float min, float max, float val) {
+        if (val > max || val < min) {
+            throw new IllegalArgumentException("val must be between min and max val="+val+ "("+min+" , "+max+")");
+        }
         float absMax = Math.max(Math.abs(min), Math.abs(max));
         return (int)SimplePlotUtil.linearInterp(-1*absMax, 0, absMax, 255, val);
     }

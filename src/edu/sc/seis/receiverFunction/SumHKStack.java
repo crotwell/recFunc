@@ -14,7 +14,8 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
 public class SumHKStack {
-    public SumHKStack(HKStack[] individuals) {
+    public SumHKStack(HKStack[] individuals,
+                      ChannelId chan) {
         this.individuals = individuals;
         if (individuals.length == 0) {
             throw new IllegalArgumentException("Cannot create SumStack with empty array");
@@ -25,7 +26,7 @@ public class SumHKStack {
             }
             // need to do more of this checking...
         }
-        calculate();
+        calculate(chan);
     }
 
     public BufferedImage createStackImage() {
@@ -36,7 +37,7 @@ public class SumHKStack {
         sum.write(out);
     }
 
-    void calculate() {
+    void calculate(ChannelId chan) {
         float[][] stack = new float[individuals[0].getStack().length][individuals[0].getStack()[0].length];
         for (int i = 0; i < stack.length; i++) {
             for (int j = 0; j < stack[0].length; j++) {
@@ -53,7 +54,8 @@ public class SumHKStack {
                           individuals[0].getMinK(),
                           individuals[0].getStepK(),
                           individuals[0].getNumK(),
-                          stack);
+                          stack,
+                          chan);
     }
 
     public static SumHKStack load(File parentDir, ChannelId chan, String prefix, String postfix) throws IOException {
@@ -74,7 +76,8 @@ public class SumHKStack {
             stacks.add(individual);
         }
         if (stacks.size() != 0) {
-            return new SumHKStack((HKStack[])stacks.toArray(new HKStack[0]));
+            return new SumHKStack((HKStack[])stacks.toArray(new HKStack[0]),
+                                  chan);
         } else {
             return null;
         }

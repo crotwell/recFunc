@@ -5,6 +5,7 @@
  */
 
 package edu.sc.seis.receiverFunction;
+import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
@@ -30,13 +31,13 @@ import org.w3c.dom.Element;
 public class HKStack  {
 
     protected HKStack(float alpha,
-                   float p,
-                   float minH,
-                   float stepH,
-                   int numH,
-                   float minK,
-                   float stepK,
-                   int numK) {
+                      float p,
+                      float minH,
+                      float stepH,
+                      int numH,
+                      float minK,
+                      float stepK,
+                      int numK) {
         this.alpha = alpha;
         this.p = p;
         this.minH = minH;
@@ -75,6 +76,34 @@ public class HKStack  {
         this.stack = stack;
     }
 
+    public HKStack(float alpha,
+                   float p,
+                   float minH,
+                   float stepH,
+                   int numH,
+                   float minK,
+                   float stepK,
+                   int numK,
+                   float[][] stack,
+                   DataSetSeismogram recFunc) {
+        this(alpha,p ,minH ,stepH ,numH ,minK ,stepK ,numK, stack );
+        this.recFunc = recFunc;
+    }
+
+    public HKStack(float alpha,
+                   float p,
+                   float minH,
+                   float stepH,
+                   int numH,
+                   float minK,
+                   float stepK,
+                   int numK,
+                   float[][] stack,
+                   ChannelId chanId) {
+        this(alpha,p ,minH ,stepH ,numH ,minK ,stepK ,numK, stack );
+        this.chanId = chanId;
+    }
+
     public BufferedImage createStackImage() {
         float[][] stackOut = getStack();
         int dataH = 2*stackOut.length;
@@ -90,7 +119,7 @@ public class HKStack  {
         g.translate(0, 5);
         FontMetrics fm = g.getFontMetrics();
 
-        String title = ChannelIdUtil.toStringNoDates(getRecFunc().getRequestFilter().channel_id);
+        String title = ChannelIdUtil.toStringNoDates(getChannelId());
         g.setColor(Color.white);
         g.drawString(title, (fullWidth-fm.stringWidth(title))/2, fm.getHeight());
 
@@ -218,6 +247,14 @@ public class HKStack  {
         return retVal;
     }
 
+    public ChannelId getChannelId() {
+        if (recFunc != null) {
+            return getRecFunc().getRequestFilter().channel_id;
+        } else {
+            return chanId;
+        }
+    }
+
     public DataSetSeismogram getRecFunc() {
         return recFunc;
     }
@@ -279,7 +316,16 @@ public class HKStack  {
         }
     }
 
-    /** Reades the HKStack from the DataInputStream. The DataSetSeismogram
+    /** Reads the HKStack from the DataInputStream. The DataSetSeismogram
+     *  is NOT read as it is assumed that this will be saved separatedly.
+     */
+    public static HKStack read(DataInputStream in, DataSetSeismogram recFunc) throws IOException {
+        HKStack hks = read(in);
+        hks.recFunc = recFunc;
+        return hks;
+    }
+
+    /** Reads the HKStack from the DataInputStream. The DataSetSeismogram
      *  is NOT read as it is assumed that this will be saved separatedly.
      */
     public static HKStack read(DataInputStream in) throws IOException {
@@ -313,6 +359,7 @@ public class HKStack  {
     float stepK;
     int numK;
     DataSetSeismogram recFunc;
+    ChannelId chanId;
 
     class DataGetter implements SeisDataChangeListener {
 

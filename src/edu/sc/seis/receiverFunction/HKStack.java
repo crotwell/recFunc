@@ -276,6 +276,10 @@ public class HKStack implements Serializable {
                                                                               getMinK()+getNumK()*getStepK(),
                                                                               UnitImpl.divide(UnitImpl.KILOMETER_PER_SECOND,UnitImpl.KILOMETER_PER_SECOND, "km/s/km/s")));
         bd.add(kBottomBorder, bd.BOTTOM_CENTER);
+        Dimension dim = stackImage.getSize();
+        dim = new Dimension(dim.width+depthLeftBorder.getPreferredSize().width+depthRightBorder.getPreferredSize().width,
+                            dim.height+kTopBorder.getPreferredSize().height+kBottomBorder.getPreferredSize().height);
+        bd.setPreferredSize(dim);
         return bd;
     }
 
@@ -288,7 +292,7 @@ public class HKStack implements Serializable {
             if(comp.getRootPane() == null){
                 comp.addNotify();
             }
-            Dimension size = comp.getSize();
+            Dimension size = comp.getPreferredSize();
 
             int fullWidth = size.width+40;
             int fullHeight = size.height+140;

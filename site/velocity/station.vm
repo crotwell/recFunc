@@ -23,22 +23,38 @@
 <td class="odd">$sta.getCode()</td>
 <td class="even">$sta.getName()</td>
 <td class="odd">($sta.getLatitude(), $sta.getLongitude())</td>
-<td class="odd">$sta.getStart() / $sta.getEnd()</td>
+<td class="even">$fissures.formatYMD($sta.getStartDate()) / $fissures.formatYMD($sta.getEndDate())</td>
 </tr>
 #end
 </table>
 
-<p>$numNinty with match > 90 and $numEighty with match > 80.</p>
+<table>
+<tr><td class="odd">Thickness Estimate</td><td class="even">$summary.getSum().getMaxValueH()</td></tr>
+<tr><td class="odd">Thickness StdDev</td><td class="even">$summary.getHStdDev()</td></tr>
+<tr><td class="odd">Vp/Vs Estimate</td><td class="even">$summary.getSum().getMaxValueK()</td></tr>
+<tr><td class="odd">Vp/Vs StdDev</td><td class="even">$summary.getKStdDev()</td></tr>
+<tr><td class="odd">Peak Value</td><td class="even">$summary.getSum().getMaxValue()</td></tr>
+<tr><td class="odd">Assumed Vp</td><td class="even">$summary.getSum().getAlpha()</td></tr>
+<tr><td class="odd">Ps Weight</td><td class="even">$summary.getSum().getWeightPs()</td></tr>
+<tr><td class="odd">PsPs Weight</td><td class="even">$summary.getSum().getWeightPsPs()</td></tr>
+<tr><td class="odd">PsSs Weight</td><td class="even">$summary.getSum().getWeightPsSs()</td></tr>
+</table>
 
-<ul>
-#foreach( $marker in $markerList)
- <li>$marker.getName()  H=$marker.getDepth()  Vp/Vs=$marker.getVpvs()</li>
-#end
-</ul>
+<p>$numNinty with match > 90% and $numEighty with match > 80%.</p>
 
 <img class="dataimg" src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=${smallestH}"/>
 
-
+<p><b>Prior Results for this Station</b></p>
+<table>
+<tr>
+<td class="headodd">Study</td>
+<td class="headodd">Thickness</td>
+<td class="headodd">Vp/Vs</td>
+</tr>
+#foreach( $marker in $markerList)
+ <tr><td class="odd">$marker.getName()</td><td class="even">$marker.formatDepth()</td><td class="odd">$marker.formatVpvs()</td></tr>
+#end
+</table>
 
 #set( $sta = $stationList.get(0) )
 <table>
@@ -52,18 +68,19 @@
 <td class="headodd">Depth</td>
 <td class="headodd">Magnitude</td>
 
+<p><b>Events processed for this station.</b></p>
 </tr>
 #foreach($eq in $eventList)
 <tr>
 <td class="even">$eq.getParam("itr_match")</td>
-<td class="even">$sta.getDistanceDeg($eq)</td>
+<td class="odd">$sta.getDistanceDeg($eq)</td>
 <td class="even">$sta.getBaz($eq)</td>
 #set( $recFunc_id = $eq.getParam("recFunc_id") )
 <td class="odd"><a href="http://roo:8084/stationEvent.html?rf=$recFunc_id">$eq.getRegion()</a></td>
 <td class="even">$eq.getTimePrecise()</td>
 <td class="odd">($eq.getLatitude(), $eq.getLongitude())</td>
 <td class="even">$eq.getDepth()</td>
-<td class="even">$eq.getAllMagnitudes()</td>
+<td class="odd">$eq.getAllMagnitudes()</td>
 </tr>
 #end
 </table>

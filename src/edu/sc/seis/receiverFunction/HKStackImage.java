@@ -30,8 +30,8 @@ public class HKStackImage extends JComponent {
         setPreferredSize(imageSize);
     }
 
-    public void addMarker(String name, int vpvsIndex, int depthIndex, Color color) {
-        markers.add(new Marker(name, depthIndex, vpvsIndex, color));
+    public void addMarker(String name, double vpvs, double depth, Color color) {
+        markers.add(new Marker(name, vpvs, depth, color));
     }
 
     public void paintComponent(Graphics graphics) {
@@ -63,9 +63,9 @@ public class HKStackImage extends JComponent {
         Iterator it = markers.iterator();
         while(it.hasNext()) {
             Marker mark = (Marker)it.next();
-            System.out.println("Marker "+mark.name);
+            System.out.println("Marker "+mark.name+" "+mark.vpvs+"-->"+Math.round(2*stack.getKIndexFloat(mark.vpvs))+" "+ Math.round(2*stack.getHIndexFloat(mark.depth)));
             g.setColor(mark.color);
-            g.fillRect(2*mark.vpvsIndex, 2*(mark.depthIndex-smallestHindex), 2, 2);
+            g.fillRect(Math.round(2*stack.getKIndexFloat(mark.vpvs)), Math.round(2*stack.getHIndexFloat(mark.depth)), 2, 2);
         }
         g.setColor(Color.CYAN);
         TradeoffCurve tradeoff = new TradeoffCurve(stack);
@@ -85,15 +85,15 @@ public class HKStackImage extends JComponent {
     }
     
     class Marker {
-        Marker(String name, int vpvsIndex, int depthIndex, Color color) {
+        Marker(String name, double vpvs, double depth, Color color) {
             this.name = name;
-            this.vpvsIndex = vpvsIndex;
-            this.depthIndex = depthIndex;
+            this.vpvs = vpvs;
+            this.depth = depth;
             this.color = color;
         }
         String name;
-        int vpvsIndex;
-        int depthIndex;
+        double vpvs;
+        double depth;
         Color color;
     }
 

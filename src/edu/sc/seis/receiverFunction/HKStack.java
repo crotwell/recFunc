@@ -240,12 +240,12 @@ public class HKStack implements Serializable {
         return Math.round(getKIndexFloat(k));
     }
     
-    public float getHIndexFloat(float h) {
-        return (h-getMinH())/getStepH();
+    public float getHIndexFloat(double h) {
+        return (float)((h-getMinH())/getStepH());
     }
     
-    public float getKIndexFloat(float k) {
-        return (k-getMinK())/getStepK();
+    public float getKIndexFloat(double k) {
+        return (float)((k-getMinK())/getStepK());
     }
     
     public float getMaxValueH() {
@@ -282,7 +282,7 @@ public class HKStack implements Serializable {
             int vpvsIndex = (int)Math.round((vpvs-minK)/stepK);
             System.out.println("Crust2 "+StationIdUtil.toString(chan.my_site.my_station.get_id())+" depth="+
                               profile.getLayer(7).topDepth+" "+depthIndex+"  VpVs="+vpvs+" "+vpvsIndex);
-            stackImage.addMarker("Crust2", vpvsIndex, depthIndex, Color.blue);
+            stackImage.addMarker("Crust2", profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity(), profile.getCrustThickness(), Color.blue);
         }
         if (wilson != null) {
             StationResult result = wilson.getResult(chan.my_site.my_station.get_id());
@@ -292,7 +292,7 @@ public class HKStack implements Serializable {
                 int vpvsIndex = (int)Math.round((vpvs-minK)/stepK);
                 System.out.println("Wilson "+StationIdUtil.toString(chan.my_site.my_station.get_id())+" depth="+
                                    result.getH()+" "+depthIndex+"  VpVs="+vpvs+" "+vpvsIndex);
-                stackImage.addMarker("Wilson", vpvsIndex, depthIndex, Color.GREEN);
+                stackImage.addMarker("Wilson", result.getVpVs(), result.getH(), Color.GREEN);
             }
         }
         BorderedDisplay bd = new BorderedDisplay(stackImage);

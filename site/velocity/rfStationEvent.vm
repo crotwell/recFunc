@@ -60,7 +60,7 @@
 </tr>
 </table>
 
-<img src="http://roo:8084/hkstackimage.png?rf=$rf"/>
+<img src="hkstackimage.png?rf=$rf"/>
 
 
 <table>
@@ -101,6 +101,8 @@
 <td class="odd">$result.tol</td>
 </tr>
 </table>
+
+<img src="waveforms.png?rf=$rf"/>
 
 <div id="footer2" align="center">
   <a href="http://seis.sc.edu">

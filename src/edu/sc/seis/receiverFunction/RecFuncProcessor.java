@@ -205,21 +205,6 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                     cookieJar.put("recFunc_pred_auxData"+ITR_ITT, auxStrings);
                     cookieJar.put("stack_"+ITR_ITT, stack);
 
-                    // test in out for all channels
-                    Collection c = (Collection)cookieJar.get("allChanIds");
-                    Iterator iterator = c.iterator();
-                    boolean found = false;
-                    while(iterator.hasNext()) {
-                        Context cTemp = (Context)cookieJar.getContext().get(iterator.next().toString());
-                        System.out.println("Check for stack"+ cTemp.get("stack_"+ITR_ITT).toString());
-                        found = true;
-                        break;
-                    }
-                    if ( ! found) {
-                        System.err.println("XXXXXX  DIDN't find stack_"+ITR_ITT);
-                    }
-
-
                     RecFuncTemplate rfTemplate =new RecFuncTemplate();
                     File velocityOutFile = new File(getEventDirectory(event),"Vel_"+prefix+channelIdString+".html");
                     rfTemplate.process(cookieJar.getContext(), velocityOutFile);

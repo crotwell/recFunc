@@ -133,12 +133,12 @@ public class JDBCHKStack extends JDBCTable {
         peakH = stack.getMinH() + stack.getStepH() * indicies[0];
         peakK = stack.getMinK() + stack.getStepK() * indicies[1];
         peakVal = stack.getStack()[indicies[0]][indicies[1]];
-        put.setFloat(index++, stack.getWeightPs());
-        put.setFloat(index++, stack.getWeightPpPs());
-        put.setFloat(index++, stack.getWeightPsPs());
         put.setFloat(index++, peakH);
         put.setFloat(index++, peakK);
         put.setFloat(index++, peakVal);
+        put.setFloat(index++, stack.getWeightPs());
+        put.setFloat(index++, stack.getWeightPpPs());
+        put.setFloat(index++, stack.getWeightPsPs());
         float[][] data = stack.getStack();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(out);

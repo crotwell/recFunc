@@ -55,7 +55,7 @@ public class StackSummary {
                     SumHKStack sumStack = createSummary(station[j].get_id(),
                                   parentDir,
                                   minPercentMatch);
-                    
+                    if (sumStack == null) { continue;}
                     String outStr = net+" "+station[j].get_code();
                     
                     float peakH, peakK, peakVal = 0;

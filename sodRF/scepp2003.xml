@@ -52,8 +52,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
      <eventArm>
 
        <eventFinder>
-        <name>ANHINGAEVENTDC</name>
-        <dns>edu/sc/seis</dns>
+        <name>IRIS_EventDC</name>
+        <dns>edu/iris/dmc</dns>
             <boxArea>
             <latitudeRange>
                 <unit>DEGREE</unit>
@@ -91,8 +91,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                         <max>10.0</max>
                 </magnitudeRange>
 
-                <catalog>BIGQUAKE</catalog>
-                <contributor>NEIC</contributor>
+                <catalog>PREF</catalog>
+                <contributor>IRIS-DMC</contributor>
 
        </eventFinder>
 
@@ -235,7 +235,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
         <fileType>sac</fileType>
         <dataDirectory>SP_recfunc</dataDirectory>
-                <eventDirLabel><originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/></eventDirLabel>
+        <eventDirLabel><originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/></eventDirLabel>
     </externalSeismogramProcess>
 
     </localSeismogramArm>

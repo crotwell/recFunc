@@ -8,9 +8,6 @@ sodConfig.put=INSERT INTO sodConfig (config_id, config) VALUES (?, ?)
 sodConfig.get=SELECT config from sodConfig where config_id = ?
 sodConfig.getDbId=SELECT config_id from sodConfig where config = ?
 
-sodConfigSeq.create=CREATE SEQUENCE sodConfigSeq
-sodConfigSeq.nextVal=SELECT NEXTVAL ('sodConfigSeq')
-
 receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
                                    origin_id int, \
                                    eventAttr_id int, \
@@ -45,8 +42,7 @@ receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
                                    FOREIGN KEY (sodConfig_id) \
                                    REFERENCES sodConfig (config_id))
                                    
-receiverFunctionSeq.create=CREATE SEQUENCE receiverFunctionSeq
-receiverFunctionSeq.nextVal=SELECT NEXTVAL ('receiverFunctionSeq')
+receiverFunction.index_origin=create index receiverfunction_origin_idx on receiverfunction ( origin_id )
 
 hkstack.create=CREATE TABLE hkstack ( \
                    hkstack_id int, \
@@ -71,8 +67,6 @@ hkstack.create=CREATE TABLE hkstack ( \
                    PRIMARY KEY (hkstack_id), \
                    FOREIGN KEY (recFunc_id) \
                    REFERENCES receiverFunction (recFunc_id) )
-hkstackSeq.create=CREATE SEQUENCE hkStackSeq
-hkstackSeq.nextVal=SELECT NEXTVAL ('hkStackSeq')
 
 hkstack.calcbypercent=SELECT receiverFunction.recfunc_id FROM network \
                    NATURAL JOIN station \
@@ -145,11 +139,22 @@ hkstack.getForStation=SELECT * FROM network \
                    AND percentMatch > ? \
                    AND receiverfunction.recfunc_id = hkstack.recfunc_id
 
-sumhkstack.create=CREATE TABLE sumhkstack ( \
-                   sumhkstack_id int, \
-                   channel_id int, \
+hkstackToSummary.create=CREATE TABLE $tablename ( \
+					hkstack_id, \
+					hksummary_id, \
+					FOREIGN KEY (hkstack_id) REFERENCES hkstack (hkstack_id) , \
+					FOREIGN KEY (hksummary_id) REFERENCES hksummary (hksummary_id) )
+					
+hkstackToSummary.put=INSERT INTO $tablename \
+                   ( hkstack_id, hksummary_id ) \
+                   VALUES ( ?, ? )
+
+hksummary.create=CREATE TABLE $tablename ( \
+                   hksummary_id int, \
+                   chanA_id int, \
+                   chanB_id int, \
+                   chanZ_id int, \
                    alpha float, \
-                   p float, \
                    minPercentMatch float, \
                    minH float, \
                    stepH float, \
@@ -165,10 +170,67 @@ sumhkstack.create=CREATE TABLE sumhkstack ( \
                    weightPsPs float, \
                    data bytea, \
                    insertTime timestamp, \
-                   PRIMARY KEY (sumhkstack_id), \
-                   FOREIGN KEY (channel_id) \
-                   REFERENCES channel (chan_id) )
+                   hVariance float, \
+                   kVariance float, \
+                   PRIMARY KEY (hksummary_id), \
+                   FOREIGN KEY (chanA_id) \
+                   REFERENCES channel (chan_id), \
+                   FOREIGN KEY (chanB_id) \
+                   REFERENCES channel (chan_id), \
+                   FOREIGN KEY (chanZ_id) \
+                   REFERENCES channel (chan_id) \
+                   )
+	
+hksummary.put=INSERT INTO $tablename ( \
+                   hksummary_id , \
+                   chanA_id , \
+                   chanB_id , \
+                   chanZ_id , \
+                   alpha , \
+                   minPercentMatch , \
+                   minH , \
+                   stepH , \
+                   numH , \
+                   minK , \
+                   stepK , \
+                   numK , \
+                   peakH , \
+                   peakK , \
+                   peakVal , \
+                   weightPs , \
+                   weightPpPs , \
+                   weightPsPs , \
+                   data , \
+                   insertTime , \
+                   hVariance , \
+                   kVariance  \
+                   ) \
+                   VALUES ( ?, ?, ?, ?, ?   ?, ?, ?, ?, ?   ?, ?, ?, ?, ?   ?, ?, ?, ?, ?  ?, ?)
                    
-sumhkstack.createSeq.create=CREATE SEQUENCE sumhkstackSeq
-sumhkstack.createSeq.nextVal=SELECT NEXTVAL ('sumhkstackSeq')
+hksummery.get=SELECT * from $tablename \
+                   WHERE hksummary_id = ?
+                   
+hksummary.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
+                   NATURAL JOIN station \
+                   NATURAL JOIN site \
+                   NATURAL JOIN channel \
+                   JOIN  receiverFunction ON (chanz_id = chan_id ) \
+                   NATURAL JOIN hkstack \
+                   WHERE network.network_dbid = ? \
+                   AND sta_code = ? \
+                   AND receiverFunction.itr_match >= ? \
+                   EXCEPT SELECT receiverFunction.recfunc_id from network \
+                       NATURAL JOIN station \
+                       NATURAL JOIN site \
+                       NATURAL JOIN channel \
+                       JOIN receiverFunction ON (chanz_id = chan_id ) \
+                       JOIN hkStack ON ( receiverFunction.recfunc_id = hkstack.recfunc_id ) \
+                       JOIN hkstackToSummary ON ( hkStack.hkstack_id = hkstackToSummary.hkstack_id ) \
+                       JOIN hksummary ON ( hkstackToSummary.hksummary_id = hksummary.hksummary_id ) \
+                       WHERE  net_code = ? \
+                       AND sta_code = ? \
+                       AND receiverFunction.itr_match >= hksummary.minPercentMatch \
+                       AND hksummary.minPercentMatch = ? \
+
+hksummary.put=INSERT INTO hksummary
 

@@ -19,6 +19,7 @@ import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
+import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.rev.StationLocator;
 import edu.sc.seis.rev.velocity.VelocityNetwork;
@@ -47,6 +48,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
         JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
         JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.getDataLoc());
         jdbcHKStack = new JDBCHKStack(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
+        jdbcSumHKStack = new JDBCSummaryHKStack(jdbcHKStack);
     }
     
     public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -65,11 +67,18 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             if(req.getParameter("smallestH") == null) { throw new Exception("smallestH param not set"); }
             float smallestH = new Float(req.getParameter("smallestH")).floatValue();
             
-            SumHKStack sumStack = jdbcHKStack.sum(net.getCode(),
-                                                  staCode,
-                                                  minPercentMatch,
-                                                  smallestH);
-            logger.debug("finish calc stack summary");
+            SumHKStack sumStack;
+            if(req.getParameter("nocalc").equals("true")) {
+                System.out.println("BAD, just for testing...");
+                sumStack = jdbcSumHKStack.get(1);
+            } else {
+                sumStack = jdbcHKStack.sum(net.getCode(),
+                                           staCode,
+                                           minPercentMatch,
+                                           smallestH);
+               // jdbcSumHKStack.put(sumStack);
+                logger.debug("finish calc stack summary");
+            }
             OutputStream out = res.getOutputStream();
             if (sumStack == null) {
                 logger.warn("summary stack is null for "+net.getCode()+"."+staCode);
@@ -99,6 +108,8 @@ public class SummaryHKStackImageServlet extends HttpServlet {
     private JDBCEventChannelStatus jdbcECStatus;
     
     private JDBCHKStack jdbcHKStack;
+    
+    private JDBCSummaryHKStack jdbcSumHKStack;
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SummaryHKStackImageServlet.class);
     

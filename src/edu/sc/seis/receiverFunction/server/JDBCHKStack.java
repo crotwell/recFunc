@@ -297,17 +297,9 @@ public class JDBCHKStack extends JDBCTable {
     public HKStack extract(ResultSet rs) throws FissuresException, NotFound,
             IOException, SQLException {
         Channel[] channels = jdbcRecFunc.extractChannels(rs);
-        byte[] dataBytes = rs.getBytes("data");
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
-        float[][] data = HKStack.createArray(numH, numK);
-        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(dataBytes));
-        for(int i = 0; i < data.length; i++) {
-            for(int j = 0; j < data[i].length; j++) {
-                data[i][j] = dis.readFloat();
-            }
-        }
-        System.out.println("WARNING: Weights are assumed to be 1");
+        float[][] data = extractData(rs, numH, numK);
         HKStack out = new HKStack(rs.getFloat("alpha"),
                                   rs.getFloat("p"),
                                   rs.getFloat("percentMatch"),
@@ -317,12 +309,24 @@ public class JDBCHKStack extends JDBCTable {
                                   rs.getFloat("minK"),
                                   rs.getFloat("stepK"),
                                   numK,
-                                  1,
-                                  1,
-                                  1,
+                                  rs.getFloat("weightPs"),
+                                  rs.getFloat("weightPpPs"),
+                                  rs.getFloat("weightPsPs"),
                                   data,
                                   channels[0]);
         return out;
+    }
+    
+    public float[][] extractData(ResultSet rs, int numH, int numK) throws SQLException, IOException {
+        byte[] dataBytes = rs.getBytes("data");
+        float[][] data = HKStack.createArray(numH, numK);
+        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(dataBytes));
+        for(int i = 0; i < data.length; i++) {
+            for(int j = 0; j < data[i].length; j++) {
+                data[i][j] = dis.readFloat();
+            }
+        }
+        return data;
     }
 
     private PreparedStatement uncalculated, calcByPercent, put, get, getForStation;

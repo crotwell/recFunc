@@ -20,6 +20,19 @@ import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.sod.status.FissuresFormatter;
 
 public class SumHKStack {
+    
+    public SumHKStack(float minPercentMatch,
+                      float smallestH,
+                      HKStack sum,
+                      float hVariance,
+                      float kVariance) {
+        this.sum = sum;
+        this.minPercentMatch = minPercentMatch;
+        this.smallestH = smallestH;
+        this.hVariance = hVariance;
+        this.kVariance = kVariance;
+    }
+    
     public SumHKStack(HKStack[] individuals,
                       Channel chan,
                       float minPercentMatch,
@@ -125,6 +138,14 @@ public class SumHKStack {
 
     public double getKVariance() {
         return kVariance;
+    }
+    
+    public float getMinPercentMatch() {
+        return minPercentMatch;
+    }
+    
+    public float getSmallestH() {
+        return smallestH;
     }
     
     protected void calcVariance() {

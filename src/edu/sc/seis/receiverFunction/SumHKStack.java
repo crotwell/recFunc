@@ -141,7 +141,7 @@ public class SumHKStack {
             a = sum.getStack()[maxIndices[0]][maxIndices[1]];
             b = sum.getStack()[maxIndices[0]+1][maxIndices[1]];
             c = sum.getStack()[maxIndices[0]+2][maxIndices[1]];
-        } else if (maxIndices[0] == sum.getStack().length) {
+        } else if (maxIndices[0] == sum.getStack().length-1) {
             //          off edge, shift by 1???
             a = sum.getStack()[maxIndices[0]-2][maxIndices[1]];
             b = sum.getStack()[maxIndices[0]-1][maxIndices[1]];
@@ -159,7 +159,7 @@ public class SumHKStack {
             a = sum.getStack()[maxIndices[0]][maxIndices[1]];
             b = sum.getStack()[maxIndices[0]][maxIndices[1]+1];
             c = sum.getStack()[maxIndices[0]][maxIndices[1]+2];
-        } else if (maxIndices[1] == sum.getStack()[0].length) {
+        } else if (maxIndices[1] == sum.getStack()[0].length-1) {
             // off edge, shift by 1???
             a = sum.getStack()[maxIndices[0]][maxIndices[1]-2];
             b = sum.getStack()[maxIndices[0]][maxIndices[1]-1];

@@ -68,7 +68,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
      * @param cookies a <code>CookieJar</code> value
      * @exception Exception if an error occurs
      */
-    public ChannelGroupLocalSeismogramResult process(EventAccessOperations event,
+    public WaveformVectorResult process(EventAccessOperations event,
                                                      ChannelGroup channelGroup,
                                                      RequestFilter[][] original,
                                                      RequestFilter[][] available,
@@ -76,7 +76,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                                                      CookieJar cookieJar) throws Exception {
         // save original seismograms, return value is ignored
         for (int i = 0; i < seismograms.length; i++) {
-            LocalSeismogramResult saveToFileSeis = super.process(event,
+            WaveformResult saveToFileSeis = super.process(event,
                                                                  channelGroup.getChannels()[i],
                                                                  original[i],
                                                                  available[i],
@@ -93,7 +93,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
         for (int i = 0; i < seismograms.length; i++) {
             if (seismograms[i].length == 0) {
                 // maybe no data after cut?
-                return new ChannelGroupLocalSeismogramResult(false, seismograms, new StringTreeLeaf(this, false, "zero seismograms for "+i+" component"));
+                return new WaveformVectorResult(false, seismograms, new StringTreeLeaf(this, false, "zero seismograms for "+i+" component"));
             }
             if ( ! ChannelIdUtil.areEqual(available[i][0].channel_id, seismograms[i][0].channel_id)) {
                 // fix the dumb -farm or -spyder on pond available_data
@@ -108,7 +108,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
         if (chGrpSeismograms.length < 3) {
             logger.debug("chGrpSeismograms.length = "+chGrpSeismograms.length);
             // must not be all here yet
-            return new ChannelGroupLocalSeismogramResult(false, seismograms, new StringTreeLeaf(this, false, "Can't find 3 seismograms for motion vector"));
+            return new WaveformVectorResult(false, seismograms, new StringTreeLeaf(this, false, "Can't find 3 seismograms for motion vector"));
         }
 
         logger.info("RecFunc for "+ChannelIdUtil.toStringNoDates(channelGroup.getChannels()[0].get_id()));
@@ -116,7 +116,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
             if (chGrpSeismograms[i] == null) {
                 // must not be all here yet
                 System.out.println("chGrpSeismograms["+i+"] is null");
-                return new ChannelGroupLocalSeismogramResult(false, seismograms, new StringTreeLeaf(this, false, "seismogram "+i+" is null"));
+                return new WaveformVectorResult(false, seismograms, new StringTreeLeaf(this, false, "seismogram "+i+" is null"));
             }
         }
 
@@ -175,9 +175,9 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                     if (lSeisTemplateGen == null) {
                         WaveformVectorProcess[] processes = Start.getWaveformArm().getMotionVectorArm().getProcesses();
                         for (int j = 0; j < processes.length; j++) {
-                            if (processes[j] instanceof ANDLocalSeismogramWrapper) {
-                                ANDLocalSeismogramWrapper wrapper =
-                                    (ANDLocalSeismogramWrapper)processes[j];
+                            if (processes[j] instanceof ANDWaveformProcessWrapper) {
+                                ANDWaveformProcessWrapper wrapper =
+                                    (ANDWaveformProcessWrapper)processes[j];
                                 if (wrapper.getProcess() instanceof LocalSeismogramTemplateGenerator) {
                                     lSeisTemplateGen = (LocalSeismogramTemplateGenerator)wrapper.getProcess();
                                     break;
@@ -321,12 +321,12 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
             // problem occurred
             SeisDataErrorEvent error = processor.getError();
             logger.error("problem with recfunc:", error.getCausalException());
-            return new ChannelGroupLocalSeismogramResult(false, seismograms, new StringTreeLeaf(this, false, "problem with recfunc", error.getCausalException()));
+            return new WaveformVectorResult(false, seismograms, new StringTreeLeaf(this, false, "problem with recfunc", error.getCausalException()));
         }
         MicroSecondDate after = new MicroSecondDate();
         System.out.println("Save took "+after.subtract(before).convertTo(UnitImpl.SECOND));
         System.out.println("Done with "+ChannelIdUtil.toStringNoDates(zeroChannel.get_id()));
-        return new ChannelGroupLocalSeismogramResult(true, seismograms, new StringTreeLeaf(this, true));
+        return new WaveformVectorResult(true, seismograms, new StringTreeLeaf(this, true));
     }
 
     public synchronized void appendToSummaryPage(String val) throws IOException {

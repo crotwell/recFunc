@@ -5,6 +5,20 @@
  */
 
 package edu.sc.seis.receiverFunction;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.LinkedList;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import org.w3c.dom.Element;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
@@ -27,20 +41,6 @@ import edu.sc.seis.fissuresUtil.xml.XMLQuantity;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 import edu.sc.seis.sod.SodUtil;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.LinkedList;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import org.w3c.dom.Element;
 
 
 

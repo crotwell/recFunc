@@ -1,9 +1,5 @@
 package edu.sc.seis.receiverFunction;
 
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * IterDecon.java
@@ -12,7 +8,7 @@ import java.util.List;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 7779 2004-03-24 13:49:22Z crotwell $
+ * @version $Id: IterDecon.java 10258 2004-08-31 14:02:39Z groves $
  */
 
 public class IterDecon {

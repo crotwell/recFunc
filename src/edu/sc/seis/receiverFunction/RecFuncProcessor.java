@@ -6,43 +6,55 @@
 
 package edu.sc.seis.receiverFunction;
 
-import edu.sc.seis.fissuresUtil.xml.*;
-import edu.sc.seis.sod.process.waveformArm.*;
-import java.io.*;
-
+import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.Iterator;
+import org.apache.log4j.Logger;
+import org.w3c.dom.Element;
+import edu.iris.Fissures.Orientation;
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.iris.Fissures.IfSeismogramDC.RequestFilter;
-import edu.iris.Fissures.Orientation;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
-import edu.iris.Fissures.network.StationIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.EventUtil;
 import edu.sc.seis.fissuresUtil.display.DisplayUtils;
-import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
-import edu.sc.seis.receiverFunction.crust2.Crust2;
-import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
+import edu.sc.seis.fissuresUtil.xml.DataSet;
+import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
+import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
+import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
+import edu.sc.seis.fissuresUtil.xml.SeismogramFileTypes;
+import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
 import edu.sc.seis.sod.ChannelGroup;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.Start;
+import edu.sc.seis.sod.process.waveformArm.LocalSeismogramTemplateGenerator;
+import edu.sc.seis.sod.process.waveformArm.SaveSeismogramToFile;
+import edu.sc.seis.sod.process.waveformArm.WaveformResult;
+import edu.sc.seis.sod.process.waveformVectorArm.ANDWaveformProcessWrapper;
+import edu.sc.seis.sod.process.waveformVectorArm.WaveformVectorProcess;
+import edu.sc.seis.sod.process.waveformVectorArm.WaveformVectorResult;
 import edu.sc.seis.sod.status.FissuresFormatter;
 import edu.sc.seis.sod.status.StringTreeLeaf;
-import java.awt.image.BufferedImage;
-import java.util.Collection;
-import java.util.Iterator;
-import org.apache.log4j.Logger;
-import org.w3c.dom.Element;
 
 public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVectorProcess {
 
@@ -198,8 +210,8 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                         zoomP[0] = new RequestFilter(recFuncChannel.get_id(),
                                                      pTime.subtract(new TimeInterval(5, UnitImpl.SECOND)).getFissuresTime(),
                                                      pTime.add(new TimeInterval(30, UnitImpl.SECOND)).getFissuresTime());
-                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP,predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PNG, phases, true);
-                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP, predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PDF, phases, true);
+                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP,predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PNG, phases, cookieJar);
+                        lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP, predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PDF, phases, cookieJar);
                     }
                     RecFuncTemplate rfTemplate =new RecFuncTemplate();
                     File velocityOutFile = new File(getEventDirectory(event),FissuresFormatter.filize("Vel_"+channelIdString+".html"));

@@ -1,5 +1,8 @@
 package edu.sc.seis.receiverFunction;
 
+import java.io.DataInputStream;
+import junit.framework.TestCase;
+import junitx.framework.ArrayAssert;
 import edu.iris.Fissures.model.SamplingImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
@@ -7,11 +10,6 @@ import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import edu.sc.seis.fissuresUtil.sac.FissuresToSac;
 import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
-import edu.sc.seis.receiverFunction.IterDecon;
-import java.io.DataInputStream;
-import junit.framework.TestCase;
-import junitx.framework.ArrayAssert;
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
 // JUnitDoclet end import
 
 /**

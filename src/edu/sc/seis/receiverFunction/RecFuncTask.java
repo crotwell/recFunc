@@ -1,5 +1,9 @@
 package edu.sc.seis.receiverFunction;
 
+import java.util.Map;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import org.apache.log4j.Logger;
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.sc.seis.TauP.TauModelException;
@@ -14,10 +18,6 @@ import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.gee.configurator.ConfigurationException;
 import edu.sc.seis.gee.task.GUITask;
 import edu.sc.seis.gee.task.GlobalToolBar;
-import java.util.Map;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import org.apache.log4j.Logger;
 
 /**
  * RecFuncTask.java

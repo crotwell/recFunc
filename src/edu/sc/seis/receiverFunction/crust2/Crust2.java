@@ -6,7 +6,6 @@
 
 package edu.sc.seis.receiverFunction.crust2;
 
-import edu.sc.seis.TauP.VelocityLayer;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import edu.sc.seis.TauP.VelocityLayer;
 
 public class Crust2 {
 

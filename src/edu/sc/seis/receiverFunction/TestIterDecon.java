@@ -1,12 +1,6 @@
 package edu.sc.seis.receiverFunction;
 
 import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
-import java.io.IOException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.net.MalformedURLException;
-import edu.sc.seis.fissuresUtil.xml.XMLDataSet;
-import java.net.URL;
 
 /**
  * TestIterDecon.java

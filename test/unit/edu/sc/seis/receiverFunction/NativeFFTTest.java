@@ -6,9 +6,9 @@
 
 package edu.sc.seis.receiverFunction;
 
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import junit.framework.TestCase;
 import junitx.framework.ArrayAssert;
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
 
 public class NativeFFTTest extends TestCase {
 

@@ -6,12 +6,12 @@
 
 package edu.sc.seis.receiverFunction;
 
-import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JComponent;
-import java.awt.Dimension;
+import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 
 public class HKStackImage extends JComponent {
 

@@ -6,8 +6,8 @@
 
 package edu.sc.seis.receiverFunction.crust2;
 
-import junit.framework.TestCase;
 import java.io.IOException;
+import junit.framework.TestCase;
 
 public class Crust2Test extends TestCase {
 

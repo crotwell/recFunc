@@ -52,9 +52,9 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements WaveformV
                               new IterDecon(maxBumps, true, tol, gwidth));
         try {
             FissuresNamingService fisName = CommonAccess.getCommonAccess().getFissuresNamingService();
-            cache = RecFuncCacheHelper.narrow(fisName.resolve("edu/sc/seis", "IfReceiverFunction", "Ears"));
+            cache = RecFuncCacheHelper.narrow(fisName.resolve(dns, interfaceName, serverName));
         } catch (SystemException e) {
-            throw new ConfigurationException("Problem getting cache server", e);
+            throw new ConfigurationException("Problem getting cache server "+dns+" "+interfaceName+" "+serverName, e);
         } catch (UserException e) {
             throw new ConfigurationException("Problem getting cache server", e);
         }
@@ -125,6 +125,10 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements WaveformV
         WaveformVectorResult result = new WaveformVectorResult(seismograms, new StringTreeLeaf(this, true));
         return result;
     }
+
+    String dns = "edu/sc/seis";
+    String interfaceName = "IfReceiverFunction";
+    String serverName = "Ears";
     
     boolean overwrite = false;
     

@@ -157,7 +157,7 @@ public class JDBCHKStack  extends JDBCTable {
             tauPTime.calcTravelTimes(cachedResult.channels[0].my_site.my_station, cachedResult.prefOrigin, pPhases);
         // convert radian per sec ray param into km per sec
         float kmRayParam = (float)(arrivals[0].getRayParam()/tauPTime.getTauModel().getRadiusOfEarth());
-        HKStack stack = new HKStack(6.5f,
+        HKStack stack = new HKStack(6.3f,
                                     kmRayParam,
                                     cachedResult.radialMatch,
                                     getDefaultMinH(), .25f, 240,

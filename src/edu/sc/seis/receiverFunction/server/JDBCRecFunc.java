@@ -426,6 +426,8 @@ public class JDBCRecFunc extends JDBCTable {
     
     protected File getDir(CacheEvent cacheEvent, Channel chan) {
         File eventDir = new File(dataDir, eventFormatter.getResult(cacheEvent));
+        // try all uppercase
+        eventDir = new File(dataDir, eventFormatter.getResult(cacheEvent).toUpperCase());
             
         File netDir = new File(eventDir, chan.get_id().network_id.network_code);
         File stationDir = new File(netDir, chan.get_id().station_code);

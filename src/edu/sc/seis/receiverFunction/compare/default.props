@@ -1,0 +1,32 @@
+stationResult.create=CREATE TABLE $tablename ( 
+    net_id int,
+    sta_code varchar,
+    h float,
+    vpvs float,
+    vp float,
+    ref_id int,
+    FORGEIN KEY (sta_id) REFERENCES station (sta_id ),
+    FORGEIN KEY (ref_id) REFERENCES stationResultRef (ref_id ))
+
+stationResult.put=INSERT INTO $tablename (
+                     net_id, sta_code, h, vpvs, vp, ref_id ) 
+                     VALUES ( ?, ?, ?, ?, ?, ? )
+
+stationResult.get=SELECT * from $tablename 
+    JOIN stationResultRef ON ( $tablename.ref_id = stationResultRef.ref_id ) 
+    JOIN station ON ( $tablename.sta_id = station.sta_id ) 
+    JOIN network ON ( network.net_id = $tablename.net_id ) 
+    WHERE station.sta_code = ?
+    AND network.net_code = ?
+ 
+stationResultRef.create=CREATE TABLE $tablename ( 
+    ref_id int,
+    name varchar,
+    reference varchar,
+    method varchar)
+    
+stationResultRef.put=INSERT INTO $tablename (
+                     ref_id, name, reference, method ) 
+                     VALUES ( ?, ?, ?, ? )
+
+    

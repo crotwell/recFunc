@@ -29,14 +29,14 @@ public class TestIterDecon {
             System.exit(1);
         } // end of if ()
 
-        float gwidth = 3;
+        float gwidth = 2.5f;
         IterDecon decon = new IterDecon(100, true, .001f, gwidth);
         SacTimeSeries num = new SacTimeSeries();
         num.read(args[0]);
         SacTimeSeries denom = new SacTimeSeries();
         denom.read(args[1]);
 
-        float shift = 10;
+        float shift = 5;
 
         IterDeconResult ans = decon.process(num.y, denom.y, num.delta);
         float[] predicted = ans.getPredicted();
@@ -46,20 +46,8 @@ public class TestIterDecon {
             // System.out.println(i+" "+num.y[i]+" "+denom.y[i]+" "+predicted[i]);
         } // end of for (int i=0; i<num.length; i++)
 
-        DocumentBuilderFactory factory
-            = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = factory.newDocumentBuilder();
-        URL dirURL = new URL("./ReccFunc/");
-        System.out.println(" dirURL is "+dirURL.toString());
-        String dsName = "RecFunc";
-        String userName = "crotwell";
-        XMLDataSet dataset
-            = new XMLDataSet(docBuilder,
-                             dirURL,
-                             "genid"+Math.round(Math.random()*Integer.MAX_VALUE),
-                             dsName,
-                             userName);
-        
+
+
 
         SacTimeSeries predOut = new SacTimeSeries();
         predOut.y = predicted;

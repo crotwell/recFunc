@@ -113,6 +113,8 @@ public class JDBCRecFunc extends JDBCTable {
                                                " AND gwidth = ? "+
                                                " AND maxbumps = ? "+
                                                " AND tol = ? ");
+        getByDbIdStmt = conn.prepareStatement("SELECT * from "+getTableName()+
+                                              " WHERE recfunc_id = ? ");
     }
     
     public int put(Origin prefOrigin,
@@ -243,7 +245,15 @@ public class JDBCRecFunc extends JDBCTable {
         }
         throw new NotFound("No rec func entry found");
     }
-    
+
+    public CachedResult get(int dbid) throws FileNotFoundException, FissuresException, NotFound, IOException, SQLException {
+        getByDbIdStmt.setInt(1, dbid);
+        ResultSet rs = getByDbIdStmt.executeQuery();
+        if (rs.next()) {
+            return extract(rs);
+        }
+        throw new NotFound("No rec func entry found for dbid="+dbid);
+    }
 
     public CachedResult get(Origin prefOrigin,
                             ChannelId[] channel,
@@ -251,48 +261,53 @@ public class JDBCRecFunc extends JDBCTable {
         populateGetStmt(getStmt, prefOrigin, channel, config);
         ResultSet rs = getStmt.executeQuery();
         if (rs.next()) {
-            Origin origin = jdbcOrigin.get(rs.getInt("origin_id"));
-            EventAttr eventAttr = jdbcEventAttr.get(rs.getInt("eventAttr_id"));
-            Channel[] channels = new Channel[] {jdbcChannel.get(rs.getInt("chanA_id")),
-                                                jdbcChannel.get(rs.getInt("chanB_id")),
-                                                jdbcChannel.get(rs.getInt("chanZ_id"))};
-            CacheEvent cacheEvent = new CacheEvent(eventAttr, prefOrigin);
-            File stationDir = getDir(cacheEvent, channels[0]);
-            
-            SacTimeSeries radialSAC = new SacTimeSeries();
-            radialSAC.read(new File(stationDir, rs.getString("radial")));
-            LocalSeismogramImpl radial = SacToFissures.getSeismogram(radialSAC);
-            
-            SacTimeSeries transverseSAC = new SacTimeSeries();
-            transverseSAC.read(new File(stationDir, rs.getString("transverse")));
-            LocalSeismogramImpl transverse = SacToFissures.getSeismogram(transverseSAC);
-            
-            LocalSeismogramImpl[] originals = new LocalSeismogramImpl[3];
-            SacTimeSeries SACa = new SacTimeSeries();
-            SACa.read(new File(stationDir, rs.getString("seisA")));
-            originals[0] = SacToFissures.getSeismogram(SACa);
-            SacTimeSeries SACb = new SacTimeSeries();
-            SACb.read(new File(stationDir, rs.getString("seisB")));
-            originals[1] = SacToFissures.getSeismogram(SACb);
-            SacTimeSeries SACz = new SacTimeSeries();
-            SACz.read(new File(stationDir, rs.getString("seisZ")));
-            originals[2] = SacToFissures.getSeismogram(SACz);
-            
-            CachedResult result = new CachedResult(origin,
-                                                   eventAttr,
-                                                   new IterDeconConfig(rs.getFloat("gwidth"),
-                                                   rs.getInt("maxBumps"),
-                                                   rs.getFloat("tol")),
-                                                   channels,
-                                                   originals,
-                                                   radial,
-                                                   rs.getFloat("radialMatch"),
-                                                   transverse,
-                                                   rs.getFloat("transverseMatch"),
-                                                   rs.getInt("bump"));
-            return result;
+            return extract(rs);
         }
         throw new NotFound("No rec func entry found");
+    }
+    
+    public CachedResult extract(ResultSet rs) throws NotFound, FileNotFoundException, IOException, SQLException, FissuresException {
+
+        Origin origin = jdbcOrigin.get(rs.getInt("origin_id"));
+        EventAttr eventAttr = jdbcEventAttr.get(rs.getInt("eventAttr_id"));
+        Channel[] channels = new Channel[] {jdbcChannel.get(rs.getInt("chanA_id")),
+                                            jdbcChannel.get(rs.getInt("chanB_id")),
+                                            jdbcChannel.get(rs.getInt("chanZ_id"))};
+        CacheEvent cacheEvent = new CacheEvent(eventAttr, origin);
+        File stationDir = getDir(cacheEvent, channels[0]);
+        
+        SacTimeSeries radialSAC = new SacTimeSeries();
+        radialSAC.read(new File(stationDir, rs.getString("radial")));
+        LocalSeismogramImpl radial = SacToFissures.getSeismogram(radialSAC);
+        
+        SacTimeSeries transverseSAC = new SacTimeSeries();
+        transverseSAC.read(new File(stationDir, rs.getString("transverse")));
+        LocalSeismogramImpl transverse = SacToFissures.getSeismogram(transverseSAC);
+        
+        LocalSeismogramImpl[] originals = new LocalSeismogramImpl[3];
+        SacTimeSeries SACa = new SacTimeSeries();
+        SACa.read(new File(stationDir, rs.getString("seisA")));
+        originals[0] = SacToFissures.getSeismogram(SACa);
+        SacTimeSeries SACb = new SacTimeSeries();
+        SACb.read(new File(stationDir, rs.getString("seisB")));
+        originals[1] = SacToFissures.getSeismogram(SACb);
+        SacTimeSeries SACz = new SacTimeSeries();
+        SACz.read(new File(stationDir, rs.getString("seisZ")));
+        originals[2] = SacToFissures.getSeismogram(SACz);
+        
+        CachedResult result = new CachedResult(origin,
+                                               eventAttr,
+                                               new IterDeconConfig(rs.getFloat("gwidth"),
+                                               rs.getInt("maxBumps"),
+                                               rs.getFloat("tol")),
+                                               channels,
+                                               originals,
+                                               radial,
+                                               rs.getFloat("radialMatch"),
+                                               transverse,
+                                               rs.getFloat("transverseMatch"),
+                                               rs.getInt("bump"));
+        return result;   
     }
     
     public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,
@@ -381,7 +396,7 @@ public class JDBCRecFunc extends JDBCTable {
     
     private SeismogramFileTypes fileType = SeismogramFileTypes.SAC;
     
-    private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt;
+    private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt, getByDbIdStmt;
     
     private JDBCSequence seq;
     

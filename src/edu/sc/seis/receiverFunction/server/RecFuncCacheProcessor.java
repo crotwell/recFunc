@@ -26,6 +26,7 @@ import edu.sc.seis.fissuresUtil.cache.ProxyEventAccessOperations;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.namingService.FissuresNamingService;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
+import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.IterDecon;
 import edu.sc.seis.receiverFunction.IterDeconResult;
 import edu.sc.seis.receiverFunction.RecFunc;
@@ -106,6 +107,7 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
                                                          firstP.subtract(shift),
                                                          singleSeismograms[0],
                                                          UnitImpl.DIMENSONLESS);
+                cookieJar.put("recFunc_percentMatch_"+chanCode, ""+HKStack.getPercentMatch(predictedDSS[i]));
             }
             while(true) {
                 try {

@@ -35,6 +35,72 @@ receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
 receiverFunctionSeq.create=CREATE SEQUENCE receiverFunctionSeq
 receiverFunctionSeq.nextVal=SELECT NEXTVAL ('receiverFunctionSeq')
 
+hkStack.create=CREATE TABLE hkstack ( \
+                   hkstack_id int, \
+                   recFunc_id int, \
+                   alpha float, \
+                   p float, \
+                   percentMatch float, \
+                   minH float, \
+                   stepH float, \
+                   numH int, \
+                   minK float, \
+                   stepK float, \
+                   numK int, \
+                   peakH float, \
+                   peakK float, \
+                   peakVal float, \
+                   data float[][], \
+                   insertTime timestamp, \
+                   PRIMARY KEY (hkstack_id), \
+                   FOREIGN KEY (recFunc_id) \
+                   REFERENCES receiverFunction (recFunc_id) )
+hkStack.createSeq.create=CREATE SEQUENCE hkstackSeq
+hkStack.createSeq.nextVal=SELECT NEXTVAL ('hkstackSeq')
+
+hkStack.uncalculated=SELECT recfunc_id FROM network \
+                   NATURAL JOIN station \
+                   NATURAL JOIN site \
+                   NATURAL JOIN channel \
+                   JOIN  receiverFunction ON (chanz_id = chan_id ) \
+                   WHERE net_code = ? \
+                   AND sta_code = ? \
+                   EXCEPT SELECT recfunc_id from network \
+                       NATURAL JOIN station \
+                       NATURAL JOIN site \
+                       NATURAL JOIN channel \
+                       JOIN receiverFunction ON (chanz_id = chan_id ) \
+                       NATURAL JOIN hkStack
+
+hkStack.put=INSERT INTO hkstack ( \
+                   hkstack_id  \
+                   recFunc_id  \
+                   alpha , \
+                   p , \
+                   percentMatch , \
+                   minH , \
+                   stepH , \
+                   numH , \
+                   minK , \
+                   stepK , \
+                   numK , \
+                   peakH , \
+                   peakK , \
+                   peakVal , \
+                   data , \
+                   insertTime) \
+                   VALUES ( \
+                   ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?)
+                   
+hkstack.getForStation=SELECT * FROM network \
+                   NATURAL JOIN station \
+                   NATURAL JOIN site \
+                   NATURAL JOIN channel \
+                   JOIN  receiverFunction ON (chanz_id = chan_id ) \
+                   NATURAL JOIN hkStack
+                   WHERE net_code = ? \
+                   AND sta_code = ? \
+                   AND percentMatch > ?
 
 # specifies the database URL
 #    for hsqldb

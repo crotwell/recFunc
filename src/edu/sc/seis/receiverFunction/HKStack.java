@@ -23,6 +23,7 @@ import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.model.UnitRangeImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
@@ -34,6 +35,7 @@ import edu.sc.seis.fissuresUtil.display.borders.Border;
 import edu.sc.seis.fissuresUtil.display.borders.UnitRangeBorder;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
+import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.SeisDataChangeEvent;
 import edu.sc.seis.fissuresUtil.xml.SeisDataChangeListener;
 import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
@@ -82,6 +84,24 @@ public class HKStack implements Serializable {
         calculate();
     }
 
+    public HKStack(float alpha,
+                   float p,
+                   float percentMatch,
+                   float minH,
+                   float stepH,
+                   int numH,
+                   float minK,
+                   float stepK,
+                   int numK,
+                   LocalSeismogramImpl recFuncSeis,
+                   Channel chan,
+                   TimeInterval shift)  throws FissuresException {
+        this(alpha,p, percentMatch, minH ,stepH ,numH ,minK ,stepK ,numK );
+        this.recFunc = new MemoryDataSetSeismogram(recFuncSeis);
+        this.chan = chan;
+        calculate(recFuncSeis, shift);
+    }
+    
     public HKStack(float alpha,
                    float p,
                    float percentMatch,
@@ -303,11 +323,6 @@ public class HKStack implements Serializable {
 
 
     protected void calculate()  throws FissuresException {
-        stack = new float[numH][numK];
-        float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
-        if (Float.isNaN(etaP)) {
-            System.out.println("Warning: Eta P is NaN alpha="+alpha+"  p="+p);
-        }
         Element shiftElement =
             (Element)recFunc.getAuxillaryData("recFunc.alignShift");
         QuantityImpl shift = XMLQuantity.getQuantity(shiftElement);
@@ -320,6 +335,15 @@ public class HKStack implements Serializable {
             throw new IllegalArgumentException("Receiver function DSS must have exactly one seismogram");
         } else {
             seis = (LocalSeismogramImpl)data.get(0);
+        }
+        calculate(seis, shift);
+    }
+    
+    void calculate(LocalSeismogramImpl seis, QuantityImpl shift) throws FissuresException  {
+        stack = new float[numH][numK];
+        float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
+        if (Float.isNaN(etaP)) {
+            System.out.println("Warning: Eta P is NaN alpha="+alpha+"  p="+p);
         }
         for (int kIndex = 0; kIndex < numK; kIndex++) {
             float beta = alpha/(minK + kIndex*stepK);
@@ -364,6 +388,13 @@ public class HKStack implements Serializable {
         } else {
             return chan.get_id();
         }
+    }
+    
+    /** 
+     * Returns the channel, which may be null. 
+     */
+    public Channel getChannel() {
+        return chan;
     }
 
     public DataSetSeismogram getRecFunc() {

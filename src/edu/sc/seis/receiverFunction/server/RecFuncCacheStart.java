@@ -72,7 +72,7 @@ public class RecFuncCacheStart {
         }
     }
     
-    private static Properties loadProps(String[] args) {
+    public static Properties loadProps(String[] args) {
         
         Properties props = System.getProperties();
 

@@ -31,7 +31,7 @@ public class RecFunc {
 
     /** uses a default shift of 10 seconds. */
     public RecFunc(TauPUtil timeCalc, IterDecon decon) {
-        this(timeCalc, decon, new TimeInterval(10, UnitImpl.SECOND));
+        this(timeCalc, decon, DEFAULT_SHIFT);
 
     }
 
@@ -221,7 +221,13 @@ public class RecFunc {
     TimeInterval shift;
 
     TimeInterval pad;
+    
+    private static final TimeInterval DEFAULT_SHIFT = new TimeInterval(10, UnitImpl.SECOND);
 
+    public static TimeInterval getDefaultShift() {
+        return DEFAULT_SHIFT;   
+    }
+    
     static Logger logger = Logger.getLogger(RecFunc.class);
 
 }

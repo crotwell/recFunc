@@ -18,7 +18,7 @@ public class NetworkDBPopulate {
         Initializer.init(args);
         FissuresNamingService fisName = Initializer.getNS();
         NetworkDCOperations netDC = BulletproofVestFactory.vestNetworkDC("edu/iris/dmc",
-                                                                         "IRIS_NetworkDC_1.0",
+                                                                         "IRIS_NetworkDC",
                                                                          fisName);
         NetworkAccess[] nets = netDC.a_finder().retrieve_by_code(args[0]);
         JDBCNetwork jdbcNet = new JDBCNetwork();

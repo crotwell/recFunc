@@ -117,7 +117,9 @@ $chanContext.status <br/>
 <td><b>Radial RF</b><br/>
 </td>
 <td>
-<img src="${fissures.filize(${fissures.formatSite($channel.getSite().get_id())})}.ITR.png"/>
+#set ( $fileEnd = ".ITR.png" )
+#set ( $filename = "${fissures.formatSite($channel.getSite().get_id())}$fileEnd" )
+<img src="${fissures.filize($filename)}"/>
 </td>
 </tr>
 
@@ -125,7 +127,9 @@ $chanContext.status <br/>
 <td><b>Transverse RF</b><br/>
 </td>
 <td>
-<img src="${fissures.filize(${fissures.formatSite($channel.getSite().get_id())})}.ITT.png"/>
+#set ( $fileEnd = ".ITT.png" )
+#set ( $filename = "${fissures.formatSite($channel.getSite().get_id())}$fileEnd" )
+<img src="${fissures.filize($filename)}"/>
 </td>
 </tr>
 </table>

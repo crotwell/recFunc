@@ -56,7 +56,7 @@ public class StackSummary {
                                   parentDir,
                                   minPercentMatch);
                     if (sumStack == null) { continue;}
-                    String outStr = net+" "+station[j].get_code();
+                    String outStr = net+" "+station[j].get_code()+" "+station[i].my_location.latitude+" "+station[i].my_location.longitude;
                     
                     float peakH, peakK, peakVal = 0;
                     int[] indicies = sumStack.getSum().getMaxValueIndices();

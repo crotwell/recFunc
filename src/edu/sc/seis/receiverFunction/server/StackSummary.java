@@ -4,12 +4,15 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
+import org.apache.log4j.PropertyConfigurator;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
@@ -154,7 +157,48 @@ public class StackSummary {
         }
         javax.imageio.ImageIO.write(image, "png", outSumImageFile);
     }
+    
+    public static Properties loadProps(String[] args) {
+        
+        Properties props = System.getProperties();
 
+        ConnMgr.addPropsLocation("edu/sc/seis/receiverFunction/server/");
+        
+        // get some defaults
+        String propFilename=
+            "rfcache.prop";
+        String defaultsFilename=
+            "edu/sc/seis/receiverFunction/server/"+propFilename;
+        
+        for (int i=0; i<args.length-1; i++) {
+            if (args[i].equals("-props")) {
+                // override with values in local directory,
+                // but still load defaults with original name
+                propFilename = args[i+1];
+            }
+        }
+        
+        try {
+            props.load((StackSummary.class).getClassLoader().getResourceAsStream( defaultsFilename ));
+        } catch (IOException e) {
+            System.err.println("Could not load defaults. "+e);
+        }
+        try {
+            FileInputStream in = new FileInputStream(propFilename);
+            props.load(in);
+            in.close();
+        } catch (FileNotFoundException f) {
+            System.err.println(" file missing "+f+" using defaults");
+        } catch (IOException f) {
+            System.err.println(f.toString()+" using defaults");
+        }
+        
+        // configure logging from properties...
+        PropertyConfigurator.configure(props);
+        logger.info("Logging configured");
+        return props;
+    }
+    
     JDBCHKStack jdbcHKStack;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StackSummary.class);
@@ -165,7 +209,7 @@ public class StackSummary {
             return;
         }
         try {
-            Properties props = RecFuncCacheStart.loadProps(args);
+            Properties props = loadProps(args);
             ConnMgr.setDB(ConnMgr.POSTGRES);
             Connection conn = ConnMgr.createConnection();
             StackSummary summary = new StackSummary(conn);

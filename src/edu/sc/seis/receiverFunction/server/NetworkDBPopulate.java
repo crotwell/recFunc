@@ -21,7 +21,7 @@ public class NetworkDBPopulate {
 
     public static void main(String[] args) throws NetworkNotFound, SQLException, IOException {
 
-        Properties props = RecFuncCacheStart.loadProps(args);
+        Properties props = StackSummary.loadProps(args);
         org.omg.CORBA_2_3.ORB orb =
             (org.omg.CORBA_2_3.ORB)ORB.init(args, props);
         

@@ -321,7 +321,7 @@ public class JDBCHKStack extends JDBCTable {
             IOException, TauModelException, SQLException,
             ConfigurationException, Exception {
         ConnMgr.setDB(ConnMgr.POSTGRES);
-        Properties props = RecFuncCacheStart.loadProps(args);
+        Properties props = StackSummary.loadProps(args);
         Connection conn = ConnMgr.createConnection();
         JDBCOrigin jdbcOrigin = new JDBCOrigin(conn);
         JDBCEventAttr jdbcEventAttr = new JDBCEventAttr(conn);

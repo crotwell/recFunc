@@ -79,6 +79,7 @@ public class JDBCHKStack  extends JDBCTable {
         tauPTime = TauPUtil.getTauPUtil(modelName);
         
         uncalculatedStmt = conn.prepareStatement(ConnMgr.getSQL("hkStack.uncalculated"));
+        calcByPercentStmt = conn.prepareStatement(ConnMgr.getSQL("hkStack.calcbypercent"));
         putStmt = conn.prepareStatement(ConnMgr.getSQL("hkStack.put"));
         getForStationStmt = conn.prepareStatement(ConnMgr.getSQL("hkStack.getForStation"));
     }
@@ -143,8 +144,28 @@ public class JDBCHKStack  extends JDBCTable {
         uncalculatedStmt.setString(2, staCode);
         uncalculatedStmt.setFloat(3, percentMatch);
         ResultSet rs = uncalculatedStmt.executeQuery();
+       return calcStmt(rs, save, weightPs, weightPpPs, weightPsPs);
+    }
+
+    public ArrayList calcAll(String netCode, String staCode, float percentMatch, boolean save,
+                          float weightPs,
+                          float weightPpPs,
+                          float weightPsPs) throws FileNotFoundException, FissuresException, NotFound, IOException, SQLException, TauModelException {
+            
+        // get all uncalculated rows
+        calcByPercentStmt.setString(1, netCode);
+        calcByPercentStmt.setString(2, staCode);
+        calcByPercentStmt.setFloat(3, percentMatch);
+        ResultSet rs = uncalculatedStmt.executeQuery();
+       return calcStmt(rs, save, weightPs, weightPpPs, weightPsPs);
+    }
+    
+    public ArrayList calcStmt(ResultSet rs,
+                              boolean save,
+                              float weightPs,
+                              float weightPpPs,
+                              float weightPsPs) throws FileNotFoundException, FissuresException, SQLException, TauModelException, NotFound, IOException {
         ArrayList individualHK = new ArrayList();
-       
         while (rs.next()) {
             int recFuncDbId = rs.getInt(1);
             System.out.println("Calc for "+recFuncDbId);
@@ -233,7 +254,7 @@ public class JDBCHKStack  extends JDBCTable {
         return out;
     }
     
-    private PreparedStatement uncalculatedStmt, putStmt, getForStationStmt;
+    private PreparedStatement uncalculatedStmt, calcByPercentStmt, putStmt, getForStationStmt;
     
     private JDBCOrigin jdbcOrigin;
     
@@ -266,13 +287,13 @@ public class JDBCHKStack  extends JDBCTable {
         }
         float minPercentMatch = 80;
         try {
-        calcAndSave(args, minPercentMatch, true, 1, 1, 1);
+        calcAndSave(args, minPercentMatch, true, false, 1, 1, 1);
         }catch(Exception e) {
             GlobalExceptionHandler.handle(e);   
         }
     }
     
-    public static ArrayList calcAndSave(String[] args, float minPercentMatch, boolean save,
+    public static ArrayList calcAndSave(String[] args, float minPercentMatch, boolean save, boolean forceAllCalc,
                                    float weightPs,
                                    float weightPpPs,
                                    float weightPsPs) throws FileNotFoundException, FissuresException, NotFound, IOException, TauModelException, SQLException, ConfigurationException {
@@ -290,8 +311,13 @@ public class JDBCHKStack  extends JDBCTable {
             if (args.length > 1) {
                 String staCode = args[1];
                 System.out.println("calc for "+netCode+"."+staCode);
-                return jdbcHKStack.calc(netCode, staCode, minPercentMatch, save, weightPs,
+                if (forceAllCalc) {
+                    return jdbcHKStack.calcAll(netCode, staCode, minPercentMatch, save, weightPs,
+                                            weightPpPs, weightPsPs);
+                } else {
+                    return jdbcHKStack.calc(netCode, staCode, minPercentMatch, save, weightPs,
                                  weightPpPs, weightPsPs);
+                }
             } else {
                 // do all or for a net
                 JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel().getSiteTable().getStationTable();

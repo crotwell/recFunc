@@ -70,6 +70,15 @@ hkStack.create=CREATE TABLE hkstack ( \
 hkStackSeq.create=CREATE SEQUENCE hkStackSeq
 hkStackSeq.nextVal=SELECT NEXTVAL ('hkStackSeq')
 
+hkStack.calcbypercent=SELECT receiverFunction.recfunc_id FROM network \
+                   NATURAL JOIN station \
+                   NATURAL JOIN site \
+                   NATURAL JOIN channel \
+                   JOIN  receiverFunction ON (chanz_id = chan_id ) \
+                   WHERE net_code = ? \
+                   AND sta_code = ? \
+                   AND receiverFunction.itr_match >= ?
+                   
 hkStack.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
                    NATURAL JOIN station \
                    NATURAL JOIN site \

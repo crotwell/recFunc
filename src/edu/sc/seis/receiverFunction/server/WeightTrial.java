@@ -21,6 +21,7 @@ public class WeightTrial {
             ArrayList list = JDBCHKStack.calcAndSave(args,
                                                      minPercentMatch,
                                                      false,
+                                                     true,
                                                      0.7f,
                                                      0.2f,
                                                      0.1f);

@@ -363,13 +363,13 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                                          minPercentMatch);
         if (sum != null) {
             // at least on event meet the min percent match
-            File sumStackOutFile = new File(parentDir,"SumHKStack_"+minPercentMatch+"_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+postfix);
+            File sumStackOutFile = new File(parentDir,"SumHKStack_"+minPercentMatch+"_"+FissuresFormatter.filize(ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+postfix));
             if (sumStackOutFile.exists()) {sumStackOutFile.delete();}
             DataOutputStream sumdos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(sumStackOutFile)));
             sum.write(sumdos);
             sumdos.close();
 
-            File outSumImageFile  = new File(parentDir,"SumHKStack_"+minPercentMatch+"_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
+            File outSumImageFile  = new File(parentDir,"SumHKStack_"+minPercentMatch+"_"+FissuresFormatter.filize(ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png"));
             if (outSumImageFile.exists()) {outSumImageFile.delete();}
             BufferedImage bufSumImage = sum.createStackImage();
             javax.imageio.ImageIO.write(bufSumImage, "png", outSumImageFile);

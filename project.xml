@@ -57,6 +57,22 @@
     </developers>
     <dependencies>
         <dependency>
+            <groupId>rev</groupId>
+            <artifactId>rev</artifactId>
+            <version>0.1alpha</version>
+        </dependency>
+        <dependency>
+            <groupId>jetty</groupId>
+            <artifactId>jetty</artifactId>
+            <version>4.2.22</version>
+        </dependency>
+        <dependency>
+            <id>servletapi</id>
+            <version>2.3</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>cormorant</groupId>
             <artifactId>cormorant</artifactId>
             <version>0.1beta</version>

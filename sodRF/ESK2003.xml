@@ -195,9 +195,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
     <someCoverage/>
 
     <printlineSeismogramProcess/>
-<!--
     <phaseCut>
-<phaseRequest>
         <beginPhase>ttp</beginPhase>
         <beginOffset>
             <unit>SECOND</unit>
@@ -208,12 +206,11 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <unit>SECOND</unit>
             <value>90</value>
         </endOffset>
-</phaseRequest>
     </phaseCut>
     <rMean/>
     <rTrend/>
     <taper/>
--->
+
     <externalSeismogramProcess>
         <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
         <dataDirectory>ESK_recfunc</dataDirectory>

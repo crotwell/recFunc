@@ -23,6 +23,7 @@ import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.ProxyEventAccessOperations;
+import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.namingService.FissuresNamingService;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
@@ -36,6 +37,7 @@ import edu.sc.seis.sod.CommonAccess;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.Start;
+import edu.sc.seis.sod.database.JDBCConfig;
 import edu.sc.seis.sod.process.waveform.vector.WaveformVectorProcess;
 import edu.sc.seis.sod.process.waveform.vector.WaveformVectorResult;
 import edu.sc.seis.sod.status.StringTreeLeaf;
@@ -68,7 +70,15 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
                                         CookieJar cookieJar) throws Exception {
         try {
             if (sodconfig_id == -1) {
-                System.out.println("Bad socConfig_id");
+                try {
+                    JDBCConfig jdbcConfig = new JDBCConfig(ConnMgr.createConnection());
+                    String sodConfig = jdbcConfig.getCurrentConfig();
+                    sodconfig_id = cache.insertSodConfig(sodConfig);
+                } catch(Exception e) {
+                    // oh well
+                    GlobalExceptionHandler.handle(e);
+                    sodconfig_id = -2;
+                }
             }
             Channel chan = channelGroup.getChannels()[0];
             Location staLoc = chan.my_site.my_station.my_location;

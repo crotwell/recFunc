@@ -3,8 +3,11 @@
 #
 sodConfig.create=CREATE TABLE sodConfig (config_id int, \
                                          config varchar)
-sodConfig.createSeq.create=CREATE SEQUENCE sodConfigSeq
-sodConfig.createSeq.nextVal=SELECT NEXTVAL ('sodConfigSeq')
+sodConfig.put=INSERT INTO sodConfig (config_id, config) VALUES (?, ?)
+sodConfig.get=SELECT config from sodConfig where config_id = ?
+
+sodConfigSeq.create=CREATE SEQUENCE sodConfigSeq
+sodConfigSeq.nextVal=SELECT NEXTVAL ('sodConfigSeq')
 
 receiverFunction.create=CREATE TABLE receiverFunction (recFunc_id int, \
                                    origin_id int, \

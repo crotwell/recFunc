@@ -3,6 +3,7 @@ package edu.sc.seis.receiverFunction.server;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.UNKNOWN;
 import edu.iris.Fissures.IfEvent.EventAttr;
 import edu.iris.Fissures.IfEvent.Origin;
@@ -35,8 +36,9 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         jdbcOrigin = new JDBCOrigin(conn);
         jdbcEventAttr = new JDBCEventAttr(conn);
         jdbcChannel  = new JDBCChannel(conn);
-        jdbcRecFunc = new JDBCRecFunc(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, "../Ears/Data");
-        jdbcHKStack = new JDBCHKStack(conn);
+        jdbcSodConfig = new JDBCSodConfig(conn);
+        jdbcRecFunc = new JDBCRecFunc(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, jdbcSodConfig, DATA_LOC);
+        jdbcHKStack = new JDBCHKStack(conn,  jdbcOrigin, jdbcEventAttr, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
     }
     
 	public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,
@@ -129,13 +131,28 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
 
 
     public int insertSodConfig(String config) {
-        System.err.println("NO IMPL insertSodConfig");
-        return -1;
+        try {
+            synchronized(jdbcRecFunc.getConnection()) {
+                return jdbcSodConfig.put(config);
+            }
+        } catch(SQLException e) {
+            GlobalExceptionHandler.handle(e);
+            throw new UNKNOWN(e.getMessage(), 7, CompletionStatus.COMPLETED_NO);
+        }
     }
 
     public String getSodConfig(int sodConfig_id) throws SodConfigNotFound {
-        System.err.println("NO IMPL getSodConfig");
-        return "NO IMPL";
+        try {
+            synchronized(jdbcRecFunc.getConnection()) {
+                return jdbcSodConfig.get(sodConfig_id);
+            }
+        } catch(SQLException e) {
+            GlobalExceptionHandler.handle(e);
+            throw new UNKNOWN(e.getMessage(), 8, CompletionStatus.COMPLETED_NO);
+        } catch(NotFound e) {
+            GlobalExceptionHandler.handle(e);
+            throw new UNKNOWN(e.getMessage(), 9, CompletionStatus.COMPLETED_NO);
+        }
     }
     
     private JDBCOrigin jdbcOrigin ;
@@ -147,6 +164,10 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     private JDBCRecFunc jdbcRecFunc;
     
     private JDBCHKStack jdbcHKStack;
+    
+    private JDBCSodConfig jdbcSodConfig;
 
+    public static String DATA_LOC = "../Ears/Data";
+    
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(RecFuncCacheImpl.class);
 }

@@ -56,17 +56,13 @@ import edu.sc.seis.sod.status.EventFormatter;
  */
 public class JDBCHKStack  extends JDBCTable {
 
-    
-    public JDBCHKStack(Connection conn) throws SQLException, ConfigurationException, TauModelException {
+    public JDBCHKStack(Connection conn,
+                       JDBCOrigin jdbcOrigin,
+                       JDBCEventAttr jdbcEventAttr,
+                       JDBCChannel jdbcChannel,
+                       JDBCSodConfig jdbcSodConfig,
+                       JDBCRecFunc jdbcRecFunc) throws SQLException, ConfigurationException, TauModelException {
         super("hkstack", conn);
-        JDBCOrigin jdbcOrigin = new JDBCOrigin(conn); 
-        JDBCEventAttr jdbcEventAttr = new JDBCEventAttr(conn);
-        JDBCChannel jdbcChannel = new JDBCChannel(conn);
-        JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn,
-                                                  jdbcOrigin,
-                                                  jdbcEventAttr,
-                                                  jdbcChannel,
-                                                  dataDirectory);
         this.jdbcOrigin = jdbcOrigin;
         this.jdbcEventAttr = jdbcEventAttr;
         this.jdbcChannel = jdbcChannel;
@@ -234,7 +230,7 @@ public class JDBCHKStack  extends JDBCTable {
     
     private JDBCSequence seq;
     
-    private String dataDirectory = "Ears/Data";
+    private String dataDirectory = RecFuncCacheImpl.DATA_LOC;
     
     private File dataDir;
     
@@ -258,7 +254,12 @@ public class JDBCHKStack  extends JDBCTable {
             ConnMgr.setDB(ConnMgr.POSTGRES);
             Properties props = RecFuncCacheStart.loadProps(args);
             Connection conn = ConnMgr.createConnection();
-            JDBCHKStack jdbcHKStack = new JDBCHKStack(conn);
+            JDBCOrigin jdbcOrigin = new JDBCOrigin(conn);
+            JDBCEventAttr jdbcEventAttr = new JDBCEventAttr(conn);
+            JDBCChannel jdbcChannel  = new JDBCChannel(conn);
+            JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
+            JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.DATA_LOC);
+            JDBCHKStack jdbcHKStack = new JDBCHKStack(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
             String netCode = args[0];
             if (args.length > 1) {
                 String staCode = args[1];

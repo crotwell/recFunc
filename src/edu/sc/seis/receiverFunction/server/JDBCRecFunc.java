@@ -57,16 +57,15 @@ public class JDBCRecFunc extends JDBCTable {
                        JDBCOrigin jdbcOrigin,
                        JDBCEventAttr jdbcEventAttr,
                        JDBCChannel jdbcChannel,
+                       JDBCSodConfig jdbcSodConfig,
                        String dataDirectory) throws SQLException, ConfigurationException {
         super("receiverFunction", conn);
         this.jdbcOrigin = jdbcOrigin;
         this.jdbcEventAttr = jdbcEventAttr;
         this.jdbcChannel = jdbcChannel;
+        this.jdbcSodConfig = jdbcSodConfig;
         seq = new JDBCSequence(conn, "receiverFunctionSeq");
         Statement stmt = conn.createStatement();
-        if(!DBUtil.tableExists("sodConfig", conn)){
-            stmt.executeUpdate(ConnMgr.getSQL("sodConfig.create"));
-        }
         if(!DBUtil.tableExists("receiverFunction", conn)){
             stmt.executeUpdate(ConnMgr.getSQL("receiverFunction.create"));
         }
@@ -102,7 +101,7 @@ public class JDBCRecFunc extends JDBCTable {
                                              " AND gwidth = ? "+
                                              " AND maxbumps = ? "+
                                              " AND tol = ? ");
-        getConfigsStmt = conn.prepareStatement("SELECT gwidth, maxbumps, maxerror from "+getTableName()+
+        getConfigsStmt = conn.prepareStatement("SELECT gwidth, maxbumps, tol from "+getTableName()+
                                                " WHERE "+
                                                " origin_id = ? "+
                                                " AND chanZ_id = ? AND ( "+
@@ -404,7 +403,9 @@ public class JDBCRecFunc extends JDBCTable {
     private JDBCEventAttr jdbcEventAttr;
     
     private JDBCChannel jdbcChannel;
-    
+
+    private JDBCSodConfig jdbcSodConfig;
+
     private SeismogramFileTypes fileType = SeismogramFileTypes.SAC;
     
     private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt, getByDbIdStmt;

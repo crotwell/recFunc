@@ -32,11 +32,14 @@ public class SimpleRecFuncClient {
 
         // South Carolina (SCEPP)
         serverDNS="edu/sc/seis";
-        serverName="EARS";
+        serverName="Ears";
 
         NSRecFuncCache cache;
         cache = new NSRecFuncCache(serverDNS, serverName, Initializer.getNS());
         
-        cache.getSodConfig(1);
+        String config = cache.getSodConfig(2);
+        System.out.println(config);
+        System.out.println();
+        System.out.println("Done.");
     }
 }

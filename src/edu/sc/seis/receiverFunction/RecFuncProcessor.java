@@ -39,6 +39,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeismogramProcess {
 
@@ -155,14 +158,33 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
 
                     String prefix = "HKstack_";
                     String postfix = ".raw";
-                    File stackOutFile = new File(getEventDirectory(event),prefix+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+postfix);
+                    String channelIdString = ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id);
+                    File stackOutFile = new File(getEventDirectory(event),prefix+channelIdString+postfix);
                     DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(stackOutFile)));
                     stack.write(dos);
                     dos.close();
 
-                    File outImageFile  = new File(getEventDirectory(event),prefix+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
+                    File outImageFile  = new File(getEventDirectory(event),prefix+channelIdString+".png");
                     BufferedImage bufImage = stack.createStackImage();
                     javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
+
+                    char quote = '"';
+                    File outHtmlFile  = new File(getEventDirectory(event),prefix+channelIdString+".html");
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(outHtmlFile));
+                    bw.write("<html>");bw.newLine();
+                    bw.write("<head>");bw.newLine();
+                    bw.write("<title>"+channelIdString+"</title>");bw.newLine();
+                    bw.write("</head>");bw.newLine();
+                    bw.write("<body>");bw.newLine();
+                    bw.write("</br><pre>");bw.newLine();
+                    stack.writeReport(bw);bw.newLine();
+                    bw.write("</pre></br>");bw.newLine();
+                    bw.write("<img src="+quote+outImageFile+quote+"/>");
+                    bw.write("</body>");bw.newLine();
+                    bw.write("</html>");bw.newLine();
+                    bw.close();
+
+                    appendToSummaryPage(getEventDirectory(event).getName()+" "+channelIdString+" "+stack.getPercentMatch());
 
                     // now update global per channel stack
                     SumHKStack sum = SumHKStack.load(getParentDirectory(),
@@ -214,6 +236,20 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
         return seismograms;
     }
 
+    public synchronized void appendToSummaryPage(String val) throws IOException {
+        if (summaryPage == null) {
+            File summaryFile = new File(getParentDirectory(), "summary.html");
+            summaryPage = new BufferedWriter(new FileWriter(summaryFile));
+            summaryPage.write("<html>");summaryPage.newLine();
+            summaryPage.write("<head>");summaryPage.newLine();
+            summaryPage.write("<title>Receiver Function Summary</title>");summaryPage.newLine();
+            summaryPage.write("</head>");summaryPage.newLine();
+            summaryPage.write("<body>");summaryPage.newLine();
+            // we don't close the tags so that we can append to the file easily
+        }
+        summaryPage.write(val);summaryPage.newLine();
+        summaryPage.flush();
+    }
 
     boolean isDataComplete(LocalSeismogram seis) {
         return processor.isRecFuncFinished();
@@ -222,6 +258,8 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
     RecFunc recFunc;
     DataSetRecFuncProcessor processor;
     TauP_Time tauPTime;
+
+    static BufferedWriter summaryPage = null;
 
     private static Logger logger = Logger.getLogger(RecFuncProcessor.class);
 

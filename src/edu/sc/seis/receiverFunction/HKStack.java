@@ -33,6 +33,8 @@ import javax.swing.JComponent;
 import org.w3c.dom.Element;
 import javax.swing.JFrame;
 import java.awt.Dimension;
+import java.io.Writer;
+import java.io.BufferedWriter;
 
 
 
@@ -196,9 +198,6 @@ public class HKStack {
     }
 
     public BufferedImage createStackImage() {
-        float[][] stackOut = getStack();
-
-
         JComponent comp =  getStackComponent();
         JFrame frame = null;
         Graphics2D g = null;
@@ -392,6 +391,22 @@ public class HKStack {
         return numK;
     }
 
+    /** Writes the HKStack report to a string.
+     */
+    public void writeReport(BufferedWriter out) throws IOException {
+        out.write("p="+p);out.newLine();
+        out.write("alpha="+alpha);out.newLine();
+        out.write("percentMatch="+percentMatch);out.newLine();
+        out.write("minH="+minH);out.newLine();
+        out.write("stepH="+stepH);out.newLine();
+        out.write("numH="+numH);out.newLine();
+        out.write("minK="+minK);out.newLine();
+        out.write("stepK="+stepK);out.newLine();
+        out.write("numK="+numK);out.newLine();
+        out.write("stack.length="+stack.length);out.newLine();
+        out.write("stack[0].length="+stack[0].length);out.newLine();
+
+    }
     /** Writes the HKStack to the DataOutputStream. The DataSetSeismogram
      *  is NOT written as it is assumed that this will be saved separately.
      */

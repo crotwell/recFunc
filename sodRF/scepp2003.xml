@@ -218,7 +218,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <delayTime>
                     <value>80</value><unit>SECOND</unit>
                 </delayTime>
-                <ratio>1.0</ratio>
+                <ratio>0.5</ratio>
                 <modelName>prem</modelName>
                 <phaseName>P</phaseName>
                 <triggerWindow>

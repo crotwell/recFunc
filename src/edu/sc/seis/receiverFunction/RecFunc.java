@@ -102,23 +102,8 @@ public class RecFunc {
             throw new IncompatibleSeismograms("data is not of same length "+
                                                   rotated[0].length+" "+zdata.length);
         }
-
         SamplingImpl samp = SamplingImpl.createSamplingImpl(z.sampling_info);
         double period = samp.getPeriod().convertTo(UnitImpl.SECOND).getValue();
-        UnitImpl sec_per_sec = UnitImpl.divide(UnitImpl.SECOND, UnitImpl.SECOND, "sec per sec");
-
-        int padLength = (int)Math.ceil(pad.divideBy(samp.getPeriod()).convertTo(sec_per_sec).get_value());
-        float[] tmp = new float[zdata.length+padLength];
-        System.arraycopy(zdata, 0, tmp, 0, zdata.length);
-        zdata = tmp;
-
-        tmp = new float[zdata.length+padLength];
-        System.arraycopy(rotated[0], 0, tmp, 0, rotated[0].length);
-        rotated[0] = tmp;
-
-        tmp = new float[zdata.length+padLength];
-        System.arraycopy(rotated[1], 0, tmp, 0, rotated[1].length);
-        rotated[1] = tmp;
 
         zdata = decon.makePowerTwo(zdata);
         rotated[0] = decon.makePowerTwo(rotated[0]);

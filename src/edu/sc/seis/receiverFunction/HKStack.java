@@ -339,8 +339,12 @@ public class HKStack implements Serializable {
         calculate(seis, shift);
     }
     
+    public static float[][] createArray(int numH, int numK) {
+        return new float[numH][numK];
+    }
+    
     void calculate(LocalSeismogramImpl seis, QuantityImpl shift) throws FissuresException  {
-        stack = new float[numH][numK];
+        stack = createArray(numH, numK);
         float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
         if (Float.isNaN(etaP)) {
             System.out.println("Warning: Eta P is NaN alpha="+alpha+"  p="+p);

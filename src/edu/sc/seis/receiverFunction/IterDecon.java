@@ -10,7 +10,7 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 3564 2003-03-26 03:56:16Z crotwell $
+ * @version $Id: IterDecon.java 3568 2003-03-26 15:54:42Z crotwell $
  */
 
 public class IterDecon {
@@ -170,17 +170,17 @@ public class IterDecon {
     float[] gaussianFilter(float[] x, float gwidthFactor, float dt) {
         int n2 = nextPowerTwo(x.length);
         int halfpts = n2 / 2;
+
         Cmplx[] forward = Cmplx.fft(x);
-        //	float[] forward = realFT(x, halfpts);
 
         double df = 1/(n2 * dt);
         double d_omega = 2*Math.PI*df;
         double gwidth = 4*gwidthFactor*gwidthFactor;
 
         // Handle the nyquist frequency
-        double omega = Math.PI/dt;
+        double omega = Math.PI/dt; // eliminate 2 / 2
         double gauss = Math.exp(-omega*omega / gwidth);
-        //	x[2] *= gauss;
+
         forward[0].i *= gauss;
 
         for (int i=1; i<halfpts; i++) {
@@ -189,6 +189,42 @@ public class IterDecon {
             gauss = Math.exp(-omega*omega / gwidth);
             forward[i].r *= gauss;
             forward[i].i *= gauss;
+        }
+	
+        float[] ans = Cmplx.fftInverse(forward, x.length);
+
+        float scaleFactor = (float)(dt * 2 * df);
+        for (int i=0; i<ans.length; i++) {
+            ans[i] *= scaleFactor;
+        }
+        return ans;
+    }
+
+    public float[] phaseShift(float[] x, float shift, float dt) {
+        int n2 = nextPowerTwo(x.length);
+        int halfpts = n2 / 2;
+
+        Cmplx[] forward = Cmplx.fft(x);
+
+        double df = 1/(n2 * dt);
+        double d_omega = 2*Math.PI*df;
+
+        // Handle the nyquist frequency
+        double omega = Math.PI/dt;
+        forward[0].i *= (float)Math.cos(omega*shift);
+
+        double a,b,c,d;
+
+        for (int i=1; i<halfpts; i++) {
+            int j=i*2;
+            omega = i*d_omega;
+            a = forward[i].r;
+            b = forward[i].i;
+            c = Math.cos(omega*shift);
+            d = Math.sin(omega*shift);
+
+            forward[i].r = a*c-b*d;
+            forward[i].i = a*d+b*c;
         }
 	
         float[] ans = Cmplx.fftInverse(forward, x.length);

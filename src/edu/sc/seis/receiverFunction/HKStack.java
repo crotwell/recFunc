@@ -249,11 +249,11 @@ public class HKStack implements Serializable {
             g.drawString("    K="+(getMinK()+xyMax[1]*getStepK()), 0, 2*fm.getHeight());
             g.translate(0, 2*fm.getHeight());
 
-            int minColor = HKStackImage.makeImageable(min, max, min);
+            int minColor = HKStackImage.makeImageable(0, max, 0);
             g.setColor(new Color(minColor, minColor, minColor));
             g.fillRect(0, 0, 15, 15);
             g.setColor(Color.white);
-            g.drawString("Min="+min, 0, 15+fm.getHeight());
+            g.drawString("Min=0", 0, 15+fm.getHeight());
 
             int maxColor = HKStackImage.makeImageable(min, max, max);
             g.setColor(new Color(maxColor, maxColor, maxColor));

@@ -41,7 +41,7 @@ public class HKStackImage extends JComponent {
                 if (j== xyMax[0] && k==xyMax[1]) {
                     g.setColor(Color.red);
                 } else {
-                    int colorVal = makeImageable(min, max, stackOut[j][k]);
+                    int colorVal = makeImageable(0, max, stackOut[j][k]);
                     g.setColor(new Color(colorVal, colorVal, colorVal));
                 }
                 g.fillRect( 2*k, 2*j, 2, 2);
@@ -53,11 +53,9 @@ public class HKStackImage extends JComponent {
     }
 
     static int makeImageable(float min, float max, float val) {
-        if (val > max || val < min) {
-            throw new IllegalArgumentException("val must be between min and max val="+val+ "("+min+" , "+max+")");
-        }
-        float absMax = Math.max(Math.abs(min), Math.abs(max));
-        return (int)SimplePlotUtil.linearInterp(-1*absMax, 0, absMax, 255, val);
+        if (val > max) { return makeImageable(min, max, max); }
+        if (val < min) { return makeImageable(min, max, min); }
+        return (int)SimplePlotUtil.linearInterp(min, 255, max, 0, val);
     }
 
     protected HKStack stack;

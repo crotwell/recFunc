@@ -10,6 +10,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.Iterator;
 import javax.swing.JComponent;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 
@@ -28,14 +30,13 @@ public class HKStackImage extends JComponent {
         setPreferredSize(imageSize);
     }
 
-    public void addMarker(int vpvsIndex, int depthIndex) {
-        markerH = depthIndex;
-        markerV = vpvsIndex;
+    public void addMarker(String name, int vpvsIndex, int depthIndex, Color color) {
+        markers.add(new Marker(name, depthIndex, vpvsIndex, color));
     }
-
 
     public void paintComponent(Graphics graphics) {
         Graphics2D g = (Graphics2D)graphics;
+        Color origColor = g.getColor();
 
         float[][] stackOut = stack.getStack();
 
@@ -50,8 +51,6 @@ public class HKStackImage extends JComponent {
             for (int k = 0; k < stackOut[j].length; k++) {
                 if (j== xyMax[0] && k==xyMax[1]) {
                     g.setColor(Color.red);
-                } else if (j== markerH && k==markerV) {
-                    g.setColor(Color.blue);
                 } else {
                     int colorVal = makeImageable(0, max, stackOut[j][k]);
                     g.setColor(new Color(colorVal, colorVal, colorVal));
@@ -61,7 +60,27 @@ public class HKStackImage extends JComponent {
             }
             //System.out.println("");
         }
-
+        Iterator it = markers.iterator();
+        while(it.hasNext()) {
+            Marker mark = (Marker)it.next();
+            System.out.println("Marker "+mark.name);
+            g.setColor(mark.color);
+            g.fillRect(2*mark.vpvsIndex, 2*(mark.depthIndex-smallestHindex), 2, 2);
+        }
+        g.setColor(origColor);
+    }
+    
+    class Marker {
+        Marker(String name, int vpvsIndex, int depthIndex, Color color) {
+            this.name = name;
+            this.vpvsIndex = vpvsIndex;
+            this.depthIndex = depthIndex;
+            this.color = color;
+        }
+        String name;
+        int vpvsIndex;
+        int depthIndex;
+        Color color;
     }
 
     static int makeImageable(float min, float max, float val) {
@@ -72,8 +91,7 @@ public class HKStackImage extends JComponent {
 
     protected HKStack stack;
 
-    protected int markerH = -1;
-    protected int markerV = -1;
+    protected ArrayList markers = new ArrayList();
 
     protected int smallestHindex = 0;
 }

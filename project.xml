@@ -69,128 +69,83 @@ deconvolution method of Ammon.
       <id>j3dcore</id>
       <version>1.0</version>
       <jar>j3dcore.jar</jar>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
 <!-- hopefully temporary Java3D support -->
     <dependency>
       <id>j3dutils</id>
       <version>1.0</version>
       <jar>j3dutils.jar</jar>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
 <!-- hopefully temporary Java3D support -->
     <dependency>
       <id>vecmath</id>
       <version>1.0</version>
       <jar>vecmath.jar</jar>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
 
     <dependency>
       <id>classics</id>
       <version>1.0</version>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>gee</id>
       <version>2.0.6beta</version>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>sod</id>
       <version>1.0Beta</version>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>fissuresUtil</id>
       <version>1.0.6beta</version>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>fissuresImpl</id>
       <version>1.1.4beta</version>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>fissuresIDL</id>
       <version>1.0</version>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>SeedCodec</id>
       <version>1.0Beta2</version>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>TauP</id>
       <version>1.1.4</version>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
+    </dependency>
+    <dependency>
+      <id>junit-addons</id>
+      <version>1.4</version>
+      <type>test</type>
+      <url>http://sourceforge.net/projects/junit-addons</url>
     </dependency>
     <dependency>
       <id>junit</id>
       <version>3.8</version>
       <type>test</type>
       <url>http://junit.org/</url>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>hsqldb</id>
       <version>20040212</version>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>xerces</id>
       <version>2.4.0</version>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>xml-apis</id>
       <version>1.0.b2</version>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>xalan</id>
       <version>2.5.1</version>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>log4j</id>
       <version>1.2.8</version>
-      <properties>
-	<jnlp.jar>true</jnlp.jar>
-      </properties>
     </dependency>
 
     <dependency>
@@ -239,8 +194,19 @@ deconvolution method of Ammon.
           <include>*.prop</include>
         </includes>
       </resource>
-
     </resources>
+    <unitTest>
+      <resources>
+        <resource>
+          <directory>test/unit/edu/sc/seis/receiverFunction</directory>
+          <targetPath>edu/sc/seis/receiverFunction</targetPath>
+          <includes>
+            <include>*.prop</include>
+            <include>*.sac</include>
+          </includes>
+        </resource>
+      </resources>
+    </unitTest>
   </build>
 
 </project>

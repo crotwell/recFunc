@@ -39,11 +39,11 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogramProcess {
-    
+
     public RecFuncProcessor(Element config)  throws ConfigurationException {
         super(config);
     }
-    
+
     /**
      * Processes localSeismograms to calculate receiver functions.
      *
@@ -75,19 +75,19 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
             float gwidth = 3.0f;
             tauPTime = new TauP_Time("iasp91");
             recFunc = new RecFunc(tauPTime,
-                                  new IterDecon(100, true, .001f, gwidth));
+                                  new IterDecon(200, true, .001f, gwidth));
         }
-        
+
         DataSet dataset = getDataSet(event);
         DataSetSeismogram[] chGrpSeismograms =
             DisplayUtils.getComponents(dataset, available[0]);
-        
+
         if (chGrpSeismograms.length < 3) {
             logger.debug("chGrpSeismograms.length = "+chGrpSeismograms.length);
             // must not be all here yet
             return seismograms;
         }
-        
+
         logger.info("RecFunc for "+ChannelIdUtil.toStringNoDates(channel.get_id()));
         for (int i=0; i<chGrpSeismograms.length; i++) {
             if (chGrpSeismograms[i] == null) {
@@ -96,7 +96,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                 return seismograms;
             }
         }
-        
+
         processor =
             new DataSetRecFuncProcessor(chGrpSeismograms,
                                         event,
@@ -108,7 +108,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         while ( ! processor.isRecFuncFinished()) {
             try {
                 //System.out.println("Sleeping "+ChannelIdUtil.toStringNoDates(channel.get_id()));
-                
+
                 Thread.sleep(100);
             } catch (InterruptedException e) {
             }
@@ -124,7 +124,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                                                              channel.sampling_info,
                                                              channel.effective_time,
                                                              channel.my_site);
-                    
+
                     URLDataSetSeismogram saved =
                         saveInDataSet(event, recFuncChannel, predicted.getCache());
                     Collection aux = predicted.getAuxillaryDataKeys();
@@ -143,7 +143,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                                                 5, .25f, 240,
                                                 1.6f, .0025f, 200,
                                                 saved);
-                    
+
                     File outImageFile  = new File(getEventDirectory(event),"stack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
                     BufferedImage bufImage = createStackImage(stack);
                     javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
@@ -159,16 +159,16 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         System.out.println("Done with "+ChannelIdUtil.toStringNoDates(channel.get_id()));
         return seismograms;
     }
-    
+
     int makeImageable(float min, float max, float val) {
         float absMax = Math.max(Math.abs(min), Math.abs(max));
         return (int)SimplePlotUtil.linearInterp(-1*absMax, 0, absMax, 255, val);
     }
-    
+
     boolean isDataComplete(LocalSeismogram seis) {
         return processor.isRecFuncFinished();
     }
-    
+
     public BufferedImage createStackImage(HKStack stack) {
         float[][] stackOut = stack.getStack();
         int dataH = 2*stackOut.length;
@@ -183,20 +183,20 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         g.fillRect(0, 0, bufImage.getWidth(), bufImage.getHeight());
         g.translate(0, 5);
         FontMetrics fm = g.getFontMetrics();
-        
+
         String title = ChannelIdUtil.toStringNoDates(stack.getRecFunc().getRequestFilter().channel_id);
         g.setColor(Color.white);
         g.drawString(title, (fullWidth-fm.stringWidth(title))/2, fm.getHeight());
-        
+
         g.translate(5, fm.getHeight()+fm.getDescent());
-        
+
         float min = stackOut[0][0];
         int maxIndexX = 0;
         int maxIndexY = 0;
         int minIndexX = 0;
         int minIndexY = 0;
         float max = min;
-        
+
         for (int j = 0; j < stackOut.length; j++) {
             for (int k = 0; k < stackOut[j].length; k++) {
                 if (stackOut[j][k] < min) {
@@ -211,7 +211,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
                 }
             }
         }
-        
+
         for (int j = 0; j < stackOut.length; j++) {
             //System.out.print(j+" : ");
             for (int k = 0; k < stackOut[j].length; k++) {
@@ -223,7 +223,7 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
             //System.out.println("");
         }
         g.translate(0, dataH);
-        
+
         g.setColor(Color.white);
         g.drawString("Min H="+(stack.getMinH()+minIndexY*stack.getStepH()), 0, fm.getHeight());
         g.drawString("    K="+(stack.getMinK()+minIndexX*stack.getStepK()), 0, 2*fm.getHeight());
@@ -231,13 +231,13 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         g.drawString("Max H="+(stack.getMinH()+maxIndexY*stack.getStepH()), 0, fm.getHeight());
         g.drawString("    K="+(stack.getMinK()+maxIndexX*stack.getStepK()), 0, 2*fm.getHeight());
         g.translate(0, 2*fm.getHeight());
-        
+
         int minColor = makeImageable(min, max, min);
         g.setColor(new Color(minColor, minColor, minColor));
         g.fillRect(0, 0, 15, 15);
         g.setColor(Color.white);
         g.drawString("Min="+min, 0, 15+fm.getHeight());
-        
+
         int maxColor = makeImageable(min, max, max);
         g.setColor(new Color(maxColor, maxColor, maxColor));
         g.fillRect(dataW-20, 0, 15, 15);
@@ -245,17 +245,17 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         String maxString = "Max="+max;
         int stringWidth = fm.stringWidth(maxString);
         g.drawString(maxString, dataW-5-stringWidth, 15+fm.getHeight());
-        
+
         g.dispose();
         return bufImage;
     }
-    
+
     RecFunc recFunc;
     DataSetRecFuncProcessor processor;
     TauP_Time tauPTime;
-    
+
     private static Logger logger = Logger.getLogger(RecFuncProcessor.class);
-    
+
 }
 
 

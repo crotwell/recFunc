@@ -203,7 +203,7 @@ public class IterDeconTest
             new DataInputStream(this.getClass().getClassLoader().getResourceAsStream("edu/sc/seis/receiverFunction/gauss1024.sac"));
         sac.read(in);
         float[] data = new float[sac.npts];
-        data[101] = 1/sac.delta;
+        data[100] = 1/sac.delta;
 
         float[] out = iterdecon.gaussianFilter(data, 2.5f, sac.delta);
         float[] sacData = sac.y;
@@ -253,7 +253,7 @@ public class IterDeconTest
         assertEquals("lag 7", 0f, corr[7], 0.00001f);
     }
 
-    public void xxxtxestIterDeconIdentity() throws Exception {
+    public void testIterDeconIdentity() throws Exception {
         // JUnitDoclet begin method phaseShift
         float[] data = new float[128];
 

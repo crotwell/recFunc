@@ -7,27 +7,35 @@
 #include "IfEvent.idl"
 #include "IfSeismogramDC.idl"
 
-module receiverFunction {
+module IfReceiverFunction {
 
 	typedef sequence<Fissures::IfNetwork::ChannelId> ChannelIdSeq;
 	
     interface RecFuncCache {
 
-        boolean isCached(in ChannelIdSeq channel, in Fissures::IfEvent::EventAccess event);
+        boolean isCached(in Fissures::IfEvent::EventAccess event, 
+        				    in ChannelIdSeq channel,
+        				    in float gwidth,
+        				    in long maxBumps,
+        				    in float tol);
 
-        Fissures::IfSeismogramDC::LocalSeismogramSeq calculate(
+        Fissures::IfSeismogramDC::LocalSeismogramSeq get(
                            in Fissures::IfEvent::EventAccess event,
                            in ChannelIdSeq channel,
-					      in Fissures::IfSeismogramDC::LocalSeismogramSeq seis
-					      );
+                           in float gwidth,
+                           in long maxBumps,
+                           in float tol);
 					      
         void insert(in Fissures::IfEvent::EventAccess event,
-                           in ChannelIdSeq channel,
+					      in float gwidth,
+					      in long maxBumps,
+					      in float tol,
 					      in Fissures::IfSeismogramDC::LocalSeismogramSeq original,
 					      in Fissures::IfSeismogramDC::LocalSeismogram radial,
-					      in Fissures::IfSeismogramDC::LocalSeismogram tansverse
-        );
+					      in float radialError,
+					      in Fissures::IfSeismogramDC::LocalSeismogram tansverse,
+					      in float transverseError
+                    );
 
     };
-
 };

@@ -10,6 +10,7 @@
 <img src="earslogo2.gif"/><br/>
 
 <p><b>Network: </b>$net.getCodeWithYear() - $net.name</p>
+<p><b>Description: </b>$net.getDescription()</p>
 
 <table>
 <tr>

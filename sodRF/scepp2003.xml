@@ -215,6 +215,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
     <externalSeismogramProcess>
         <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
+        <fileType>sac</fileType>
         <dataDirectory>SP_recfunc</dataDirectory>
                 <eventDirLabel><originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/></eventDirLabel>
     </externalSeismogramProcess>

@@ -52,12 +52,10 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             </unitRange>
         </originDepthRange>
 
-        <eventTimeRange>
-        <timeRange>
+        <originTimeRange>
             <startTime>20030301T00:00:00.001Z</startTime>
             <endTime>20041231T23:59:59.999Z</endTime>
-        </timeRange>
-        </eventTimeRange>
+        </originTimeRange>
 
 
                 <magnitudeRange>

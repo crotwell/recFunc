@@ -282,7 +282,8 @@ public class JDBCHKStack extends JDBCTable {
         }
         rs.close();
         rs = null;
-        if(individualHK.size() != 0) {
+        // if there is only 1 eq that matches, then we can't really do a stack
+        if(individualHK.size() > 1) {
             HKStack temp = (HKStack)individualHK.get(0);
             SumHKStack sumStack = new SumHKStack((HKStack[])individualHK.toArray(new HKStack[0]),
                                                  temp.getChannel(),

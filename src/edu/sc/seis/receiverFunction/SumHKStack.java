@@ -176,8 +176,13 @@ public class SumHKStack {
             b = sum.getStack()[maxIndices[0]][maxIndices[1]];
             c = sum.getStack()[maxIndices[0]+1][maxIndices[1]];
         }
-        hVariance = -2*Math.sqrt(maxVariance)/((a-2*b+c)/(sum.getStepH()*sum.getStepH()));
-        
+        double denom = a-2*b+c;
+        if (denom != 0) {
+            hVariance = -2*Math.sqrt(maxVariance)/(denom/(sum.getStepH()*sum.getStepH()));
+        } else {
+            logger.error("hVariance is NaN: a="+a+"  b="+b+"  c="+c);
+            hVariance = Double.MAX_VALUE;
+        }
         if (maxIndices[1] == 0) {
             // off edge, shift by 1???
             a = sum.getStack()[maxIndices[0]][maxIndices[1]];
@@ -194,7 +199,13 @@ public class SumHKStack {
             b = sum.getStack()[maxIndices[0]][maxIndices[1]];
             c = sum.getStack()[maxIndices[0]][maxIndices[1]+1];
         }
-        kVariance = -2*Math.sqrt(maxVariance)/((a-2*b+c)/(sum.getStepK()*sum.getStepK()));
+        denom = a-2*b+c;
+        if (denom != 0) {
+            kVariance = -2*Math.sqrt(maxVariance)/(denom/(sum.getStepK()*sum.getStepK()));
+        } else {
+            logger.error("kVariance is NaN: a="+a+"  b="+b+"  c="+c);
+            kVariance = Double.MAX_VALUE;
+        }
     }
 
     protected Channel channel;
@@ -205,5 +216,7 @@ public class SumHKStack {
     protected double maxVariance;
     protected double hVariance;
     protected double kVariance;
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumHKStack.class);
 }
 

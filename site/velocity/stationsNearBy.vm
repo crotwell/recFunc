@@ -20,7 +20,7 @@
 #foreach($sta in $stationList)
 <tr>
 <td class="odd">$sta.getNet().getCode() $sta.getCode()</td>
-<td class="even"><a href="station.html?netdbid=$net.getDbId()&stacode=$sta.getCode()">$sta.getName()</a></td>
+<td class="even"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()">$sta.getName()</a></td>
 <td class="odd">$sta.getLatitude()/$sta.getLongitude()</td>
 </tr>
 #end

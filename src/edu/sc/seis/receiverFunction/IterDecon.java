@@ -10,7 +10,7 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 3595 2003-03-31 21:06:51Z crotwell $
+ * @version $Id: IterDecon.java 3674 2003-04-13 02:15:09Z crotwell $
  */
 
 public class IterDecon {
@@ -172,24 +172,23 @@ public class IterDecon {
      *  The 1D gaussian is: f(x) = 1/(2*PI*sigma) e^(-x^2/(q * sigma^2))
      *  and the impluse response is: g(x) = 1/(2*PI)e^(-sigma^2 * u^2 / 2)
      * 
-*/
+     */
     public static float[] gaussianFilter(float[] x, 
                                          float gwidthFactor, 
                                          float dt) {
-        int n2 = nextPowerTwo(x.length);
-        int halfpts = n2 / 2;
-
         Cmplx[] forward = Cmplx.fft(x);
 
-        double df = 1/(n2 * dt);
+        double df = 1/(forward.length * dt);
         double d_omega = 2*Math.PI*df;
         double gwidth = 4*gwidthFactor*gwidthFactor;
+        double gauss;
+        double omega;
 
-        // Handle the nyquist frequency
-        double omega = Math.PI/dt; // eliminate 2 / 2
-        double gauss = Math.exp(-omega*omega / gwidth);
+//         // Handle the nyquist frequency
+//         omega = Math.PI/dt; // eliminate 2 / 2
+//         gauss = Math.exp(-omega*omega / gwidth);
 
-        forward[0].i *= gauss;
+//         forward[0].i *= gauss;
 
         for (int i=1; i<forward.length; i++) {
             omega = i*d_omega;
@@ -199,13 +198,12 @@ public class IterDecon {
         }
 	
         float[] ans = Cmplx.fftInverse(forward, x.length);
-        System.out.println("before scale [10="+ans[10]);
         
-        float scaleFactor = (float)(dt * 2 * df);
-        for (int i=0; i<ans.length; i++) {
-            ans[i] *= scaleFactor;
-        }
-        System.out.println("after scale [10="+ans[10]);
+//         float scaleFactor = (float)(dt * 2 * df);
+//         for (int i=0; i<ans.length; i++) {
+//             ans[i] *= scaleFactor;
+//         }
+
         return ans;
     }
 
@@ -218,14 +216,14 @@ public class IterDecon {
         double df = 1/(n2 * dt);
         double d_omega = 2*Math.PI*df;
 
+        double omega;
         // Handle the nyquist frequency
-        double omega = Math.PI/dt;
-        forward[0].i *= (float)Math.cos(omega*shift);
+        // omega = Math.PI/dt;
+        //forward[0].i *= (float)Math.cos(omega*shift);
 
         double a,b,c,d;
 
-        for (int i=1; i<halfpts; i++) {
-            int j=i*2;
+        for (int i=1; i<forward.length; i++) {
             omega = i*d_omega;
             a = forward[i].r;
             b = forward[i].i;
@@ -238,10 +236,10 @@ public class IterDecon {
 	
         float[] ans = Cmplx.fftInverse(forward, x.length);
 
-        float scaleFactor = (float)(dt * 2 * df);
-        for (int i=0; i<ans.length; i++) {
-            ans[i] *= scaleFactor;
-        }
+        //        float scaleFactor = (float)(dt * 2 * df);
+        //        for (int i=0; i<ans.length; i++) {
+        //            ans[i] *= scaleFactor;
+        //        }
         return ans;
     }
 

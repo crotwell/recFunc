@@ -52,7 +52,7 @@ public class StackSummary {
         parentDir.mkdirs();
         BufferedWriter textSumm = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(textSummary)));
         for(int i = 0; i < netId.length; i++) {
-            if(netId[i].network_code.equals(net)) {
+            if(net.equals("-all") || netId[i].network_code.equals(net)) {
                 Station[] station = jdbcStation.getAllStations(netId[i]);
                 for(int j = 0; j < station.length; j++) {
                     System.out.println("calc for "+StationIdUtil.toStringNoDates(station[j].get_id()));

@@ -244,9 +244,10 @@ public class JDBCHKStack  extends JDBCTable {
     
     public static void main(String[] args) {
         if (args.length < 1) {
-            System.out.println("Usage: JDBCHKStack net [station]");
+            System.out.println("Usage: JDBCHKStack -all or net [station]");
             return;
         }
+        float minPercentMatch = 80;
         try {
             ConnMgr.setDB(ConnMgr.POSTGRES);
             Properties props = RecFuncCacheStart.loadProps(args);
@@ -256,23 +257,22 @@ public class JDBCHKStack  extends JDBCTable {
             if (args.length > 1) {
                 String staCode = args[1];
                 System.out.println("calc for "+netCode+"."+staCode);
-                jdbcHKStack.calc(netCode, staCode, 90.0f);
+                jdbcHKStack.calc(netCode, staCode, minPercentMatch);
             } else {
-                // do all for a net
+                // do all or for a net
                 JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel().getSiteTable().getStationTable();
                 JDBCNetwork jdbcNetwork = jdbcStation.getNetTable();
                 NetworkId[] netId = jdbcNetwork.getAllNetworkIds();
                 for(int i = 0; i < netId.length; i++) {
-                    if(netId[i].network_code.equals(netCode)) {
+                    if(netCode.equals("-all") || netId[i].network_code.equals(netCode)) {
                         Station[] station = jdbcStation.getAllStations(netId[i]);
                         for(int j = 0; j < station.length; j++) {
                             System.out.println("calc for "+netCode+"."+station[j].get_code());
-                            jdbcHKStack.calc(netCode, station[j].get_code(), 90.0f);
+                            jdbcHKStack.calc(netCode, station[j].get_code(), minPercentMatch);
                         }
                     }
                 }
             }
-            
         }catch(Exception e) {
             GlobalExceptionHandler.handle(e);   
         }

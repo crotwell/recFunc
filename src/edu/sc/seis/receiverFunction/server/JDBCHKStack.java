@@ -141,7 +141,9 @@ public class JDBCHKStack  extends JDBCTable {
         while (rs.next()) {
             int recFuncDbId = rs.getInt(1);
             System.out.println("Calc for "+recFuncDbId);
-            individualHK.add(calc(recFuncDbId));
+            HKStack stack = calc(recFuncDbId);
+            int hkstack_id = put(recFuncDbId, stack);
+            individualHK.add(stack);
         }
         return individualHK;
     }
@@ -161,7 +163,6 @@ public class JDBCHKStack  extends JDBCTable {
                                     (LocalSeismogramImpl)cachedResult.radial,
                                     cachedResult.channels[0],
                                     RecFunc.getDefaultShift());
-        int hkstack_id = put(recFuncDbId, stack);
         System.out.println("Stack calc for "+ChannelIdUtil.toStringNoDates(cachedResult.channels[0]));
         return stack;
     }
@@ -190,7 +191,7 @@ public class JDBCHKStack  extends JDBCTable {
         }
     }
     
-    HKStack extract(ResultSet rs) throws FissuresException, NotFound, IOException, SQLException {
+    public HKStack extract(ResultSet rs) throws FissuresException, NotFound, IOException, SQLException {
         Channel[] channels = jdbcRecFunc.extractChannels(rs);
         byte[] dataBytes = rs.getBytes("data");
         int numH = rs.getInt("numH");

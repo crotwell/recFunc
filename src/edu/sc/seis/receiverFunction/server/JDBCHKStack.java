@@ -264,6 +264,7 @@ public class JDBCHKStack  extends JDBCTable {
                 JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel().getSiteTable().getStationTable();
                 JDBCNetwork jdbcNetwork = jdbcStation.getNetTable();
                 NetworkId[] netId = jdbcNetwork.getAllNetworkIds();
+                System.out.println("Found "+netId.length+" networks.");
                 for(int i = 0; i < netId.length; i++) {
                     System.out.println("Network: "+NetworkIdUtil.toString(netId[i]));
                     if(netCode.equals("-all") || netId[i].network_code.equals(netCode)) {

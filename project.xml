@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project>
     <pomVersion>3</pomVersion>
     <groupId>recFunc</groupId>
@@ -12,27 +11,20 @@
         <logo>http://www.seis.sc.edu/images/header.gif</logo>
     </organization>
     <inceptionYear>2002</inceptionYear>
-    
     <package>edu.sc.seis.receiverFunction</package>
     <gumpRepositoryId>${pom.artifactId}</gumpRepositoryId>
-    <description> 
-        Caclulation of seismic receiver functions based on the time-domain iterative 
-        deconvolution method of Ammon.
-    </description>
+    <description> Caclulation of seismic receiver functions based on the time-domain iterative
+        deconvolution method of Ammon. </description>
     <shortDescription>Caclulation of receiver functions.</shortDescription>
     <url>http://www.seis.sc.edu/software/${pom.artifactId}</url>
     <siteAddress>www.seis.sc.edu</siteAddress>
     <siteDirectory>/seis/raid1/Apache/htdocs/software/${pom.artifactId}</siteDirectory>
     <distributionDirectory>/seis/raid1/Apache/htdocs/software/mavenRepository</distributionDirectory>
-    
     <repository>
         <connection>scm:cvs:local:anonymous@cvs.seis.sc.edu:/opt/local/Internal/CvsRoot:seis/${pom.artifactId}</connection>
         <url>http://www.seis.sc.edu/cgi-bin/viewcvs.cgi/seis/${pom.artifactId}</url>
     </repository>
-    <mailingLists>
-    </mailingLists>
-    
-    
+    <mailingLists/>
     <developers>
         <developer>
             <name>Philip Crotwell</name>
@@ -63,13 +55,12 @@
             </roles>
         </developer>
     </developers>
-    
     <dependencies>
         <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
             <version>1.0</version>
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>Multivalent</groupId>
             <artifactId>Multivalent</artifactId>
@@ -80,17 +71,16 @@
             <id>geeMac</id>
             <version>1.3</version>
         </dependency>
-
         <dependency>
             <groupId>recFunc</groupId>
             <artifactId>recFuncIDL</artifactId>
             <version>1.0beta</version>
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>mapData</groupId>
             <artifactId>etopo10</artifactId>
-            <jar>etopo10.jar</jar>            
-        </dependency> 
+            <jar>etopo10.jar</jar>
+        </dependency>
         <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -101,7 +91,7 @@
             <groupId>isti</groupId>
             <artifactId>isti.util</artifactId>
             <version>1.0.1USC</version>
-            <url>http://www.isti.com</url> 
+            <url>http://www.isti.com</url>
         </dependency>
         <dependency>
             <groupId>isti</groupId>
@@ -115,7 +105,6 @@
             <version>b9</version>
             <url>http://www.jdom.org</url>
         </dependency>
-        
         <dependency>
             <id>gee</id>
             <version>2.0.9beta</version>
@@ -142,50 +131,32 @@
             <artifactId>JacORB</artifactId>
             <version>2.1_USC1</version>
             <url>http://www.jacorb.org</url>
-            <properties>
-                <endorsed/>
-                </properties>
         </dependency>
         <dependency>
             <groupId>JacORB</groupId>
             <artifactId>idl</artifactId>
             <version>2.1</version>
             <url>http://www.jacorb.org</url>
-            <properties>
-                <endorsed/>
-                </properties>
         </dependency>
         <dependency>
             <groupId>JacORB</groupId>
             <artifactId>antlr</artifactId>
             <version>2.7.2</version>
-            <properties>
-                <endorsed/>
-                </properties>
         </dependency>
         <dependency>
             <groupId>JacORB</groupId>
             <artifactId>avalon-framework</artifactId>
             <version>4.1.5</version>
-            <properties>
-                <endorsed/>
-                </properties>
         </dependency>
         <dependency>
             <groupId>JacORB</groupId>
             <artifactId>concurrent</artifactId>
             <version>1.3.2</version>
-            <properties>
-                <endorsed/>
-                </properties>
         </dependency>
         <dependency>
             <groupId>JacORB</groupId>
             <artifactId>logkit</artifactId>
             <version>1.2</version>
-            <properties>
-                <endorsed/>
-                </properties>
         </dependency>
         <dependency>
             <id>fissuresUtil</id>
@@ -249,7 +220,7 @@
             <url>http://xml.apache.org/xerces2-j/index.html</url>
             <properties>
                 <endorsed/>
-                </properties>
+            </properties>
         </dependency>
         <dependency>
             <id>xml-apis</id>
@@ -257,7 +228,7 @@
             <url>http://xml.apache.org/xalan-j/index.html</url>
             <properties>
                 <endorsed/>
-                </properties>
+            </properties>
         </dependency>
         <dependency>
             <id>xalan</id>
@@ -265,7 +236,7 @@
             <url>http://xml.apache.org/xalan-j/index.html</url>
             <properties>
                 <endorsed/>
-                </properties>
+            </properties>
         </dependency>
         <dependency>
             <id>log4j</id>
@@ -302,20 +273,18 @@
             <version>20030807</version>
             <url>http://wwws.sun.com/software/xml/developers/multischema/</url>
         </dependency>
-        <dependency>   
+        <dependency>
             <groupId>velocity</groupId>
             <artifactId>velocity</artifactId>
             <version>1.5-USC1</version>
-            <url>http://jakarta.apache.org/velocity</url>                      
+            <url>http://jakarta.apache.org/velocity</url>
         </dependency>
-        
-        <dependency>   
+        <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>3.0</version>
             <url>http://jakarta.apache.org/commons/collections</url>
         </dependency>
-        
         <dependency>
             <groupId>velocity-tools</groupId>
             <artifactId>velocity-tools-generic</artifactId>
@@ -347,7 +316,6 @@
             <version>0.99</version>
         </dependency>
     </dependencies>
-    
     <build>
         <nagEmailAddress>jaster@seis.sc.edu</nagEmailAddress>
         <sourceDirectory>src</sourceDirectory>
@@ -392,6 +360,4 @@
             </resources>
         </unitTest>
     </build>
-    
 </project>
-

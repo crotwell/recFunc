@@ -50,9 +50,9 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         } catch(NotFound e) {
             logger.info("NotFound: ", e);
             return new IterDeconConfig[0];
-        } catch(Exception e) {
+        } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
-            throw new org.omg.CORBA.UNKNOWN(e.toString());
+            throw new org.omg.CORBA.UNKNOWN(e.toString(), 14, CompletionStatus.COMPLETED_MAYBE);
         }
 	}
 	
@@ -66,9 +66,9 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
             synchronized (jdbcRecFunc.getConnection()) {
                 return jdbcRecFunc.get(prefOrigin, channel, config);
             }
-        } catch(Exception e) {
+        } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
-            throw new org.omg.CORBA.UNKNOWN(e.toString());
+            throw new org.omg.CORBA.UNKNOWN(e.toString(), 13, CompletionStatus.COMPLETED_MAYBE);
         }
     }
     
@@ -104,9 +104,9 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                 System.out.println("insert "+recFuncDbId+" with weights of 1");
                 jdbcHKStack.calc(recFuncDbId, 1, 1, 1);
             }
-        } catch(Exception e) {
+        } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
-            throw new UNKNOWN(e.toString());
+            throw new UNKNOWN(e.toString(), 12, CompletionStatus.COMPLETED_MAYBE);
         }
     }
     
@@ -123,7 +123,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
             return true;
         } catch(NotFound e) {
             return false;
-        } catch(Exception e) {
+        } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
         }
         return false;
@@ -138,6 +138,9 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         } catch(SQLException e) {
             GlobalExceptionHandler.handle(e);
             throw new UNKNOWN(e.getMessage(), 7, CompletionStatus.COMPLETED_NO);
+        } catch (Throwable t) {
+            GlobalExceptionHandler.handle(t);
+            throw new UNKNOWN(t.getMessage(), 10, CompletionStatus.COMPLETED_MAYBE);
         }
     }
 
@@ -152,6 +155,9 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         } catch(NotFound e) {
             GlobalExceptionHandler.handle(e);
             throw new UNKNOWN(e.getMessage(), 9, CompletionStatus.COMPLETED_NO);
+        } catch (Throwable t) {
+            GlobalExceptionHandler.handle(t);
+            throw new UNKNOWN(t.getMessage(), 11, CompletionStatus.COMPLETED_MAYBE);
         }
     }
     

@@ -185,6 +185,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <max>100</max>
         </distanceRange>
         <phaseExists>
+            <modelName>prem</modelName>
             <phaseName>P</phaseName>
         </phaseExists>
       </eventStationAND>
@@ -193,12 +194,12 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
     <requestGeneratorWrapper>
     <phaseRequest>
-        <beginPhase>ttp</beginPhase>
+        <beginPhase>P</beginPhase>
         <beginOffset>
             <unit>SECOND</unit>
             <value>-100</value>
         </beginOffset>
-        <endPhase>ttp</endPhase>
+        <endPhase>P</endPhase>
         <endOffset>
             <unit>SECOND</unit>
             <value>180</value>
@@ -218,7 +219,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
     <ORLocalSeismogramSubsetterWrapper>
             <phaseSignalToNoise>
                 <modelName>prem</modelName>    
-                <phaseName>ttp</phaseName>
+                <phaseName>P</phaseName>
                 <shortOffsetBegin>
                     <unit>SECOND</unit>
                     <value>-5</value>
@@ -235,19 +236,19 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                     <unit>SECOND</unit>
                     <value>-5</value>
                 </longOffsetEnd>
-                <ratio>2</ratio>
+                <ratio>2.7</ratio>
             </phaseSignalToNoise>
     </ORLocalSeismogramSubsetterWrapper>
 
     <printlineSeismogramProcess/>
 
     <phaseCut>
-        <beginPhase>ttp</beginPhase>
+        <beginPhase>P</beginPhase>
         <beginOffset>
             <unit>SECOND</unit>
             <value>-30</value>
         </beginOffset>
-        <endPhase>ttp</endPhase>
+        <endPhase>P</endPhase>
         <endOffset>
             <unit>SECOND</unit>
             <value>120</value>

@@ -29,7 +29,7 @@ import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.Start;
 import edu.sc.seis.sod.process.waveformArm.ChannelGroupLocalSeismogramProcess;
-import edu.sc.seis.sod.process.waveformArm.LocalSeismogramProcess;
+import edu.sc.seis.sod.process.waveformArm.LocalSeismogramProcessWrapper;
 import edu.sc.seis.sod.process.waveformArm.LocalSeismogramTemplateGenerator;
 import edu.sc.seis.sod.process.waveformArm.SaveSeismogramToFile;
 import java.awt.image.BufferedImage;
@@ -176,11 +176,15 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                     dos.close();
 
                     if (lSeisTemplateGen == null) {
-                        LocalSeismogramProcess[] processes = Start.getWaveformArm().getLocalSeismogramArm().getProcesses();
+                        ChannelGroupLocalSeismogramProcess[] processes = Start.getWaveformArm().getMotionVectorArm().getProcesses();
                         for (int j = 0; j < processes.length; j++) {
-                            if (processes[j] instanceof LocalSeismogramTemplateGenerator) {
-                                lSeisTemplateGen = (LocalSeismogramTemplateGenerator)processes[j];
-                                break;
+                            if (processes[j] instanceof LocalSeismogramProcessWrapper) {
+                                LocalSeismogramProcessWrapper wrapper =
+                                    (LocalSeismogramProcessWrapper)processes[j];
+                                if (wrapper.getSeisProcess() instanceof LocalSeismogramTemplateGenerator) {
+                                    lSeisTemplateGen = (LocalSeismogramTemplateGenerator)wrapper.getSeisProcess();
+                                    break;
+                                }
                             }
                         }
                     }
@@ -348,6 +352,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
     private static Logger logger = Logger.getLogger(RecFuncProcessor.class);
 
 }
+
 
 
 

@@ -7,6 +7,7 @@
 package edu.sc.seis.receiverFunction.crust2;
 
 import edu.sc.seis.TauP.VelocityLayer;
+import edu.sc.seis.receiverFunction.compare.StationResult;
 
 public class Crust2Profile {
 

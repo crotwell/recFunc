@@ -56,9 +56,19 @@
 <td class="headodd">Study</td>
 <td class="headodd">Thickness</td>
 <td class="headodd">Vp/Vs</td>
+<td class="headodd">Vp</td>
+<td class="headodd">Vs</td>
+<td class="headodd">Poissons Ratio</td>
 </tr>
 #foreach( $marker in $markerList)
- <tr><td class="odd">$marker.getName()</td><td class="even">$marker.formatDepth()</td><td class="odd">$marker.formatVpvs()</td></tr>
+ <tr>
+ <td class="odd"><a href="$marker.getRef().getURL()">$marker.getRef().getName()</a></td>
+ <td class="even">$marker.formatH()</td>
+ <td class="odd">$marker.formatVpVs()</td>
+ <td class="even">$marker.formatVp()</td>
+ <td class="odd">$marker.formatVs()</td>
+ <td class="even">$marker.formatPoissonsRatio()</td>
+</tr>
 #end
 </table>
 

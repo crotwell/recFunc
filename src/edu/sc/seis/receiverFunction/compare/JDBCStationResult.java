@@ -20,6 +20,7 @@ import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.database.WrappedSQLException;
 import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
 import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 
@@ -28,9 +29,6 @@ import edu.sc.seis.fissuresUtil.database.util.TableSetup;
  */
 public class JDBCStationResult extends JDBCTable {
 
-    /**
-     * @throws SQLException
-     */
     public JDBCStationResult(JDBCNetwork jdbcNetwork,
             JDBCStationResultRef jdbcStationResultRef) throws SQLException {
         super("stationResult", jdbcStationResultRef.getConnection());
@@ -54,6 +52,7 @@ public class JDBCStationResult extends JDBCTable {
 
     public StationResult[] get(NetworkId networkId, String stationCode)
             throws SQLException, NotFound {
+        try {
         int networkDbId = jdbcNetwork.getDbId(networkId);
         int index = 1;
         get.setInt(index++, networkDbId);
@@ -70,14 +69,17 @@ public class JDBCStationResult extends JDBCTable {
                                        ref));
         }
         return (StationResult[])list.toArray(new StationResult[0]);
+        } catch (SQLException e) {
+            throw new WrappedSQLException(e.getMessage()+"     sql:"+get, e);
+        }
     }
 
     public static void main(String[] args) throws FileNotFoundException,
             IOException, SQLException, NotFound {
         if(args.length == 0) {
-            System.err.println("Usage: progname -n name -m method -r reference -f filename");
+            System.err.println("Usage: progname -n name -m method -r reference -f filename -u url");
         }
-        String name = "", reference = "", method = "", filename = "";
+        String name = "", reference = "", method = "", filename = "", url = null;
         Properties props = System.getProperties();
         for(int i = 0; i < args.length; i++) {
             if(args[i].equals("-n")) {
@@ -88,6 +90,8 @@ public class JDBCStationResult extends JDBCTable {
                 reference = args[i + 1];
             } else if(args[i].equals("-f")) {
                 filename = args[i + 1];
+            } else if(args[i].equals("-u")) {
+                url = args[i + 1];
             } else if(args[i].equals("-props")) {
                 props.load(new BufferedInputStream(new FileInputStream(args[i + 1])));
             }
@@ -99,7 +103,12 @@ public class JDBCStationResult extends JDBCTable {
         JDBCStationResultRef jdbcRef = new JDBCStationResultRef(conn);
         JDBCNetwork jdbcNetwork = new JDBCNetwork(conn);
         JDBCStationResult jdbc = new JDBCStationResult(jdbcNetwork, jdbcRef);
-        StationResultRef ref = new StationResultRef(name, reference, method);
+        StationResultRef ref = new StationResultRef(name, reference, method, url);
+        System.out.println("StationResultRef:");
+        System.out.println(name);
+        System.out.println(reference);
+        System.out.println( method);
+        System.out.println( url);
         int refDbId = jdbcRef.put(ref);
         File inFile = new File(filename);
         if(!inFile.exists()) {

@@ -13,24 +13,24 @@ stationResult.put=INSERT INTO $tablename ( \
                      VALUES ( ?, ?, ?, ?, ?, ? )
 
 stationResult.get=SELECT * from $tablename \
-    JOIN stationResultRef ON ( $tablename.ref_id = stationResultRef.ref_id )  \
-    JOIN station ON ( $tablename.sta_id = station.sta_id )  \
-    JOIN network ON ( network.net_id = $tablename.net_id )  \
-    WHERE station.sta_code = ? \
-    AND network.net_code = ? \
+    JOIN stationResultRef ON ( stationResult.ref_id = stationResultRef.ref_id )  \
+    WHERE stationResult.net_id = ? \
+    AND stationResult.sta_code = ? 
  
 stationResultRef.create=CREATE TABLE $tablename (  \
     ref_id int, \
     name varchar, \
     reference varchar, \
     method varchar, \
+    url varchar, \
     PRIMARY KEY(ref_id))
     
 stationResultRef.put=INSERT INTO $tablename ( \
-                     ref_id, name, reference, method ) \
-                     VALUES ( ?, ?, ?, ? )
+                     ref_id, name, reference, method, url ) \
+                     VALUES ( ?, ?, ?, ?, ? )
 
 stationResultRef.getDbId=SELECT ref_id FROM $tablename \
     WHERE name = ? \
     AND reference = ? \
-    AND method = ?
+    AND method = ? \
+    AND url = ?

@@ -23,9 +23,12 @@ public class WilsonRistra implements StationCompare {
     public StationResult getResult(StationId stationId) {
         String prefix = StationIdUtil.toStringNoDates(stationId);
         if (props.containsKey(prefix+"_H")) {
-            return new StationResult(stationId,
+            return new StationResult(stationId.network_id,
+                                     stationId.station_code,
                                      Float.parseFloat(props.getProperty(prefix+"_H")),
-                                     Float.parseFloat(props.getProperty(prefix+"_VpVs")));
+                                     Float.parseFloat(props.getProperty(prefix+"_VpVs")),
+                                     6,
+                                     new StationResultRef("a","b","c"));
         } else {
             return null;
         }

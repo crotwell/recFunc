@@ -4,17 +4,24 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.velocity.VelocityContext;
 import edu.iris.Fissures.Time;
 import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
+import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
+import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
+import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.rev.velocity.VelocityNetwork;
@@ -29,7 +36,7 @@ import edu.sc.seis.sod.ConfigurationException;
 public class StationList extends Revlet {
     
     public StationList() throws SQLException, ConfigurationException, Exception {
-        this("jdbc:postgresql:ears", System.getProperty("user.home")+"/CacheServer/Ears/Data");
+        this("jdbc:postgresql:ears", System.getProperty("user.home")+"/CacheRecFunc/Ears/Data");
     }
     
     public StationList(String databaseURL, String dataloc) throws SQLException, ConfigurationException, Exception {
@@ -42,6 +49,7 @@ public class StationList extends Revlet {
         jdbcSodConfig = new JDBCSodConfig(conn);
         jdbcRecFunc = new JDBCRecFunc(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, DATA_LOC);
         jdbcHKStack = new JDBCHKStack(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
+        jdbcSumHKStack = new JDBCSummaryHKStack(jdbcHKStack);
     }
 
     /**
@@ -49,17 +57,52 @@ public class StationList extends Revlet {
      */
     public RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
-        int netDbId = new Integer(req.getParameter("netdbid")).intValue();
+        RevletContext context = new RevletContext(getVelocityTemplate());
+        ArrayList stationList = getStations(req, context);
+        HashMap summary = getSummaries(stationList);
+        context.put("stationList", stationList);
+        context.put("summary", summary);
+        return context;
+    }
+    
+    public String getVelocityTemplate() {
+        return "stationList.vm";
+    }
+    
+    public ArrayList getStations(HttpServletRequest req, RevletContext context) throws SQLException, NotFound {
+        int netDbId = RevUtil.getInt("netdbid", req);
         VelocityNetwork net = new VelocityNetwork(jdbcChannel.getStationTable().getNetTable().get(netDbId), netDbId);
+        context.put("net", net);
         Station[] stations = jdbcChannel.getSiteTable().getStationTable().getAllStations(net.get_id());
         ArrayList stationList = new ArrayList();
         for(int i = 0; i < stations.length; i++) {
             stationList.add(new VelocityStation(stations[i]));
         }
-        RevletContext context = new RevletContext("stationList.vm");
-        context.put("stationList", stationList);
-        context.put("net", net);
-        return context;
+        return stationList;
+    }
+    
+    /** 
+     * Populates a hashmap with keys (objects of type Station) from the list
+     * and values of SumHKStack. Also populates the dbid for the stations and network.
+     * @throws SQLException
+     * @throws IOException
+     */
+    public HashMap getSummaries(ArrayList stationList) throws SQLException, IOException {
+        Iterator it = stationList.iterator();
+        HashMap summary = new HashMap();
+        while(it.hasNext()) {
+            try {
+            VelocityStation sta = (VelocityStation)it.next();
+            sta.setDbId(jdbcChannel.getStationTable().getDBId(sta.get_id()));
+            sta.getNet().setDbId(jdbcChannel.getNetworkTable().getDbId(sta.getNet().get_id()));
+            int dbid = jdbcSumHKStack.getDbIdForStation(sta.my_network.get_id(), sta.get_code());
+            SumHKStack sumStack = jdbcSumHKStack.get(dbid);
+            summary.put(sta, sumStack);
+            } catch (NotFound e) {
+                // oh well, skip this station
+            }
+        }
+        return summary;
     }
     
     String DATA_LOC;
@@ -73,4 +116,6 @@ public class StationList extends Revlet {
     JDBCRecFunc jdbcRecFunc;
     
     JDBCSodConfig jdbcSodConfig;
+    
+    JDBCSummaryHKStack jdbcSumHKStack;
 }

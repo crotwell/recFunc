@@ -29,6 +29,7 @@ import edu.iris.Fissures.model.UnitRangeImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
+import edu.sc.seis.fissuresUtil.bag.PoissonsRatio;
 import edu.sc.seis.fissuresUtil.display.BorderedDisplay;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import edu.sc.seis.fissuresUtil.display.borders.Border;
@@ -268,6 +269,10 @@ public class HKStack implements Serializable {
     
     public float getVs() {
         return getAlpha()/getMaxValueK();
+    }
+    
+    public float getPoissonsRatio() {
+        return (float)PoissonsRatio.calcPoissonsRatio(getMaxValueK());
     }
     
     public JComponent getStackComponent() {

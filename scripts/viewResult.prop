@@ -1,0 +1,19 @@
+#Velocity File Location Properties
+file.resource.loader.path=.,site/velocity
+file.resource.loader.cache=true
+file.resource.loader.modificationCheckInterval=1000
+rev.sodoutputbase=status
+rev.resources=site
+rev.host=roo.seis.sc.edu
+#rev.host=localhost
+rev.port=8084
+
+velocimacro.library.autoreload = false
+#
+# for testing
+#sod.dburl=jdbc:hsqldb:hsql://localhost:9003
+#
+# for connecting to the arraymon sod db on roo
+#sod.dburl=jdbc:hsqldb:hsql://localhost:9002
+sod.dburl=jdbc:postgresql:ears
+

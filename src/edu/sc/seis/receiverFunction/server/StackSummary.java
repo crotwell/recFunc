@@ -45,7 +45,7 @@ public class StackSummary {
         JDBCEventAttr jdbcEventAttr = new JDBCEventAttr(conn);
         JDBCChannel jdbcChannel  = new JDBCChannel(conn);
         JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
-        JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.DATA_LOC);
+        JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.getDataLoc());
         jdbcHKStack = new JDBCHKStack(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
     }
 

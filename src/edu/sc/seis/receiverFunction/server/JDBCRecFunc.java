@@ -149,6 +149,7 @@ public class JDBCRecFunc extends JDBCTable {
 
         CacheEvent cacheEvent = new CacheEvent(eventAttr, prefOrigin);
         File stationDir = getDir(cacheEvent, channels[0]);
+        stationDir.mkdirs();
         File[] seisFile = new File[original.length];
         
         for (int i=0; i<original.length; i++) {
@@ -305,10 +306,13 @@ public class JDBCRecFunc extends JDBCTable {
         Origin origin = jdbcOrigin.get(rs.getInt("origin_id"));
         EventAttr eventAttr = jdbcEventAttr.get(rs.getInt("eventAttr_id"));
         Channel[] channels = extractChannels(rs);
+
         CacheEvent cacheEvent = new CacheEvent(eventAttr, origin);
         File stationDir = getDir(cacheEvent, channels[0]);
+        System.out.println("StationDir: "+stationDir);
         
         SacTimeSeries itrSAC = new SacTimeSeries();
+        File f = new File(stationDir, rs.getString("recfuncITR"));
         itrSAC.read(new File(stationDir, rs.getString("recfuncITR")));
         LocalSeismogramImpl itrSeis = SacToFissures.getSeismogram(itrSAC);
         
@@ -422,9 +426,9 @@ public class JDBCRecFunc extends JDBCTable {
     
     protected File getDir(CacheEvent cacheEvent, Channel chan) {
         File eventDir = new File(dataDir, eventFormatter.getResult(cacheEvent));
+            
         File netDir = new File(eventDir, chan.get_id().network_id.network_code);
         File stationDir = new File(netDir, chan.get_id().station_code);
-        stationDir.mkdirs();
         return stationDir;
     }
     

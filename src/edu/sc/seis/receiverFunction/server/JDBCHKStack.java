@@ -65,7 +65,7 @@ public class JDBCHKStack extends JDBCTable {
         this.jdbcChannel = jdbcChannel;
         this.jdbcRecFunc = jdbcRecFunc;
         TableSetup.setup(getTableName(), conn, this, "edu/sc/seis/receiverFunction/server/default.props");
-        dataDir = new File(dataDirectory);
+        dataDir = new File(RecFuncCacheImpl.getDataLoc());
         dataDir.mkdirs();
         eventFormatter = new EventFormatter(true);
         tauPTime = TauPUtil.getTauPUtil(modelName);
@@ -283,8 +283,6 @@ public class JDBCHKStack extends JDBCTable {
 
     private JDBCSequence seq;
 
-    private String dataDirectory = RecFuncCacheImpl.DATA_LOC;
-
     private File dataDir;
 
     private EventFormatter eventFormatter;
@@ -332,7 +330,7 @@ public class JDBCHKStack extends JDBCTable {
                                                   jdbcEventAttr,
                                                   jdbcChannel,
                                                   jdbcSodConfig,
-                                                  RecFuncCacheImpl.DATA_LOC);
+                                                  RecFuncCacheImpl.getDataLoc());
         JDBCHKStack jdbcHKStack = new JDBCHKStack(conn,
                                                   jdbcOrigin,
                                                   jdbcEventAttr,

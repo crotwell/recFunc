@@ -17,7 +17,7 @@ public class RecFuncCacheController extends AbstractController {
     public RecFuncCacheController(Properties confProps, String serverPropName,
             ORB orb) throws Exception {
         super(confProps, serverPropName, orb);
-        impl = new RecFuncCacheImpl();
+        impl = new RecFuncCacheImpl(confProps.getProperty(getPropertryPrefix()+"databaseURL"), confProps.getProperty(getPropertryPrefix()+"dataloc"));
     }
 
     

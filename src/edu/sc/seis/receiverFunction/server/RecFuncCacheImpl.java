@@ -31,9 +31,10 @@ import edu.sc.seis.sod.ConfigurationException;
  */
 public class RecFuncCacheImpl extends RecFuncCachePOA {
     
-    public RecFuncCacheImpl() throws IOException, SQLException, ConfigurationException, TauModelException, Exception {
+    public RecFuncCacheImpl(String databaseURL, String dataloc) throws IOException, SQLException, ConfigurationException, TauModelException, Exception {
         ConnMgr.setDB(ConnMgr.POSTGRES);
-        ConnMgr.setURL("jdbc:postgresql:ears");
+        ConnMgr.setURL(databaseURL);
+        DATA_LOC = dataloc;
         Connection conn = ConnMgr.createConnection();
         jdbcOrigin = new JDBCOrigin(conn);
         jdbcEventAttr = new JDBCEventAttr(conn);
@@ -194,6 +195,10 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         }
     }
     
+    public static String getDataLoc() {
+        return DATA_LOC;
+    }
+    
     private JDBCOrigin jdbcOrigin ;
     
     private JDBCEventAttr jdbcEventAttr;
@@ -206,7 +211,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     
     private JDBCSodConfig jdbcSodConfig;
 
-    public static String DATA_LOC = "../Ears/Data";
+    private static String DATA_LOC = "../Ears/Data";
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(RecFuncCacheImpl.class);
 }

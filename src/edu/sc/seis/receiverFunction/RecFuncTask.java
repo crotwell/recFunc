@@ -9,11 +9,15 @@ import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.Location;
+import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.SamplingImpl;
+import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
+import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
+import edu.sc.seis.fissuresUtil.bag.PhaseCut;
 import edu.sc.seis.fissuresUtil.bag.Rotate;
 import edu.sc.seis.fissuresUtil.chooser.DataSetChannelGrouper;
 import edu.sc.seis.fissuresUtil.display.BasicSeismogramDisplay;
@@ -198,51 +202,80 @@ public class RecFuncTask  extends MouseAdapter implements GUITask {
                 return;
             }
             
+            
             Channel chan =
                 seis[0].getDataSet().getChannel(seis[0].getRequestFilter().channel_id);
             Location staLoc = chan.my_site.my_station.my_location;
             Location evtLoc = origin.my_location;
-            DistAz distAz = new DistAz(staLoc.latitude, staLoc.longitude,
-                                       evtLoc.latitude, evtLoc.longitude);
-            float[][] rotated = Rotate.rotate(e, n, (180+distAz.baz)*Math.PI/180);
             
-            // check lengths, trim if needed???
-            float[] zdata = z.get_as_floats();
-            if (rotated[0].length != zdata.length) {
-                logger.error("data is not of same length "+
-                                 rotated[0].length+" "+zdata.length);
-                return;
+            PhaseCut phaseCut;
+            try {
+                phaseCut =
+                    new PhaseCut(CommonAccess.getCommonAccess().getTravelTimeCalc(),
+                                 "P", new TimeInterval(-30, UnitImpl.SECOND),
+                                 "P", new TimeInterval(30, UnitImpl.SECOND));
+                
+                n = phaseCut.cut(staLoc, origin, n);
+                e = phaseCut.cut(staLoc, origin, e);
+                z = phaseCut.cut(staLoc, origin, z);
+                
+                DistAz distAz = new DistAz(staLoc.latitude, staLoc.longitude,
+                                           evtLoc.latitude, evtLoc.longitude);
+                float[][] rotated = Rotate.rotate(e, n, (180+distAz.baz)*Math.PI/180);
+                
+                // check lengths, trim if needed???
+                float[] zdata = z.get_as_floats();
+                if (rotated[0].length != zdata.length) {
+                    logger.error("data is not of same length "+
+                                     rotated[0].length+" "+zdata.length);
+                    return;
+                }
+                zdata = decon.makePowerTwo(zdata);
+                rotated[0] = decon.makePowerTwo(rotated[0]);
+                rotated[1] = decon.makePowerTwo(rotated[1]);
+                
+                SamplingImpl samp = SamplingImpl.createSamplingImpl(z.sampling_info);
+                double period = samp.getPeriod().convertTo(UnitImpl.SECOND).getValue();
+                IterDeconResult ans = decon.process(rotated[0],
+                                                    zdata,
+                                                        (float)period);
+                float[] predicted = ans.getPredicted();
+                
+                Arrival[] pPhases = CommonAccess.getCommonAccess().getTravelTimes(evtLoc, staLoc, "ttp");
+                MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
+                firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
+                TimeInterval shift = firstP.subtract(z.getBeginTime());
+                shift = (TimeInterval)shift.convertTo(UnitImpl.SECOND);
+                predicted = decon.phaseShift(predicted,
+                                                 (float)shift.getValue(),
+                                                 (float)period);
+                
+                logger.info("Finished with receiver funciton processing");
+                
+                LocalSeismogramImpl predSeis =
+                    new LocalSeismogramImpl("recFunc/"+z.get_id(),
+                                            z.getBeginTime().getFissuresTime(),
+                                            predicted.length,
+                                            z.sampling_info,
+                                            z.y_unit,
+                                            z.channel_id,
+                                            predicted);
+                predSeis.setName("receiver function");
+                DataSetSeismogram predDSS =
+                    new MemoryDataSetSeismogram(predSeis,
+                                                "receiver function");
+                AuditInfo[] audit = new AuditInfo[1];
+                audit[0] =
+                    new AuditInfo("Calculated receiver function",
+                                  System.getProperty("user.name"));
+                sdce.getSource().getDataSet().addDataSetSeismogram(predDSS,
+                                                                   audit);
+                
+            } catch (ConfigurationException ce) {
+                CommonAccess.getCommonAccess().handleException("Unable to get travel time calculator", ce);
+            } catch (Exception ee) {
+                logger.warn("Problem shifting receiver function to align P wave", ee);
             }
-            zdata = decon.makePowerTwo(zdata);
-            rotated[0] = decon.makePowerTwo(rotated[0]);
-            rotated[1] = decon.makePowerTwo(rotated[1]);
-            
-            SamplingImpl samp = SamplingImpl.createSamplingImpl(z.sampling_info);
-            double period = samp.getPeriod().convertTo(UnitImpl.SECOND).getValue();
-            IterDeconResult ans = decon.process(rotated[0],
-                                                zdata,
-                                                (float)period);
-            float[] predicted = ans.getPredicted();
-            logger.info("Finished with receiver funciton processing");
-            
-            LocalSeismogramImpl predSeis =
-                new LocalSeismogramImpl("recFunc/"+z.get_id(),
-                                        z.getBeginTime().getFissuresTime(),
-                                        predicted.length,
-                                        z.sampling_info,
-                                        z.y_unit,
-                                        z.channel_id,
-                                        predicted);
-            predSeis.setName("receiver function");
-            DataSetSeismogram predDSS =
-                new MemoryDataSetSeismogram(predSeis,
-                                            "receiver function");
-            AuditInfo[] audit = new AuditInfo[1];
-            audit[0] =
-                new AuditInfo("Calculated receiver function",
-                              System.getProperty("user.name"));
-            sdce.getSource().getDataSet().addDataSetSeismogram(predDSS,
-                                                               audit);
         }
         
         /**

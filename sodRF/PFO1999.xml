@@ -132,8 +132,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         <stationCode>PFO</stationCode>
         <stationEffectiveTimeOverlap>
            <effectiveTimeOverlap>
-               <min>20030101T00:00:00.001Z</min>
-               <max>20041231T23:59:59.999Z</max>
+               <min>19990101T00:00:00.001Z</min>
+               <max>20000101T00:00:00.001Z</max>
            </effectiveTimeOverlap>
         </stationEffectiveTimeOverlap>
     </stationAND>
@@ -146,8 +146,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
         <channelEffectiveTimeOverlap>
         <effectiveTimeOverlap>
-            <min>20030101T00:00:00.001Z</min>
-            <max>20041231T23:59:59.999Z</max>
+               <min>19990101T00:00:00.001Z</min>
+               <max>20000101T00:00:00.001Z</max>
         </effectiveTimeOverlap>
         </channelEffectiveTimeOverlap>
 

@@ -182,14 +182,14 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         </phaseExists>
       </eventStationAND>
 
-    <localSeismogramArm>
+    <motionVectorArm>
 
-
+    <requestGeneratorWrapper>
     <phaseRequest>
         <beginPhase>ttp</beginPhase>
         <beginOffset>
             <unit>SECOND</unit>
-            <value>-30</value>
+            <value>-100</value>
         </beginOffset>
         <endPhase>ttp</endPhase>
         <endOffset>
@@ -197,35 +197,40 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <value>180</value>
         </endOffset>
     </phaseRequest>
-
+    </requestGeneratorWrapper>
 
     <fixedDataCenter>
         <name>SCEPPSeismogramDC</name>
         <dns>edu/sc/seis</dns>
     </fixedDataCenter>
 
+    <ORAvailableDataWrapper>
         <someCoverage/>
+    </ORAvailableDataWrapper>
 
-
+    <ORLocalSeismogramSubsetterWrapper>
             <phaseSignalToNoise>
-                <longTime>
+                <modelName>prem</modelName>    
+                <phaseName>ttp</phaseName>
+                <shortOffsetBegin>
                     <unit>SECOND</unit>
-                    <value>100</value>
-                </longTime>
-                <shortTime>
-                    <value>6</value><unit>SECOND</unit>
-                </shortTime>
-                <delayTime>
-                    <value>80</value><unit>SECOND</unit>
-                </delayTime>
-                <ratio>0.5</ratio>
-                <modelName>prem</modelName>
-                <phaseName>P</phaseName>
-                <triggerWindow>
+                    <value>-5</value>
+                </shortOffsetBegin>
+                <shortOffsetEnd>
+                    <unit>SECOND</unit>
                     <value>5</value>
+                </shortOffsetEnd>
+                <longOffsetBegin>
                     <unit>SECOND</unit>
-                </triggerWindow>
+                    <value>-105</value>
+                </longOffsetBegin>
+                <longOffsetEnd>
+                    <unit>SECOND</unit>
+                    <value>-5</value>
+                </longOffsetEnd>
+                <ratio>2</ratio>
             </phaseSignalToNoise>
+    </ORLocalSeismogramSubsetterWrapper>
 
     <printlineSeismogramProcess/>
 
@@ -252,18 +257,18 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
     </filter>
 
 
-    <externalSeismogramProcess>
+    <externalChannelGroupSeismogramProcess>
         <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
         <fileType>sac</fileType>
         <dataDirectory>SP_recfunc</dataDirectory>
         <eventDirLabel><originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/></eventDirLabel>
-    </externalSeismogramProcess>
+    </externalChannelGroupSeismogramProcess>
 
             <localSeismogramTemplateGenerator>  
                 <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
             </localSeismogramTemplateGenerator>
 
-    </localSeismogramArm>
+    </motionVectorArm>
 
                 <waveformEventTemplateGenerator>
                         <waveformConfig xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml"/>

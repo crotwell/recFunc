@@ -15,12 +15,25 @@ for l in lines:
   ears[s[0]] = s[3]
 f.close()
 
+
+f=open('XM99.grades', 'r')
+lines = f.readlines()
+ears_grades = {}
+for l in lines:
+  s = l.split()
+  ears_grades[s[0]] = s[1]
+  if (ears_grades[s[0]] == 'B'):
+    ears_grades[s[0]] = 'D'
+f.close()
+
+
+
 print "Wilson EARS Station"
 dwilsonkeys = dwilson.keys()
 dwilsonkeys.sort()
 for sta in dwilsonkeys:
     #  if abs(float(ears[sta]) - float(dwilson[sta])) > 10:
-    print dwilson[sta], ears[sta],  sta
+    print dwilson[sta], ears[sta], ears_grades[sta], sta
 
 
 

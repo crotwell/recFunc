@@ -5,8 +5,8 @@ MAVEN=/Users/crotwell/.maven/repository
 JACORB=$MAVEN/JacORB/jars/JacORB-2.0beta3.jar
 
 SEEDCODEC=$MAVEN/SeedCodec/jars/SeedCodec-1.0Beta.jar
-FISSURESUTIL=$MAVEN/fissuresUtil/jars/fissuresUtil-1.0.2beta.jar
-FISSURESIMPL=$MAVEN/fissuresImpl/jars/fissuresImpl-1.1.1beta.jar
+FISSURESUTIL=$MAVEN/fissuresUtil/jars/fissuresUtil-1.0.3beta.jar
+FISSURESIMPL=$MAVEN/fissuresImpl/jars/fissuresImpl-1.1.1.jar
 FISSURESIDL=$MAVEN/fissuresIDL/jars/fissuresIDL-1.0.jar
 LOG4J=$MAVEN/log4j/jars/log4j-1.2.8.jar
 TAUP=$MAVEN/TauP/jars/TauP-1.1.4.jar

@@ -310,6 +310,14 @@
                     <include>*.xml</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>src/edu/sc/seis/receiverFunction/crust2</directory>
+                <targetPath>edu/sc/seis/receiverFunction/crust2</targetPath>
+                <includes>
+                    <include>*.txt</include>
+                    <include>CN-README</include>
+                </includes>
+            </resource>
         </resources>
         <unitTest>
             <resources>

@@ -155,6 +155,21 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
             } else {
                 logger.error("problem with recfunc: predicted is null");
             }
+            String[] names = dataset.getDataSetSeismogramNames();
+            for (int i = 0; i < names.length; i++) {
+                DataSetSeismogram dss = dataset.getDataSetSeismogram(names[i]);
+                if (dss instanceof MemoryDataSetSeismogram) {
+                    dataset.remove(dss); // avoid duplicates
+                    Channel recFuncChannel = new ChannelImpl(dss.getRequestFilter().channel_id,
+                                                             "receiver function fake channel for "+ChannelIdUtil.toStringNoDates(dss.getRequestFilter().channel_id),
+                                                             new Orientation(0, 0),
+                                                             channel.sampling_info,
+                                                             channel.effective_time,
+                                                             channel.my_site);
+                    URLDataSetSeismogram saved =
+                        saveInDataSet(event, recFuncChannel, ((MemoryDataSetSeismogram)dss).getCache());
+                }
+            }
         } else {
             // problem occurred
             SeisDataErrorEvent error = processor.getError();

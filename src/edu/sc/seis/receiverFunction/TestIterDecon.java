@@ -32,10 +32,11 @@ public class TestIterDecon {
         denom.read(args[1]);
 
         float shift = 10;
+
         IterDeconResult ans = decon.process(num.y, denom.y, num.delta);
         float[] predicted = ans.getPredicted();
         predicted = decon.phaseShift(predicted, shift, num.delta);
-        //        predicted = decon.gaussianFilter(predicted, gwidth, num.delta);
+
         for (int i=0; i<num.y.length; i++) {
             // System.out.println(i+" "+num.y[i]+" "+denom.y[i]+" "+predicted[i]);
         } // end of for (int i=0; i<num.length; i++)

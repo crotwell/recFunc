@@ -97,11 +97,11 @@ deconvolution method of Ammon.
     </dependency>
     <dependency>
       <id>fissuresUtil</id>
-      <version>1.0.6beta</version>
+      <version>1.0.7beta</version>
     </dependency>
     <dependency>
       <id>fissuresImpl</id>
-      <version>1.1.4beta</version>
+      <version>1.1.5beta</version>
     </dependency>
     <dependency>
       <id>fissuresIDL</id>

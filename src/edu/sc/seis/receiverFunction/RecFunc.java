@@ -10,7 +10,6 @@ import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
-import edu.iris.Fissures.IfNetwork.NetworkAccess;
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.QuantityImpl;
@@ -22,27 +21,30 @@ import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.SphericalCoords;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.TauP.TauP_Time;
-import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
 import edu.sc.seis.fissuresUtil.bag.PhaseCut;
 import edu.sc.seis.fissuresUtil.bag.PhaseNonExistent;
 import edu.sc.seis.fissuresUtil.bag.Rotate;
+import edu.sc.seis.fissuresUtil.sac.FissuresToSac;
+import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
 import org.apache.log4j.Logger;
+import edu.iris.dmc.seedcodec.CodecException;
+import java.io.IOException;
 
 public class RecFunc {
-    
+
     /** uses a default shift of 10 seconds. */
     RecFunc(TauP_Time timeCalc, IterDecon decon) {
         this(timeCalc, decon, new TimeInterval(10, UnitImpl.SECOND));
-        
+
     }
-    
+
     RecFunc(TauP_Time timeCalc, IterDecon decon, TimeInterval shift) {
         this.timeCalc = timeCalc;
         this.decon = decon;
         this.shift = shift;
     }
-    
+
     public IterDeconResult[] process(EventAccessOperations event,
                                      Channel[] channel,
                                      LocalSeismogramImpl[] localSeis)
@@ -50,7 +52,7 @@ public class RecFunc {
         TauModelException,
         PhaseNonExistent,
         IncompatibleSeismograms {
-        
+
         LocalSeismogramImpl n = null, e = null, z = null;
         for (int i=0; i<localSeis.length; i++) {
             if (localSeis[i].channel_id.channel_code.endsWith("N")) {
@@ -66,26 +68,27 @@ public class RecFunc {
             throw new NullPointerException("problem one seismogram component is null "+
                                                (n != null)+" "+(e != null)+" "+(z != null));
         }
-        
-        
+
+
         Channel chan = channel[0];
         Location staLoc = chan.my_site.my_station.my_location;
         Origin origin = event.get_preferred_origin();
         Location evtLoc = origin.my_location;
-        
+
         PhaseCut phaseCut;
-        
+
         phaseCut =
             new PhaseCut(timeCalc,
-                         "P", new TimeInterval(-30, UnitImpl.SECOND),
-                         "P", new TimeInterval(30, UnitImpl.SECOND));
-        
+                         "P", new TimeInterval(-15, UnitImpl.SECOND),
+                         "P", new TimeInterval(90, UnitImpl.SECOND));
+
         n = phaseCut.cut(staLoc, origin, n);
         e = phaseCut.cut(staLoc, origin, e);
         z = phaseCut.cut(staLoc, origin, z);
-        
+
         float[][] rotated = Rotate.rotateGCP(e, n, staLoc, evtLoc);
-        
+
+
         // check lengths, trim if needed???
         float[] zdata = z.get_as_floats();
         if (rotated[0].length != zdata.length) {
@@ -97,7 +100,7 @@ public class RecFunc {
         zdata = decon.makePowerTwo(zdata);
         rotated[0] = decon.makePowerTwo(rotated[0]);
         rotated[1] = decon.makePowerTwo(rotated[1]);
-        
+
         SamplingImpl samp = SamplingImpl.createSamplingImpl(z.sampling_info);
         double period = samp.getPeriod().convertTo(UnitImpl.SECOND).getValue();
         IterDeconResult ansRadial = processComponent(rotated[1],
@@ -105,7 +108,7 @@ public class RecFunc {
                                                          (float)period,
                                                      staLoc,
                                                      origin);
-        
+
         IterDeconResult ansTangential = processComponent(rotated[0],
                                                          zdata,
                                                              (float)period,
@@ -116,7 +119,7 @@ public class RecFunc {
         ans[1] = ansTangential;
         return ans;
     }
-    
+
     protected IterDeconResult processComponent(float[] component,
                                                float[] zdata,
                                                float period,
@@ -127,9 +130,9 @@ public class RecFunc {
                                             zdata,
                                             period);
         float[] predicted = ans.getPredicted();
-        
+
         Location evtLoc = origin.my_location;
-        
+
         timeCalc.parsePhaseList("ttp");
         timeCalc.depthCorrect(((QuantityImpl)evtLoc.depth).convertTo(UnitImpl.KILOMETER).value);
         timeCalc.calculate(SphericalCoords.distance(evtLoc.latitude,
@@ -137,7 +140,7 @@ public class RecFunc {
                                                     staLoc.latitude,
                                                     staLoc.longitude));
         Arrival[] pPhases = timeCalc.getArrivals();
-        
+
         MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
         logger.debug("origin "+firstP);
         firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
@@ -149,7 +152,7 @@ public class RecFunc {
             predicted = decon.phaseShift(predicted,
                                              (float)shift.getValue(),
                                              (float)period);
-            
+
             logger.debug("shifting by "+shift+"  after 2000="+predicted[2000]);
         }
         logger.info("Finished with receiver function processing");
@@ -158,26 +161,26 @@ public class RecFunc {
         ans.setAlignShift(shift);
         return ans;
     }
-    
+
     public IterDecon getIterDecon() {
         return decon;
     }
-    
+
     public TauP_Time getTimeCalc() {
         return timeCalc;
     }
-    
+
     public TimeInterval getShift() {
         return shift;
     }
-    
+
     TauP_Time timeCalc;
-    
+
     IterDecon decon;
-    
+
     TimeInterval shift;
-    
+
     static Logger logger = Logger.getLogger(RecFunc.class);
-    
+
 }
 

@@ -23,9 +23,13 @@ public class Start {
     public static void main(String[] args) throws Exception {
         String netHTML = "/networks.html";
         String staForNet = "/stations.html";
+        String rfstationEvent = "/rfStationEvent.html";
+        
         Set servletStrings = new HashSet();
         servletStrings.add(netHTML);
         servletStrings.add(staForNet);
+        servletStrings.add(rfstationEvent);
+        
         ServletHandler sh = new ServletFromSet(servletStrings);
         sh.addServlet("Networks",
                       netHTML,
@@ -33,5 +37,8 @@ public class Start {
         sh.addServlet("StationEqViewer",
                       staForNet,
                       "edu.sc.seis.viewResult.StationList");
+        sh.addServlet("rfStationEvent",
+                      rfstationEvent,
+                      "edu.sc.seis.receiverFunction.web.RFStationEvent");
         edu.sc.seis.rev.Start.runREV(args, sh);}
 }

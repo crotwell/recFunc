@@ -27,36 +27,41 @@ public class Start {
         ConnMgr.setURL(props.getProperty("sod.dburl"));
         Set servletStrings = new HashSet();
         ServletHandler sh = new ServletFromSet(servletStrings);
-        edu.sc.seis.rev.Start.populateJetty("/networkList.html",
+        edu.sc.seis.rev.RevUtil.populateJetty("/networkList.html",
                                             "/networkList.html",
                                             "edu.sc.seis.receiverFunction.web.NetworkList",
                                             servletStrings,
                                             sh);
-        edu.sc.seis.rev.Start.populateJetty("/stationList.html",
+        edu.sc.seis.rev.RevUtil.populateJetty("/stationList.html",
                                             "/stationList.html",
                                             "edu.sc.seis.receiverFunction.web.StationList",
                                             servletStrings,
                                             sh);
-        edu.sc.seis.rev.Start.populateJetty("/station.html",
+        edu.sc.seis.rev.RevUtil.populateJetty("/station.html",
                                             "/station.html",
                                             "edu.sc.seis.receiverFunction.web.Station",
                                             servletStrings,
                                             sh);
-        edu.sc.seis.rev.Start.populateJetty("/summaryHKStack.png",
+        edu.sc.seis.rev.RevUtil.populateJetty("/summaryHKStack.png",
                                             "/summaryHKStack.png",
                                             "edu.sc.seis.receiverFunction.web.SummaryHKStackImageServlet",
                                             servletStrings,
                                             sh);
-        edu.sc.seis.rev.Start.populateJetty("/stationEvent.html",
+        edu.sc.seis.rev.RevUtil.populateJetty("/stationEvent.html",
                                             "/stationEvent.html",
                                             "edu.sc.seis.receiverFunction.web.RFStationEvent",
                                             servletStrings,
                                             sh);
-        edu.sc.seis.rev.Start.populateJetty("/hkstackimage.png",
-                                            "/hkstackimage.png",
-                                            "edu.sc.seis.receiverFunction.web.HKStackImageServlet",
-                                            servletStrings,
-                                            sh);
+        edu.sc.seis.rev.RevUtil.populateJetty("/hkstackimage.png",
+                                              "/hkstackimage.png",
+                                              "edu.sc.seis.receiverFunction.web.HKStackImageServlet",
+                                              servletStrings,
+                                              sh);
+        edu.sc.seis.rev.RevUtil.populateJetty("/waveforms.png",
+                                              "/waveforms.png",
+                                              "edu.sc.seis.receiverFunction.web.SeismogramImage",
+                                              servletStrings,
+                                              sh);
         edu.sc.seis.rev.Start.runREV(args, sh);
     }
 }

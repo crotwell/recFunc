@@ -10,7 +10,7 @@ import edu.sc.seis.fissuresUtil.freq.*;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 3833 2003-05-08 03:15:40Z crotwell $
+ * @version $Id: IterDecon.java 5103 2003-08-11 01:34:23Z crotwell $
  */
 
 public class IterDecon {
@@ -57,7 +57,7 @@ public class IterDecon {
                 shifts[bump] = getMaxIndex(corr);
             } // end of else
             amps[bump] = corr[shifts[bump]]; // note don't normalize by dt here
-            System.out.println("Corr max is "+amps[bump]+" at index "+shifts[bump]+" for length "+g.length+" with dt="+dt);
+            //System.out.println("Corr max is "+amps[bump]+" at index "+shifts[bump]+" for length "+g.length+" with dt="+dt);
 
             predicted = buildDecon(amps, shifts, g.length, gwidthFactor, dt);
             float[] predConvolve = Cmplx.convolve(predicted, denominator);

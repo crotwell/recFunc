@@ -2,7 +2,8 @@
 
 MAVEN=/Users/crotwell/.maven/repository
 
-JACORB=$MAVEN/JacORB/jars/JacORB-2.0beta3.jar
+export JACORB_HOME=/Users/crotwell/External/JacORB
+export JACO=${JACORB_HOME}/bin/jaco
 
 SEEDCODEC=$MAVEN/SeedCodec/jars/SeedCodec-1.0Beta.jar
 FISSURESUTIL=$MAVEN/fissuresUtil/jars/fissuresUtil-1.0.6beta.jar
@@ -22,6 +23,5 @@ OPENMAP=$MAVEN/openmap/jars/openmap-4.5.4_USC1.jar
 SOD=$MAVEN/sod/jars/sod-1.0Beta.jar
 RECFUNC=$MAVEN/recFunc/jars/recFunc-1.0Beta.jar
 
-
-java -Xmx256m -cp ${SEEDCODEC}:${SOD}:${RECFUNC}:${OPENMAP}:${GEE}:${JING}:${FISSURESIDL}:${FISSURESIMPL}:${FISSURESUTIL}:${XERCES}:${XMLAPI}:${XALAN}:${TAUP}:${LOG4J}:${HSQLDB}:${CLASSPATH} edu.sc.seis.sod.Start $*
+$JACO -Djacorb.connection.client.pending_reply_timeout=120000 -Xmx256m -cp ${SEEDCODEC}:${SOD}:${RECFUNC}:${OPENMAP}:${GEE}:${JING}:${FISSURESIDL}:${FISSURESIMPL}:${FISSURESUTIL}:${XERCES}:${XMLAPI}:${XALAN}:${TAUP}:${LOG4J}:${HSQLDB}:${CLASSPATH} edu.sc.seis.sod.Start $*
 

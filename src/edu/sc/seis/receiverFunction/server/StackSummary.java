@@ -38,8 +38,11 @@ public class StackSummary {
         jdbcHKStack = new JDBCHKStack(conn);
     }
 
-    public void createSummary(String net, File parentDir, float minPercentMatch)
-            throws FissuresException, NotFound, IOException, SQLException {
+    public void createSummary(String net,
+                              File parentDir,
+                              float minPercentMatch,
+                              float smallestH) throws FissuresException,
+            NotFound, IOException, SQLException {
         JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel()
                 .getSiteTable()
                 .getStationTable();
@@ -53,27 +56,32 @@ public class StackSummary {
                 Station[] station = jdbcStation.getAllStations(netId[i]);
                 for(int j = 0; j < station.length; j++) {
                     SumHKStack sumStack = createSummary(station[j].get_id(),
-                                  parentDir,
-                                  minPercentMatch);
-                    if (sumStack == null) { continue;}
-                    String outStr = net+" "+station[j].get_code()+" "+station[j].my_location.latitude+" "+station[j].my_location.longitude;
-                    
+                                                        parentDir,
+                                                        minPercentMatch,
+                                                        smallestH);
+                    if(sumStack == null) {
+                        continue;
+                    }
+                    String outStr = net + " " + station[j].get_code() + " "
+                            + station[j].my_location.latitude + " "
+                            + station[j].my_location.longitude;
                     float peakH, peakK, peakVal = 0;
                     int[] indicies = sumStack.getSum().getMaxValueIndices();
-                    peakH = sumStack.getSum().getMinH()+sumStack.getSum().getStepH()*indicies[0];
-                    peakK = sumStack.getSum().getMinK()+sumStack.getSum().getStepK()*indicies[1];
+                    peakH = sumStack.getSum().getMinH()
+                            + sumStack.getSum().getStepH() * indicies[0];
+                    peakK = sumStack.getSum().getMinK()
+                            + sumStack.getSum().getStepK() * indicies[1];
                     peakVal = sumStack.getSum().getStack()[indicies[0]][indicies[1]];
-                    outStr +=" "+peakH+" "+peakK+" "+peakVal;
-
+                    outStr += " " + peakH + " " + peakK + " " + peakVal;
                     Crust2 crust2 = HKStack.getCrust2();
-                    if (crust2 != null) {
+                    if(crust2 != null) {
                         Crust2Profile profile = crust2.getClosest(station[j].my_location.longitude,
                                                                   station[j].my_location.latitude);
                         double depth = profile.getLayer(7).topDepth;
-                        double vpvs = profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity();
-                        outStr+=" "+depth+" "+vpvs;
+                        double vpvs = profile.getPWaveAvgVelocity()
+                                / profile.getSWaveAvgVelocity();
+                        outStr += " " + depth + " " + vpvs;
                     }
-                    
                     textSumm.write(outStr);
                     textSumm.newLine();
                 }
@@ -83,12 +91,14 @@ public class StackSummary {
     }
 
     public SumHKStack createSummary(StationId station,
-                              File parentDir,
-                              float minPercentMatch) throws FissuresException,
-            NotFound, IOException, SQLException {
+                                    File parentDir,
+                                    float minPercentMatch,
+                                    float smallestH)
+            throws FissuresException, NotFound, IOException, SQLException {
         SumHKStack sumStack = jdbcHKStack.sum(station.network_id.network_code,
                                               station.station_code,
-                                              minPercentMatch);
+                                              minPercentMatch,
+                                              smallestH);
         if(sumStack == null) {
             logger.info("No hk plots for "
                     + StationIdUtil.toStringNoDates(station) + " with match > "
@@ -121,7 +131,7 @@ public class StackSummary {
             ConnMgr.setDB(ConnMgr.POSTGRES);
             Connection conn = ConnMgr.createConnection();
             StackSummary summary = new StackSummary(conn);
-            summary.createSummary(args[0], new File("stackImages"), 90f);
+            summary.createSummary(args[0], new File("stackImages25"), 90f, 25);
         } catch(Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -168,7 +168,7 @@ public class JDBCHKStack  extends JDBCTable {
         return stack;
     }
     
-    public SumHKStack sum(String netCode, String staCode, float percentMatch) throws FissuresException, NotFound, IOException, SQLException, SQLException {
+    public SumHKStack sum(String netCode, String staCode, float percentMatch, float smallestH) throws FissuresException, NotFound, IOException, SQLException, SQLException {
         ArrayList individualHK = new ArrayList();
         int index = 1;
         getForStationStmt.setString(index++, netCode);
@@ -182,7 +182,8 @@ public class JDBCHKStack  extends JDBCTable {
             HKStack temp = (HKStack)individualHK.get(0);
             SumHKStack sumStack = new SumHKStack((HKStack[])individualHK.toArray(new HKStack[0]),
                                                  temp.getChannel(),
-                                                 percentMatch);
+                                                 percentMatch,
+                                                 smallestH);
             return sumStack;
         } else {
             return null;

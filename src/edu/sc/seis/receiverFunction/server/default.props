@@ -66,7 +66,7 @@ hkStack.create=CREATE TABLE hkstack ( \
 hkStack.createSeq.create=CREATE SEQUENCE hkstackSeq
 hkStack.createSeq.nextVal=SELECT NEXTVAL ('hkstackSeq')
 
-hkStack.uncalculated=SELECT recfunc_id FROM network \
+hkStack.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
                    NATURAL JOIN station \
                    NATURAL JOIN site \
                    NATURAL JOIN channel \
@@ -74,12 +74,13 @@ hkStack.uncalculated=SELECT recfunc_id FROM network \
                    WHERE net_code = ? \
                    AND sta_code = ? \
                    AND receiverFunction.itr_match >= ? \
-                   EXCEPT SELECT recfunc_id from network \
+                   EXCEPT SELECT receiverFunction.recfunc_id from network \
                        NATURAL JOIN station \
                        NATURAL JOIN site \
                        NATURAL JOIN channel \
                        JOIN receiverFunction ON (chanz_id = chan_id ) \
-                       NATURAL JOIN hkStack
+                       , hkStack \
+                       WHERE receiverFunction.recfunc_id = hkstack.recfunc_id
 
 hkStack.put=INSERT INTO hkstack ( \
                    hkstack_id,  \

@@ -16,9 +16,14 @@ import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 public class HKStackImage extends JComponent {
 
     HKStackImage(HKStack stack) {
+        this(stack, 0);
+    }
+
+    HKStackImage(HKStack stack, int smallestHindex) {
         this.stack = stack;
+        this.smallestHindex = smallestHindex;
         float[][] stackOut = stack.getStack();
-        Dimension imageSize = new Dimension(2*stackOut[0].length, 2*stackOut.length);
+        Dimension imageSize = new Dimension(2*stackOut[0].length, 2*(stackOut.length-smallestHindex));
         setMinimumSize(imageSize);
         setPreferredSize(imageSize);
     }
@@ -40,7 +45,7 @@ public class HKStackImage extends JComponent {
         float min = stack.stack[xyMin[0]][xyMin[1]];
         float max = stack.stack[xyMax[0]][xyMax[1]];
 
-        for (int j = 0; j < stackOut.length; j++) {
+        for (int j = smallestHindex; j < stackOut.length; j++) {
             //System.out.print(j+" : ");
             for (int k = 0; k < stackOut[j].length; k++) {
                 if (j== xyMax[0] && k==xyMax[1]) {
@@ -51,7 +56,7 @@ public class HKStackImage extends JComponent {
                     int colorVal = makeImageable(0, max, stackOut[j][k]);
                     g.setColor(new Color(colorVal, colorVal, colorVal));
                 }
-                g.fillRect( 2*k, 2*j, 2, 2);
+                g.fillRect( 2*k, 2*(j-smallestHindex), 2, 2);
                 //System.out.print(colorVal+" ");
             }
             //System.out.println("");
@@ -70,5 +75,6 @@ public class HKStackImage extends JComponent {
     protected int markerH = -1;
     protected int markerV = -1;
 
+    protected int smallestHindex = 0;
 }
 

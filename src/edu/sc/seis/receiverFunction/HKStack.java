@@ -177,11 +177,19 @@ public class HKStack implements Serializable {
      *  2 and the y in 3.
      */
     public int[] getMaxValueIndices() {
+        return getMaxValueIndices(0);
+    }
+
+    /**
+     * returns the x and y indices for the max value in the stack for a depth
+     * grater than minH. 
+     */
+    public int[] getMaxValueIndices(int startHIndex) {
         float[][] stackOut = getStack();
-        float max = stackOut[0][0];
+        float max = stackOut[startHIndex][0];
         int maxIndexX = 0;
         int maxIndexY = 0;
-        for (int j = 0; j < stackOut.length; j++) {
+        for (int j = startHIndex; j < stackOut.length; j++) {
             for (int k = 0; k < stackOut[j].length; k++) {
                 if (stackOut[j][k] > max) {
                     max = stackOut[j][k];
@@ -195,9 +203,15 @@ public class HKStack implements Serializable {
         xy[1] = maxIndexY;
         return xy;
     }
+    
 
     public JComponent getStackComponent() {
-        HKStackImage stackImage = new HKStackImage(this);
+        return getStackComponent(minH);
+    }
+    
+    public JComponent getStackComponent(float smallestH) {
+        int startHIndex = (int)Math.round((smallestH-minH)/stepH);
+        HKStackImage stackImage = new HKStackImage(this, startHIndex);
         if (crust2 != null) {
             Crust2Profile profile = crust2.getClosest(chan.my_site.my_station.my_location.longitude,
                                                       chan.my_site.my_station.my_location.latitude);
@@ -209,15 +223,18 @@ public class HKStack implements Serializable {
             stackImage.addMarker(vpvsIndex, depthIndex);
         }
         BorderedDisplay bd = new BorderedDisplay(stackImage);
+        UnitRangeImpl depthRange = new UnitRangeImpl(getMinH()+startHIndex*getStepH(),
+                                                     getMinH()+getNumH()*getStepH(),
+                                                     UnitImpl.KILOMETER);
         UnitRangeBorder depthLeftBorder = new UnitRangeBorder(Border.LEFT,
                                                               Border.DESCENDING,
                                                               "Depth",
-                                                              new UnitRangeImpl(getMinH(), getMinH()+getNumH()*getStepH(), UnitImpl.KILOMETER));
+                                                              depthRange);
         bd.add(depthLeftBorder, bd.CENTER_LEFT);
         UnitRangeBorder depthRightBorder = new UnitRangeBorder(Border.RIGHT,
                                                                Border.DESCENDING,
                                                                "Depth",
-                                                               new UnitRangeImpl(getMinH(), getMinH()+getNumH()*getStepH(), UnitImpl.KILOMETER));
+                                                               depthRange);
         bd.add(depthRightBorder, bd.CENTER_RIGHT);
         UnitRangeBorder kTopBorder = new UnitRangeBorder(Border.TOP,
                                                          Border.ASCENDING,

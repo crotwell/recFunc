@@ -21,16 +21,21 @@ import edu.sc.seis.sod.status.FissuresFormatter;
 public class SumHKStack {
     public SumHKStack(HKStack[] individuals,
                       Channel chan,
-                      float minPercentMatch) {
+                      float minPercentMatch,
+                      float smallestH) {
         this.individuals = individuals;
         this.minPercentMatch = minPercentMatch;
         this.channel = chan;
+        this.smallestH = smallestH;
         if (individuals.length == 0) {
             throw new IllegalArgumentException("Cannot create SumStack with empty array");
         }
         for (int i = 0; i < individuals.length; i++) {
             if (individuals[i].getMinH() != individuals[0].getMinH()) {
                 throw new IllegalArgumentException("Cannot create SumStack with different minH, "+individuals[i].getMinH() +"!="+ individuals[0].getMinH());
+            }
+            if (individuals[i].getMinK() != individuals[0].getMinK()) {
+                throw new IllegalArgumentException("Cannot create SumStack with different minK, "+individuals[i].getMinK() +"!="+ individuals[0].getMinK());
             }
             // need to do more of this checking...
         }
@@ -54,20 +59,21 @@ public class SumHKStack {
     }
     
     void calculate(Channel chan) {
-        float[][] stack = new float[individuals[0].getStack().length][individuals[0].getStack()[0].length];
+        int smallestHIndex = (int)Math.round((smallestH-individuals[0].getMinH())/individuals[0].getStepH());
+        float[][] stack = new float[individuals[0].getStack().length-smallestHIndex][individuals[0].getStack()[0].length];
         for (int i = 0; i < stack.length; i++) {
             for (int j = 0; j < stack[0].length; j++) {
                 for (int s = 0; s < individuals.length; s++) {
-                    stack[i][j] += individuals[s].getStack()[i][j];
+                    stack[i][j] += individuals[s].getStack()[i+smallestHIndex][j];
                 }
             }
         }
         sum = new HKStack(individuals[0].getAlpha(),
                           0f,
                           minPercentMatch,
-                          individuals[0].getMinH(),
+                          individuals[0].getMinH()+smallestHIndex*individuals[0].getStepH(),
                           individuals[0].getStepH(),
-                          individuals[0].getNumH(),
+                          individuals[0].getNumH()-smallestHIndex,
                           individuals[0].getMinK(),
                           individuals[0].getStepK(),
                           individuals[0].getNumK(),
@@ -97,7 +103,8 @@ public class SumHKStack {
         if (stacks.size() != 0) {
             return new SumHKStack((HKStack[])stacks.toArray(new HKStack[0]),
                                   chan,
-                                  minPercentMatch);
+                                  minPercentMatch,
+                                  ((HKStack)stacks.get(0)).getMinH());
         } else {
             return null;
         }
@@ -107,5 +114,6 @@ public class SumHKStack {
     protected HKStack[] individuals;
     protected HKStack sum;
     protected float minPercentMatch;
+    protected float smallestH;
 }
 

@@ -2,6 +2,7 @@ package edu.sc.seis.receiverFunction.server;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -105,19 +106,20 @@ public class JDBCHKStack  extends JDBCTable {
         putStmt.setFloat(index++, peakK);
         putStmt.setFloat(index++, peakVal);
         
-        float[][] vals = stack.getStack();
+        float[][] data = stack.getStack();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(out);
-        for(int i = 0; i < vals.length; i++) {
-            for(int j = 0; j < vals[i].length; j++) {
-                dos.writeFloat(vals[i][j]);
+        for(int i = 0; i < data.length; i++) {
+            for(int j = 0; j < data[i].length; j++) {
+                dos.writeFloat(data[i][j]);
             }
         }
         byte[] valBytes = out.toByteArray();
-        putStmt.setBinaryStream(index++, new ByteArrayInputStream(valBytes), valBytes.length);
+        putStmt.setBytes(index++, valBytes);
+        
         putStmt.setTimestamp(index++, ClockUtil.now().getTimestamp());
         try {
-        putStmt.executeUpdate();
+            putStmt.executeUpdate();
         } catch (SQLException e) {
             logger.error("SQL stmt: "+putStmt.toString());
             throw e;
@@ -176,16 +178,28 @@ public class JDBCHKStack  extends JDBCTable {
     
     HKStack extract(ResultSet rs) throws FileNotFoundException, FissuresException, NotFound, IOException, SQLException {
         CachedResult rfCache = jdbcRecFunc.extract(rs);
+        byte[] dataBytes = rs.getBytes("data");
+        int numH = rs.getInt("numH");
+        int numK = rs.getInt("numK");
+        float[][] data = HKStack.createArray(numH, numK);
+        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(dataBytes));
+        for(int i = 0; i < data.length; i++) {
+            for(int j = 0; j < data[i].length; j++) {
+                data[i][j] = dis.readFloat();
+            }
+        }
+        
+        
         HKStack out = new HKStack(rs.getFloat("alpha"),
                                   rs.getFloat("p"),
                                   rs.getFloat("percentMatch"),
                                   rs.getFloat("minH"),
                                   rs.getFloat("stepH"),
-                                  rs.getInt("numH"),
+                                  numH,
                                   rs.getFloat("minK"),
                                   rs.getFloat("stepK"),
-                                  rs.getInt("numK"),
-                                  (float[][])rs.getObject("data"),
+                                  numK,
+                                  data,
                                   rfCache.channels[0]);
         return out;
     }
@@ -232,5 +246,21 @@ public class JDBCHKStack  extends JDBCTable {
         }catch(Exception e) {
             GlobalExceptionHandler.handle(e);   
         }
+    }
+    
+    public JDBCChannel getJDBCChannel() {
+        return jdbcChannel;
+    }
+    public JDBCEventAttr getJDBCEventAttr() {
+        return jdbcEventAttr;
+    }
+    public JDBCOrigin getJDBCOrigin() {
+        return jdbcOrigin;
+    }
+    public JDBCRecFunc getJDBCRecFunc() {
+        return jdbcRecFunc;
+    }
+    public TauPUtil getTauPTime() {
+        return tauPTime;
     }
 }

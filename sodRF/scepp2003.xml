@@ -5,13 +5,14 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 >
   <properties>
 
-    <property>
-      <name>sod.start.IndexPageDirectory</name>
-      <value>SPstatus</value>
-    </property>
-
-
-
+                <property>
+                        <name>sod.start.RunName</name>
+                        <value>Tutorial Test Run</value>
+                </property>
+                <property>
+                        <name>sod.start.StatusBaseDirectory</name>
+                        <value>status</value>
+                </property>
     <property>
       <name>edu.sc.seis.sod.waveformarm.threads</name>
       <value>2</value>

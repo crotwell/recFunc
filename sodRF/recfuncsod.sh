@@ -5,7 +5,7 @@ MAVEN=~/.maven
 JACORB_TIMEOUT=900000
 
 JACORB_LIB=$MAVEN/repository/JacORB/jars
-JACORB=$JACORB_LIB/JacORB-2.0.jar
+JACORB=$JACORB_LIB/JacORB-2.1.jar
 JACORB_ANTLR=$JACORB_LIB/antlr-2.7.2.jar
 JACORB_AVALON=$JACORB_LIB/avalon-framework-4.1.5.jar
 JACORB_CONCURRENT=$JACORB_LIB/concurrent-1.3.2.jar
@@ -29,7 +29,7 @@ JING=$MAVEN/repository/jing/jars/jing-20030619.jar
 SOD=$MAVEN/repository/sod/jars/sod-1.0Beta.jar
 
 RECFUNC=$MAVEN/repository/recFunc/jars/recFunc-1.0beta.jar
-GEE=$MAVEN/repository/gee/jars/gee-2.0.5.jar
+GEE=$MAVEN/repository/gee/jars/gee-2.0.6beta.jar
 
 
 java -Djava.endorsed.dirs=${JACORB_LIB}  \

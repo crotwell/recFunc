@@ -276,7 +276,7 @@ public class HKStack implements Serializable {
                 int vpvsIndex = (int)Math.round((vpvs-minK)/stepK);
                 System.out.println("Wilson "+StationIdUtil.toString(chan.my_site.my_station.get_id())+" depth="+
                                    result.getH()+" "+depthIndex+"  VpVs="+vpvs+" "+vpvsIndex);
-                stackImage.addMarker("Wilson", vpvsIndex, depthIndex, Color.ORANGE);
+                stackImage.addMarker("Wilson", vpvsIndex, depthIndex, Color.GREEN);
             }
         }
         BorderedDisplay bd = new BorderedDisplay(stackImage);

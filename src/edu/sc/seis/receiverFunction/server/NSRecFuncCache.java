@@ -87,7 +87,7 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
             return getCorbaObject().isCached(prefOrigin, channel, config);
         } catch (Throwable e) {
             // retry in case regetting from name service helps
-            logger.warn("Exception in a_channel_finder(), regetting from nameservice to try again.", e);
+            logger.warn("Exception in isCached(), regetting from nameservice to try again.", e);
             reset();
             return getCorbaObject().isCached(prefOrigin, channel, config);
         } // end of try-catch
@@ -102,7 +102,7 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
             return getCorbaObject().getCachedConfigs(prefOrigin, channel);
         } catch (Throwable e) {
             // retry in case regetting from name service helps
-            logger.warn("Exception in a_channel_finder(), regetting from nameservice to try again.", e);
+            logger.warn("Exception in getCachedConfigs(), regetting from nameservice to try again.", e);
             reset();
             return getCorbaObject().getCachedConfigs(prefOrigin, channel);
         } // end of try-catch
@@ -121,7 +121,7 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
             throw e;
         } catch (Throwable e) {
             // retry in case regetting from name service helps
-            logger.warn("Exception in a_channel_finder(), regetting from nameservice to try again.", e);
+            logger.warn("Exception in get(), regetting from nameservice to try again.", e);
             reset();
             return getCorbaObject().get(prefOrigin, channel, config);
         } // end of try-catch
@@ -133,7 +133,7 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
             return getCorbaObject().insertSodConfig(config);
         } catch (Throwable e) {
             // retry in case regetting from name service helps
-            logger.warn("Exception in a_channel_finder(), regetting from nameservice to try again.", e);
+            logger.warn("Exception in insertSodConfig(), regetting from nameservice to try again.", e);
             reset();
             return getCorbaObject().insertSodConfig(config);
         } // end of try-catch
@@ -146,7 +146,7 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
             throw e;
         } catch (Throwable e) {
             // retry in case regetting from name service helps
-            logger.warn("Exception in a_channel_finder(), regetting from nameservice to try again.", e);
+            logger.warn("Exception in getSodConfig(), regetting from nameservice to try again.", e);
             reset();
             return getCorbaObject().getSodConfig(sodConfig_id);
         } // end of try-catch
@@ -182,7 +182,7 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
                                     sodConfig_id);
         } catch (Throwable e) {
             // retry in case regetting from name service helps
-            logger.warn("Exception in a_channel_finder(), regetting from nameservice to try again.", e);
+            logger.warn("Exception in insert(), regetting from nameservice to try again.", e);
             reset();
             getCorbaObject().insert(prefOrigin,
                                     eventAttr,

@@ -51,7 +51,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             </originDepthRange>
             
             <originTimeRange>
-                <startTime>20030301T00:00:00.001Z</startTime>
+                <startTime>20020101T00:00:00.001Z</startTime>
                 <endTime>20041231T23:59:59.999Z</endTime>
             </originTimeRange>
             
@@ -101,6 +101,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                     <max>115</max>
                 </originPointDistance>
             </originOR>
+
             <removeEventDuplicate/>
         </originAND>
 
@@ -128,6 +129,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <networkCode>US</networkCode>
             <networkCode>II</networkCode>
             <networkCode>IU</networkCode>
+            <networkCode>SP</networkCode>
         </networkOR>
         
         <stationArea>

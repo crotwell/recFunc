@@ -61,7 +61,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 <!-- Only take events from Apr-June -->
         <eventTimeRange>
         <timeRange>
-            <startTime>20030101T00:00:00.001Z</startTime>
+            <startTime>20030925T00:00:00.001Z</startTime>
             <endTime>20041231T23:59:59.999Z</endTime>
         </timeRange>
         </eventTimeRange>
@@ -89,16 +89,23 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 <!-- Print out a line for each successful event -->
     <printLineEventProcess/>
 
-
-                <mapEventStatus xlink:href="status/eventMap.png"/>
-                <eventStatusTemplate
-                        outputLocation="status/time.html" xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/timeSorted.xml"/>
-                <eventStatusTemplate
-                        outputLocation="status/depth.html" xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/depthSorted.xml"/>
-                <eventStatusTemplate
-                        outputLocation="status/location.html" xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/locSorted.xml"/>
-                <eventStatusTemplate
-                        outputLocation="status/mag.html" xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/magSorted.xml"/>
+                <mapEventStatus xlink:href="SPstatus/eventMap.png"/>
+                <eventStatusTemplate>
+                        <fileDir>SPstatus</fileDir>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/timeSorted.xml"/>
+                </eventStatusTemplate>
+                <eventStatusTemplate>
+                        <fileDir>SPstatus</fileDir>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/depthSorted.xml"/>
+                </eventStatusTemplate>
+                <eventStatusTemplate>
+                        <fileDir>SPstatus</fileDir>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/locSorted.xml"/>
+                </eventStatusTemplate>
+                <eventStatusTemplate>
+                        <fileDir>SPstatus</fileDir>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/magSorted.xml"/>
+                </eventStatusTemplate>
 
    </eventArm>
 
@@ -119,7 +126,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
     <stationAND>
         <stationEffectiveTimeOverlap>
            <effectiveTimeOverlap>
-               <min>20030101T00:00:00.001Z</min>
+               <min>20030925T00:00:00.001Z</min>
                <max>20041231T23:59:59.999Z</max>
            </effectiveTimeOverlap>
         </stationEffectiveTimeOverlap>
@@ -133,7 +140,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
         <channelEffectiveTimeOverlap>
         <effectiveTimeOverlap>
-            <min>20030101T00:00:00.001Z</min>
+            <min>20030925T00:00:00.001Z</min>
             <max>20041231T23:59:59.999Z</max>
         </effectiveTimeOverlap>
         </channelEffectiveTimeOverlap>
@@ -141,6 +148,12 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
    </channelAND>
 
     <printlineChannelProcessor/>
+                <networkInfoTemplateGenerator>
+                    <fileDir>SPstatus</fileDir>
+                    <netConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/networks.xml"/>
+                    <stationConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/stations.xml"/>
+                    <channelConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/channels.xml"/>
+                </networkInfoTemplateGenerator>
 
     </networkArm>
 
@@ -169,7 +182,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         <endPhase>ttp</endPhase>
         <endOffset>
             <unit>SECOND</unit>
-            <value>60</value>
+            <value>180</value>
         </endOffset>
     </phaseRequest>
 
@@ -183,16 +196,22 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
     <printlineSeismogramProcess/>
 
-<!--
-    <sacFileProcessor>
-        <dataDirectory>SP_recfunc</dataDirectory>
-        <eventDirLabel>
-             <originTime>yyyy_DDD_HH_mm_ss</originTime>
-             _<magnitude/>
-        </eventDirLabel>
-    </sacFileProcessor>
+    <phaseCut>
+        <beginPhase>ttp</beginPhase>
+        <beginOffset>
+            <unit>SECOND</unit>
+            <value>-30</value>
+        </beginOffset>
+        <endPhase>ttp</endPhase>
+        <endOffset>
+            <unit>SECOND</unit>
+            <value>90</value>
+        </endOffset>
+    </phaseCut>
+    <rMean/>
+    <rTrend/>
+    <taper/>
 
--->
     <externalSeismogramProcess>
         <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
         <dataDirectory>SP_recfunc</dataDirectory>
@@ -201,10 +220,9 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
     </localSeismogramArm>
 
-
                 <waveformEventTemplateGenerator>
-                        <fileLoc>status/<originTime>yyyyMMddHHmmssSSS</originTime>/event.html</fileLoc>
-                        <externalConfig xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml"/>
+                        <fileDir>SPstatus</fileDir>
+                        <waveformConfig xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml"/>
                 </waveformEventTemplateGenerator>
 
    </waveFormArm>

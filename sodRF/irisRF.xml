@@ -293,7 +293,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             </externalWaveformVectorProcess>
             
             <localSeismogramTemplateGenerator>
-                <template>jar:edu/sc/seis/receiverFunction/rfTemplate.vm"</template>
+                <template>jar:edu/sc/seis/receiverFunction/rfTemplate.vm</template>
             </localSeismogramTemplateGenerator>
             
         <waveformEventTemplateGenerator>

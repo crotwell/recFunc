@@ -103,6 +103,9 @@ public class EventSeismogramRFTask extends EventSeismogramTask {
                         }
                         
                         IterDeconConfig[] deconConfig = cache.getCachedConfigs(eventAccess[eventNum].get_preferred_origin(), chanIds);
+                        if (deconConfig.length == 0) {
+                            continue;
+                        }
                         CachedResult result = cache.get(eventAccess[eventNum].get_preferred_origin(), chanIds, deconConfig[0]);
                         
                         if (result != null) {

@@ -84,7 +84,7 @@ public class JDBCHKStack  extends JDBCTable {
         
         uncalculatedStmt = conn.prepareStatement(ConnMgr.getSQL("hkStack.uncalculated"));
         putStmt = conn.prepareStatement(ConnMgr.getSQL("hkStack.put"));
-        getForStationStmt = conn.prepareStatement(ConnMgr.getSQL("hkstack.getForStation"));
+        getForStationStmt = conn.prepareStatement(ConnMgr.getSQL("hkStack.getForStation"));
     }
     
     public int put(int recfunc_id, HKStack stack) throws SQLException, IOException {

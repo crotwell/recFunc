@@ -124,9 +124,9 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
         Channel zeroChannel = channelGroup.getChannels()[0];
         while ( ! processor.isRecFuncFinished()) {
             try {
-                System.out.println("Sleeping "+ChannelIdUtil.toStringNoDates(zeroChannel.get_id()));
+                //System.out.println("Sleeping "+ChannelIdUtil.toStringNoDates(zeroChannel.get_id()));
 
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
             }
         }

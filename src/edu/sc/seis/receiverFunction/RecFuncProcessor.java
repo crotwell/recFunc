@@ -161,7 +161,8 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
     }
     
     int makeImageable(float min, float max, float val) {
-        return (int)SimplePlotUtil.linearInterp(min, 0, max, 255, val);
+        float absMax = Math.max(Math.abs(min), Math.abs(max));
+        return (int)SimplePlotUtil.linearInterp(-1*absMax, 0, absMax, 255, val);
     }
     
     boolean isDataComplete(LocalSeismogram seis) {
@@ -170,8 +171,10 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
     
     public BufferedImage createStackImage(HKStack stack) {
         float[][] stackOut = stack.getStack();
-        int fullWidth = 2*stackOut.length+40;
-        int fullHeight = 2*stackOut[0].length+110;
+        int dataH = 2*stackOut.length;
+        int dataW = 2*stackOut[0].length;
+        int fullWidth = dataW+40;
+        int fullHeight = dataH+140;
         BufferedImage bufImage = new BufferedImage(fullWidth,
                                                    fullHeight,
                                                    BufferedImage.TYPE_INT_RGB);
@@ -182,9 +185,10 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
         FontMetrics fm = g.getFontMetrics();
         
         String title = ChannelIdUtil.toStringNoDates(stack.getRecFunc().getRequestFilter().channel_id);
+        g.setColor(Color.white);
         g.drawString(title, (fullWidth-fm.stringWidth(title))/2, fm.getHeight());
         
-        g.translate(5, 5);
+        g.translate(5, fm.getHeight()+fm.getDescent());
         
         float min = stackOut[0][0];
         int maxIndexX = 0;
@@ -208,34 +212,40 @@ public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogra
             }
         }
         
-        g.setColor(Color.white);
-        g.drawString("H max="+stack.getMinH()+maxIndexY*stack.getStepH(), 0, 2*stackOut[0].length+5);
-        g.drawString("K max="+stack.getMinK()+maxIndexX*stack.getStepK(), 0, 2*stackOut[0].length+20);
-        
-        int minColor = makeImageable(min, max, min);
-        g.setColor(new Color(minColor, minColor, minColor));
-        g.fillRect(0, 2*stackOut[0].length+25, 15, 15);
-        g.setColor(Color.white);
-        g.drawString("Min="+min, 0, 2*stackOut[0].length+55);
-        
-        int maxColor = makeImageable(min, max, max);
-        g.setColor(new Color(maxColor, maxColor, maxColor));
-        g.fillRect(2*stackOut.length-20, 2*stackOut[0].length+25, 15, 15);
-        g.setColor(Color.white);
-        String maxString = "Max="+max;
-        int stringWidth = fm.stringWidth(maxString);
-        g.drawString(maxString, 2*stackOut.length-5-stringWidth, 2*stackOut[0].length+55);
-        
         for (int j = 0; j < stackOut.length; j++) {
-            System.out.print(j+" : ");
+            //System.out.print(j+" : ");
             for (int k = 0; k < stackOut[j].length; k++) {
                 int colorVal = makeImageable(min, max, stackOut[j][k]);
                 g.setColor(new Color(colorVal, colorVal, colorVal));
                 g.fillRect( 2*k, 2*j, 2, 2);
-                System.out.print(colorVal+" ");
+                //System.out.print(colorVal+" ");
             }
-            System.out.println("");
+            //System.out.println("");
         }
+        g.translate(0, dataH);
+        
+        g.setColor(Color.white);
+        g.drawString("Min H="+(stack.getMinH()+minIndexY*stack.getStepH()), 0, fm.getHeight());
+        g.drawString("    K="+(stack.getMinK()+minIndexX*stack.getStepK()), 0, 2*fm.getHeight());
+        g.translate(0, 2*fm.getHeight());
+        g.drawString("Max H="+(stack.getMinH()+maxIndexY*stack.getStepH()), 0, fm.getHeight());
+        g.drawString("    K="+(stack.getMinK()+maxIndexX*stack.getStepK()), 0, 2*fm.getHeight());
+        g.translate(0, 2*fm.getHeight());
+        
+        int minColor = makeImageable(min, max, min);
+        g.setColor(new Color(minColor, minColor, minColor));
+        g.fillRect(0, 0, 15, 15);
+        g.setColor(Color.white);
+        g.drawString("Min="+min, 0, 15+fm.getHeight());
+        
+        int maxColor = makeImageable(min, max, max);
+        g.setColor(new Color(maxColor, maxColor, maxColor));
+        g.fillRect(dataW-20, 0, 15, 15);
+        g.setColor(Color.white);
+        String maxString = "Max="+max;
+        int stringWidth = fm.stringWidth(maxString);
+        g.drawString(maxString, dataW-5-stringWidth, 15+fm.getHeight());
+        
         g.dispose();
         return bufImage;
     }

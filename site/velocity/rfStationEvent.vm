@@ -68,6 +68,18 @@
 <td class="even">Estimated Crust Vp/Vs</td>
 <td class="odd">$stack.getMaxValueK()</td>
 </tr>
+<tr>
+<td class="even">Assumed Crust Vp</td>
+<td class="odd">$stack.getAlpha()</td>
+</tr>
+<tr>
+<td class="even">Estimated Crust Vs</td>
+<td class="odd">$stack.getVs()</td>
+</tr>
+<tr>
+<td class="even">Estimated Crust Poisson's Ratio</td>
+<td class="odd">$stack.getPoissonsRatio()</td>
+</tr>
 </table>
 
 

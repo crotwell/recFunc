@@ -326,6 +326,7 @@
                 <targetPath>edu/sc/seis/receiverFunction/server</targetPath>
                 <includes>
                     <include>*.prop</include>
+                    <include>*.props</include>
                 </includes>
             </resource>
             <resource>

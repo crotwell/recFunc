@@ -66,6 +66,11 @@
     
     <dependencies>
         <dependency>
+            <groupId>recFunc</groupId>
+            <artifactId>recFuncIDL</artifactId>
+            <version>1.0beta</version>
+        </dependency> 
+        <dependency>
             <groupId>mapData</groupId>
             <artifactId>etopo10</artifactId>
             <jar>etopo10.jar</jar>            

@@ -40,9 +40,14 @@ public class RecFunc {
     }
 
     RecFunc(TauP_Time timeCalc, IterDecon decon, TimeInterval shift) {
+        this(timeCalc, decon, shift, new TimeInterval(100, UnitImpl.SECOND));
+    }
+
+    RecFunc(TauP_Time timeCalc, IterDecon decon, TimeInterval shift, TimeInterval pad) {
         this.timeCalc = timeCalc;
         this.decon = decon;
         this.shift = shift;
+        this.pad = pad;
     }
 
     public IterDeconResult[] process(EventAccessOperations event,
@@ -97,12 +102,27 @@ public class RecFunc {
             throw new IncompatibleSeismograms("data is not of same length "+
                                                   rotated[0].length+" "+zdata.length);
         }
+
+        SamplingImpl samp = SamplingImpl.createSamplingImpl(z.sampling_info);
+        double period = samp.getPeriod().convertTo(UnitImpl.SECOND).getValue();
+
+        int padLength = (int)Math.ceil(pad.divideBy(samp.getPeriod()).convertTo(UnitImpl.COUNT).get_value());
+        float[] tmp = new float[zdata.length+padLength];
+        System.arraycopy(zdata, 0, tmp, 0, zdata.length);
+        zdata = tmp;
+
+        tmp = new float[zdata.length+padLength];
+        System.arraycopy(rotated[0], 0, tmp, 0, rotated[0].length);
+        rotated[0] = tmp;
+
+        tmp = new float[zdata.length+padLength];
+        System.arraycopy(rotated[1], 0, tmp, 0, rotated[1].length);
+        rotated[1] = tmp;
+
         zdata = decon.makePowerTwo(zdata);
         rotated[0] = decon.makePowerTwo(rotated[0]);
         rotated[1] = decon.makePowerTwo(rotated[1]);
 
-        SamplingImpl samp = SamplingImpl.createSamplingImpl(z.sampling_info);
-        double period = samp.getPeriod().convertTo(UnitImpl.SECOND).getValue();
         IterDeconResult ansRadial = processComponent(rotated[1],
                                                      zdata,
                                                          (float)period,
@@ -179,6 +199,8 @@ public class RecFunc {
     IterDecon decon;
 
     TimeInterval shift;
+
+    TimeInterval pad;
 
     static Logger logger = Logger.getLogger(RecFunc.class);
 

@@ -148,6 +148,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                     float kmRayParam = (float)(arrival.getRayParam()/tauPTime.getTauModel().getRadiusOfEarth());
                     HKStack stack = new HKStack(6.5f,
                                                 kmRayParam,
+                                                HKStack.getPercentMatch(saved),
                                                 5, .25f, 240,
                                                 1.6f, .0025f, 200,
                                                 saved);
@@ -167,18 +168,21 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                     SumHKStack sum = SumHKStack.load(getParentDirectory(),
                                                      predicted.getRequestFilter().channel_id,
                                                      prefix,
-                                                     postfix);
-                    File sumStackOutFile = new File(getParentDirectory(),"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+postfix);
-                    if (sumStackOutFile.exists()) {sumStackOutFile.delete();}
-                    DataOutputStream sumdos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(sumStackOutFile)));
-                    sum.write(sumdos);
-                    sumdos.close();
+                                                     postfix,
+                                                     90);
+                    if (sum != null) {
+                        // at least on event meet the min percent match
+                        File sumStackOutFile = new File(getParentDirectory(),"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+postfix);
+                        if (sumStackOutFile.exists()) {sumStackOutFile.delete();}
+                        DataOutputStream sumdos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(sumStackOutFile)));
+                        sum.write(sumdos);
+                        sumdos.close();
 
-                    File outSumImageFile  = new File(getParentDirectory(),"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
-                    if (outSumImageFile.exists()) {outSumImageFile.delete();}
-                    BufferedImage bufSumImage = sum.createStackImage();
-                    javax.imageio.ImageIO.write(bufSumImage, "png", outSumImageFile);
-
+                        File outSumImageFile  = new File(getParentDirectory(),"SumHKStack_"+ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png");
+                        if (outSumImageFile.exists()) {outSumImageFile.delete();}
+                        BufferedImage bufSumImage = sum.createStackImage();
+                        javax.imageio.ImageIO.write(bufSumImage, "png", outSumImageFile);
+                    }
 
                 }
             } else {

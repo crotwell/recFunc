@@ -15,8 +15,10 @@ import java.util.LinkedList;
 
 public class SumHKStack {
     public SumHKStack(HKStack[] individuals,
-                      ChannelId chan) {
+                      ChannelId chan,
+                      float minPercentMatch) {
         this.individuals = individuals;
+        this.minPercentMatch = minPercentMatch;
         if (individuals.length == 0) {
             throw new IllegalArgumentException("Cannot create SumStack with empty array");
         }
@@ -48,6 +50,7 @@ public class SumHKStack {
         }
         sum = new HKStack(individuals[0].getAlpha(),
                           0f,
+                          minPercentMatch,
                           individuals[0].getMinH(),
                           individuals[0].getStepH(),
                           individuals[0].getNumH(),
@@ -58,7 +61,7 @@ public class SumHKStack {
                           chan);
     }
 
-    public static SumHKStack load(File parentDir, ChannelId chan, String prefix, String postfix) throws IOException {
+    public static SumHKStack load(File parentDir, ChannelId chan, String prefix, String postfix, float minPercentMatch) throws IOException {
         File[] subdir = parentDir.listFiles();
         LinkedList stacks = new LinkedList();
         for (int i = 0; i < subdir.length; i++) {
@@ -73,11 +76,14 @@ public class SumHKStack {
             // found a file with the correct name, load it
             DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(stackFile)));
             HKStack individual = HKStack.read(dis);
-            stacks.add(individual);
+            if (individual.getPercentMatch() > minPercentMatch) {
+                stacks.add(individual);
+            }
         }
         if (stacks.size() != 0) {
             return new SumHKStack((HKStack[])stacks.toArray(new HKStack[0]),
-                                  chan);
+                                  chan,
+                                  minPercentMatch);
         } else {
             return null;
         }
@@ -85,6 +91,6 @@ public class SumHKStack {
 
     protected HKStack[] individuals;
     protected HKStack sum;
-
+    protected float minPercentMatch;
 }
 

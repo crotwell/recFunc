@@ -33,6 +33,7 @@ public class HKStack  {
 
     protected HKStack(float alpha,
                       float p,
+                      float percentMatch,
                       float minH,
                       float stepH,
                       int numH,
@@ -41,6 +42,7 @@ public class HKStack  {
                       int numK) {
         this.alpha = alpha;
         this.p = p;
+        this.percentMatch = percentMatch;
         this.minH = minH;
         this.stepH = stepH;
         this.numH = numH;
@@ -51,6 +53,7 @@ public class HKStack  {
 
     public HKStack(float alpha,
                    float p,
+                   float percentMatch,
                    float minH,
                    float stepH,
                    int numH,
@@ -58,13 +61,14 @@ public class HKStack  {
                    float stepK,
                    int numK,
                    DataSetSeismogram recFunc) {
-        this(alpha,p ,minH ,stepH ,numH ,minK ,stepK ,numK );
+        this(alpha,p, percentMatch, minH ,stepH ,numH ,minK ,stepK ,numK );
         this.recFunc = recFunc;
         calculate();
     }
 
     public HKStack(float alpha,
                    float p,
+                   float percentMatch,
                    float minH,
                    float stepH,
                    int numH,
@@ -72,13 +76,14 @@ public class HKStack  {
                    float stepK,
                    int numK,
                    float[][] stack) {
-        this(alpha,p ,minH ,stepH ,numH ,minK ,stepK ,numK );
+        this(alpha,p, percentMatch ,minH ,stepH ,numH ,minK ,stepK ,numK );
         this.recFunc = null;
         this.stack = stack;
     }
 
     public HKStack(float alpha,
                    float p,
+                   float percentMatch,
                    float minH,
                    float stepH,
                    int numH,
@@ -87,12 +92,13 @@ public class HKStack  {
                    int numK,
                    float[][] stack,
                    DataSetSeismogram recFunc) {
-        this(alpha,p ,minH ,stepH ,numH ,minK ,stepK ,numK, stack );
+        this(alpha,p, percentMatch ,minH ,stepH ,numH ,minK ,stepK ,numK, stack );
         this.recFunc = recFunc;
     }
 
     public HKStack(float alpha,
                    float p,
+                   float percentMatch,
                    float minH,
                    float stepH,
                    int numH,
@@ -101,7 +107,7 @@ public class HKStack  {
                    int numK,
                    float[][] stack,
                    ChannelId chanId) {
-        this(alpha,p ,minH ,stepH ,numH ,minK ,stepK ,numK, stack );
+        this(alpha,p, percentMatch ,minH ,stepH ,numH ,minK ,stepK ,numK, stack );
         this.chanId = chanId;
     }
 
@@ -161,11 +167,6 @@ public class HKStack  {
         g.translate(0, dataH);
 
         g.setColor(Color.white);
-        String percentMatch = "?";
-        if (recFunc != null) {
-            Element e = (Element)recFunc.getAuxillaryData("recFunc.percentMatch");
-            percentMatch = SodUtil.getNestedText(e);
-        }
         g.drawString("% match="+percentMatch, 0, fm.getHeight());
         g.drawString("    ", 0, 2*fm.getHeight());
         g.translate(0, 2*fm.getHeight());
@@ -191,6 +192,14 @@ public class HKStack  {
         return bufImage;
     }
 
+    public static float getPercentMatch(DataSetSeismogram recFunc) {
+        String percentMatch = "-9999";
+        if (recFunc != null) {
+            Element e = (Element)recFunc.getAuxillaryData("recFunc.percentMatch");
+            percentMatch = SodUtil.getNestedText(e);
+        }
+        return Float.parseFloat(percentMatch);
+    }
 
     int makeImageable(float min, float max, float val) {
         float absMax = Math.max(Math.abs(min), Math.abs(max));
@@ -277,6 +286,10 @@ public class HKStack  {
         return alpha;
     }
 
+    public float getPercentMatch() {
+        return percentMatch;
+    }
+
     public float getMinH() {
         return minH;
     }
@@ -307,6 +320,7 @@ public class HKStack  {
     public void write(DataOutputStream out) throws IOException {
         out.writeFloat(p);
         out.writeFloat(alpha);
+        out.writeFloat(percentMatch);
         out.writeFloat(minH);
         out.writeFloat(stepH);
         out.writeInt(numH);
@@ -337,6 +351,7 @@ public class HKStack  {
     public static HKStack read(DataInputStream in) throws IOException {
         float p = in.readFloat();
         float alpha = in.readFloat();
+        float percentMatch = in.readFloat();
         float minH = in.readFloat();
         float stepH = in.readFloat();
         int numH = in.readInt();
@@ -346,7 +361,7 @@ public class HKStack  {
         int iDim = in.readInt();
         int jDim = in.readInt();
         float[][] stack = new float[iDim][jDim];
-        HKStack out = new HKStack(alpha, p, minH, stepH, numH, minK, stepK, numK, stack);
+        HKStack out = new HKStack(alpha, p, percentMatch, minH, stepH, numH, minK, stepK, numK, stack);
         for (int i = 0; i < stack.length; i++) {
             for (int j = 0; j < stack[0].length; j++) {
                 stack[i][j] = in.readFloat();
@@ -358,6 +373,7 @@ public class HKStack  {
     float[][] stack;
     float p;
     float alpha;
+    float percentMatch;
     float minH;
     float stepH;
     int numH;

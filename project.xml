@@ -18,10 +18,7 @@
 Caclulation of seismic receiver functions based on the time-domain iterative 
 deconvolution method of Ammon.
 </description>
-  <shortDescription>
-Caclulation of seismic receiver functions.
-</shortDescription>
-  
+  <shortDescription>Caclulation of receiver functions.</shortDescription>
   <url>http://www.seis.sc.edu/software/${pom.artifactId}</url>
   <siteAddress>www.seis.sc.edu</siteAddress>
   <siteDirectory>/seis/raid1/Apache/htdocs/software/${pom.artifactId}</siteDirectory>

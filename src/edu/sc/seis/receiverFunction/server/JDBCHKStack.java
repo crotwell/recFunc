@@ -64,10 +64,12 @@ public class JDBCHKStack extends JDBCTable {
         this.jdbcEventAccess = jdbcEventAccess;
         this.jdbcChannel = jdbcChannel;
         this.jdbcRecFunc = jdbcRecFunc;
+        hkstackSeq = new JDBCSequence(conn, getTableName()+"Seq");
         TableSetup.setup(getTableName(),
                          conn,
                          this,
                          "edu/sc/seis/receiverFunction/server/default.props");
+        
         dataDir = new File(RecFuncCacheImpl.getDataLoc());
         dataDir.mkdirs();
         eventFormatter = new EventFormatter(true);

@@ -74,6 +74,7 @@ public class JDBCRecFunc extends JDBCTable {
         this.jdbcEventAccess = jdbcEventAccess;
         this.jdbcChannel = jdbcChannel;
         this.jdbcSodConfig = jdbcSodConfig;
+        receiverFunctionSeq  = new JDBCSequence(conn, getTableName()+"Seq");
         TableSetup.setup(getTableName(), conn, this, "edu/sc/seis/receiverFunction/server/default.props");
         
         dataDir = new File(dataDirectory);

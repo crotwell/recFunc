@@ -22,6 +22,7 @@ public class JDBCSodConfig  extends JDBCTable {
     
     public JDBCSodConfig(Connection conn) throws SQLException, ConfigurationException, Exception {
         super("sodConfig", conn);
+        sodConfigSeq = new JDBCSequence(conn, getTableName()+"Seq");
         TableSetup.setup(getTableName(), conn, this, "edu/sc/seis/receiverFunction/server/default.props");
     }
     

@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 
-<!-- $Id: recfunc_config.xml 3972 2003-05-21 13:57:50Z crotwell $ -->
+<!-- $Id: recfunc_config.xml 6959 2004-02-05 01:40:03Z crotwell $ -->
 
-<vsnconfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:noNamespaceSchemaLocation='vsnconfigurator.xsd'>
-   <title>GEE Configuration</title>
+<vsnconfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="vsnconfigurator.xsd">
+    <title>GEE Configuration</title>
 
 <!-- Activities are configurable
      relative to a default, in this case "DefaultExplorer"
@@ -12,622 +11,703 @@
      The first activity is the one loaded at startup
  -->
 
-   <activity>
-       <id>TestChoiceDataExplorer</id>
-       <title>Choose Global Earthquake Explorer</title>
-       <description>SCEPP Module v4, June 2002</description>
+    <activity>
+        <id>TestChoiceDataExplorer</id>
+        <title>Choose Global Earthquake Explorer</title>
+        <description>SCEPP Module v4, June 2002</description>
 
 <!-- Put Extra Menu here if desired -->
-       <menubar/>
+        <menubar/>
 
-       <initialTask>projectChoice</initialTask>
+        <initialTask>projectChoice</initialTask>
 
-       <inactiveTask>LoadClassic_BandaSea</inactiveTask>
-       <inactiveTask>LoadClassic_Rukwa</inactiveTask>
-       <inactiveTask>LoadClassic_California</inactiveTask>
-   </activity>
 
-   <activity>
-       <id>ExploreringTheEarth</id>
-       <title>Explorering The Earth</title>
-       <description>the conference call module</description>
-       <appendActivityId>DefaultExplorer</appendActivityId>
+        <inactiveTask>LoadClassic_BandaSea</inactiveTask>
+        <inactiveTask>LoadClassic_Rukwa</inactiveTask>
+        <inactiveTask>LoadClassic_California</inactiveTask>
+    </activity>
 
-<!-- Put Extra Menu here if desired -->
-       <menubar/>
-
-       <initialTask>exploringEarthTabs</initialTask>
-
-       <inactiveTask>LoadClassic_BandaSea</inactiveTask>
-       <inactiveTask>LoadClassic_Rukwa</inactiveTask>
-       <inactiveTask>LoadClassic_California</inactiveTask>
-   </activity>
-
-   <activity>
-       <id>DataExplorer</id>
-       <title>Global Earthquake Explorer</title>
-       <description>SCEPP Module v4, June 2002</description>
-       <appendActivityId>DefaultExplorer</appendActivityId>
+    <activity>
+        <id>ExploreringTheEarth</id>
+        <title>Explorering The Earth</title>
+        <description>the conference call module</description>
+        <appendActivityId>DefaultExplorer</appendActivityId>
 
 <!-- Put Extra Menu here if desired -->
-       <menubar/>
+        <menubar/>
 
-       <initialTask>colseisdisplay</initialTask>
 
-       <inactiveTask>LoadClassic_BandaSea</inactiveTask>
-       <inactiveTask>LoadClassic_Rukwa</inactiveTask>
-       <inactiveTask>LoadClassic_California</inactiveTask>
-   </activity>
+        <initialTask>existantWindows</initialTask>
+        <initialTask>exploringEarthTabs</initialTask>
 
-   <activity>
-       <id>IntroToGEE</id>
-       <title>"Introduction to the Global Earthquake Explorer"</title>
-       <description>SCEPP Module v4, June 2002</description>
-       <appendActivityId>DefaultExplorer</appendActivityId>
+        <inactiveTask>LoadClassic_BandaSea</inactiveTask>
+        <inactiveTask>LoadClassic_Rukwa</inactiveTask>
+        <inactiveTask>LoadClassic_California</inactiveTask>
+    </activity>
 
-<!-- Put Extra Menu here if desired -->
-       <menubar/>
-
-       <initialTask>colseisdisplay</initialTask>
-
-       <inactiveTask>LoadClassic_BandaSea</inactiveTask>
-       <inactiveTask>LoadClassic_California</inactiveTask>
-       <inactiveTask>ShowEventInformation</inactiveTask>
-       <inactiveTask>ClickEventInfo</inactiveTask>
-       <inactiveTask>OverlayTravelTimes</inactiveTask>
-       <inactiveTask>ClickOverlayTravelTimes</inactiveTask>
-   </activity>
-
-   <activity>
-       <id>SCEPP_LTW</id>
-       <title>"Longitudinal and Transverse Waves"</title>
-       <description>SCEPP Module v4, June 2002</description>
-       <appendActivityId>DefaultExplorer</appendActivityId>
+    <activity>
+        <id>DataExplorer</id>
+        <title>Global Earthquake Explorer</title>
+        <description>SCEPP Module v4, June 2002</description>
+        <appendActivityId>DefaultExplorer</appendActivityId>
 
 <!-- Put Extra Menu here if desired -->
-       <menubar/>
+        <menubar/>
 
-       <initialTask>colseisdisplay</initialTask>
 
-       <inactiveTask>LoadClassic_Rukwa</inactiveTask>
-       <inactiveTask>LoadClassic_California</inactiveTask>
-   </activity>
+        <initialTask>existantWindows</initialTask>
+        <initialTask>colseisdisplay</initialTask>
+        <initialTask>MultiSeisWindow</initialTask>
+        <initialTask>IndividualizeAmp</initialTask>
 
-   <activity>
-       <id>DetectingTheLayeredEarth</id>
-       <title>"Detecting the Layered Earth"</title>
-       <description>SCEPP Module v4, June 2002</description>
-       <appendActivityId>DefaultExplorer</appendActivityId>
+        <inactiveTask>LoadClassic_BandaSea</inactiveTask>
+        <inactiveTask>LoadClassic_Rukwa</inactiveTask>
+        <inactiveTask>LoadClassic_California</inactiveTask>
+    </activity>
 
-<!-- Put Extra Menu here if desired -->
-       <menubar/>
-
-       <initialTask>colseisdisplay</initialTask>
-
-       <inactiveTask>LoadClassic_BandaSea</inactiveTask>
-       <inactiveTask>LoadClassic_Rukwa</inactiveTask>
-       <inactiveTask>OverlayTravelTimes</inactiveTask>
-       <inactiveTask>ClickOverlayTravelTimes</inactiveTask>
-   </activity>
-
-   <activity>
-       <id>QuickLoad</id>
-       <title>"Quick Data Display"</title>
-       <description>Quick display of data for debugging purposes.</description>
-       <appendActivityId>DefaultExplorer</appendActivityId>
+    <activity>
+        <id>IntroToGEE</id>
+        <title>"Introduction to the Global Earthquake Explorer"</title>
+        <description>SCEPP Module v4, June 2002</description>
+        <appendActivityId>DefaultExplorer</appendActivityId>
 
 <!-- Put Extra Menu here if desired -->
-       <menubar/>
+        <menubar/>
 
-       <initialTask>colseisdisplay</initialTask>
-       <initialTask>BandaSea_Sequence</initialTask>
-       <initialTask>DisplayAllSeismograms</initialTask>
-   </activity>
 
-   <activity>
-       <id>DefaultExplorer</id>
-       <title>"Default Configuration of the Global Earthquake Explorer"</title>
-       <description>Basic Functionality for GEE</description>
-       <menubar>
-           <menu>
-               <name>File</name>
-           <menuItem>
-                   <taskid>LoadRecentEarthquake</taskid>
-           </menuItem>
-           <menuItem>
-         <taskid>LoadRecentEarthquakeAll</taskid>
-           </menuItem>
-           <menuItem>
-                   <taskid>openSCEPPRepository</taskid>
-           </menuItem>
-           <menuItem>
-                   <taskid>LoadLocalDataSet</taskid>
-           </menuItem>
-           <separator/>
-               <menu>
-                   <name>Begin Learning Module</name>
-                   <menuItem>
-                      <taskid>doIGEE</taskid>
-                    </menuItem>
-                     <menuItem>
-                        <taskid>doLTW</taskid>
-                     </menuItem>
-                     <menuItem>
-                        <taskid>doDLE</taskid>
-                     </menuItem>
-                </menu>
-               <menu>
-                   <name>Choose Classic Earthquake</name>
-                   <menuItem>
-                      <taskid>LoadClassic_Rukwa</taskid>
-                    </menuItem>
-                     <menuItem>
-                        <taskid>LoadClassic_BandaSea</taskid>
-                     </menuItem>
-                     <menuItem>
-                        <taskid>LoadClassic_California</taskid>
-                     </menuItem>
-                </menu>
-           <separator/>
-               <menuItem>
-                   <taskid>SaveLocalDataSet</taskid>
-               </menuItem>
-           <separator/>
-               <menuItem>
-                   <taskid>closeDataSet</taskid>
-               </menuItem>
-           <menuItem>
-                   <taskid>doGEE</taskid>
-           </menuItem>
-               <menuItem>
-                   <taskid>print</taskid>
-               </menuItem>
-               <menuItem>
-                   <taskid>quit</taskid>
-               </menuItem>
-           </menu>
-           <menu>
-               <name>Edit</name>
-        <menuItem>
-           <taskid>EditCurrentDataSet</taskid>
-        </menuItem>
-           <separator/>
+        <initialTask>existantWindows</initialTask>
+        <initialTask>colseisdisplay</initialTask>
+        <initialTask>Rukwa_Sequence</initialTask>
+        <initialTask>MultiSeisWindow</initialTask>
+        <initialTask>IndividualizeAmp</initialTask>
+        <initialTask>DisplayAllSeismograms</initialTask>
+  <!--     <initialTask>EditCurrentDataSet</initialTask>
+    -->
+
+
+        <inactiveTask>LoadClassic_BandaSea</inactiveTask>
+        <inactiveTask>LoadClassic_California</inactiveTask>
+        <inactiveTask>ShowEventInformation</inactiveTask>
+        <inactiveTask>ClickEventInfo</inactiveTask>
+        <inactiveTask>OverlayTravelTimes</inactiveTask>
+        <inactiveTask>ClickOverlayTravelTimes</inactiveTask>
+               <inactiveTask>RecordSection</inactiveTask>
+    </activity>
+
+    <activity>
+        <id>SCEPP_LTW</id>
+        <title>"Longitudinal and Transverse Waves"</title>
+        <description>SCEPP Module v4, June 2002</description>
+        <appendActivityId>DefaultExplorer</appendActivityId>
+
+<!-- Put Extra Menu here if desired -->
+        <menubar/>
+
+        <initialTask>existantWindows</initialTask>
+        <initialTask>colseisdisplay</initialTask>
+        <initialTask>MultiSeisWindow</initialTask>
+        <initialTask>IndividualizeAmp</initialTask>
+        <initialTask>LoadClassic_BandaSea</initialTask>
+
+        <inactiveTask>LoadClassic_Rukwa</inactiveTask>
+        <inactiveTask>LoadClassic_California</inactiveTask>
+    </activity>
+
+    <activity>
+        <id>DetectingTheLayeredEarth</id>
+        <title>"Detecting the Layered Earth"</title>
+        <description>SCEPP Module v4, June 2002</description>
+        <appendActivityId>DefaultExplorer</appendActivityId>
+
+<!-- Put Extra Menu here if desired -->
+        <menubar/>
+
+        <initialTask>existantWindows</initialTask>
+        <initialTask>colseisdisplay</initialTask>
+        <initialTask>California_Sequence</initialTask>
+        <initialTask>MultiSeisWindow</initialTask>
+        <initialTask>IndividualizeAmp</initialTask>
+        <initialTask>DisplayAllSeismograms</initialTask>
+
+        <inactiveTask>LoadClassic_BandaSea</inactiveTask>
+        <inactiveTask>LoadClassic_Rukwa</inactiveTask>
+        <inactiveTask>OverlayTravelTimes</inactiveTask>
+        <inactiveTask>ClickOverlayTravelTimes</inactiveTask>
+    </activity>
+
+    <activity>
+        <id>QuickLoad</id>
+        <title>"Quick Data Display"</title>
+        <description>Quick display of data for debugging purposes.</description>
+        <appendActivityId>DefaultExplorer</appendActivityId>
+
+<!-- Put Extra Menu here if desired -->
+        <menubar/>
+
+        <initialTask>existantWindows</initialTask>
+        <initialTask>colseisdisplay</initialTask>
+        <initialTask>BandaSea_Sequence</initialTask>
+        <initialTask>MultiSeisWindow</initialTask>
+        <initialTask>IndividualizeAmp</initialTask>
+        <initialTask>DisplayAllSeismograms</initialTask>
+    </activity>
+
+    <activity>
+        <id>DayViewer</id>
+        <title>"SCEPP Day Viewer"</title>
+        <description>View an entire day's worth of data from a SCEPP station</description>
+        <appendActivityId>DefaultExplorer</appendActivityId>
+
+<!-- Put Extra Menu here if desired -->
+        <menubar/>
+
+        <initialTask>existantWindows</initialTask>
+        <initialTask>GetPlottable</initialTask>
+    </activity>
+
+    <activity>
+        <id>RealTime</id>
+        <title>"Real Time Data"</title>
+        <description>View data currently coming in from seismic stations</description>
+        <appendActivityId>DefaultExplorer</appendActivityId>
+
+<!-- Put Extra Menu here if desired -->
+        <menubar/>
+
+        <initialTask>existantWindows</initialTask>
+        <initialTask>RealTimePlayer</initialTask>
+    </activity>
+
+    <activity>
+        <id>DefaultExplorer</id>
+        <title>"Default Configuration of the Global Earthquake Explorer"</title>
+        <description>Basic Functionality for GEE</description>
+        <menubar>
+            <menu>
+                <name>File</name>
                 <menu>
-                <name>Select Seismograph Stations</name>
-        <menuItem>
-           <taskid>StationsFromSCEPP</taskid>
-        </menuItem>
-        <menuItem>
-           <taskid>StationsFromSCEPP_DMC</taskid>
-        </menuItem>
+                    <name>Load Recent Earthquake</name>
+                    <menuItem>
+                        <taskid>LoadRecentEarthquake</taskid>
+                    </menuItem>
+                    <menuItem>
+                        <taskid>LoadRecentEarthquakeAll</taskid>
+                    </menuItem>
                 </menu>
-        <menu>
-                <name>Select An Earthquake ...</name>
-        <menuItem>
-           <taskid>QuakeFromSCEPP</taskid>
-        </menuItem>
-        <menuItem>
-           <taskid>QuakeFromIRIS</taskid>
-        </menuItem>
-        </menu>
-        <menu>
-                <name>Select A Time Window ...</name>
-        <menuItem>
-           <taskid>TimeForEarthquakeSCEPP</taskid>
-        </menuItem>
-        <menuItem>
-           <taskid>TimeForEarthquakeBUD</taskid>
-        </menuItem>
-        <menuItem>
-           <taskid>CustomTimeWindowSCEPP</taskid>
-        </menuItem>
-        <menuItem>
-           <taskid>CustomTimeWindowBUD</taskid>
-        </menuItem>
-        </menu>
-           </menu>
-           <menu>
-               <name>Display</name>
-               <menuItem>
-                   <taskid>DisplayAllSeismograms</taskid>
-               </menuItem>
-               <menuItem>
-                   <taskid>OverlayTravelTimes</taskid>
-               </menuItem>
-               <menuItem>
-                   <taskid>ClearDisplay</taskid>
-               </menuItem>
-               <menuItem>
-                    <taskid>ResetZoom</taskid>
-               </menuItem>
-               <menuItem>
-                    <taskid>ClearSelections</taskid>
-               </menuItem>
-           <separator/>
-           <menuItem>
-            <taskid>DataSetRealTimePlayer</taskid>
-           </menuItem>
-           <menuItem>
-            <taskid>RealTimePlayer</taskid>
-           </menuItem>
-           <menuItem>
-            <taskid>BUDRealTimePlayer</taskid>
-           </menuItem>
-           <menuItem>
-            <taskid>GetPlottable</taskid>
-           </menuItem>
-            </menu>
-          <menu>
-               <name>Tools</name>
-               <menuItem>
-                   <taskid>ShowTimeAmpPalette</taskid>
-               </menuItem>
-               <menuItem>
-                   <taskid>ShowFilterPalette</taskid>
-               </menuItem>
-               <menuItem>
-                   <taskid>ShowEventInformation</taskid>
-               </menuItem>
-               <menuItem>
-                   <taskid>ImageViewer</taskid>
-               </menuItem>
-           <menuItem>
-           <taskid>HtmlViewer</taskid>
-           </menuItem>
-               <menuItem>
-                   <taskid>TauP</taskid>
-               </menuItem>
-               <menuItem>
-                   <taskid>geotools world map</taskid>
-               </menuItem>
-               <menuItem>
-                   <taskid>SCEPP world map</taskid>
-               </menuItem>
-           </menu>
-       <menu>
-       <name>Extras</name>
-              <menuItem>
-                  <taskid>3DParticleMotion</taskid>
-              </menuItem>
-              <menuItem>
-                  <taskid>NetInfo</taskid>
-              </menuItem>
-           </menu>
-       <menu>
-       <name>Help</name>
-       <menuItem>
-          <taskid>ConnectionStatus</taskid>
-           </menuItem>
-       <menuItem>
-          <taskid>version</taskid>
-           </menuItem>
+                <menu>
+                    <name>Load Historic Earthquake</name>
+                    <menuItem>
+                        <taskid>openSCEPPRepository</taskid>
+                    </menuItem>
+                    <menu>
+                        <name>Choose Classic Earthquake</name>
+                        <menuItem>
+                            <taskid>LoadClassic_Rukwa</taskid>
+                        </menuItem>
+                        <menuItem>
+                            <taskid>LoadClassic_BandaSea</taskid>
+                        </menuItem>
+                        <menuItem>
+                            <taskid>LoadClassic_California</taskid>
+                        </menuItem>
+                    </menu>
 
-           </menu>
-       <menu>
-       <name>Test</name>
-       <menuItem>
-          <taskid>projectChoice</taskid>
-           </menuItem>
-       <menuItem>
-          <taskid>LoadSacFile</taskid>
-           </menuItem>
-       <menuItem>
-          <taskid>LoadAndDisplaySACFile</taskid>
-           </menuItem>
-       <menuItem>
-          <taskid>SeismogramInfo</taskid>
-           </menuItem>
+                </menu>
+
+                <menuItem>
+                    <taskid>LoadLocalDataSet</taskid>
+                </menuItem>
+
+
+                <menu>
+                    <name>Begin Learning Module</name>
+                    <menuItem>
+                        <taskid>doIGEE</taskid>
+                    </menuItem>
+                    <menuItem>
+                        <taskid>doLTW</taskid>
+                    </menuItem>
+                    <menuItem>
+                        <taskid>doDLE</taskid>
+                    </menuItem>
+                </menu>
+                <separator/>
+                <menuItem>
+                    <taskid>SaveLocalDataSet</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>print</taskid>
+                </menuItem>
+                <separator/>
+                <menuItem>
+                    <taskid>doGEE</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>closeDataSet</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>quit</taskid>
+                </menuItem>
+            </menu>
+            <menu>
+                <name>Edit</name>
+                <menuItem>
+                    <taskid>EditCurrentDataSet</taskid>
+                </menuItem>
+                <separator/>
+                <menu>
+                    <name>Select Seismograph Stations</name>
+                    <menuItem>
+                        <taskid>StationsFromSCEPP</taskid>
+                    </menuItem>
+                    <menuItem>
+                        <taskid>StationsFromSCEPP_DMC</taskid>
+                    </menuItem>
+                </menu>
+                <menu>
+                    <name>Select An Earthquake ...</name>
+                    <menuItem>
+                        <taskid>QuakeFromSCEPP</taskid>
+                    </menuItem>
+                    <menuItem>
+                        <taskid>QuakeFromIRIS</taskid>
+                    </menuItem>
+                </menu>
+                <menu>
+                    <name>Select A Time Window ...</name>
+                    <menuItem>
+                        <taskid>TimeForEarthquakeSCEPP</taskid>
+                    </menuItem>
+                    <menuItem>
+                        <taskid>TimeForEarthquakeBUD</taskid>
+                    </menuItem>
+                    <menuItem>
+                        <taskid>CustomTimeWindowSCEPP</taskid>
+                    </menuItem>
+                    <menuItem>
+                        <taskid>CustomTimeWindowBUD</taskid>
+                    </menuItem>
+                </menu>
+            </menu>
+            <menu>
+                <name>Display</name>
+                <menu>
+                <name>Add Seismograms to Display</name>
+                <menuItem>
+                    <taskid>MenuDisplayAllSeismograms</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>DisplayHorizontalSeismograms</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>DisplayNSeismograms</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>DisplayESeismograms</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>DisplayZSeismograms</taskid>
+                </menuItem>
+                </menu>
+                <menuItem>
+                    <taskid>OverlayTravelTimes</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>ClearDisplay</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>ResetDisplay</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>ClearSelections</taskid>
+                </menuItem>
+                <separator/>
+                <menuItem>
+                    <taskid>colseisdisplay</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>RealTimePlayer</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>GetPlottable</taskid>
+                </menuItem>
+            </menu>
+            <menu>
+                <name>Tools</name>
+                <menuItem>
+                    <taskid>ShowTimeAmpPalette</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>ShowFilterPalette</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>ShowEventInformation</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>ImageViewer</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>HtmlViewer</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>TauP</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>WorldMap</taskid>
+                </menuItem>
+            </menu>
+            <menu>
+                <name>Extras</name>
+                <menuItem>
+                    <taskid>3DParticleMotion</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>NetInfo</taskid>
+                </menuItem>
+            </menu>
+            <menu>
+                <name>Help</name>
+                <menuItem>
+                    <taskid>ConnectionStatus</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>version</taskid>
+                </menuItem>
+
+            </menu>
+            <menu>
+                <name>Test</name>
+                <menuItem>
+                    <taskid>projectChoice</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>LoadSacFile</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>LoadAndDisplaySACFile</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>SeismogramInfo</taskid>
+                </menuItem>
 <!-- customFilter Task allows to create Custom Filters. The filter Types supported are
          Butterworth. THe filter sytles supported are LP, BP, HP, BS. Passes supported are
          CAUSAL, NONCAUSAL. The user can specify other parameters. The custom filter can be
          named and when it is applied the filter name will be added to the filter pallette.
  -->
-            <menuItem>
-             <taskid>CustomFilter</taskid>
-            </menuItem>
-            <menuItem>
-             <taskid>SaveAsWAV</taskid>
-            </menuItem>
-            <menuItem>
-                 <taskid>LayoutTest</taskid>
-            </menuItem>
-            <menuItem>
-            	<taskid>MapTask</taskid>
-            </menuItem>
+                <menuItem>
+                    <taskid>CustomFilter</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>SaveAsWAV</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>LayoutTest</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>WorldMap</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>DataFill</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>NewFrame</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>NewTab</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>MemoryStatus</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>testException</taskid>
+                </menuItem>
             </menu>
-       </menubar>
-</activity>
+        </menubar>
+    </activity>
 
-   <task>
-     <id>exploring</id>
-     <name>Exploring The Earth</name>
-     <class>edu.sc.seis.vsnexplorer.task.TabbedTask</class>
-     <taskconfig>
-        <name>gee.task.displayLocation</name>
-        <value>main</value>
-     </taskconfig>
-     <taskconfig>
-        <name>gee.task.justify</name>
-        <value>center</value>
-     </taskconfig>
-     <taskconfig>
-        <name>Welcome</name>
-        <value>projectChoice</value>
-     </taskconfig>
-     <taskconfig>
-        <name>Map</name>
-        <value>geotools world map</value>
-     </taskconfig>
-     <taskconfig>
-        <name>Seismograms</name>
-        <value>exploringTheEarthSeismogram</value>
-     </taskconfig>
-   </task>
-
-   <task>
-     <id>projectChoice</id>
-     <name>Project Choices</name>
-     <class>edu.sc.seis.vsnexplorer.task.ProjectChoice</class>
-     <taskconfig>
-        <name>gee.task.displayLocation</name>
-        <value>main</value>
-     </taskconfig>
-     <taskconfig>
-        <name>gee.task.justify</name>
-        <value>center</value>
-     </taskconfig>
-     <taskconfig>
-        <name>north</name>
-        <value>Welcome to GEE, the Global Earthquake Explorer</value>
-     </taskconfig>
-     <taskconfig>
-        <name>east</name>
-        <value>half globe here</value>
-     </taskconfig>
-     <taskconfig>
-        <name>west</name>
-        <value>half globe here</value>
-     </taskconfig>
-     <taskconfig>
-        <name>south</name>
-        <value>Welcome to GEE. GEE contains two types of programs: Exploration
-        Environments, which are designed for open exploration, and Learning
-        Modules, which provide a structured way of learning about a particular
-        topic. Click a button to access the program that you want to use. (For
-        a description of the program, roll over the button.) To return to this
-        page at any moment, click the Welcome tab at the top.</value>
-     </taskconfig>
-     <taskconfig>
+    <task>
+        <id>exploring</id>
         <name>Exploring The Earth</name>
-        <value>exploring</value>
-     </taskconfig>
-     <taskconfig>
-        <name>Intro to GEE Learning Module</name>
-        <value>doIGEE</value>
-     </taskconfig>
-     <taskconfig>
-        <name>Longitudinal and Transverse Wave Learning Module</name>
-        <value>doLTW</value>
-     </taskconfig>
-     <taskconfig>
-        <name>Dectecting the Layered Earth</name>
-        <value>doDLE</value>
-     </taskconfig>
-     <taskconfig>
-        <name>Advanced Mode</name>
-        <value>doAdvanced</value>
-     </taskconfig>
-     <taskconfig>
-        <name>Quickly Load Some Seismograms</name>
-        <value>doQuickLoad</value>
-     </taskconfig>
-   </task>
+        <class>edu.sc.seis.vsnexplorer.task.TabbedTask</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>main</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.justify</name>
+            <value>center</value>
+        </taskconfig>
+        <taskconfig>
+            <name>Welcome</name>
+            <value>projectChoice</value>
+        </taskconfig>
+        <taskconfig>
+            <name>Map</name>
+            <value>WorldMap</value>
+        </taskconfig>
+        <taskconfig>
+            <name>Seismograms</name>
+            <value>exploringTheEarthSeismogram</value>
+        </taskconfig>
+    </task>
 
-  <task>
+    <task>
+        <id>projectChoice</id>
+        <name>Project Choices</name>
+        <class>edu.sc.seis.vsnexplorer.task.ProjectChoice</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>main</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.justify</name>
+            <value>center</value>
+        </taskconfig>
+        <taskconfig>
+            <name>west</name>
+            <value>edu/sc/seis/vsnexplorer/data/images/globe.png</value>
+        </taskconfig>
+        <taskconfig>
+            <name>north</name>
+            <value>Welcome to GEE. GEE operates in two fashions: Open Exploration mode, which allows you to use the program in any way you like, and through learning modules, which provide a structured way of learning about a particular topic. Below are all of the modules and open exploration.  Click on the go button next to the description of the way you want to use GEE.</value>
+        </taskconfig>
+        <taskconfig>
+            <name>choices</name>
+            <value>Intro to GEE Module
+            intro to gee description
+            doIGEE
+            Longitudinal and Transverse Wave Module
+            ltw description
+            doLTW
+            Dectecting the Layered Earth Module
+            dle description
+            doDLE
+            Exploring The Earth
+            exploring the earth description
+            exploring
+            Open Exploration
+            open exploration description
+            doAdvanced
+            SCEPP Day Viewer
+            Day viewer description
+            doDayViewer
+            Real Time Viewer
+            Real Time Description
+            RealTime</value>
+        </taskconfig>
+    </task>
+
+    <task>
         <id>LayoutTest</id>
         <name>LayoutTest Recent Earthquakes from SCEPP</name>
         <class>edu.sc.seis.vsnexplorer.task.LayoutTask</class>
         <taskconfig>
-                <name>layout_QuakeFromSCEPP</name>
-                <complexValue>
-                   <gridbag>
-                      <gridx>0</gridx>
-                      <gridy>0</gridy>
-                      <weightx>2</weightx>
-                      <weighty>1</weighty>
-                      <fill>BOTH</fill>
-                   </gridbag>
-                </complexValue>
+            <name>layout_QuakeFromSCEPP</name>
+            <complexValue>
+                <gridbag>
+                    <gridx>0</gridx>
+                    <gridy>0</gridy>
+                    <weightx>2</weightx>
+                    <weighty>1</weighty>
+                    <fill>BOTH</fill>
+                </gridbag>
+            </complexValue>
         </taskconfig>
         <taskconfig>
-                <name>layout_ShowEvents</name>
-                <complexValue>
-                   <gridbag>
-                      <gridx>1</gridx>
-                      <gridy>0</gridy>
-                      <weightx>2</weightx>
-                      <weighty>1</weighty>
-                      <fill>BOTH</fill>
-                   </gridbag>
-                </complexValue>
+            <name>layout_ShowEvents</name>
+            <complexValue>
+                <gridbag>
+                    <gridx>1</gridx>
+                    <gridy>0</gridy>
+                    <weightx>2</weightx>
+                    <weighty>1</weighty>
+                    <fill>BOTH</fill>
+                </gridbag>
+            </complexValue>
         </taskconfig>
         <taskconfig>
-                <name>layout_TimeForEarthquakeSCEPP_DMC</name>
-                <complexValue>
-                   <gridbag>
-                      <gridx>0</gridx>
-                      <gridy>1</gridy>
-                      <weightx>2</weightx>
-                      <weighty>1</weighty>
-                      <fill>BOTH</fill>
-                   </gridbag>
-                </complexValue>
+            <name>layout_TimeForEarthquakeSCEPP_DMC</name>
+            <complexValue>
+                <gridbag>
+                    <gridx>0</gridx>
+                    <gridy>1</gridy>
+                    <weightx>2</weightx>
+                    <weighty>1</weighty>
+                    <fill>BOTH</fill>
+                </gridbag>
+            </complexValue>
         </taskconfig>
         <taskconfig>
-                <name>layout_StationsFromSCEPP_DMC</name>
-                <complexValue>
-                   <gridbag>
-                      <gridx>1</gridx>
-                      <gridy>1</gridy>
-                      <weightx>2</weightx>
-                      <weighty>1</weighty>
-                      <fill>BOTH</fill>
-                   </gridbag>
-                </complexValue>
+            <name>layout_StationsFromSCEPP_DMC</name>
+            <complexValue>
+                <gridbag>
+                    <gridx>1</gridx>
+                    <gridy>1</gridy>
+                    <weightx>2</weightx>
+                    <weighty>1</weighty>
+                    <fill>BOTH</fill>
+                </gridbag>
+            </complexValue>
         </taskconfig>
 
         <taskconfig>
-                <name>gee.task.width</name>
-                <value>1000</value>
+            <name>gee.task.width</name>
+            <value>1000</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.height</name>
-                <value>800</value>
+            <name>gee.task.height</name>
+            <value>800</value>
         </taskconfig>
-  </task>
+    </task>
 
-   <task>
-     <id>print</id>
-     <name>Print</name>
-     <class>edu.sc.seis.vsnexplorer.task.PrintTask</class>
-     <taskconfig>
-        <name>printTarget</name>
-        <value>colseisdisplay</value>
-     </taskconfig>
-   </task>
+    <task>
+        <id>print</id>
+        <name>Print</name>
+        <class>edu.sc.seis.vsnexplorer.task.PrintTask</class>
+        <taskconfig>
+            <name>printTarget</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
 
-  <task>
+    <task>
         <id>LoadRecentEarthquake</id>
         <name>Load a Recent Earthquake from SCEPP</name>
         <class>edu.sc.seis.vsnexplorer.task.SequenceTask</class>
         <taskconfig>
-             <name>taskSequence</name>
-             <value>QuakeFromSCEPP ShowEvents StationsFromSCEPP TimeForEarthquakeSCEPP EditCurrentDataSet</value>
+            <name>taskSequence</name>
+            <value>QuakeFromSCEPP ShowEvents StationsFromSCEPP TimeForEarthquakeSCEPP EditCurrentDataSet</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.width</name>
-                <value>600</value>
+            <name>gee.task.width</name>
+            <value>600</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.height</name>
-                <value>400</value>
+            <name>gee.task.height</name>
+            <value>400</value>
         </taskconfig>
-  </task>
+    </task>
 
-  <task>
-   <id>StationsFromSCEPP_DMC</id>
-   <name>Choose Global Stations</name>
-   <class>edu.sc.seis.vsnexplorer.task.ChannelChooserTask</class>
-   <taskconfig>
-      <name>serverDNS_SCEPP</name>
-      <value>edu/sc/seis</value>
-   </taskconfig>
-   <taskconfig>
-      <name>serverName_SCEPP</name>
-      <value>SCEPPNetworkDC</value>
-   </taskconfig>
-   <taskconfig>
-      <name>serverDNS_DMC</name>
-      <value>edu/iris/dmc</value>
-   </taskconfig>
-   <taskconfig>
-      <name>serverName_DMC</name>
-      <value>IRIS_NetworkDC</value>
-   </taskconfig>
-   <taskconfig>
-      <name>network_SP</name>
-      <value>SP</value>
-   </taskconfig>
+    <task>
+        <id>StationsFromSCEPP_DMC</id>
+        <name>Choose Global Stations</name>
+        <class>edu.sc.seis.vsnexplorer.task.ChannelChooserTask</class>
+        <tooltip>Choose Global Stations</tooltip>
+        <icon>world-stations.png</icon>
         <taskconfig>
-           <name>network_US</name>
-           <value>US</value>
+            <name>serverDNS_SCEPP</name>
+            <value>edu/sc/seis</value>
         </taskconfig>
         <taskconfig>
-           <name>network_II</name>
-           <value>II</value>
+            <name>serverName_SCEPP</name>
+            <value>SCEPPNetworkDC</value>
         </taskconfig>
         <taskconfig>
-           <name>network_IU</name>
-           <value>IU</value>
+            <name>serverDNS_DMC</name>
+            <value>edu/iris/dmc</value>
         </taskconfig>
         <taskconfig>
-           <name>showNetworks</name>
-           <value>false</value>
+            <name>serverName_DMC</name>
+            <value>IRIS_NetworkDC</value>
         </taskconfig>
         <taskconfig>
-           <name>showCodes</name>
-           <value>false</value>
+            <name>network_SP</name>
+            <value>SP</value>
         </taskconfig>
-   <taskconfig>
-      <name>gee.task.width</name>
-      <value>450</value>
-   </taskconfig>
-   <taskconfig>
-      <name>gee.task.height</name>
-      <value>300</value>
-   </taskconfig>
-  </task>
+        <taskconfig>
+            <name>network_US</name>
+            <value>US</value>
+        </taskconfig>
+        <taskconfig>
+            <name>network_II</name>
+            <value>II</value>
+        </taskconfig>
+        <taskconfig>
+            <name>network_IU</name>
+            <value>IU</value>
+        </taskconfig>
+        <taskconfig>
+            <name>showNetworks</name>
+            <value>false</value>
+        </taskconfig>
+        <taskconfig>
+            <name>showCodes</name>
+            <value>false</value>
+        </taskconfig>
+        <taskconfig>
+            <name>loadSeismogramTask</name>
+            <value>CustomTimeWindowALL</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.width</name>
+            <value>450</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.height</name>
+            <value>300</value>
+        </taskconfig>
+    </task>
 
-   <task>
-    <id>TimeForEarthquakeSCEPP_DMC</id>
-    <name>Choose Time relative to your Earthquake</name>
-    <class>edu.sc.seis.vsnexplorer.task.EventSeismogramTask</class>
-    <taskconfig>
-        <name>showEventsTask</name>
-        <value>ShowEvents</value>
-    </taskconfig>
-    <taskconfig>
-        <name>loadSeismogramTask</name>
-        <value>CustomTimeWindowALL</value>
-    </taskconfig>
-    <taskconfig>
-        <name>channelChooserTask</name>
-        <value>StationsFromSCEPP_DMC</value>
-    </taskconfig>
-    <taskconfig>
-        <name>gee.task.width</name>
-        <value>450</value>
-    </taskconfig>
-    <taskconfig>
-        <name>gee.task.height</name>
-        <value>250</value>
-    </taskconfig>
-    <toolbar>
-        <toolitem>
-            <taskid>QuakeFromIRIS</taskid>
-        </toolitem>
-        <toolitem>
-            <taskid>ShowEvents</taskid>
-        </toolitem>
-        <toolitem>
-            <taskid>geotools world map</taskid>
-        </toolitem>
-        <toolitem>
-            <taskid>StationsFromSCEPP_DMC</taskid>
-        </toolitem>
-    </toolbar>
-   </task>
+    <task>
+        <id>TimeForEarthquakeSCEPP_DMC</id>
+        <name>Choose Time relative to your Earthquake</name>
+        <class>edu.sc.seis.vsnexplorer.task.EventSeismogramTask</class>
+        <taskconfig>
+            <name>showEventsTask</name>
+            <value>ShowEvents</value>
+        </taskconfig>
+        <taskconfig>
+            <name>loadSeismogramTask</name>
+            <value>CustomTimeWindowALL</value>
+        </taskconfig>
+        <taskconfig>
+            <name>channelChooserTask</name>
+            <value>StationsFromSCEPP_DMC</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.width</name>
+            <value>450</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.height</name>
+            <value>250</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>QuakeFromIRIS</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>ShowEvents</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>WorldMap</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>StationsFromSCEPP_DMC</taskid>
+            </toolitem>
+        </toolbar>
+    </task>
 
-   <task>
-    <id>CustomTimeWindowALL</id>
-    <name>Select a Custom Time Window</name>
-    <class>edu.sc.seis.vsnexplorer.task.LoadSeismogram</class>
-    <taskconfig>
-        <name>serverDNS_SCEPP</name>
-        <value>edu/sc/seis</value>
-    </taskconfig>
-    <taskconfig>
-        <name>serverName_SCEPP</name>
-        <value>SCEPPSeismogramDC</value>
-    </taskconfig>
-    <taskconfig>
-        <name>serverDNS_DMCBUD</name>
-        <value>edu/iris/dmc</value>
-    </taskconfig>
-    <taskconfig>
-        <name>serverName_DMCBUD</name>
-        <value>IRIS_BudDataCenter</value>
-    </taskconfig>
+    <task>
+        <id>CustomTimeWindowALL</id>
+        <name>Select a Custom Time Window</name>
+        <class>edu.sc.seis.vsnexplorer.task.LoadSeismogram</class>
+        <taskconfig>
+            <name>serverDNS_SCEPP</name>
+            <value>edu/sc/seis</value>
+        </taskconfig>
+        <taskconfig>
+            <name>serverName_SCEPP</name>
+            <value>SCEPPSeismogramDC</value>
+        </taskconfig>
+        <taskconfig>
+            <name>serverDNS_DMCBUD</name>
+            <value>edu/iris/dmc</value>
+        </taskconfig>
+        <taskconfig>
+            <name>serverName_DMCBUD</name>
+            <value>IRIS_BudDataCenter</value>
+        </taskconfig>
 <!--
     <taskconfig>
         <name>serverDNS_DMCFARM</name>
@@ -638,836 +718,1013 @@
         <value>IRIS_PondDataCenter</value>
     </taskconfig>
 -->
-     <taskconfig>
-    <name>gee.task.width</name>
-    <value>380</value>
-     </taskconfig>
-     <taskconfig>
-    <name>gee.task.height</name>
-    <value>300</value>
-      </taskconfig>
-    <taskconfig>
-        <name>channelChooserTask</name>
-        <value>StationsFromSCEPP_DMC</value>
-    </taskconfig>
-    <toolbar>
-        <toolitem>
-            <taskid>StationsFromSCEPP_DMC</taskid>
-        </toolitem>
-    </toolbar>
-   </task>
+        <taskconfig>
+            <name>gee.task.width</name>
+            <value>380</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.height</name>
+            <value>300</value>
+        </taskconfig>
+        <taskconfig>
+            <name>channelChooserTask</name>
+            <value>StationsFromSCEPP_DMC</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>StationsFromSCEPP_DMC</taskid>
+            </toolitem>
+        </toolbar>
+    </task>
 
-  <task>
+    <task>
         <id>LoadRecentEarthquakeAll</id>
         <name>Load a Recent Earthquake (Global Stations)</name>
         <class>edu.sc.seis.vsnexplorer.task.SequenceTask</class>
         <taskconfig>
-             <name>taskSequence</name>
-             <value>QuakeFromSCEPP ShowEvents StationsFromSCEPP_DMC TimeForEarthquakeSCEPP_DMC EditCurrentDataSet</value>
+            <name>taskSequence</name>
+            <value>QuakeFromSCEPP ShowEvents StationsFromSCEPP_DMC TimeForEarthquakeSCEPP_DMC EditCurrentDataSet</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.width</name>
-                <value>600</value>
+            <name>gee.task.width</name>
+            <value>600</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.height</name>
-                <value>400</value>
+            <name>gee.task.height</name>
+            <value>400</value>
         </taskconfig>
-  </task>
+    </task>
 
-  <task>
+    <task>
         <id>LoadRecentEarthquake_withColSeisDisp</id>
         <name>Load a Recent Earthquake from SCEPP</name>
         <class>edu.sc.seis.vsnexplorer.task.SequenceTask</class>
         <taskconfig>
-             <name>taskSequence</name>
-             <value>colseisdisplay QuakeFromSCEPP ShowEvents StationsFromSCEPP TimeForEarthquakeSCEPP EditCurrentDataSet</value>
+            <name>taskSequence</name>
+            <value>colseisdisplay QuakeFromSCEPP ShowEvents StationsFromSCEPP TimeForEarthquakeSCEPP EditCurrentDataSet</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.width</name>
-                <value>600</value>
+            <name>gee.task.width</name>
+            <value>600</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.height</name>
-                <value>400</value>
+            <name>gee.task.height</name>
+            <value>400</value>
         </taskconfig>
-  </task>
+    </task>
 
-  <task>
+    <task>
         <id>DisplayAllSeismograms</id>
         <name>Display All Seismograms</name>
         <class>edu.sc.seis.vsnexplorer.task.AutoDisplayTask</class>
         <taskconfig>
-                <name>gee.task.displayLocation</name>
-                <value>none</value>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
         </taskconfig>
         <taskconfig>
-                <name>seisDisplay</name>
-                <value>colseisdisplay</value>
+            <name>seisDisplay</name>
+            <value>colseisdisplay</value>
         </taskconfig>
-  </task>
+    </task>
 
-  <task>
-   <id>StationsFromSCEPP</id>
-   <name>Choose SCEPP Stations</name>
-   <class>edu.sc.seis.vsnexplorer.task.ChannelChooserTask</class>
-   <taskconfig>
-      <name>serverDNS_SCEPP</name>
-      <value>edu/sc/seis</value>
-   </taskconfig>
-   <taskconfig>
-      <name>serverName_SCEPP</name>
-      <value>SCEPPNetworkDC</value>
-   </taskconfig>
-   <taskconfig>
-      <name>network_SP</name>
-      <value>SP</value>
-   </taskconfig>
-   <taskconfig>
-      <name>gee.task.width</name>
-      <value>450</value>
-   </taskconfig>
-   <taskconfig>
-      <name>gee.task.height</name>
-      <value>300</value>
-   </taskconfig>
+    <task>
+        <id>MenuDisplayAllSeismograms</id>
+        <name>All Traces</name>
+        <class>edu.sc.seis.vsnexplorer.task.AutoDisplayTask</class>
         <taskconfig>
-           <name>showNetworks</name>
-           <value>false</value>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
         </taskconfig>
-  </task>
+        <taskconfig>
+            <name>seisDisplay</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
 
-   <task>
-     <id>colSeisZoomIn</id>
-     <name>Zoom In</name>
-     <class>edu.sc.seis.vsnexplorer.task.ZoomInTask</class>
-     <tooltip>Click this button, then use your mouse to click on a seismogram to zoom in on the time scale</tooltip>
-     <toggle/>
-     <icon>mag-up.png</icon>
-     <taskconfig>
-        <name>zoomDestination</name>
-        <value>colseisdisplay</value>
-     </taskconfig>
-     <taskconfig>
-        <name>zoomType</name>
-        <value>zoomIn</value>
-     </taskconfig>
-     <taskconfig>
-        <name>gee.task.buttonGroupId</name>
-        <value>zoomSeismograms</value>
-     </taskconfig>
-   </task>
+    <task>
+        <id>DisplayNSeismograms</id>
+        <name>All North-South Traces</name>
+        <class>edu.sc.seis.vsnexplorer.task.AutoDisplayTask</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
+        </taskconfig>
+        <taskconfig>
+            <name>seisDisplay</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+        <taskconfig>
+            <name>orientation</name>
+            <value>orientation.north</value>
+        </taskconfig>
+    </task>
 
-   <task>
-     <id>colSeisZoomOut</id>
-     <name>Zoom Out</name>
-     <class>edu.sc.seis.vsnexplorer.task.ZoomInTask</class>
-     <tooltip>Click this button, then use your mouse to click on a seismogram to zoom in on the time scale</tooltip>
-     <toggle/>
-     <icon>mag-down.png</icon>
-     <taskconfig>
-        <name>zoomDestination</name>
-        <value>colseisdisplay</value>
-     </taskconfig>
-     <taskconfig>
-        <name>zoomType</name>
-        <value>zoomOut</value>
-     </taskconfig>
-     <taskconfig>
-        <name>gee.task.buttonGroupId</name>
-        <value>zoomSeismograms</value>
-     </taskconfig>
-   </task>
-   <task>
-    <id>colSeisDrag</id>
-    <name>Drag Seismograms</name>
-    <class>edu.sc.seis.vsnexplorer.task.DragTask</class>
+    <task>
+        <id>DisplayESeismograms</id>
+        <name>All East-West Traces</name>
+        <class>edu.sc.seis.vsnexplorer.task.AutoDisplayTask</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
+        </taskconfig>
+        <taskconfig>
+            <name>seisDisplay</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+        <taskconfig>
+            <name>orientation</name>
+            <value>orientation.east</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>DisplayZSeismograms</id>
+        <name>All Vertical Traces</name>
+        <class>edu.sc.seis.vsnexplorer.task.AutoDisplayTask</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
+        </taskconfig>
+        <taskconfig>
+            <name>seisDisplay</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+        <taskconfig>
+            <name>orientation</name>
+            <value>orientation.vertical</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>DisplayHorizontalSeismograms</id>
+        <name>All Horizontal Traces</name>
+        <class>edu.sc.seis.vsnexplorer.task.AutoDisplayTask</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
+        </taskconfig>
+        <taskconfig>
+            <name>seisDisplay</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+        <taskconfig>
+            <name>orientation</name>
+            <value>orientation.horizontal</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>StationsFromSCEPP</id>
+        <name>Choose SCEPP Stations</name>
+        <class>edu.sc.seis.vsnexplorer.task.ChannelChooserTask</class>
+        <icon>station.png</icon>
+        <taskconfig>
+            <name>serverDNS_SCEPP</name>
+            <value>edu/sc/seis</value>
+        </taskconfig>
+        <taskconfig>
+            <name>serverName_SCEPP</name>
+            <value>SCEPPNetworkDC</value>
+        </taskconfig>
+        <taskconfig>
+            <name>network_SP</name>
+            <value>SP</value>
+        </taskconfig>
+        <taskconfig>
+            <name>loadSeismogramTask</name>
+            <value>CustomTimeWindowSCEPP</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.width</name>
+            <value>450</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.height</name>
+            <value>300</value>
+        </taskconfig>
+        <taskconfig>
+            <name>showNetworks</name>
+            <value>false</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>colSeisZoomIn</id>
+        <name>Zoom In</name>
+        <class>edu.sc.seis.vsnexplorer.task.ZoomInTask</class>
+        <tooltip>Click this button, then use your mouse to click on a seismogram to zoom in on the time scale</tooltip>
+        <toggle/>
+        <icon>mag-up.png</icon>
+        <taskconfig>
+            <name>zoomDestination</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+        <taskconfig>
+            <name>zoomType</name>
+            <value>zoomIn</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>zoomSeismograms</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>colSeisZoomOut</id>
+        <name>Zoom Out</name>
+        <class>edu.sc.seis.vsnexplorer.task.ZoomInTask</class>
+        <tooltip>Click this button, then use your mouse to click on a seismogram to zoom in on the time scale</tooltip>
+        <toggle/>
+        <icon>mag-down.png</icon>
+        <taskconfig>
+            <name>zoomDestination</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+        <taskconfig>
+            <name>zoomType</name>
+            <value>zoomOut</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>zoomSeismograms</value>
+        </taskconfig>
+    </task>
+    <task>
+        <id>colSeisDrag</id>
+        <name>Drag Seismograms</name>
+        <class>edu.sc.seis.vsnexplorer.task.DragTask</class>
         <tooltip>Click this button, then use your mouse to drag a seismogram left or right by holding down the mouse button</tooltip>
-    <toggle/>
+        <toggle/>
         <icon>drag.png</icon>
-    <taskconfig>
-        <name>zoomDestination</name>
-        <value>colseisdisplay</value>
-    </taskconfig>
-    <taskconfig>
-        <name>gee.task.buttonGroupId</name>
-        <value>zoomSeismograms</value>
-    </taskconfig>
-   </task>
+        <taskconfig>
+            <name>defaultcursor</name>
+            <value>pointer-hand-unclicked.png</value>
+        </taskconfig>
+        <taskconfig>
+            <name>dragcursor</name>
+            <value>pointer-hand-clicked.png</value>
+        </taskconfig>
+        <taskconfig>
+            <name>zoomDestination</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>zoomSeismograms</value>
+        </taskconfig>
+    </task>
 
-<task>
-    <id>ResetZoom</id>
-    <name>Reset Zoom!</name>
-    <class>edu.sc.seis.vsnexplorer.task.AbsoluteTimeTask</class>
-    <tooltip>Click here to restore the seismogram display to its default zoom</tooltip>
-    <taskconfig>
-         <name>timeConfigHolder</name>
-         <value>colseisdisplay</value>
-    </taskconfig>
-</task>
+    <task>
+        <id>ResetDisplay</id>
+        <name>Reset Zoom</name>
+        <class>edu.sc.seis.vsnexplorer.task.DisplayResetTask</class>
+        <tooltip>Click here to reset the display to its original zoom</tooltip>
+        <taskconfig>
+            <name>timeConfigHolder</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
 
-<task>
+    <task>
         <id>ClearDisplay</id>
         <name>Clear Display</name>
         <class>edu.sc.seis.vsnexplorer.task.RemoveAllTask</class>
-<tooltip>Click here to clear all seismograms from your display</tooltip>
-    <taskconfig>
-        <name>columnSeismogram</name>
-        <value>colseisdisplay</value>
-    </taskconfig>
+        <tooltip>Click here to clear all seismograms from your display</tooltip>
         <taskconfig>
-                <name>gee.task.buttonGroupId</name>
-                <value>zoomSeismograms</value>
+            <name>columnSeismogram</name>
+            <value>colseisdisplay</value>
         </taskconfig>
-</task>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>zoomSeismograms</value>
+        </taskconfig>
+    </task>
 
-<task>
-        <id>colSeisRemove</id>
-        <name>Remove Seismogram</name>
-        <class>edu.sc.seis.vsnexplorer.task.RemoveTask</class>
-<tooltip>Click here, then use your mouse to click on individual seismograms to remove them from your display</tooltip>
-        <toggle/>
-        <icon>trash.png</icon>
+    <task>
+        <id>colseisdisplay</id>
+        <name>Seismogram Display</name>
+        <class>edu.sc.seis.vsnexplorer.task.DataSetRealTimePlayerTask</class>
         <taskconfig>
-                <name>removeDestination</name>
-                <value>colseisdisplay</value>
+            <name>datasetbrowser</name>
+            <value>EditCurrentDataSet</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.buttonGroupId</name>
-                <value>zoomSeismograms</value>
+            <name>gee.task.displayLocation</name>
+            <value>main</value>
         </taskconfig>
-</task>
-
-<task>
-   <id>colseisdisplay</id>
-   <name>Seismogram Display</name>
-   <class>edu.sc.seis.vsnexplorer.task.ColumnSeismogramTask</class>
-   <taskconfig>
-      <name>datasetbrowser</name>
-      <value>EditCurrentDataSet</value>
-   </taskconfig>
-   <taskconfig>
-     <name>gee.task.displayLocation</name>
-     <value>main</value>
-   </taskconfig>
-   <taskconfig>
-      <name>particleAllowed</name>
-      <value>false</value>
-   </taskconfig>
-   <toolbar>
-      <toolitem>
-              <taskid>colSeisZoomIn</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>colSeisZoomOut</taskid>
-           </toolitem>
-           <toolitem>
+        <taskconfig>
+            <name>phases</name>
+            <value>P,S</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>nullCrosshair</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>colSeisZoomIn</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>colSeisZoomOut</taskid>
+            </toolitem>
+            <toolitem>
                 <taskid>colSeisDrag</taskid>
-           </toolitem>
-           <toolitem>
-                <taskid>colSeisRemove</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>ShowFilters</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>ClickOverlayTravelTimes</taskid>
-           </toolitem>
-           <toolitem>
-                <taskid>MakeParticleDisplay</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>colSeisSelect</taskid>
-           </toolitem>
-           <toolitem>
-                <taskid>recfunc</taskid>
-           </toolitem>
-           <toolitem>
-                <taskid>SeismogramInfo</taskid>
-           </toolitem>
-   </toolbar>
-</task>
+            </toolitem>
+            <menu>
+                <name>Display Type</name>
+            <menu>
+                <name>Show Individual Traces</name>
+                <menuItem>
+                    <taskid>MultiSeisWindow</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>DistanceMultiSeis</taskid>
+                </menuItem>
+                </menu>
+                <menuItem>
+                    <taskid>SingleSeisWindow</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>ComponentSortedSeisWindow</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>StationSortedWindow</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>RecordSection</taskid>
+                </menuItem>
+                <separator/>
+                <menuItem>
+                    <taskid>GlobalizeAmp</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>IndividualizeAmp</taskid>
+                </menuItem>
+            </menu>
+        </toolbar>
+    </task>
 
-  <task>
+    <task>
+        <id>subcolseisdisplay</id>
+        <name>Pick Zone</name>
+        <class>edu.sc.seis.vsnexplorer.task.ColumnSeismogramTask</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>frame</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.widthpercentage</name>
+            <value>30</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.height</name>
+            <value>600</value>
+        </taskconfig>
+        <taskconfig>
+            <name>defaultDisplayMaker</name>
+            <value>SubMultiSeisWindow</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>colSeisZoomIn</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>colSeisZoomOut</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>colSeisDrag</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>ShowFilters</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>ClickOverlayTravelTimes</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>MakeParticleDisplay</taskid>
+            </toolitem>
+            <menu>
+                <name>Display Type</name>
+                <menu>
+                <name>Show Individual Traces</name>
+                <menuItem>
+                    <taskid>SubMultiSeisWindow</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>SubDistanceMultiSeis</taskid>
+                </menuItem>
+                </menu>
+                <menuItem>
+                    <taskid>SubSingleSeisWindow</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>SubComponentSortedSeisWindow</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>SubStationSortedWindow</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>SubRecordSection</taskid>
+                </menuItem>
+                <separator/>
+                <menuItem>
+                    <taskid>SubGlobalizeAmp</taskid>
+                </menuItem>
+                <menuItem>
+                    <taskid>SubIndividualizeAmp</taskid>
+                </menuItem>
+            </menu>
+        </toolbar>
+    </task>
+
+    <task>
         <id>exploringTheEarthSeismogram</id>
         <name>Exploring The Earth</name>
         <class>edu.sc.seis.vsnexplorer.task.LayoutTask</class>
         <taskconfig>
-                <name>layout_littlecolseisdisplay</name>
-                <complexValue>
-                   <gridbag>
-                      <gridx>0</gridx>
-                      <gridy>0</gridy>
-                      <weightx>2</weightx>
-                      <weighty>1</weighty>
-                      <gridwidth>2</gridwidth>
-                      <fill>BOTH</fill>
-                   </gridbag>
-                </complexValue>
+            <name>layout_littlecolseisdisplay</name>
+            <complexValue>
+                <gridbag>
+                    <gridx>0</gridx>
+                    <gridy>0</gridy>
+                    <weightx>2</weightx>
+                    <weighty>1</weighty>
+                    <gridwidth>2</gridwidth>
+                    <fill>BOTH</fill>
+                </gridbag>
+            </complexValue>
         </taskconfig>
         <taskconfig>
-                <name>layout_TauPPath</name>
-                <complexValue>
-                   <gridbag>
-                      <gridx>0</gridx>
-                      <gridy>1</gridy>
-                      <weightx>2</weightx>
-                      <weighty>2</weighty>
-                      <fill>BOTH</fill>
-                   </gridbag>
-                </complexValue>
+            <name>layout_TauPPath</name>
+            <complexValue>
+                <gridbag>
+                    <gridx>0</gridx>
+                    <gridy>1</gridy>
+                    <weightx>2</weightx>
+                    <weighty>2</weighty>
+                    <fill>BOTH</fill>
+                </gridbag>
+            </complexValue>
         </taskconfig>
         <taskconfig>
-                <name>layout_colseisdisplay</name>
-                <complexValue>
-                   <gridbag>
-                      <gridx>1</gridx>
-                      <gridy>1</gridy>
-                      <weightx>2</weightx>
-                      <weighty>2</weighty>
-                      <fill>BOTH</fill>
-                   </gridbag>
-                </complexValue>
+            <name>layout_colseisdisplay</name>
+            <complexValue>
+                <gridbag>
+                    <gridx>1</gridx>
+                    <gridy>1</gridy>
+                    <weightx>2</weightx>
+                    <weighty>2</weighty>
+                    <fill>BOTH</fill>
+                </gridbag>
+            </complexValue>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.width</name>
-                <value>1000</value>
+            <name>gee.task.width</name>
+            <value>1000</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.height</name>
-                <value>800</value>
+            <name>gee.task.height</name>
+            <value>800</value>
         </taskconfig>
-  </task>
+    </task>
 
-<task>
-   <id>littlecolseisdisplay</id>
-   <name>Seismogram Display</name>
-   <class>edu.sc.seis.vsnexplorer.task.ColumnSeismogramTask</class>
-   <taskconfig>
-      <name>xxxdatasetbrowser</name>
-      <value>xxxEditCurrentDataSet</value>
-   </taskconfig>
-   <taskconfig>
-     <name>gee.task.displayLocation</name>
-     <value>main</value>
-   </taskconfig>
-   <taskconfig>
-      <name>particleAllowed</name>
-      <value>false</value>
-   </taskconfig>
-   <toolbar>
-      <toolitem>
-              <taskid>colSeisZoomIn</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>colSeisZoomOut</taskid>
-           </toolitem>
-           <toolitem>
+    <task>
+        <id>littlecolseisdisplay</id>
+        <name>Seismogram Display</name>
+        <class>edu.sc.seis.vsnexplorer.task.ColumnSeismogramTask</class>
+        <taskconfig>
+            <name>xxxdatasetbrowser</name>
+            <value>xxxEditCurrentDataSet</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>main</value>
+        </taskconfig>
+        <taskconfig>
+            <name>particleAllowed</name>
+            <value>false</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>colSeisZoomIn</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>colSeisZoomOut</taskid>
+            </toolitem>
+            <toolitem>
                 <taskid>colSeisDrag</taskid>
-           </toolitem>
-           <toolitem>
-                <taskid>colSeisRemove</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>ShowFilters</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>ClickOverlayTravelTimes</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>MakeParticleDisplay</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>colSeisSelect</taskid>
-           </toolitem>
-   </toolbar>
-</task>
+            </toolitem>
+            <toolitem>
+                <taskid>recFunc</taskid>
+            </toolitem>
+        </toolbar>
+    </task>
 
-<task>
-   <id>TauPPath</id>
-   <name>Ray Path Display</name>
-   <class>edu.sc.seis.vsnexplorer.task.TauPPathTask</class>
-</task>
+    <task>
+        <id>TauPPath</id>
+        <name>Ray Path Display</name>
+        <class>edu.sc.seis.vsnexplorer.task.TauPPathTask</class>
+    </task>
 
-   <task>
-    <id>DataSetRealTimePlayer</id>
-    <name>Real-Time DataSet Playback</name>
-    <class>edu.sc.seis.vsnexplorer.task.DataSetRealTimePlayerTask</class>
-    <taskconfig>
-        <name>datasetbrowser</name>
-        <value>EditCurrentDataSet</value>
-    </taskconfig>
-    <taskconfig>
-        <name>gee.task.width</name>
-        <value>600</value>
-    </taskconfig>
-    <taskconfig>
-        <name>gee.task.height</name>
-        <value>500</value>
-    </taskconfig>
-    <toolbar>
-    </toolbar>
-   </task>
-
-<task>
-     <id>RealTimePlayer</id>
-     <name>SCEPP Real-Time Viewer</name>
-     <class>edu.sc.seis.vsnexplorer.task.RTSeismogramDisplayTask</class>
+    <task>
+        <id>RealTimePlayer</id>
+        <name>Real-Time Viewer</name>
+        <class>edu.sc.seis.vsnexplorer.task.RTSeismogramDisplayTask</class>
         <taskconfig>
-                <name>gee.task.width</name>
-                <value>500</value>
+            <name>gee.task.displayLocation</name>
+            <value>main</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.height</name>
-                <value>300</value>
+            <name>channelChooserTask</name>
+            <value>StationsFromSCEPP_DMC</value>
         </taskconfig>
         <taskconfig>
-                <name>channelChooserTask</name>
-                <value>StationsFromSCEPP</value>
+            <name>loadSeismogramTask</name>
+            <value>CustomTimeWindowBUD</value>
         </taskconfig>
         <taskconfig>
-                <name>loadSeismogramTask</name>
-                <value>CustomTimeWindowSCEPP</value>
-        </taskconfig>
-        <taskconfig>
-                <name>htmlViewerTask</name>
-                <value>HtmlViewer</value>
+            <name>defaultDisplayMaker</name>
+            <value>RTMultiSeisWindow</value>
         </taskconfig>
         <toolbar>
-                <toolitem>
-                        <taskid>StationsFromSCEPP</taskid>
-                </toolitem>
+            <toolitem>
+                <taskid>colSeisZoomIn</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>colSeisZoomOut</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>colSeisDrag</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>StationsFromSCEPP_DMC</taskid>
+            </toolitem>
         </toolbar>
-</task>
+    </task>
 
-<task>
-     <id>BUDRealTimePlayer</id>
-     <name>IRIS Real-Time Viewer</name>
-     <class>edu.sc.seis.vsnexplorer.task.RTSeismogramDisplayTask</class>
+    <task>
+        <id>MakeParticleDisplay</id>
+        <name>Plot Particle Motion</name>
+        <class>edu.sc.seis.vsnexplorer.task.ParticleCreationTask</class>
+        <tooltip>Click here, then create a particle motion display by clicking on a seismogram</tooltip>
+        <toggle/>
+        <icon>partmotion.png</icon>
         <taskconfig>
-                <name>gee.task.width</name>
-                <value>500</value>
+            <name>gee.task.displayLocation</name>
+            <value>frame</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.height</name>
-                <value>300</value>
+            <name>gee.task.buttonGroupId</name>
+            <value>zoomSeismograms</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>colSeisSelect</id>
+        <name>Tag Pick Zone</name>
+        <class>edu.sc.seis.vsnexplorer.task.RangeSelectionTask</class>
+        <tooltip>Click here, then select a time region on a seismogram by holding down the mouse a dragging over the region of interest, tagged region will pop up in a separate display</tooltip>
+        <toggle/>
+        <icon>tag-pick.png</icon>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>zoomSeismograms</value>
         </taskconfig>
         <taskconfig>
-                <name>channelChooserTask</name>
-                <value>StationsFromSCEPP_DMC</value>
+            <name>colSeisDisp</name>
+            <value>colseisdisplay</value>
         </taskconfig>
         <taskconfig>
-                <name>loadSeismogramTask</name>
-                <value>CustomTimeWindowBUD</value>
+            <name>subColSeis</name>
+            <value>subcolseisdisplay</value>
         </taskconfig>
-        <toolbar>
-                <toolitem>
-                        <taskid>StationsFromSCEPP_DMC</taskid>
-                </toolitem>
-        </toolbar>
-</task>
+    </task>
 
-<task>
-    <id>MakeParticleDisplay</id>
-    <name>Plot Particle Motion</name>
-    <class>edu.sc.seis.vsnexplorer.task.ParticleCreationTask</class>
-    <tooltip>Click here, then create a particle motion display by clicking on a seismogram</tooltip>
-    <toggle/>
-    <icon>partmotion.png</icon>
-    <taskconfig>
-        <name>gee.task.buttonGroupId</name>
-        <value>zoomSeismograms</value>
-    </taskconfig>
-</task>
+    <task>
+        <id>colSeis3CSelect</id>
+        <name>Tag Particle Motion Zone</name>
+        <class>edu.sc.seis.vsnexplorer.task.RangeSelectionTask</class>
+        <tooltip>Click here, then select a time region on a seismogram by holding down the mouse a dragging over the region of interest, tagged 3-component seismograms will pop up in a separate display</tooltip>
+        <toggle/>
+        <taskconfig>
+            <name>three component</name>
+            <value></value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>zoomSeismograms</value>
+        </taskconfig>
+    </task>
 
-<task>
-    <id>colSeisSelect</id>
-    <name>Tag Pick Zone</name>
-    <class>edu.sc.seis.vsnexplorer.task.RangeSelectionTask</class>
-    <tooltip>Click here, then select a time region on a seismogram by holding down the mouse a dragging over the region of interest, tagged region will pop up in a separate display</tooltip>
-    <toggle/>
-    <icon>tag-pick.png</icon>
-    <taskconfig>
-        <name>gee.task.buttonGroupId</name>
-        <value>zoomSeismograms</value>
-    </taskconfig>
- </task>
-
-<task>
-    <id>colSeis3CSelect</id>
-    <name>Tag Particle Motion Zone</name>
-    <class>edu.sc.seis.vsnexplorer.task.RangeSelectionTask</class>
-    <tooltip>Click here, then select a time region on a seismogram by holding down the mouse a dragging over the region of interest, tagged 3-component seismograms will pop up in a separate display</tooltip>
-    <toggle/>
-    <taskconfig>
-        <name>three component</name>
-        <value></value>
-    </taskconfig>
-    <taskconfig>
-        <name>gee.task.buttonGroupId</name>
-        <value>zoomSeismograms</value>
-    </taskconfig>
- </task>
-
-   <task>
-    <id>closeDataSet</id>
-    <name>Close DataSet</name>
-    <class>edu.sc.seis.vsnexplorer.task.ClearDataSetTask</class>
-    <taskconfig>
-        <name>dataSetBrowser</name>
-        <value>EditCurrentDataSet</value>
-    </taskconfig>
-    <taskconfig>
-        <name>columnSeismogram</name>
-        <value>colseisdisplay</value>
-    </taskconfig>
-    <taskconfig>
-        <name>saveDataSet</name>
-        <value>SaveLocalDataSet</value>
-    </taskconfig>
-   </task>
+    <task>
+        <id>closeDataSet</id>
+        <name>Close DataSet</name>
+        <class>edu.sc.seis.vsnexplorer.task.ClearDataSetTask</class>
+        <taskconfig>
+            <name>dataSetBrowser</name>
+            <value>EditCurrentDataSet</value>
+        </taskconfig>
+        <taskconfig>
+            <name>columnSeismogram</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+        <taskconfig>
+            <name>saveDataSet</name>
+            <value>SaveLocalDataSet</value>
+        </taskconfig>
+    </task>
 
     <task>
         <id>EditCurrentDataSet</id>
         <name>Launch DataSet Editor</name>
         <class>edu.sc.seis.vsnexplorer.task.dataSetBrowser.DataSetBrowser</class>
-     <taskconfig>
-         <name>datasetlocation</name>
-         <value>.</value>
-     </taskconfig>
-     <taskconfig>
-         <name>dtwidth</name>
-         <value>300</value>
-     </taskconfig>
-     <taskconfig>
-         <name>dtheight</name>
-         <value>300</value>
-     </taskconfig>
-     <taskconfig>
-         <name>x_on_screen</name>
-         <value>50</value>
-     </taskconfig>
-     <taskconfig>
-         <name>y_on_screen</name>
-         <value>200</value>
-     </taskconfig>
-     <taskconfig>
-         <name>DEBUG</name>
-         <value>true</value>
-     </taskconfig>
+        <taskconfig>
+            <name>datasetlocation</name>
+            <value>.</value>
+        </taskconfig>
+        <taskconfig>
+            <name>dtwidth</name>
+            <value>300</value>
+        </taskconfig>
+        <taskconfig>
+            <name>dtheight</name>
+            <value>300</value>
+        </taskconfig>
+        <taskconfig>
+            <name>x_on_screen</name>
+            <value>50</value>
+        </taskconfig>
+        <taskconfig>
+            <name>y_on_screen</name>
+            <value>200</value>
+        </taskconfig>
+        <taskconfig>
+            <name>DEBUG</name>
+            <value>true</value>
+        </taskconfig>
     </task>
 
-   <task>
-    <id>CustomTimeWindowSCEPP</id>
-    <name>Select a Custom Time Window (SCEPP)</name>
-    <class>edu.sc.seis.vsnexplorer.task.LoadSeismogram</class>
-    <taskconfig>
-        <name>serverDNS</name>
-        <value>edu/sc/seis</value>
-    </taskconfig>
-    <taskconfig>
-        <name>serverName</name>
-        <value>SCEPPSeismogramDC</value>
-    </taskconfig>
-     <taskconfig>
-    <name>gee.task.width</name>
-    <value>380</value>
-     </taskconfig>
-     <taskconfig>
-    <name>gee.task.height</name>
-    <value>300</value>
-      </taskconfig>
-    <taskconfig>
-        <name>channelChooserTask</name>
-        <value>StationsFromSCEPP</value>
-    </taskconfig>
-    <toolbar>
-        <toolitem>
-            <taskid>StationsFromSCEPP</taskid>
-        </toolitem>
-    </toolbar>
-   </task>
+    <task>
+        <id>CustomTimeWindowSCEPP</id>
+        <name>Select a Custom Time Window (SCEPP)</name>
+        <class>edu.sc.seis.vsnexplorer.task.LoadSeismogram</class>
+        <taskconfig>
+            <name>serverDNS</name>
+            <value>edu/sc/seis</value>
+        </taskconfig>
+        <taskconfig>
+            <name>serverName</name>
+            <value>SCEPPSeismogramDC</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.width</name>
+            <value>380</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.height</name>
+            <value>300</value>
+        </taskconfig>
+        <taskconfig>
+            <name>channelChooserTask</name>
+            <value>StationsFromSCEPP</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>StationsFromSCEPP</taskid>
+            </toolitem>
+        </toolbar>
+    </task>
 
-   <task>
-    <id>CustomTimeWindowBUD</id>
-    <name>Choose Custom Time Window (DMC)</name>
-    <class>edu.sc.seis.vsnexplorer.task.LoadSeismogram</class>
-    <taskconfig>
-        <name>serverDNS</name>
-        <value>edu/iris/dmc</value>
-    </taskconfig>
-    <taskconfig>
-        <name>serverName</name>
-        <value>IRIS_BudDataCenter</value>
-    </taskconfig>
-     <taskconfig>
-    <name>gee.task.width</name>
-    <value>380</value>
-     </taskconfig>
-     <taskconfig>
-    <name>gee.task.height</name>
-    <value>300</value>
-      </taskconfig>
-    <taskconfig>
-        <name>channelChooserTask</name>
-        <value>StationsFromSCEPP_DMC</value>
-    </taskconfig>
-    <toolbar>
-        <toolitem>
-            <taskid>StationsFromSCEPP_DMC</taskid>
-        </toolitem>
-    </toolbar>
-   </task>
+    <task>
+        <id>CustomTimeWindowBUD</id>
+        <name>Choose Custom Time Window (DMC)</name>
+        <class>edu.sc.seis.vsnexplorer.task.LoadSeismogram</class>
+        <taskconfig>
+            <name>serverDNS</name>
+            <value>edu/iris/dmc</value>
+        </taskconfig>
+        <taskconfig>
+            <name>serverName</name>
+            <value>IRIS_BudDataCenter</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.width</name>
+            <value>380</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.height</name>
+            <value>300</value>
+        </taskconfig>
+        <taskconfig>
+            <name>channelChooserTask</name>
+            <value>StationsFromSCEPP_DMC</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>StationsFromSCEPP_DMC</taskid>
+            </toolitem>
+        </toolbar>
+    </task>
 
-   <task>
-    <id>QuakeFromSCEPP</id>
-    <name>Find a Large Earthquake</name>
-    <class>edu.sc.seis.vsnexplorer.task.QueryEventsTask</class>
-    <taskconfig>
-        <name>serverDNS</name>
-        <value>edu/sc/seis</value>
-    </taskconfig>
-    <taskconfig>
-        <name>serverName</name>
-        <value>ANHINGAEVENTDC</value>
-    </taskconfig>
-    <taskconfig>
-        <name>eventDestinationId_showEvents</name>
-        <value>ShowEvents</value>
-    </taskconfig>
-    <taskconfig>
-        <name>eventDestinationId_worldmap</name>
-        <value>SCEPP world map</value>
-    </taskconfig>
-    <toolbar>
-        <toolitem>
-            <taskid>ShowEvents</taskid>
-        </toolitem>
-        <toolitem>
-            <taskid>SCEPP world map</taskid>
-        </toolitem>
-    </toolbar>
+    <task>
+        <id>QuakeFromSCEPP</id>
+        <name>Find a Large Earthquake</name>
+        <class>edu.sc.seis.vsnexplorer.task.QueryEventsTask</class>
+        <taskconfig>
+            <name>serverDNS</name>
+            <value>edu/sc/seis</value>
+        </taskconfig>
+        <taskconfig>
+            <name>serverName</name>
+            <value>ANHINGAEVENTDC</value>
+        </taskconfig>
+        <taskconfig>
+            <name>eventDestinationId_showEvents</name>
+            <value>ShowEvents</value>
+        </taskconfig>
+        <taskconfig>
+            <name>FIX LATER eventDestinationId_worldmap</name>
+            <value>WorldMap</value>
+        </taskconfig>
+        <taskconfig>
+            <name>selectedContributor_NEIC</name>
+            <value>NEIC</value>
+        </taskconfig>
+        <taskconfig>
+            <name>selectedCatalog_FINGER</name>
+            <value>FINGER</value>
+        </taskconfig>
+        <taskconfig>
+            <name>selectedCatalog_BIGQUAKE</name>
+            <value>BIGQUAKE</value>
+        </taskconfig>
+        <taskconfig>
+            <name>FIX LATER eventDestinationId_worldmap</name>
+            <value>WorldMap</value>
+        </taskconfig>
 
-   </task>
+        <toolbar>
+            <toolitem>
+                <taskid>ShowEvents</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>WorldMap</taskid>
+            </toolitem>
+        </toolbar>
 
-   <task>
-    <id>QuakeFromIRIS</id>
-    <name>Query IRIS Earthquake Database</name>
-    <class>edu.sc.seis.vsnexplorer.task.QueryEventsTask</class>
-    <taskconfig>
-        <name>serverDNS</name>
-        <value>edu/iris/dmc</value>
-    </taskconfig>
-    <taskconfig>
-        <name>serverName</name>
-        <value>IRIS_EventDC</value>
-    </taskconfig>
-    <taskconfig>
-        <name>eventDestinationId_showEvents</name>
-        <value>ShowEvents</value>
-    </taskconfig>
-    <taskconfig>
-        <name>eventDestinationId_map</name>
-        <value>geotools world map</value>
-    </taskconfig>
-    <toolbar>
-        <toolitem>
-            <taskid>ShowEvents</taskid>
-        </toolitem>
-        <toolitem>
-            <taskid>geotools world map</taskid>
-        </toolitem>
-    </toolbar>
-   </task>
+    </task>
 
-   <task>
-    <id>ShowEvents</id>
-    <name>Display Table of Earthquakes</name>
-    <class>edu.sc.seis.vsnexplorer.task.ShowEventsTask</class>
-    <taskconfig>
-        <name>queryEventsId</name>
-        <value>QuakeFromSCEPP</value>
-    </taskconfig>
-    <taskconfig>
-        <name>gee.task.width</name>
-        <value>600</value>
-    </taskconfig>
-    <taskconfig>
-        <name>gee.task.height</name>
-        <value>400</value>
-    </taskconfig>
-    <toolbar>
-        <toolitem>
-            <taskid>TimeForEarthquakeSCEPP</taskid>
-        </toolitem>
-    </toolbar>
-   </task>
+    <task>
+        <id>QuakeFromIRIS</id>
+        <name>Query IRIS Earthquake Database</name>
+        <class>edu.sc.seis.vsnexplorer.task.QueryEventsTask</class>
+        <tooltip>Query IRIS Earthquake Database</tooltip>
+        <icon>iris.png</icon>
+        <taskconfig>
+            <name>serverDNS</name>
+            <value>edu/iris/dmc</value>
+        </taskconfig>
+        <taskconfig>
+            <name>serverName</name>
+            <value>IRIS_EventDC</value>
+        </taskconfig>
+        <taskconfig>
+            <name>eventDestinationId_showEvents</name>
+            <value>ShowEvents</value>
+        </taskconfig>
+        <taskconfig>
+            <name>FIX LATER eventDestinationId_map</name>
+            <value>WorldMap</value>
+        </taskconfig>
+        <taskconfig>
+            <name>selectedContributor_NEIC</name>
+            <value>NEIC</value>
+        </taskconfig>
+        <taskconfig>
+            <name>selectedCatalog_FINGER</name>
+            <value>FINGER</value>
+        </taskconfig>
 
-   <task>
-    <id>FindDataSets</id>
-    <name>FindDataSetsTask</name>
-    <class>edu.sc.seis.vsnexplorer.task.FindDataSetsTask</class>
-    <taskconfig>
-        <name>respondId</name>
-        <value>LoadDataSet</value>
-    </taskconfig>
-   </task>
+        <toolbar>
+            <toolitem>
+                <taskid>ShowEvents</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>WorldMap</taskid>
+            </toolitem>
+        </toolbar>
+    </task>
+
+    <task>
+        <id>ShowEvents</id>
+        <name>Display Table of Earthquakes</name>
+        <class>edu.sc.seis.vsnexplorer.task.ShowEventsTask</class>
+        <tooltip>Display Table of Earthquakes</tooltip>
+        <icon>tableview2.png</icon>
+        <taskconfig>
+            <name>queryEventsId</name>
+            <value>QuakeFromSCEPP</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.width</name>
+            <value>600</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.height</name>
+            <value>400</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>TimeForEarthquakeSCEPP</taskid>
+            </toolitem>
+        </toolbar>
+    </task>
+
+    <task>
+        <id>FindDataSets</id>
+        <name>FindDataSetsTask</name>
+        <class>edu.sc.seis.vsnexplorer.task.FindDataSetsTask</class>
+        <taskconfig>
+            <name>respondId</name>
+            <value>LoadDataSet</value>
+        </taskconfig>
+    </task>
 
 
 
-   <task>
-    <id>TimeForEarthquakeSCEPP</id>
-    <name>Choose Time relative to your Earthquake (SCEPP)</name>
-    <class>edu.sc.seis.vsnexplorer.task.EventSeismogramTask</class>
-    <taskconfig>
-        <name>showEventsTask</name>
-        <value>ShowEvents</value>
-    </taskconfig>
-    <taskconfig>
-        <name>loadSeismogramTask</name>
-        <value>CustomTimeWindowSCEPP</value>
-    </taskconfig>
-    <taskconfig>
-        <name>channelChooserTask</name>
-        <value>StationsFromSCEPP</value>
-    </taskconfig>
-    <taskconfig>
-        <name>gee.task.width</name>
-        <value>450</value>
-    </taskconfig>
-    <taskconfig>
-        <name>gee.task.height</name>
-        <value>250</value>
-    </taskconfig>
-    <toolbar>
-        <toolitem>
-            <taskid>QuakeFromSCEPP</taskid>
-        </toolitem>
-        <toolitem>
-            <taskid>ShowEvents</taskid>
-        </toolitem>
-        <toolitem>
-            <taskid>geotools world map</taskid>
-        </toolitem>
-        <toolitem>
-            <taskid>StationsFromSCEPP</taskid>
-        </toolitem>
-    </toolbar>
-   </task>
+    <task>
+        <id>TimeForEarthquakeSCEPP</id>
+        <name>Choose Time relative to your Earthquake (SCEPP)</name>
+        <class>edu.sc.seis.vsnexplorer.task.EventSeismogramTask</class>
+        <taskconfig>
+            <name>showEventsTask</name>
+            <value>ShowEvents</value>
+        </taskconfig>
+        <taskconfig>
+            <name>loadSeismogramTask</name>
+            <value>CustomTimeWindowSCEPP</value>
+        </taskconfig>
+        <taskconfig>
+            <name>channelChooserTask</name>
+            <value>StationsFromSCEPP</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.width</name>
+            <value>450</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.height</name>
+            <value>250</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>QuakeFromSCEPP</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>ShowEvents</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>WorldMap</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>StationsFromSCEPP</taskid>
+            </toolitem>
+        </toolbar>
+    </task>
 
-   <task>
-    <id>TimeForEarthquakeBUD</id>
-    <name>Choose Time relative to your Earthquake (DMC)</name>
-    <class>edu.sc.seis.vsnexplorer.task.EventSeismogramTask</class>
-    <taskconfig>
-        <name>showEventsTask</name>
-        <value>ShowEvents</value>
-    </taskconfig>
-    <taskconfig>
-        <name>loadSeismogramTask</name>
-        <value>CustomTimeWindowBUD</value>
-    </taskconfig>
-    <taskconfig>
-        <name>channelChooserTask</name>
-        <value>StationsFromSCEPP_DMC</value>
-    </taskconfig>
-    <taskconfig>
-        <name>gee.task.width</name>
-        <value>450</value>
-    </taskconfig>
-    <taskconfig>
-        <name>gee.task.height</name>
-        <value>250</value>
-    </taskconfig>
-    <toolbar>
-        <toolitem>
-            <taskid>QuakeFromIRIS</taskid>
-        </toolitem>
-        <toolitem>
-            <taskid>ShowEvents</taskid>
-        </toolitem>
-        <toolitem>
-            <taskid>geotools world map</taskid>
-        </toolitem>
-        <toolitem>
-            <taskid>StationsFromSCEPP_DMC</taskid>
-        </toolitem>
-    </toolbar>
-   </task>
+    <task>
+        <id>TimeForEarthquakeBUD</id>
+        <name>Choose Time relative to your Earthquake (DMC)</name>
+        <class>edu.sc.seis.vsnexplorer.task.EventSeismogramTask</class>
+        <taskconfig>
+            <name>showEventsTask</name>
+            <value>ShowEvents</value>
+        </taskconfig>
+        <taskconfig>
+            <name>loadSeismogramTask</name>
+            <value>CustomTimeWindowBUD</value>
+        </taskconfig>
+        <taskconfig>
+            <name>channelChooserTask</name>
+            <value>StationsFromSCEPP_DMC</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.width</name>
+            <value>450</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.height</name>
+            <value>250</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>QuakeFromIRIS</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>ShowEvents</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>WorldMap</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>StationsFromSCEPP_DMC</taskid>
+            </toolitem>
+        </toolbar>
+    </task>
 
-   <task>
+    <task>
         <id>TimeForEarthquakeBUD_Short</id>
         <name>Choose Time relative to your Earthquake (DMC)</name>
         <class>edu.sc.seis.vsnexplorer.task.EventSeismogramTask</class>
         <taskconfig>
-                <name>showEventsTask</name>
-                <value>ShowEvents</value>
+            <name>showEventsTask</name>
+            <value>ShowEvents</value>
         </taskconfig>
         <taskconfig>
-                <name>loadSeismogramTask</name>
-                <value>CustomTimeWindowBUD</value>
+            <name>loadSeismogramTask</name>
+            <value>CustomTimeWindowBUD</value>
         </taskconfig>
         <taskconfig>
-                <name>channelChooserTask</name>
-                <value>StationsFromSCEPP_DMC</value>
+            <name>channelChooserTask</name>
+            <value>StationsFromSCEPP_DMC</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.width</name>
-                <value>450</value>
+            <name>gee.task.width</name>
+            <value>450</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.height</name>
-                <value>250</value>
+            <name>gee.task.height</name>
+            <value>250</value>
         </taskconfig>
         <toolbar>
-                <toolitem>
-                        <taskid>QuakeFromIRIS</taskid>
-                </toolitem>
-                <toolitem>
-                        <taskid>ShowEvents</taskid>
-                </toolitem>
-                <toolitem>
-                        <taskid>geotools world map</taskid>
-                </toolitem>
-                <toolitem>
-                        <taskid>StationsFromSCEPP_DMC</taskid>
-                </toolitem>
+            <toolitem>
+                <taskid>QuakeFromIRIS</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>ShowEvents</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>WorldMap</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>StationsFromSCEPP_DMC</taskid>
+            </toolitem>
         </toolbar>
-   </task>
+    </task>
 
-  <task>
-    <id>SaveLocalDataSet</id>
-    <name>Save DataSet Locally</name>
-    <class>edu.sc.seis.vsnexplorer.task.SaveDataSetTask</class>
-    <taskconfig>
-        <name>gee.task.displayLocation</name>
-        <value>none</value>
-    </taskconfig>
-  </task>
+    <task>
+        <id>SaveLocalDataSet</id>
+        <name>Save DataSet Locally</name>
+        <class>edu.sc.seis.vsnexplorer.task.SaveDataSetTask</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
+        </taskconfig>
+    </task>
 
-<task>
-    <id>openSCEPPRepository</id>
-    <name>Load Earthquake from SCEPP Repository</name>
+    <task>
+        <id>openSCEPPRepository</id>
+        <name>Load Earthquake from SCEPP Repository</name>
         <class>edu.sc.seis.vsnexplorer.task.SequenceTask</class>
         <taskconfig>
-             <name>taskSequence</name>
-             <value>SCEPPRepository_Sequence EditCurrentDataSet</value>
+            <name>taskSequence</name>
+            <value>SCEPPRepository_Sequence EditCurrentDataSet</value>
         </taskconfig>
- </task>
+    </task>
 
-<task>
+    <task>
         <id>SCEPPRepository_Sequence</id>
         <name>Load Earthquake from SCEPP Repository</name>
         <class>edu.sc.seis.vsnexplorer.task.LoadDataSetTask</class>
         <taskconfig>
-                <name>do_url_directory</name>
-                <value>http://www.seis.sc.edu/scepp/SCEPPRepository/SCEPP_Repository_New.dsml</value>
+            <name>do_url_directory</name>
+            <value>http://www.seis.sc.edu/scepp/SCEPPRepository/SCEPP_Repository_New.dsml</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.displayLocation</name>
-                <value>none</value>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
         </taskconfig>
- </task>
+    </task>
 
 
 <!-- These tasks load "classic" earthquakes from the local jar distribution -->
@@ -1476,888 +1733,792 @@
 <!-- -->
 <!-- Banda Sea Event for Longitudinal and Transverse Waves -->
 <!-- -->
-  <task>
+    <task>
         <id>BandaSea_Sequence</id>
         <name>Banda Sea Earthquake</name>
         <class>edu.sc.seis.vsnexplorer.task.LoadDataSetTask</class>
         <taskconfig>
-                <name>do_jar_file</name>
-                <value>BandaSea_101591/BandaSea.dsml</value>
+            <name>do_jar_file</name>
+            <value>BandaSea_101591/BandaSea.dsml</value>
         </taskconfig>
-    <taskconfig>
-        <name>gee.task.displayLocation</name>
-        <value>none</value>
-    </taskconfig>
-  </task>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
+        </taskconfig>
+    </task>
 
-<task>
+    <task>
         <id>LoadClassic_BandaSea</id>
         <name>Banda Sea Earthquake</name>
         <class>edu.sc.seis.vsnexplorer.task.SequenceTask</class>
         <taskconfig>
-             <name>taskSequence</name>
-             <value>BandaSea_Sequence EditCurrentDataSet</value>
+            <name>taskSequence</name>
+            <value>BandaSea_Sequence EditCurrentDataSet</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.width</name>
-                <value>600</value>
+            <name>gee.task.width</name>
+            <value>600</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.height</name>
-                <value>400</value>
+            <name>gee.task.height</name>
+            <value>400</value>
         </taskconfig>
 
-</task>
+    </task>
 <!-- -->
 <!-- Rukwa Event for Intro to GEE -->
 <!-- -->
-  <task>
+    <task>
         <id>Rukwa_Sequence</id>
         <name>Rukwa Earthquake</name>
         <class>edu.sc.seis.vsnexplorer.task.LoadDataSetTask</class>
         <taskconfig>
-                <name>do_jar_file</name>
-                <value>Rukwa_081894/Rukwa.dsml</value>
+            <name>do_jar_file</name>
+            <value>Rukwa_081894/Rukwa.dsml</value>
         </taskconfig>
-    <taskconfig>
-        <name>gee.task.displayLocation</name>
-        <value>none</value>
-    </taskconfig>
-  </task>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
+        </taskconfig>
+    </task>
 
-<task>
+    <task>
         <id>LoadClassic_Rukwa</id>
         <name>Rukwa Earthquake</name>
         <class>edu.sc.seis.vsnexplorer.task.SequenceTask</class>
         <taskconfig>
-             <name>taskSequence</name>
-             <value>Rukwa_Sequence EditCurrentDataSet</value>
+            <name>taskSequence</name>
+            <value>Rukwa_Sequence EditCurrentDataSet</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.width</name>
-                <value>600</value>
+            <name>gee.task.width</name>
+            <value>600</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.height</name>
-                <value>400</value>
+            <name>gee.task.height</name>
+            <value>400</value>
         </taskconfig>
-       <toolbar>
-           <toolitem>
-              <taskid>DisplayAllSeismograms</taskid>
-           </toolitem>
-       </toolbar>
+        <toolbar>
+            <toolitem>
+                <taskid>DisplayAllSeismograms</taskid>
+            </toolitem>
+        </toolbar>
 
-</task>
+    </task>
 
 <!-- -->
 <!-- California Event for Detecting the Layered Earth -->
 <!-- -->
-<task>
-     <id>California_Sequence</id>
-     <name>California Earthquake</name>
-     <class>edu.sc.seis.vsnexplorer.task.LoadDataSetTask</class>
-     <taskconfig>
-          <name>do_jar_file</name>
-          <value>California_041498/California.dsml</value>
-     </taskconfig>
-     <taskconfig>
-      <name>gee.task.displayLocation</name>
-      <value>none</value>
-     </taskconfig>
-</task>
+    <task>
+        <id>California_Sequence</id>
+        <name>California Earthquake</name>
+        <class>edu.sc.seis.vsnexplorer.task.LoadDataSetTask</class>
+        <taskconfig>
+            <name>do_jar_file</name>
+            <value>California_041498/California.dsml</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
+        </taskconfig>
+    </task>
 
-<task>
+    <task>
         <id>LoadClassic_California</id>
         <name>California Earthquake</name>
         <class>edu.sc.seis.vsnexplorer.task.SequenceTask</class>
         <taskconfig>
-             <name>taskSequence</name>
-             <value>California_Sequence EditCurrentDataSet</value>
+            <name>taskSequence</name>
+            <value>California_Sequence EditCurrentDataSet</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.width</name>
-                <value>600</value>
+            <name>gee.task.width</name>
+            <value>600</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.height</name>
-                <value>400</value>
+            <name>gee.task.height</name>
+            <value>400</value>
         </taskconfig>
-       <toolbar>
-           <toolitem>
-              <taskid>DisplayAllSeismograms</taskid>
-           </toolitem>
-       </toolbar>
+        <toolbar>
+            <toolitem>
+                <taskid>DisplayAllSeismograms</taskid>
+            </toolitem>
+        </toolbar>
 
-</task>
+    </task>
 <!-- -->
 
-  <task>
-    <id>LoadLocalDataSet</id>
-    <name>Load a Local DataSet</name>
-    <class>edu.sc.seis.vsnexplorer.task.LoadDataSetTask</class>
-    <taskconfig>
-        <name>do_file_input</name>
-        <value>true</value>
-    </taskconfig>
-    <taskconfig>
-        <name>gee.task.displayLocation</name>
-        <value>none</value>
-    </taskconfig>
-  </task>
+    <task>
+        <id>LoadLocalDataSet</id>
+        <name>Load a Local DataSet</name>
+        <class>edu.sc.seis.vsnexplorer.task.LoadDataSetTask</class>
+        <taskconfig>
+            <name>do_file_input</name>
+            <value>true</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
+        </taskconfig>
+    </task>
 
-  <task>
-    <id>ExceptionHandler</id>
-    <name>ExceptionHandler</name>
-    <class>edu.sc.seis.vsnexplorer.task.ExceptionHandlerTask</class>
-  </task>
+    <task>
+        <id>ExceptionHandler</id>
+        <name>ExceptionHandler</name>
+        <class>edu.sc.seis.vsnexplorer.task.ExceptionHandlerTask</class>
+    </task>
 
-  <task>
-    <id>ConnectionStatus</id>
-    <name>Check Connection Status</name>
-    <class>edu.sc.seis.vsnexplorer.task.ConnectionStatusTask</class>
-    <taskconfig>
-        <name>Web Connection to USC:</name>
-        <value>http://www.sc.edu</value>
-    </taskconfig>
-    <taskconfig>
-        <name>Web Connection to IRIS DMC:</name>
-        <value>http://www.iris.washington.edu</value>
-    </taskconfig>
-    <taskconfig>
-        <name>Direct Connection to SCEPP:</name>
-        <value>corbaloc:iiop:pooh.seis.sc.edu:6371/NameService</value>
-    </taskconfig>
-    <taskconfig>
-        <name>Direct Connection to IRIS:</name>
-        <value>corbaloc:iiop:dmc.iris.washington.edu:6371/NameService</value>
-    </taskconfig>
-    <taskconfig>
-        <name>Web Connection to public Web site:</name>
-        <value>http://www.yahoo.com</value>
-    </taskconfig>
-  </task>
+    <task>
+        <id>ConnectionStatus</id>
+        <name>Check Connection Status</name>
+        <class>edu.sc.seis.vsnexplorer.task.ConnectionStatusTask</class>
+        <taskconfig>
+            <name>Web Connection to USC:</name>
+            <value>http://www.sc.edu</value>
+        </taskconfig>
+        <taskconfig>
+            <name>Web Connection to IRIS DMC:</name>
+            <value>http://www.iris.washington.edu</value>
+        </taskconfig>
+        <taskconfig>
+            <name>Direct Connection to SCEPP:</name>
+            <value>corbaloc:iiop:pooh.seis.sc.edu:6371/NameService</value>
+        </taskconfig>
+        <taskconfig>
+            <name>Direct Connection to IRIS:</name>
+            <value>corbaloc:iiop:dmc.iris.washington.edu:6371/NameService</value>
+        </taskconfig>
+        <taskconfig>
+            <name>Web Connection to public Web site:</name>
+            <value>http://www.yahoo.com</value>
+        </taskconfig>
+    </task>
 
-   <task>
-     <id>ImageViewer</id>
-     <name>View Included Image(s)</name>
-     <class>edu.sc.seis.vsnexplorer.task.ImageViewer</class>
-     <taskconfig>
-    <name>datasetbrowser</name>
-    <value>EditCurrentDataSet</value>
-     </taskconfig>
-   </task>
+    <task>
+        <id>ImageViewer</id>
+        <name>View Included Image(s)</name>
+        <class>edu.sc.seis.vsnexplorer.task.ImageViewer</class>
+        <taskconfig>
+            <name>datasetbrowser</name>
+            <value>EditCurrentDataSet</value>
+        </taskconfig>
+    </task>
 
-   <task>
-    <id>HtmlViewer</id>
-    <name>View Included Web Site(s)</name>
-    <class>edu.sc.seis.vsnexplorer.task.HtmlViewerTask</class>
-    <taskconfig>
-        <name>EDITURL</name>
-        <value>false</value>
-    </taskconfig>
-    <taskconfig>
-        <name>URL_The IRIS Consortium</name>
-        <value>http://www.iris.edu</value>
-    </taskconfig>
-    <taskconfig>
-        <name>URL_Seismology at USC</name>
-        <value>http://www.seis.sc.edu</value>
-    </taskconfig>
-    <taskconfig>
-        <name>URL_Seismic Monitor</name>
-        <value>http://www.iris.washington.edu/seismic/60_2040_1_8.html</value>
-    </taskconfig>
-    <taskconfig>
-        <name>respondId</name>
-        <value>ConnectionStatus</value>
-    </taskconfig>
-    <taskconfig>
-        <name>MAX_ENTRIES</name>
-        <value>10</value>
-    </taskconfig>
-   </task>
+    <task>
+        <id>HtmlViewer</id>
+        <name>View Included Web Site(s)</name>
+        <class>edu.sc.seis.vsnexplorer.task.HtmlViewerTask</class>
+        <taskconfig>
+            <name>EDITURL</name>
+            <value>false</value>
+        </taskconfig>
+        <taskconfig>
+            <name>URL_The IRIS Consortium</name>
+            <value>http://www.iris.edu</value>
+        </taskconfig>
+        <taskconfig>
+            <name>URL_Seismology at USC</name>
+            <value>http://www.seis.sc.edu</value>
+        </taskconfig>
+        <taskconfig>
+            <name>URL_Seismic Monitor</name>
+            <value>http://www.iris.washington.edu/seismic/60_2040_1_8.html</value>
+        </taskconfig>
+        <taskconfig>
+            <name>respondId</name>
+            <value>ConnectionStatus</value>
+        </taskconfig>
+        <taskconfig>
+            <name>MAX_ENTRIES</name>
+            <value>10</value>
+        </taskconfig>
+    </task>
 
-   <task>
-     <id>SCEPP world map</id>
-     <name>SCEPP's World</name>
-     <class>edu.sc.seis.vsnexplorer.task.TestGeotoolsTask</class>
-     <taskconfig>
-         <name>shapeurl</name>
-         <value>contnent_polys</value>
-     </taskconfig>
-     <taskconfig>
-         <name>channelChooserTask</name>
-         <value>StationsFromSCEPP</value>
-     </taskconfig>
-     <taskconfig>
-         <name>eventsourceid</name>
-         <value>ShowEvents</value>
-     </taskconfig>
-       <toolbar>
-           <toolitem>
-              <taskid>StationsFromSCEPP</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>QuakeFromSCEPP</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>ShowEvents</taskid>
-           </toolitem>
-       </toolbar>
-   </task>
+    <task>
+        <id>TauP</id>
+        <name>Travel Time Calculator</name>
+        <class>edu.sc.seis.vsnexplorer.task.TauPTask</class>
+    </task>
 
-   <task>
-     <id>geotools world map</id>
-     <name>World Map</name>
-     <class>edu.sc.seis.vsnexplorer.task.TestGeotoolsTask</class>
-     <taskconfig>
-         <name>shapeurl</name>
-         <value>contnent_polys</value>
-     </taskconfig>
-     <taskconfig>
-         <name>channelChooserTask</name>
-         <value>StationsFromSCEPP_DMC</value>
-     </taskconfig>
-     <taskconfig>
-         <name>eventsourceid</name>
-         <value>ShowEvents</value>
-     </taskconfig>
-       <toolbar>
-           <toolitem>
-              <taskid>StationsFromSCEPP_DMC</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>QuakeFromIRIS</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>ShowEvents</taskid>
-           </toolitem>
-       </toolbar>
-   </task>
+    <task>
+        <id>doIGEE</id>
+        <name>Intro to the Global Earthquake Explorer</name>
+        <class>edu.sc.seis.vsnexplorer.task.ChangeActivityTask</class>
+        <taskconfig>
+            <name>activityId</name>
+            <value>IntroToGEE</value>
+        </taskconfig>
+    </task>
 
-   <task>
-     <id>geotools sc map</id>
-     <name>SC Map</name>
-     <class>edu.sc.seis.vsnexplorer.task.TestGeotoolsTask</class>
-     <taskconfig>
-         <name>shapeurl</name>
-         <value>cntys_polys</value>
-     </taskconfig>
-     <taskconfig>
-         <name>channelChooserTask</name>
-         <value>StationsFromSCEPP</value>
-     </taskconfig>
-     <taskconfig>
-         <name>eventsourceid</name>
-         <value>ShowEvents</value>
-     </taskconfig>
-       <toolbar>
-           <toolitem>
-              <taskid>StationsFromSCEPP</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>QuakeFromSCEPP</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>QuakeFromIRIS</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>ShowEvents</taskid>
-           </toolitem>
-       </toolbar>
-   </task>
+    <task>
+        <id>doLTW</id>
+        <name>Longitudinal + Transverse Waves</name>
+        <class>edu.sc.seis.vsnexplorer.task.ChangeActivityTask</class>
+        <taskconfig>
+            <name>activityId</name>
+            <value>SCEPP_LTW</value>
+        </taskconfig>
+    </task>
 
-   <task>
-     <id>TauP</id>
-     <name>Travel Time Calculator</name>
-     <class>edu.sc.seis.vsnexplorer.task.TauPTask</class>
-   </task>
+    <task>
+        <id>doDLE</id>
+        <name>Detecting the Layered Earth</name>
+        <class>edu.sc.seis.vsnexplorer.task.ChangeActivityTask</class>
+        <taskconfig>
+            <name>activityId</name>
+            <value>DetectingTheLayeredEarth</value>
+        </taskconfig>
+    </task>
 
-   <task>
-     <id>doIGEE</id>
-     <name>Intro to the Global Earthquake Explorer</name>
-     <class>edu.sc.seis.vsnexplorer.task.ChangeActivityTask</class>
-     <taskconfig>
-    <name>activityId</name>
-    <value>IntroToGEE</value>
-     </taskconfig>
-   </task>
+    <task>
+        <id>doGEE</id>
+        <name>Reset the Global Earthquake Explorer</name>
+        <class>edu.sc.seis.vsnexplorer.task.ChangeActivityTask</class>
+        <taskconfig>
+            <name>activityId</name>
+            <value>TestChoiceDataExplorer</value>
+        </taskconfig>
+    </task>
 
-   <task>
-     <id>doLTW</id>
-     <name>Longitudinal + Transverse Waves</name>
-     <class>edu.sc.seis.vsnexplorer.task.ChangeActivityTask</class>
-     <taskconfig>
-    <name>activityId</name>
-    <value>SCEPP_LTW</value>
-     </taskconfig>
-   </task>
+    <task>
+        <id>doAdvanced</id>
+        <name>Advanced Mode</name>
+        <class>edu.sc.seis.vsnexplorer.task.ChangeActivityTask</class>
+        <taskconfig>
+            <name>activityId</name>
+            <value>DataExplorer</value>
+        </taskconfig>
+    </task>
 
-   <task>
-     <id>doDLE</id>
-     <name>Detecting the Layered Earth</name>
-     <class>edu.sc.seis.vsnexplorer.task.ChangeActivityTask</class>
-     <taskconfig>
-    <name>activityId</name>
-    <value>DetectingTheLayeredEarth</value>
-     </taskconfig>
-   </task>
+    <task>
+        <id>doQuickLoad</id>
+        <name>Quickly Load Data</name>
+        <class>edu.sc.seis.vsnexplorer.task.ChangeActivityTask</class>
+        <taskconfig>
+            <name>activityId</name>
+            <value>QuickLoad</value>
+        </taskconfig>
+    </task>
 
-   <task>
-     <id>doGEE</id>
-     <name>Reset the Global Earthquake Explorer</name>
-     <class>edu.sc.seis.vsnexplorer.task.ChangeActivityTask</class>
-     <taskconfig>
-    <name>activityId</name>
-    <value>TestChoiceDataExplorer</value>
-     </taskconfig>
-   </task>
+    <task>
+        <id>doDayViewer</id>
+        <name>View a day of SCEPP data</name>
+        <class>edu.sc.seis.vsnexplorer.task.ChangeActivityTask</class>
+        <taskconfig>
+            <name>activityId</name>
+            <value>DayViewer</value>
+        </taskconfig>
+    </task>
 
-   <task>
-     <id>doAdvanced</id>
-     <name>Advanced Mode</name>
-     <class>edu.sc.seis.vsnexplorer.task.ChangeActivityTask</class>
-     <taskconfig>
-    <name>activityId</name>
-    <value>DataExplorer</value>
-     </taskconfig>
-   </task>
-
-   <task>
-     <id>doQuickLoad</id>
-     <name>Quickly Load Data</name>
-     <class>edu.sc.seis.vsnexplorer.task.ChangeActivityTask</class>
-     <taskconfig>
-    <name>activityId</name>
-    <value>QuickLoad</value>
-     </taskconfig>
-   </task>
-
-   <task>
-    <id>quit</id>
+    <task>
+        <id>quit</id>
         <name>Quit</name>
         <class>edu.sc.seis.vsnexplorer.task.QuitTask</class>
-   </task>
+    </task>
 
-<task>
-    <id>3DParticleMotion</id>
-    <name>Particle Motion Animation</name>
-    <class>edu.sc.seis.vsnexplorer.task.ParticleMotion3DTask</class>
-    <taskconfig>
-         <name>gee.task.displayLocation</name>
-         <value>frame</value>
-    </taskconfig>
-    <taskconfig>
-          <name>gee.task.width</name>
-          <value>500</value>
-    </taskconfig>
-    <taskconfig>
-          <name>gee.task.height</name>
-           <value>660</value>
-    </taskconfig>
-    <taskconfig>
-           <name>backazimuth</name>
-           <value>30</value>
-    </taskconfig>
-    <taskconfig>
+    <task>
+        <id>3DParticleMotion</id>
+        <name>Particle Motion Animation</name>
+        <class>edu.sc.seis.vsnexplorer.task.ParticleMotion3DTask</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>frame</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.width</name>
+            <value>500</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.height</name>
+            <value>660</value>
+        </taskconfig>
+        <taskconfig>
+            <name>backazimuth</name>
+            <value>30</value>
+        </taskconfig>
+        <taskconfig>
             <name>angle</name>
             <value>60</value>
-    </taskconfig>
-</task>
+        </taskconfig>
+    </task>
 
-<task>
+    <task>
         <id>GetPlottable</id>
         <name>SCEPP Day Viewer</name>
         <class>edu.sc.seis.vsnexplorer.task.PlottableTask</class>
         <taskconfig>
-                    <name>channelChooserTask</name>
-                    <value>StationsFromSCEPP</value>
+            <name>gee.task.displayLocation</name>
+            <value>main</value>
         </taskconfig>
         <taskconfig>
-                <name>plottableUtilsTask</name>
-                <value>plottableUtils</value>
+            <name>gee.task.heightpercentage</name>
+            <value>75</value>
         </taskconfig>
         <taskconfig>
-                <name>serverDNS</name>
-                <value>edu/sc/seis</value>
-        </taskconfig>
-         <taskconfig>
-                 <name>loadSeismogram</name>
-                 <value>CustomTimeWindowALL</value>
-        </taskconfig>
-         <taskconfig>
-                 <name>queryEventsTask</name>
-                 <value>QuakeFromSCEPP</value>
+            <name>gee.task.width</name>
+            <value>628</value>
         </taskconfig>
         <taskconfig>
-                <name>serverName</name>
-                <value>ANHINGAPLOTTABLESTART</value>
+            <name>channelChooserTask</name>
+            <value>StationsFromSCEPP</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.width</name>
-                <value>500</value>
+            <name>serverDNS</name>
+            <value>edu/sc/seis</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.height</name>
-                <value>400</value>
+            <name>loadSeismogram</name>
+            <value>CustomTimeWindowALL</value>
+        </taskconfig>
+        <taskconfig>
+            <name>queryEventsTask</name>
+            <value>QuakeFromSCEPP</value>
+        </taskconfig>
+        <taskconfig>
+            <name>serverName</name>
+            <value>ANHINGAPLOTTABLESTART</value>
         </taskconfig>
         <toolbar>
-                <toolitem>
-                        <taskid>StationsFromSCEPP</taskid>
-                </toolitem>
-                <toolitem>
-                        <taskid>plottableUtils</taskid>
-                </toolitem>
+            <toolitem>
+                <taskid>StationsFromSCEPP</taskid>
+            </toolitem>
         </toolbar>
-</task>
+    </task>
 
-<task>
-        <id>plottableUtils</id>
-        <name>Adjust Scaling</name>
-        <class>edu.sc.seis.vsnexplorer.task.PlottableUtilsTask</class>
+    <task>
+        <id>OverlayTravelTimes</id>
+        <name>Overlay Travel Times</name>
+        <class>edu.sc.seis.vsnexplorer.task.PhasePlotTask</class>
+        <toggle/>
         <taskconfig>
-                <name>gee.task.width</name>
-                <value>150</value>
+            <name>travelCalculator</name>
+            <value>TauP</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.height</name>
-                <value>400</value>
+            <name>phaseDestination</name>
+            <value>colseisdisplay</value>
         </taskconfig>
-</task>
+    </task>
 
-<task>
-     <id>OverlayTravelTimes</id>
-     <name>Overlay Travel Times</name>
-     <class>edu.sc.seis.vsnexplorer.task.PhasePlotTask</class>
-     <toggle/>
-     <taskconfig>
-         <name>travelCalculator</name>
-         <value>TauP</value>
-     </taskconfig>
-     <taskconfig>
-         <name>phaseDestination</name>
-         <value>colseisdisplay</value>
-     </taskconfig>
-</task>
+    <task>
+        <id>ClickOverlayTravelTimes</id>
+        <name>Overlay Travel Times</name>
+        <class>edu.sc.seis.vsnexplorer.task.PhasePlotTask</class>
+        <tooltip>Click here to overlay predicted arrival times on your displayed seismograms</tooltip>
+        <icon>flag.png</icon>
+        <taskconfig>
+            <name>travelCalculator</name>
+            <value>TauP</value>
+        </taskconfig>
+        <taskconfig>
+            <name>phaseDestination</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
 
-<task>
-     <id>ClickOverlayTravelTimes</id>
-     <name>Overlay Travel Times</name>
-     <class>edu.sc.seis.vsnexplorer.task.PhasePlotTask</class>
-     <tooltip>Click here to overlay predicted arrival times on your displayed seismograms</tooltip>
-     <icon>flag.png</icon>
-     <taskconfig>
-         <name>travelCalculator</name>
-         <value>TauP</value>
-     </taskconfig>
-     <taskconfig>
-         <name>phaseDestination</name>
-         <value>colseisdisplay</value>
-     </taskconfig>
-</task>
-
-<task>
+    <task>
         <id>ClickEventInfo</id>
         <name>Event/Station Info</name>
         <class>edu.sc.seis.vsnexplorer.task.EventInfoTask</class>
         <tooltip>Click here to display detailed information about your earthquake(s) and stations</tooltip>
         <taskconfig>
-                <name>gee.task.displayLocation</name>
-                <value>frame</value>
+            <name>gee.task.displayLocation</name>
+            <value>frame</value>
         </taskconfig>
         <taskconfig>
-                <name>colSeisDisplay</name>
-                <value>colseisdisplay</value>
+            <name>colSeisDisplay</name>
+            <value>colseisdisplay</value>
         </taskconfig>
-</task>
+    </task>
 
-<task>
+    <task>
         <id>NetInfo</id>
         <name>Network/Station Info</name>
         <class>edu.sc.seis.vsnexplorer.task.NetInfoTask</class>
         <tooltip>Click here to display detailed information about your network(s)
  and stations</tooltip>
         <taskconfig>
-                <name>gee.task.displayLocation</name>
-                <value>frame</value>
+            <name>gee.task.displayLocation</name>
+            <value>frame</value>
         </taskconfig>
         <taskconfig>
-                <name>colSeisDisplay</name>
-                <value>colseisdisplay</value>
+            <name>colSeisDisplay</name>
+            <value>colseisdisplay</value>
         </taskconfig>
-</task>
+    </task>
 
 
-<task>
+    <task>
         <id>ShowEventInformation</id>
         <name>Show Event and Station Information </name>
         <class>edu.sc.seis.vsnexplorer.task.EventInfoTask</class>
         <taskconfig>
-                <name>gee.task.displayLocation</name>
-                <value>frame</value>
+            <name>gee.task.displayLocation</name>
+            <value>frame</value>
         </taskconfig>
         <taskconfig>
-                <name>colSeisDisplay</name>
-                <value>colseisdisplay</value>
+            <name>gee.task.width</name>
+            <value>500</value>
         </taskconfig>
-</task>
-
-<task>
-    <id>local</id>
-    <name>Local Earthquake</name>
-    <class>edu.sc.seis.vsnexplorer.task.FilterTask</class>
-    <toggle/>
-    <taskconfig>
+        <taskconfig>
             <name>colSeisDisplay</name>
             <value>colseisdisplay</value>
-     </taskconfig>
-     <taskconfig>
-             <name>lowFreqCorner</name>
-             <value>1.0</value>
-     </taskconfig>
-     <taskconfig>
-             <name>highFreqCorner</name>
-             <value>10</value>
-     </taskconfig>
-     <taskconfig>
-             <name>numPoles</name>
-             <value>2</value>
-     </taskconfig>
-     <taskconfig>
-             <name>filterType</name>
-             <value>two pass</value>
-     </taskconfig>
-     <taskconfig>
-             <name>color</name>
-             <value>red</value>
-     </taskconfig>
-   </task>
+        </taskconfig>
+    </task>
 
- <task>
-    <id>regional</id>
-    <name>Regional Earthquake</name>
-    <class>edu.sc.seis.vsnexplorer.task.FilterTask</class>
-    <toggle/>
-    <taskconfig>
+    <task>
+        <id>local</id>
+        <name>Local Earthquake</name>
+        <class>edu.sc.seis.vsnexplorer.task.FilterTask</class>
+        <toggle/>
+        <taskconfig>
             <name>colSeisDisplay</name>
             <value>colseisdisplay</value>
-     </taskconfig>
-     <taskconfig>
-             <name>lowFreqCorner</name>
-             <value>0.1</value>
-     </taskconfig>
-     <taskconfig>
-             <name>highFreqCorner</name>
-             <value>10.</value>
-     </taskconfig>
-     <taskconfig>
-             <name>numPoles</name>
-             <value>2</value>
-     </taskconfig>
-     <taskconfig>
-             <name>filterType</name>
-             <value>two pass</value>
-     </taskconfig>
-     <taskconfig>
-             <name>color</name>
-             <value>gray</value>
-     </taskconfig>
-   </task>
+        </taskconfig>
+        <taskconfig>
+            <name>lowFreqCorner</name>
+            <value>1.0</value>
+        </taskconfig>
+        <taskconfig>
+            <name>highFreqCorner</name>
+            <value>10</value>
+        </taskconfig>
+        <taskconfig>
+            <name>numPoles</name>
+            <value>2</value>
+        </taskconfig>
+        <taskconfig>
+            <name>filterType</name>
+            <value>two pass</value>
+        </taskconfig>
+        <taskconfig>
+            <name>color</name>
+            <value>red</value>
+        </taskconfig>
+    </task>
 
- <task>
-    <id>teleseism</id>
-    <name>Teleseismic Earthquake</name>
-    <class>edu.sc.seis.vsnexplorer.task.FilterTask</class>
-    <toggle/>
-    <taskconfig>
+    <task>
+        <id>regional</id>
+        <name>Regional Earthquake</name>
+        <class>edu.sc.seis.vsnexplorer.task.FilterTask</class>
+        <toggle/>
+        <taskconfig>
             <name>colSeisDisplay</name>
             <value>colseisdisplay</value>
-     </taskconfig>
-     <taskconfig>
-             <name>lowFreqCorner</name>
-             <value>0.0</value>
-     </taskconfig>
-     <taskconfig>
-             <name>highFreqCorner</name>
-             <value>1.</value>
-     </taskconfig>
-     <taskconfig>
-             <name>numPoles</name>
-             <value>2</value>
-     </taskconfig>
-     <taskconfig>
-             <name>filterType</name>
-             <value>two pass</value>
-     </taskconfig>
-     <taskconfig>
-             <name>color</name>
-             <value>green</value>
-     </taskconfig>
-   </task>
+        </taskconfig>
+        <taskconfig>
+            <name>lowFreqCorner</name>
+            <value>0.1</value>
+        </taskconfig>
+        <taskconfig>
+            <name>highFreqCorner</name>
+            <value>10.</value>
+        </taskconfig>
+        <taskconfig>
+            <name>numPoles</name>
+            <value>2</value>
+        </taskconfig>
+        <taskconfig>
+            <name>filterType</name>
+            <value>two pass</value>
+        </taskconfig>
+        <taskconfig>
+            <name>color</name>
+            <value>gray</value>
+        </taskconfig>
+    </task>
 
- <task>
-    <id>smoothteleseism</id>
-    <name>Smooth Teleseismic Earthquake</name>
-    <class>edu.sc.seis.vsnexplorer.task.FilterTask</class>
-    <toggle/>
-    <taskconfig>
+    <task>
+        <id>teleseism</id>
+        <name>Teleseismic Earthquake</name>
+        <class>edu.sc.seis.vsnexplorer.task.FilterTask</class>
+        <toggle/>
+        <taskconfig>
             <name>colSeisDisplay</name>
             <value>colseisdisplay</value>
-     </taskconfig>
-     <taskconfig>
-             <name>lowFreqCorner</name>
-             <value>0.0</value>
-     </taskconfig>
-     <taskconfig>
-             <name>highFreqCorner</name>
-             <value>0.2</value>
-     </taskconfig>
-     <taskconfig>
-             <name>numPoles</name>
-             <value>2</value>
-     </taskconfig>
-     <taskconfig>
-             <name>filterType</name>
-             <value>two pass</value>
-     </taskconfig>
-     <taskconfig>
-             <name>color</name>
-             <value>magenta</value>
-     </taskconfig>
-   </task>
+        </taskconfig>
+        <taskconfig>
+            <name>lowFreqCorner</name>
+            <value>0.0</value>
+        </taskconfig>
+        <taskconfig>
+            <name>highFreqCorner</name>
+            <value>1.</value>
+        </taskconfig>
+        <taskconfig>
+            <name>numPoles</name>
+            <value>2</value>
+        </taskconfig>
+        <taskconfig>
+            <name>filterType</name>
+            <value>two pass</value>
+        </taskconfig>
+        <taskconfig>
+            <name>color</name>
+            <value>green</value>
+        </taskconfig>
+    </task>
 
- <task>
-    <id>verysmooth</id>
-    <name>Very Smooth Teleseismic Earthquake</name>
-    <class>edu.sc.seis.vsnexplorer.task.FilterTask</class>
-    <toggle/>
-    <taskconfig>
+    <task>
+        <id>smoothteleseism</id>
+        <name>Smooth Teleseismic Earthquake</name>
+        <class>edu.sc.seis.vsnexplorer.task.FilterTask</class>
+        <toggle/>
+        <taskconfig>
             <name>colSeisDisplay</name>
             <value>colseisdisplay</value>
-     </taskconfig>
-     <taskconfig>
-             <name>lowFreqCorner</name>
-             <value>0.0</value>
-     </taskconfig>
-     <taskconfig>
-             <name>highFreqCorner</name>
-             <value>0.05</value>
-     </taskconfig>
-     <taskconfig>
-             <name>numPoles</name>
-             <value>2</value>
-     </taskconfig>
-     <taskconfig>
-             <name>filterType</name>
-             <value>two pass</value>
-     </taskconfig>
-     <taskconfig>
-             <name>color</name>
-             <value>orange</value>
-     </taskconfig>
-   </task>
+        </taskconfig>
+        <taskconfig>
+            <name>lowFreqCorner</name>
+            <value>0.0</value>
+        </taskconfig>
+        <taskconfig>
+            <name>highFreqCorner</name>
+            <value>0.2</value>
+        </taskconfig>
+        <taskconfig>
+            <name>numPoles</name>
+            <value>2</value>
+        </taskconfig>
+        <taskconfig>
+            <name>filterType</name>
+            <value>two pass</value>
+        </taskconfig>
+        <taskconfig>
+            <name>color</name>
+            <value>magenta</value>
+        </taskconfig>
+    </task>
 
-   <task>
+    <task>
+        <id>verysmooth</id>
+        <name>Very Smooth Teleseismic Earthquake</name>
+        <class>edu.sc.seis.vsnexplorer.task.FilterTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>colSeisDisplay</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+        <taskconfig>
+            <name>lowFreqCorner</name>
+            <value>0.0</value>
+        </taskconfig>
+        <taskconfig>
+            <name>highFreqCorner</name>
+            <value>0.05</value>
+        </taskconfig>
+        <taskconfig>
+            <name>numPoles</name>
+            <value>2</value>
+        </taskconfig>
+        <taskconfig>
+            <name>filterType</name>
+            <value>two pass</value>
+        </taskconfig>
+        <taskconfig>
+            <name>color</name>
+            <value>orange</value>
+        </taskconfig>
+    </task>
+
+    <task>
         <id>unfiltered</id>
         <name>Original</name>
         <class>edu.sc.seis.vsnexplorer.task.ToggleOriginalTask</class>
         <toggle/>
         <taskconfig>
-                <name>colSeisDisplay</name>
-                <value>colseisdisplay</value>
+            <name>colSeisDisplay</name>
+            <value>colseisdisplay</value>
         </taskconfig>
-   </task>
+    </task>
 
 
-<task>
-    <id>ShowFilterPalette</id>
-    <name>Show Filter Palette</name>
-    <class>edu.sc.seis.vsnexplorer.task.ToolPaletteTask</class>
-    <taskconfig>
-       <name>gee.task.displayLocation</name>
-       <value>palette</value>
-    </taskconfig>
-    <toolbar>
-        <toolitem>
-            <taskid>unfiltered</taskid>
-        </toolitem>
-        <toolitem>
-            <taskid>local</taskid>
-        </toolitem>
-        <toolitem>
-           <taskid>regional</taskid>
-        </toolitem>
-        <toolitem>
-           <taskid>teleseism</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>smoothteleseism</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>verysmooth</taskid>
-           </toolitem>
-       </toolbar>
+    <task>
+        <id>ShowFilterPalette</id>
+        <name>Show Filter Palette</name>
+        <class>edu.sc.seis.vsnexplorer.task.ToolPaletteTask</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>palette</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>unfiltered</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>local</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>regional</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>teleseism</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>smoothteleseism</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>verysmooth</taskid>
+            </toolitem>
+        </toolbar>
 
-</task>
-<task>
-    <id>ShowFilters</id>
-    <name>Filter</name>
-    <class>edu.sc.seis.vsnexplorer.task.ToolPaletteTask</class>
-    <tooltip>Click here to display seismogram filter palette</tooltip>
-    <icon>filter.png</icon>
-    <taskconfig>
-       <name>gee.task.displayLocation</name>
-       <value>palette</value>
-    </taskconfig>
-    <toolbar>
-        <toolitem>
-            <taskid>unfiltered</taskid>
-        </toolitem>
-        <toolitem>
-            <taskid>local</taskid>
-        </toolitem>
-        <toolitem>
-           <taskid>regional</taskid>
-        </toolitem>
-        <toolitem>
-           <taskid>teleseism</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>smoothteleseism</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>verysmooth</taskid>
-           </toolitem>
-       </toolbar>
+    </task>
+    <task>
+        <id>ShowFilters</id>
+        <name>Filter</name>
+        <class>edu.sc.seis.vsnexplorer.task.ToolPaletteTask</class>
+        <tooltip>Click here to display seismogram filter palette</tooltip>
+        <icon>filter.png</icon>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>palette</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>unfiltered</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>local</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>regional</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>teleseism</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>smoothteleseism</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>verysmooth</taskid>
+            </toolitem>
+        </toolbar>
 
-</task>
+    </task>
 
-     <task>
-     <id>ShowTimeAmpPalette</id>
-     <name>Show Time Amp Palette</name>
-     <class>edu.sc.seis.vsnexplorer.task.TimeAmpPaletteTask</class>
-     <taskconfig>
-        <name>gee.task.displayLocation</name>
-        <value>palette</value>
-     </taskconfig>
-      <taskconfig>
-        <name>timeHolder</name>
-        <value>colseisdisplay</value>
-     </taskconfig>
-     <taskconfig>
-        <name>ampHolder</name>
-        <value>colseisdisplay</value>
-     </taskconfig>
-     </task>
+    <task>
+        <id>ShowTimeAmpPalette</id>
+        <name>Show Time Amp Palette</name>
+        <class>edu.sc.seis.vsnexplorer.task.TimeAmpPaletteTask</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>palette</value>
+        </taskconfig>
+        <taskconfig>
+            <name>timeHolder</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+        <taskconfig>
+            <name>ampHolder</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
 
-     <task>
-     <id>ShowToolPalette</id>
-     <name>Show Tool Palette</name>
-     <class>edu.sc.seis.vsnexplorer.task.TimeAmpPaletteTask</class>
-     <taskconfig>
-        <name>gee.task.displayLocation</name>
-        <value>palette</value>
-     </taskconfig>
-     <taskconfig>
-        <name>gee.task.justify</name>
-        <value>topright</value>
-      </taskconfig>
-      <taskconfig>
-        <name>timeHolder</name>
-        <value>colseisdisplay</value>
-     </taskconfig>
-     <taskconfig>
-        <name>ampHolder</name>
-        <value>colseisdisplay</value>
-     </taskconfig>
-     <toolbar>
-           <toolitem>
-              <taskid>colSeisZoomIn</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>colSeisZoomOut</taskid>
-           </toolitem>
-           <toolitem>
+    <task>
+        <id>ShowToolPalette</id>
+        <name>Show Tool Palette</name>
+        <class>edu.sc.seis.vsnexplorer.task.TimeAmpPaletteTask</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>palette</value>
+        </taskconfig>
+        <taskconfig>
+            <name>gee.task.justify</name>
+            <value>topright</value>
+        </taskconfig>
+        <taskconfig>
+            <name>timeHolder</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+        <taskconfig>
+            <name>ampHolder</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>colSeisZoomIn</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>colSeisZoomOut</taskid>
+            </toolitem>
+            <toolitem>
                 <taskid>colSeisDrag</taskid>
-           </toolitem>
-           <toolitem>
-                <taskid>colSeisRemove</taskid>
-           </toolitem>
-           <toolitem>
-                <taskid>ResetZoom</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
+                <taskid>ResetDisplay</taskid>
+            </toolitem>
+            <toolitem>
                 <taskid>ClearDisplay</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>ShowFilters</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>ClickOverlayTravelTimes</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>MakeParticleDisplay</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>colSeisSelect</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>colSeis3CSelect</taskid>
-           </toolitem>
+            </toolitem>
             <toolitem>
                 <taskid>ClearSelections</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>ClickEventInfo</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>3DParticleMotion</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>EditCurrentDataSet</taskid>
-           </toolitem>
-           <toolitem>
+            </toolitem>
+            <toolitem>
                 <taskid>closeDataSet</taskid>
-           </toolitem>
-           <toolitem>
-              <taskid>quit</taskid>
-           </toolitem>
-       </toolbar>
-   </task>
+            </toolitem>
+            <toolitem>
+                <taskid>quit</taskid>
+            </toolitem>
+        </toolbar>
+    </task>
 
-   <task>
+    <task>
         <id>ClearSelections</id>
         <name>Clear Tag(s)</name>
         <class>edu.sc.seis.vsnexplorer.task.ClearSelectionTask</class>
         <taskconfig>
-                <name>selectionHolder</name>
-                <value>colseisdisplay</value>
+            <name>selectionHolder</name>
+            <value>colseisdisplay</value>
         </taskconfig>
         <taskconfig>
-                <name>gee.task.buttonGroupId</name>
-                <value>zoomSeismograms</value>
+            <name>gee.task.buttonGroupId</name>
+            <value>zoomSeismograms</value>
         </taskconfig>
-   </task>
+    </task>
 
-<task>
+    <task>
         <id>version</id>
         <name>Display GEE Version Number</name>
         <class>edu.sc.seis.vsnexplorer.task.VersionTask</class>
         <taskconfig>
-                <name>gee.task.displayLocation</name>
-                <value>frame</value>
+            <name>gee.task.displayLocation</name>
+            <value>frame</value>
         </taskconfig>
-</task>
+    </task>
 
-  <task>
+    <task>
         <id>LoadAndDisplaySACFile</id>
         <name>Load a SAC (AS-1) file</name>
         <class>edu.sc.seis.vsnexplorer.task.SequenceTask</class>
         <taskconfig>
-             <name>taskSequence</name>
-             <value>LoadSacFile DisplayAllSeismograms</value>
+            <name>taskSequence</name>
+            <value>LoadSacFile DisplayAllSeismograms</value>
         </taskconfig>
-  </task>
+    </task>
 
     <task>
         <id>LoadSacFile</id>
@@ -2369,47 +2530,41 @@
         <id>SeismogramInfo</id>
         <name>Seismogram Info</name>
         <class>edu.sc.seis.vsnexplorer.task.SeismogramInfoTask</class>
-     <toggle/>       
-     <icon>mag-up.png</icon>      
-     <taskconfig>
-        <name>gee.task.buttonGroupId</name>
-        <value>zoomSeismograms</value>
-     </taskconfig>
         <taskconfig>
-                <name>numPoints</name>
-                <value>true</value>
+            <name>numPoints</name>
+            <value>true</value>
         </taskconfig>
         <taskconfig>
-                <name>ID</name>
-                <value>true</value>
+            <name>ID</name>
+            <value>true</value>
         </taskconfig>
         <taskconfig>
-                <name>sampling</name>
-                <value>true</value>
+            <name>sampling</name>
+            <value>true</value>
         </taskconfig>
         <taskconfig>
-                <name>channelID</name>
-                <value>true</value>
+            <name>channelID</name>
+            <value>true</value>
         </taskconfig>
         <taskconfig>
-                <name>beginTime</name>
-                <value>true</value>
+            <name>beginTime</name>
+            <value>true</value>
         </taskconfig>
         <taskconfig>
-                <name>endTime</name>
-                <value>true</value>
+            <name>endTime</name>
+            <value>true</value>
         </taskconfig>
         <taskconfig>
-                <name>minValue</name>
-                <value>true</value>
+            <name>minValue</name>
+            <value>true</value>
         </taskconfig>
         <taskconfig>
-                <name>maxValue</name>
-                <value>true</value>
+            <name>maxValue</name>
+            <value>true</value>
         </taskconfig>
         <taskconfig>
-                <name>meanValue</name>
-                <value>true</value>
+            <name>meanValue</name>
+            <value>true</value>
         </taskconfig>
     </task>
 
@@ -2420,9 +2575,9 @@
     -->
 
     <task>
-    <id>CustomFilter</id>
-    <name>Custom Filtering</name>
-    <class>edu.sc.seis.vsnexplorer.task.CustomFilterTask</class>
+        <id>CustomFilter</id>
+        <name>Custom Filtering</name>
+        <class>edu.sc.seis.vsnexplorer.task.CustomFilterTask</class>
         <taskconfig>
             <name>ShowFilterPalette</name>
             <value>ShowFilterPalette</value>
@@ -2434,20 +2589,442 @@
     </task>
 
     <task>
-    <id>SaveAsWAV</id>
-    <name>Save as WAV</name>
-    <class>edu.sc.seis.vsnexplorer.task.SoundExport</class>
+        <id>SaveAsWAV</id>
+        <name>Save as WAV</name>
+        <class>edu.sc.seis.vsnexplorer.task.SoundExport</class>
         <taskconfig>
             <name>datasetbrowser</name>
             <value>EditCurrentDataSet</value>
         </taskconfig>
     </task>
-    
+
     <task>
-    <id>MapTask</id>
-    <name>World Map</name>
-    <class>edu.sc.seis.vsnexplorer.task.MapTask</class>
-   	</task>
+        <id>MapZoomIn</id>
+        <name>Zoom In</name>
+        <class>edu.sc.seis.vsnexplorer.task.MapToolTask</class>
+        <tooltip>Zoom In</tooltip>
+        <icon>mag-up.png</icon>
+        <taskconfig>
+            <name>mapTask</name>
+            <value>WorldMap</value>
+        </taskconfig>
+        <taskconfig>
+            <name>toolType</name>
+            <value>zoomIn</value>
+        </taskconfig>
+    </task>
+    <task>
+        <id>MapZoomOut</id>
+        <name>Zoom Out</name>
+        <class>edu.sc.seis.vsnexplorer.task.MapToolTask</class>
+        <tooltip>Zoom Out</tooltip>
+        <icon>mag-down.png</icon>
+        <taskconfig>
+            <name>mapTask</name>
+            <value>WorldMap</value>
+        </taskconfig>
+        <taskconfig>
+            <name>toolType</name>
+            <value>zoomOut</value>
+        </taskconfig>
+    </task>
+    <task>
+        <id>MapPan</id>
+        <name>Pan</name>
+        <class>edu.sc.seis.vsnexplorer.task.MapToolTask</class>
+        <tooltip>Pan</tooltip>
+        <icon>drag.png</icon>
+        <taskconfig>
+            <name>mapTask</name>
+            <value>WorldMap</value>
+        </taskconfig>
+        <taskconfig>
+            <name>toolType</name>
+            <value>pan</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>WorldMap</id>
+        <name>World Map</name>
+        <class>edu.sc.seis.vsnexplorer.task.MapTask</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>main</value>
+        </taskconfig>
+        <taskconfig>
+            <name>zoomInTool</name>
+            <value>MapZoomIn</value>
+        </taskconfig>
+        <taskconfig>
+            <name>zoomOutTool</name>
+            <value>MapZoomOut</value>
+        </taskconfig>
+        <taskconfig>
+            <name>panTool</name>
+            <value>MapPan</value>
+        </taskconfig>
+        <taskconfig>
+            <name>channelChooserTask</name>
+            <value>StationsFromSCEPP_DMC</value>
+        </taskconfig>
+        <taskconfig>
+            <name>eventsourceid</name>
+            <value>ShowEvents</value>
+        </taskconfig>
+        <taskconfig>
+            <name>shapeurl_coastlines</name>
+            <value>contnent_polys</value>
+        </taskconfig>
+        <taskconfig>
+            <name>shapeurl_states</name>
+            <value>dm_state_pop</value>
+        </taskconfig>
+        <taskconfig>
+            <name>shapeurl_sc</name>
+            <value>cntys_polys</value>
+        </taskconfig>
+        <toolbar>
+            <toolitem>
+                <taskid>MapZoomIn</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>MapZoomOut</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>MapPan</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>StationsFromSCEPP_DMC</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>QuakeFromIRIS</taskid>
+            </toolitem>
+            <toolitem>
+                <taskid>ShowEvents</taskid>
+            </toolitem>
+        </toolbar>
+    </task>
+
+    <task>
+        <id>DataFill</id>
+        <name>Fill Display with Data</name>
+        <class>edu.sc.seis.vsnexplorer.task.DataFillTask</class>
+        <taskconfig>
+            <name>display</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>NewFrame</id>
+        <name>New Window</name>
+        <class>edu.sc.seis.vsnexplorer.task.NewMainFrame</class>
+    </task>
+
+    <task>
+        <id>NewTab</id>
+        <name>New Tab</name>
+        <class>edu.sc.seis.vsnexplorer.task.NewMainTab</class>
+    </task>
+
+    <task>
+        <id>MemoryStatus</id>
+        <name>Memory Status</name>
+        <class>edu.sc.seis.vsnexplorer.task.MemoryStatus</class>
+    </task>
+
+    <task>
+        <id>SingleSeisWindow</id>
+        <name>Overlay All Traces</name>
+        <class>edu.sc.seis.vsnexplorer.task.SingleWindowDisplayTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisDisplayType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>SubSingleSeisWindow</id>
+        <name>Overlay All Traces</name>
+        <class>edu.sc.seis.vsnexplorer.task.SingleWindowDisplayTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisDisplayType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>subcolseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>MultiSeisWindow</id>
+        <name>Alphabetical Order</name>
+        <class>edu.sc.seis.vsnexplorer.task.MultiSeismogramWindowTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisDisplayType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>SubMultiSeisWindow</id>
+        <name>Alphabetical Order</name>
+        <class>edu.sc.seis.vsnexplorer.task.MultiSeismogramWindowTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisDisplayType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>subcolseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>RTMultiSeisWindow</id>
+        <name>Show Individual Traces</name>
+        <class>edu.sc.seis.vsnexplorer.task.MultiSeismogramWindowTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisDisplayType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>RealTimePlayer</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>ComponentSortedSeisWindow</id>
+        <name>Overlay by Component</name>
+        <class>edu.sc.seis.vsnexplorer.task.ComponentSortedWindowTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisDisplayType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>SubComponentSortedSeisWindow</id>
+        <name>Overlay by Component</name>
+        <class>edu.sc.seis.vsnexplorer.task.ComponentSortedWindowTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisDisplayType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>subcolseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>StationSortedWindow</id>
+        <name>Overlay by Station</name>
+        <class>edu.sc.seis.vsnexplorer.task.StationWindowTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisDisplayType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>SubStationSortedWindow</id>
+        <name>Overlay by Station</name>
+        <class>edu.sc.seis.vsnexplorer.task.StationWindowTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisDisplayType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>subcolseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>RecordSection</id>
+        <name>Plot as Record Section</name>
+        <class>edu.sc.seis.vsnexplorer.task.RecordSectionTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisDisplayType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>SubRecordSection</id>
+        <name>Plot as Record Section</name>
+        <class>edu.sc.seis.vsnexplorer.task.RecordSectionTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisDisplayType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>subcolseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>GlobalizeAmp</id>
+        <name>Show True Amplitude</name>
+        <class>edu.sc.seis.vsnexplorer.task.GlobalizeAmpTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisAmpType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>SubGlobalizeAmp</id>
+        <name>Show True Amplitude</name>
+        <class>edu.sc.seis.vsnexplorer.task.GlobalizeAmpTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisAmpType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>subcolseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>IndividualizeAmp</id>
+        <name>Maximize Amplitude</name>
+        <class>edu.sc.seis.vsnexplorer.task.IndividualizeAmpTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisAmpType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>SubIndividualizeAmp</id>
+        <name>Maximize Amplitude</name>
+        <class>edu.sc.seis.vsnexplorer.task.IndividualizeAmpTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisAmpType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>subcolseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>DistanceMultiSeis</id>
+        <name>Distance Order</name>
+        <class>edu.sc.seis.vsnexplorer.task.DistSortMultiSeismogramWindowTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>colSeisDisplayType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>SubDistanceMultiSeis</id>
+        <name>Distance Order</name>
+        <class>edu.sc.seis.vsnexplorer.task.DistSortMultiSeismogramWindowTask</class>
+        <toggle/>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>subColSeisDisplayType</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisTarget</name>
+            <value>subcolseisdisplay</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>existantWindows</id>
+        <name>Windows</name>
+        <class>edu.sc.seis.vsnexplorer.task.ExistantWindowTask</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>testException</id>
+        <name>TestException</name>
+        <class>edu.sc.seis.vsnexplorer.task.TestException</class>
+        <taskconfig>
+            <name>gee.task.displayLocation</name>
+            <value>none</value>
+        </taskconfig>
+    </task>
+
+    <task>
+        <id>nullCrosshair</id>
+        <name>NullCrosshair</name>
+        <class>edu.sc.seis.vsnexplorer.task.NullCrosshairTask</class>
+        <tooltip>Click this button to use a cursor that neither does anything nor gets in the way.</tooltip>
+        <toggle/>
+        <icon>nullpointer.png</icon>
+        <taskconfig>
+            <name>gee.task.buttonGroupId</name>
+            <value>zoomSeismograms</value>
+        </taskconfig>
+        <taskconfig>
+            <name>colSeisDisp</name>
+            <value>colseisdisplay</value>
+        </taskconfig>
+     </task>
 
    <task>
      <id>recfunc</id>
@@ -2462,6 +3039,11 @@
      </taskconfig>
    </task>
 
-
-
 </vsnconfig>
+
+
+
+
+
+
+

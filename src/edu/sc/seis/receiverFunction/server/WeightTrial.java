@@ -18,13 +18,22 @@ public class WeightTrial {
         try {
             float minPercentMatch = 90f;
             float smallestH = 20;
+            float weightPs, weightPpPs, weightPpSs;
+            // Zhu and Kanamori
+            weightPs = 0.7f ; weightPpPs = 0.2f;
+            // equals weight
+            //weightPs = 1/3f ; weightPpPs = 1/3f;
+            // Ps = PpPs + PpSs
+            //weightPs = 0.5f ; weightPpPs = 0.25f;
+            
+            weightPpSs = 1 - weightPs - weightPpPs;
             ArrayList list = JDBCHKStack.calcAndSave(args,
                                                      minPercentMatch,
                                                      false,
                                                      true,
-                                                     0.7f,
-                                                     0.2f,
-                                                     0.1f);
+                                                     weightPs,
+                                                     weightPpPs,
+                                                     weightPpSs);
             System.out.println("Got "+list.size()+" item in stack.");
             HKStack[] stackArray = (HKStack[])list.toArray(new HKStack[0]);
             SumHKStack sumStack = new SumHKStack(stackArray,

@@ -330,7 +330,7 @@ public class JDBCRecFunc extends JDBCTable {
         return (IterDeconConfig[])out.toArray(new IterDeconConfig[0]);
     }
     
-    protected int populateGetStmt(Statement stmt, 
+    protected int populateGetStmt(PreparedStatement stmt, 
                                    Origin prefOrigin,
                                    ChannelId[] channels) throws SQLException, NotFound {
         int originDbId = jdbcOrigin.getDBId(prefOrigin);
@@ -348,27 +348,29 @@ public class JDBCRecFunc extends JDBCTable {
             chanDbId[i] = jdbcChannel.getDBId(channels[i]);
         }
         int index = 1;
-        isCachedStmt.setInt(index++, originDbId);
-        isCachedStmt.setInt(index++, chanDbId[zChan]);
+        stmt.setInt(index++, originDbId);
+        stmt.setInt(index++, chanDbId[zChan]);
         switch (zChan) {
             case 0:
-                isCachedStmt.setInt(index++, chanDbId[1]);
-                isCachedStmt.setInt(index++, chanDbId[2]);
-                isCachedStmt.setInt(index++, chanDbId[1]);
-                isCachedStmt.setInt(index++, chanDbId[2]);
+                stmt.setInt(index++, chanDbId[1]);
+                stmt.setInt(index++, chanDbId[2]);
+                stmt.setInt(index++, chanDbId[1]);
+                stmt.setInt(index++, chanDbId[2]);
                 break;
             case 1:
-                isCachedStmt.setInt(index++, chanDbId[0]);
-                isCachedStmt.setInt(index++, chanDbId[2]);
-                isCachedStmt.setInt(index++, chanDbId[0]);
-                isCachedStmt.setInt(index++, chanDbId[2]);
+                stmt.setInt(index++, chanDbId[0]);
+                stmt.setInt(index++, chanDbId[2]);
+                stmt.setInt(index++, chanDbId[0]);
+                stmt.setInt(index++, chanDbId[2]);
                 break;
             case 2:
-                isCachedStmt.setInt(index++, chanDbId[0]);
-                isCachedStmt.setInt(index++, chanDbId[1]);
-                isCachedStmt.setInt(index++, chanDbId[0]);
-                isCachedStmt.setInt(index++, chanDbId[1]);
+                stmt.setInt(index++, chanDbId[0]);
+                stmt.setInt(index++, chanDbId[1]);
+                stmt.setInt(index++, chanDbId[0]);
+                stmt.setInt(index++, chanDbId[1]);
                 break;
+            default:
+                throw new NotFound("Channel for Z is "+zChan);
         }
         return index;
     }

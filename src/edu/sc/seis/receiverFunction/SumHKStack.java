@@ -152,7 +152,7 @@ public class SumHKStack {
             b = sum.getStack()[maxIndices[0]][maxIndices[1]];
             c = sum.getStack()[maxIndices[0]+1][maxIndices[1]];
         }
-        hVariance = -2*maxVariance/((a-2*b+c)/sum.getStepH()*sum.getStepH());
+        hVariance = -2*maxVariance/((a-2*b+c)/(sum.getStepH()*sum.getStepH()));
         
         if (maxIndices[1] == 0) {
             // off edge, shift by 1???
@@ -170,7 +170,7 @@ public class SumHKStack {
             b = sum.getStack()[maxIndices[0]][maxIndices[1]];
             c = sum.getStack()[maxIndices[0]][maxIndices[1]+1];
         }
-        kVariance = -2*maxVariance/((a-2*b+c)/sum.getStepK()*sum.getStepK());
+        kVariance = -2*maxVariance/((a-2*b+c)/(sum.getStepK()*sum.getStepK()));
     }
 
     protected Channel channel;

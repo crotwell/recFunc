@@ -1,5 +1,6 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.awt.Color;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,10 +10,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.Time;
 import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.receiverFunction.HKStack;
+import edu.sc.seis.receiverFunction.Marker;
+import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.compare.WilsonRistra;
+import edu.sc.seis.receiverFunction.crust2.Crust2;
+import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
@@ -63,19 +71,56 @@ public class Station extends Revlet {
         
         CacheEvent[] events = jdbcRecFunc.getSuccessfulEvents(netDbId, staCode);
         ArrayList eventList = new ArrayList();
+        int numNinty = 0;
+        int numEighty = 0;
         for(int i = 0; i < events.length; i++) {
-            eventList.add(new VelocityEvent(events[i]));
+            VelocityEvent ve = new VelocityEvent(events[i]);
+            eventList.add(ve);
+            float match = new Float(ve.getParam("itr_match")).floatValue();
+            if (match >= 80) {
+                numEighty++;
+                if (match >= 90) {
+                    numNinty++;
+                }
+            }
         }
         Collections.sort(eventList, itrMatchComparator);
         Collections.reverse(eventList);
+        
+        VelocityStation sta = (VelocityStation)stationList.get(0);
+        ArrayList markerList = new ArrayList();
+        float smallestH = 20;
+        if (crust2 != null) {
+            Crust2Profile profile = crust2.getClosest(sta.my_location.longitude,
+                                                      sta.my_location.latitude);
+            double vpvs = profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity();
+            markerList.add(new Marker("Crust2", vpvs, profile.getCrustThickness(), Color.blue));
+            if (profile.getCrustThickness() < smallestH + 10) {
+                smallestH = (float)profile.getCrustThickness() - 10;
+            }
+        }
+        if (wilson != null) {
+            StationResult result = wilson.getResult(sta.get_id());
+            if (result != null) {
+                double vpvs = result.getVpVs();
+                markerList.add(new Marker("Wilson", result.getVpVs(), result.getH(), Color.GREEN));
+            }
+        }
         
         RevletContext context = new RevletContext("station.vm");
         context.put("stationList", stationList);
         context.put("stacode", staCode);
         context.put("net", net);
         context.put("eventList", eventList);
+        context.put("numNinty", ""+numNinty);
+        context.put("numEighty", ""+numEighty);
+        context.put("markerList", markerList);
+        context.put("smallestH", smallestH+"");
         return context;
     }
+
+    transient static Crust2 crust2 = HKStack.getCrust2();
+    transient static WilsonRistra wilson = HKStack.getWilsonRistra();
     
     static ITRMatchComparator itrMatchComparator = new ITRMatchComparator();
     

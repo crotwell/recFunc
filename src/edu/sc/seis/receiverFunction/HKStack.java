@@ -55,8 +55,8 @@ public class HKStack implements Serializable {
     protected HKStack(float alpha,
                       float p,
                       float percentMatch,
-                      float minH,
-                      float stepH,
+                      QuantityImpl minH,
+                      QuantityImpl stepH,
                       int numH,
                       float minK,
                       float stepK,
@@ -67,7 +67,7 @@ public class HKStack implements Serializable {
         this.alpha = alpha;
         this.p = p;
         this.percentMatch = percentMatch;
-        this.minH = minH;
+        this.minH = minH.convertTo(UnitImpl.KILOMETER);
         this.stepH = stepH;
         this.numH = numH;
         this.minK = minK;
@@ -81,8 +81,8 @@ public class HKStack implements Serializable {
     public HKStack(float alpha,
                    float p,
                    float percentMatch,
-                   float minH,
-                   float stepH,
+                   QuantityImpl minH,
+                   QuantityImpl stepH,
                    int numH,
                    float minK,
                    float stepK,
@@ -101,8 +101,8 @@ public class HKStack implements Serializable {
     public HKStack(float alpha,
                    float p,
                    float percentMatch,
-                   float minH,
-                   float stepH,
+                   QuantityImpl minH,
+                   QuantityImpl stepH,
                    int numH,
                    float minK,
                    float stepK,
@@ -123,8 +123,8 @@ public class HKStack implements Serializable {
     public HKStack(float alpha,
                    float p,
                    float percentMatch,
-                   float minH,
-                   float stepH,
+                   QuantityImpl minH,
+                   QuantityImpl stepH,
                    int numH,
                    float minK,
                    float stepK,
@@ -142,8 +142,8 @@ public class HKStack implements Serializable {
     public HKStack(float alpha,
                    float p,
                    float percentMatch,
-                   float minH,
-                   float stepH,
+                   QuantityImpl minH,
+                   QuantityImpl stepH,
                    int numH,
                    float minK,
                    float stepK,
@@ -162,8 +162,8 @@ public class HKStack implements Serializable {
     public HKStack(float alpha,
                    float p,
                    float percentMatch,
-                   float minH,
-                   float stepH,
+                   QuantityImpl minH,
+                   QuantityImpl stepH,
                    int numH,
                    float minK,
                    float stepK,
@@ -234,6 +234,10 @@ public class HKStack implements Serializable {
         return xy;
     }
 
+    public int getHIndex(QuantityImpl h) {
+        return getHIndex((float)h.getValue());
+    }
+    
     public int getHIndex(float h) {
         return Math.round(getHIndexFloat(h));
     }
@@ -243,7 +247,7 @@ public class HKStack implements Serializable {
     }
     
     public float getHIndexFloat(double h) {
-        return (float)((h-getMinH())/getStepH());
+        return (float)((h-getMinH().getValue())/getStepH().getValue());
     }
     
     public float getKIndexFloat(double k) {
@@ -252,7 +256,7 @@ public class HKStack implements Serializable {
     
     public float getMaxValueH() {
         int[] indicies = getMaxValueIndices();
-        float peakH = getMinH() + getStepH() * indicies[0];
+        float peakH = (float)(getMinH().get_value() + getStepH().getValue() * indicies[0]);
         return peakH;
     }
     
@@ -296,13 +300,13 @@ public class HKStack implements Serializable {
         return getStackComponent(minH);
     }
     
-    public JComponent getStackComponent(float smallestH) {
-        int startHIndex = (int)Math.round((smallestH-minH)/stepH);
+    public JComponent getStackComponent(QuantityImpl smallestH) {
+        int startHIndex = getHIndex((float)smallestH.getValue());
         HKStackImage stackImage = new HKStackImage(this, startHIndex);
         if (crust2 != null) {
             Crust2Profile profile = crust2.getClosest(chan.my_site.my_station.my_location.longitude,
                                                       chan.my_site.my_station.my_location.latitude);
-            int depthIndex = (int)Math.round((profile.getCrustThickness()-minH)/stepH);
+            int depthIndex = getHIndex((float)profile.getCrustThickness());
             double vpvs = profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity();
             int vpvsIndex = (int)Math.round((vpvs-minK)/stepK);
             System.out.println("Crust2 "+StationIdUtil.toString(chan.my_site.my_station.get_id())+" depth="+
@@ -312,7 +316,7 @@ public class HKStack implements Serializable {
         if (wilson != null) {
             StationResult result = wilson.getResult(chan.my_site.my_station.get_id());
             if (result != null) {
-                int depthIndex = (int)Math.round((result.getH()-minH)/stepH);
+                int depthIndex = getHIndex(result.getH());
                 double vpvs = result.getVpVs();
                 int vpvsIndex = (int)Math.round((vpvs-minK)/stepK);
                 System.out.println("Wilson "+StationIdUtil.toString(chan.my_site.my_station.get_id())+" depth="+
@@ -321,8 +325,8 @@ public class HKStack implements Serializable {
             }
         }
         BorderedDisplay bd = new BorderedDisplay(stackImage);
-        UnitRangeImpl depthRange = new UnitRangeImpl(getMinH()+startHIndex*getStepH(),
-                                                     getMinH()+getNumH()*getStepH(),
+        UnitRangeImpl depthRange = new UnitRangeImpl(getMinH().getValue()+startHIndex*getStepH().getValue(),
+                                                     getMinH().getValue()+getNumH()*getStepH().getValue(),
                                                      UnitImpl.KILOMETER);
         UnitRangeBorder depthLeftBorder = new UnitRangeBorder(Border.LEFT,
                                                               Border.DESCENDING,
@@ -402,7 +406,7 @@ public class HKStack implements Serializable {
             g.drawString("% match="+percentMatch, 0, fm.getHeight());
             g.drawString("    ", 0, 2*fm.getHeight());
             g.translate(0, 2*fm.getHeight());
-            g.drawString("Max H="+(getMinH()+xyMax[0]*getStepH()), 0, fm.getHeight());
+            g.drawString("Max H="+(getMinH().getValue()+xyMax[0]*getStepH().getValue()), 0, fm.getHeight());
             g.drawString("    K="+(getMinK()+xyMax[1]*getStepK()), 0, 2*fm.getHeight());
             g.translate(0, 2*fm.getHeight());
 
@@ -475,7 +479,7 @@ public class HKStack implements Serializable {
                 System.out.println("Warning: Eta S is NaN "+kIndex+"  beta="+beta+"  p="+p);
             }
             for (int hIndex = 0; hIndex < numH; hIndex++) {
-                float h = minH + hIndex*stepH;
+                float h = (float)(minH.getValue() + hIndex*stepH.getValue());
                 double timePs = h * (etaS - etaP) + shift.value;
                 double timePpPs = h * (etaS + etaP) + shift.value;
                 double timePsPs = h * (2 * etaS) + shift.value;
@@ -553,11 +557,11 @@ public class HKStack implements Serializable {
         return vpvsFormat.format(getPercentMatch());
     }
 
-    public float getMinH() {
+    public QuantityImpl getMinH() {
         return minH;
     }
 
-    public float getStepH() {
+    public QuantityImpl getStepH() {
         return stepH;
     }
 
@@ -609,7 +613,7 @@ public class HKStack implements Serializable {
 
         int[] xyMax = getMaxValueIndices();
         float max = stack[xyMax[0]][xyMax[1]];
-        out.write("Max H="+(getMinH()+xyMax[0]*getStepH()));
+        out.write("Max H="+(getMinH().getValue()+xyMax[0]*getStepH().getValue()));
         out.write("    K="+(getMinK()+xyMax[1]*getStepK()));
         out.write("  max="+max);
         out.write("alpha="+alpha);out.newLine();
@@ -631,8 +635,8 @@ public class HKStack implements Serializable {
         out.writeFloat(p);
         out.writeFloat(alpha);
         out.writeFloat(percentMatch);
-        out.writeFloat(minH);
-        out.writeFloat(stepH);
+        out.writeFloat((float)minH.convertTo(UnitImpl.KILOMETER).get_value());
+        out.writeFloat((float)stepH.getValue());
         out.writeInt(numH);
         out.writeFloat(minK);
         out.writeFloat(stepK);
@@ -662,8 +666,8 @@ public class HKStack implements Serializable {
         float p = in.readFloat();
         float alpha = in.readFloat();
         float percentMatch = in.readFloat();
-        float minH = in.readFloat();
-        float stepH = in.readFloat();
+        QuantityImpl minH = new QuantityImpl(in.readFloat(), UnitImpl.KILOMETER);
+        QuantityImpl stepH = new QuantityImpl(in.readFloat(), UnitImpl.KILOMETER);
         int numH = in.readInt();
         float minK = in.readFloat();
         float stepK = in.readFloat();
@@ -685,8 +689,8 @@ public class HKStack implements Serializable {
     float p;
     float alpha;
     float percentMatch;
-    float minH;
-    float stepH;
+    QuantityImpl minH;
+    QuantityImpl stepH;
     int numH;
     float minK;
     float stepK;

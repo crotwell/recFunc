@@ -10,6 +10,8 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
@@ -66,7 +68,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             float minPercentMatch = new Float(req.getParameter("minPercentMatch")).floatValue();
 
             if(req.getParameter("smallestH") == null) { throw new Exception("smallestH param not set"); }
-            float smallestH = new Float(req.getParameter("smallestH")).floatValue();
+            QuantityImpl smallestH = new QuantityImpl(new Float(req.getParameter("smallestH")).floatValue(), UnitImpl.KILOMETER);
             
             SumHKStack sumStack;
             try {

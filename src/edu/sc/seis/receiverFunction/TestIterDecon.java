@@ -2,7 +2,7 @@ package edu.sc.seis.receiverFunction;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import com.sun.rsasign.d;
+import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
@@ -76,8 +76,8 @@ public class TestIterDecon {
         predOut.write(filename);
         setOSFileExtras(filename);
 
-        HKStack stack = new HKStack(6.3f, 0.06f, 1,
-                                    10, .25f, 200,
+        HKStack stack = new HKStack(6.1f, 0.06f, 1,
+                                    new QuantityImpl(10, UnitImpl.KILOMETER), new QuantityImpl(.25f, UnitImpl.KILOMETER), 200,
                                     1.6f,.0025f, 200,
                                     1/3f, 1/3f, 1/3f, SacToFissures.getSeismogram(predOut), SacToFissures.getChannel(predOut), new TimeInterval(shift, UnitImpl.SECOND));
         BufferedImage bufSumImage = stack.createStackImage();

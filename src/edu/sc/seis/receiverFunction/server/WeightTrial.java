@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import org.apache.log4j.BasicConfigurator;
 import edu.iris.Fissures.IfNetwork.StationId;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
@@ -39,7 +41,7 @@ public class WeightTrial {
             SumHKStack sumStack = new SumHKStack(stackArray,
                                                  stackArray[0].getChannel(),
                                                  minPercentMatch,
-                                                 smallestH);
+                                                 new QuantityImpl(smallestH, UnitImpl.KILOMETER));
             StackSummary.saveImage(sumStack,
                                    stackArray[0].getChannel().my_site.my_station.get_id(),
                                    new File("."),

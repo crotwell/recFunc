@@ -20,7 +20,9 @@ import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
+import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
@@ -48,6 +50,8 @@ import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.RecFunc;
 import edu.sc.seis.receiverFunction.SumHKStack;
+import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.status.EventFormatter;
 
@@ -69,7 +73,7 @@ public class JDBCHKStack extends JDBCTable {
                          conn,
                          this,
                          "edu/sc/seis/receiverFunction/server/default.props");
-        
+        crust2 = new Crust2();
         dataDir = new File(RecFuncCacheImpl.getDataLoc());
         dataDir.mkdirs();
         eventFormatter = new EventFormatter(true);
@@ -95,8 +99,8 @@ public class JDBCHKStack extends JDBCTable {
            return new HKStack(rs.getFloat("alpha"),
                               rs.getFloat("p"),
                               rs.getFloat("percentMatch"),
-                              rs.getFloat("minH"),
-                              rs.getFloat("stepH"),
+                              new QuantityImpl(rs.getFloat("minH"), UnitImpl.KILOMETER),
+                              new QuantityImpl(rs.getFloat("stepH"), UnitImpl.KILOMETER),
                               numH,
                               rs.getFloat("minK"),
                               rs.getFloat("stepK"),
@@ -122,17 +126,17 @@ public class JDBCHKStack extends JDBCTable {
         put.setFloat(index++, stack.getAlpha());
         put.setFloat(index++, stack.getP());
         put.setFloat(index++, stack.getPercentMatch());
-        put.setFloat(index++, stack.getMinH());
-        put.setFloat(index++, stack.getStepH());
+        put.setFloat(index++, (float)stack.getMinH().getValue());
+        put.setFloat(index++, (float)stack.getStepH().getValue());
         put.setInt(index++, stack.getNumH());
         put.setFloat(index++, stack.getMinK());
         put.setFloat(index++, stack.getStepK());
         put.setInt(index++, stack.getNumK());
         float peakH, peakK, peakVal = 0;
         int[] indicies = stack.getMaxValueIndices();
-        peakH = stack.getMinH() + stack.getStepH() * indicies[0];
-        peakK = stack.getMinK() + stack.getStepK() * indicies[1];
-        peakVal = stack.getStack()[indicies[0]][indicies[1]];
+        peakH = stack.getMaxValueH();
+        peakK = stack.getMaxValueK();
+        peakVal = stack.getMaxValue();
         put.setFloat(index++, peakH);
         put.setFloat(index++, peakK);
         put.setFloat(index++, peakVal);
@@ -246,11 +250,12 @@ public class JDBCHKStack extends JDBCTable {
         // convert radian per sec ray param into km per sec
         float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
                 .getRadiusOfEarth());
-        HKStack stack = new HKStack(6.3f,
+        StationResult staResult = crust2.getStationResult(cachedResult.channels[0].my_site.my_station);
+        HKStack stack = new HKStack(staResult.getVp(),
                                     kmRayParam,
                                     cachedResult.radialMatch,
                                     getDefaultMinH(),
-                                    .25f,
+                                    new QuantityImpl(.25f, UnitImpl.KILOMETER),
                                     240,
                                     1.6f,
                                     .0025f,
@@ -269,7 +274,7 @@ public class JDBCHKStack extends JDBCTable {
     public SumHKStack sum(String netCode,
                           String staCode,
                           float percentMatch,
-                          float smallestH) throws FissuresException, NotFound,
+                          QuantityImpl smallestH) throws FissuresException, NotFound,
             IOException, SQLException {
         ArrayList individualHK = new ArrayList();
         int index = 1;
@@ -304,8 +309,8 @@ public class JDBCHKStack extends JDBCTable {
         HKStack out = new HKStack(rs.getFloat("alpha"),
                                   rs.getFloat("p"),
                                   rs.getFloat("percentMatch"),
-                                  rs.getFloat("minH"),
-                                  rs.getFloat("stepH"),
+                                  new QuantityImpl(rs.getFloat("minH"), UnitImpl.KILOMETER),
+                                  new QuantityImpl(rs.getFloat("stepH"), UnitImpl.KILOMETER),
                                   numH,
                                   rs.getFloat("minK"),
                                   rs.getFloat("stepK"),
@@ -348,7 +353,7 @@ public class JDBCHKStack extends JDBCTable {
 
     private TauPUtil tauPTime;
 
-    private static final int DEFAULT_MIN_H = 10;
+    private static final QuantityImpl DEFAULT_MIN_H = new QuantityImpl(10, UnitImpl.KILOMETER);
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCHKStack.class);
 
@@ -489,7 +494,9 @@ public class JDBCHKStack extends JDBCTable {
         return tauPTime;
     }
 
-    public static int getDefaultMinH() {
+    public static QuantityImpl getDefaultMinH() {
         return DEFAULT_MIN_H;
     }
+    
+    Crust2 crust2;
 }

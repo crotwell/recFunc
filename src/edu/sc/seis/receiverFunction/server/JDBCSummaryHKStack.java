@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.JDBCSequence;
@@ -100,8 +102,8 @@ public class JDBCSummaryHKStack extends JDBCTable {
                 .getDBId(summary.getChannel().get_id()));
         stmt.setFloat(index++, summary.getSum().getAlpha());
         stmt.setFloat(index++, summary.getMinPercentMatch());
-        stmt.setFloat(index++, summary.getSmallestH());
-        stmt.setFloat(index++, summary.getSum().getStepH());
+        stmt.setFloat(index++, (float)summary.getSmallestH().convertTo(UnitImpl.KILOMETER).getValue());
+        stmt.setFloat(index++, (float)summary.getSum().getStepH().convertTo(UnitImpl.KILOMETER).getValue());
         stmt.setInt(index++, summary.getSum().getNumH());
         stmt.setFloat(index++, summary.getSum().getMinK());
         stmt.setFloat(index++, summary.getSum().getStepK());
@@ -137,8 +139,8 @@ public class JDBCSummaryHKStack extends JDBCTable {
         HKStack stack = new HKStack(rs.getFloat("alpha"),
                                     0,
                                     rs.getFloat("minPercentMatch"),
-                                    rs.getFloat("minH"),
-                                    rs.getFloat("stepH"),
+                                    new QuantityImpl(rs.getFloat("minH"), UnitImpl.KILOMETER),
+                                    new QuantityImpl(rs.getFloat("stepH"), UnitImpl.KILOMETER),
                                     numH,
                                     rs.getFloat("minK"),
                                     rs.getFloat("stepK"),
@@ -149,7 +151,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
                                     data,
                                     chan);
         SumHKStack sum = new SumHKStack(rs.getFloat("minPercentMatch"),
-                                        rs.getFloat("minH"),
+                                        new QuantityImpl(rs.getFloat("minH"), UnitImpl.KILOMETER),
                                         stack,
                                         rs.getFloat("hVariance"),
                                         rs.getFloat("kVariance"));

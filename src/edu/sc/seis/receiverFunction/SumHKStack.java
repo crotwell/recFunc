@@ -15,6 +15,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import edu.iris.Fissures.IfNetwork.Channel;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.sod.status.FissuresFormatter;
@@ -22,7 +24,7 @@ import edu.sc.seis.sod.status.FissuresFormatter;
 public class SumHKStack {
     
     public SumHKStack(float minPercentMatch,
-                      float smallestH,
+                      QuantityImpl smallestH,
                       HKStack sum,
                       float hVariance,
                       float kVariance) {
@@ -36,7 +38,7 @@ public class SumHKStack {
     public SumHKStack(HKStack[] individuals,
                       Channel chan,
                       float minPercentMatch,
-                      float smallestH) {
+                      QuantityImpl smallestH) {
         this.individuals = individuals;
         this.minPercentMatch = minPercentMatch;
         this.channel = chan;
@@ -77,7 +79,7 @@ public class SumHKStack {
     }
     
     void calculate(Channel chan) {
-        int smallestHIndex = (int)Math.round((smallestH-individuals[0].getMinH())/individuals[0].getStepH());
+        int smallestHIndex = individuals[0].getHIndex(smallestH);
         float[][] stack = new float[individuals[0].getStack().length-smallestHIndex][individuals[0].getStack()[0].length];
         for (int i = 0; i < stack.length; i++) {
             for (int j = 0; j < stack[0].length; j++) {
@@ -89,7 +91,7 @@ public class SumHKStack {
         sum = new HKStack(individuals[0].getAlpha(),
                           0f,
                           minPercentMatch,
-                          individuals[0].getMinH()+smallestHIndex*individuals[0].getStepH(),
+                          individuals[0].getMinH().add(  individuals[0].getStepH().multiplyBy(smallestHIndex)  ),
                           individuals[0].getStepH(),
                           individuals[0].getNumH()-smallestHIndex,
                           individuals[0].getMinK(),
@@ -152,7 +154,7 @@ public class SumHKStack {
         return minPercentMatch;
     }
     
-    public float getSmallestH() {
+    public QuantityImpl getSmallestH() {
         return smallestH;
     }
     
@@ -186,7 +188,7 @@ public class SumHKStack {
         }
         double denom = a-2*b+c;
         if (denom != 0) {
-            hVariance = -2*Math.sqrt(maxVariance)/(denom/(sum.getStepH()*sum.getStepH()));
+            hVariance = -2*Math.sqrt(maxVariance)/(denom/(sum.getStepH().getValue()*sum.getStepH().getValue()));
         } else {
             logger.error("hVariance is NaN: a="+a+"  b="+b+"  c="+c);
             hVariance = Double.MAX_VALUE;
@@ -220,7 +222,7 @@ public class SumHKStack {
     protected HKStack[] individuals;
     protected HKStack sum;
     protected float minPercentMatch;
-    protected float smallestH;
+    protected QuantityImpl smallestH;
     protected double maxVariance;
     protected double hVariance;
     protected double kVariance;

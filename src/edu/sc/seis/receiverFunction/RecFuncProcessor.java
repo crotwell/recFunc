@@ -26,6 +26,7 @@ import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.iris.Fissures.IfSeismogramDC.RequestFilter;
 import edu.iris.Fissures.model.MicroSecondDate;
+import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
@@ -243,7 +244,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                         HKStack stack = new HKStack(6.5f,
                                                     kmRayParam,
                                                     HKStack.getPercentMatch(saved),
-                                                    10, .25f, 240,
+                                                    new QuantityImpl(10, UnitImpl.KILOMETER), new QuantityImpl(.25f, UnitImpl.KILOMETER), 240,
                                                     1.6f, .0025f, 200,
                                                     1, 1, 1,
                                                     saved);
@@ -307,7 +308,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
 
                         int[] xyMax = stack.getMaxValueIndices();
                         float max = stack.stack[xyMax[0]][xyMax[1]];
-                        appendToSummaryPage("<tr><td>"+getEventDirectory(event).getName()+"</td><td>"+channelIdString+"</td><td>"+stack.getPercentMatch()+"</td><td>"+(stack.getMinH()+xyMax[0]*stack.getStepH())+"</td><td>"+(stack.getMinK()+xyMax[1]*stack.getStepK())+"</td></tr>");
+                        appendToSummaryPage("<tr><td>"+getEventDirectory(event).getName()+"</td><td>"+channelIdString+"</td><td>"+stack.getPercentMatch()+"</td><td>"+(stack.getMaxValueH())+"</td><td>"+(stack.getMinK()+xyMax[1]*stack.getStepK())+"</td></tr>");
 
                         doSumHKStack(predicted,
                                      getParentDirectory(),

@@ -1,7 +1,6 @@
 package edu.sc.seis.receiverFunction.server;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,20 +16,19 @@ import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.IfNetwork.StationId;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
-import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
-import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
 import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
-import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.status.FissuresFormatter;
@@ -61,7 +59,7 @@ public class StackSummary {
     public void createSummary(String net,
                               File parentDir,
                               float minPercentMatch,
-                              float smallestH) throws FissuresException,
+                              QuantityImpl smallestH) throws FissuresException,
             NotFound, IOException, SQLException {
         JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel()
                 .getSiteTable()
@@ -82,14 +80,14 @@ public class StackSummary {
                                         station[j].my_location.latitude);
                     double crust2H = crust2.getCrustThickness();
                     SumHKStack sumStack;
-                    if(crust2H > smallestH + 5) {
+                    if(crust2H > smallestH.getValue() + 5) {
                         sumStack = createSummary(station[j].get_id(),
                                                  parentDir,
                                                  minPercentMatch,
                                                  smallestH);
                     } else {
-                        float modSmallestH = (float)(crust2H - 5);
-                        if(modSmallestH < JDBCHKStack.getDefaultMinH()) {
+                        QuantityImpl modSmallestH = new QuantityImpl(crust2H - 5, UnitImpl.KILOMETER);
+                        if(modSmallestH.lessThan(JDBCHKStack.getDefaultMinH())) {
                             modSmallestH = JDBCHKStack.getDefaultMinH();
                         }
                         sumStack = createSummary(station[j].get_id(),
@@ -132,7 +130,7 @@ public class StackSummary {
     public SumHKStack createSummary(StationId station,
                                     File parentDir,
                                     float minPercentMatch,
-                                    float smallestH) throws FissuresException,
+                                    QuantityImpl smallestH) throws FissuresException,
             NotFound, IOException, SQLException {
         SumHKStack sumStack = jdbcHKStack.sum(station.network_id.network_code,
                                               station.station_code,
@@ -248,7 +246,7 @@ public class StackSummary {
                 }
             }
             summary.createSummary(netArg, new File("stackImages" + smallestH
-                    + "_" + minPercentMatch), minPercentMatch, smallestH);
+                    + "_" + minPercentMatch), minPercentMatch, new QuantityImpl(smallestH, UnitImpl.KILOMETER));
         } catch(Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -1,0 +1,72 @@
+<html>
+#macro(link $sta $eq)<a href="http://roo.seis.sc.edu/arrayMon/stationForEvent.html?station_dbid=$sta.DbId&eq=$eq.id">$sta.code - $sta.name</a>#end
+<head>
+<title>Station-Earthquake Result Viewer</title>
+<link rel="stylesheet" type="text/css" href="usarray.css"/>
+</head>
+<body>
+	
+<div id="content" align="left">
+
+<table>
+<tr>
+<td class="odd">Earthquake location</td>
+<td class="even">$eq.region</td>
+</tr>
+<tr>
+<td class="odd">Earthquake latitude</td>
+<td class="even">$eq.latitude</td>
+</tr>
+<tr>
+<td class="odd">Earthquake longitude</td>
+<td class="even">$eq.longitude</td>
+</tr>
+<tr>
+<td class="odd">Earthquake time(UTC)</td>
+<td class="even">$eq.time</td>
+</tr>
+<tr>
+<td class="odd">Earthquake time(UTC)</td>
+<td class="even">$eq.depth</td>
+</tr>
+<tr>
+<td class="odd">Earthquake Magnitude</td>
+<td class="even">$eq.getAllMagnitudes()</td>
+</tr>
+</table>
+
+<table>
+
+<table>
+<tr>
+<td class="odd">Network</td>
+<td class="even">Station</td>
+<td class="even">Distance</td>
+<td class="odd">$resultName</td>
+</tr>
+<tr>
+<td class="odd">$sta.getNet().getCode()</td>
+<td class="even">#link($sta $eq)</td>
+<td class="even">$fissures.formatQuantity($fissures.getDistance($sta, $eq.get_preferred_origin()))</td>
+#set($cookieList = $cookieMap.get($fissures.formatStation($sta.get_id())))
+<td class="even">
+#foreach($result in $cookieList)
+$result 
+#end
+</td>
+</tr>
+</table>
+
+
+
+<div id="footer2" align="center">
+  <a href="http://seis.sc.edu">
+    <img src="seislogo.gif" alt="Seismology at USC" title="USC"/>
+  </a>
+  <a href="http://www.iris.edu">
+    <img src="irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
+  </a>
+</div id="footer2">
+</div id="content">
+</body>
+</html>

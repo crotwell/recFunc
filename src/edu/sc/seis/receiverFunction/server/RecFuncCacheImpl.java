@@ -15,6 +15,7 @@ import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.sod.ConfigurationException;
 
 
 /**
@@ -23,11 +24,12 @@ import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
  */
 public class RecFuncCacheImpl extends RecFuncCachePOA {
     
-    public RecFuncCacheImpl() throws SQLException {
+    public RecFuncCacheImpl() throws SQLException, ConfigurationException {
         Connection conn = ConnMgr.createConnection();
         jdbcOrigin = new JDBCOrigin(conn);
         jdbcEventAttr = new JDBCEventAttr(conn);
         jdbcChannel  = new JDBCChannel(conn);
+        jdbcRecFunc = new JDBCRecFunc(conn, jdbcOrigin, jdbcEventAttr, jdbcChannel, "Ears/Data");
     }
     
 	public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,
@@ -84,6 +86,13 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         // TODO Auto-generated method stub
         return false;
     }
+
+    private JDBCOrigin jdbcOrigin ;
     
-    JDBCRecFunc jdbcRecFunc;
+    private JDBCEventAttr jdbcEventAttr;
+    
+    private JDBCChannel jdbcChannel;
+    
+    private JDBCRecFunc jdbcRecFunc;
+    
 }

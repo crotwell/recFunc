@@ -9,6 +9,7 @@ import edu.iris.Fissures.Location;
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
+import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfSeismogramDC.RequestFilter;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.TimeInterval;
@@ -69,6 +70,22 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements WaveformV
                                         RequestFilter[][] available,
                                         LocalSeismogramImpl[][] seismograms,
                                         CookieJar cookieJar) throws Exception {
+
+        Channel chan = channelGroup.getChannels()[0];
+        Location staLoc = chan.my_site.my_station.my_location;
+        Origin origin = event.get_preferred_origin();
+        Location evtLoc = origin.my_location;
+
+        IterDeconConfig config = new IterDeconConfig(gwidth, maxBumps, tol);
+        ChannelId[] chanIds = new ChannelId[channelGroup.getChannels().length];
+        for(int i = 0; i < chanIds.length; i++) {
+            chanIds[i] = channelGroup.getChannels()[i].get_id();
+        }
+        if ( ! overwrite && cache.isCached(origin,
+                           chanIds,
+                           config)) {
+            return new WaveformVectorResult(seismograms, new StringTreeLeaf(this, true, "Already calculated"));
+        }
         
         LocalSeismogramImpl[] singleSeismograms = new LocalSeismogramImpl[3];
         for(int i = 0; i < singleSeismograms.length; i++) {
@@ -78,11 +95,6 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements WaveformV
         IterDeconResult[] ans = recFunc.process(event,
                                                 channelGroup,
                                                 singleSeismograms);
-        
-        Channel chan = channelGroup.getChannels()[0];
-        Location staLoc = chan.my_site.my_station.my_location;
-        Origin origin = event.get_preferred_origin();
-        Location evtLoc = origin.my_location;
         
         Arrival[] pPhases = taup.calcTravelTimes(chan.my_site.my_station, origin, new String[] { "ttp"});
         MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
@@ -102,7 +114,6 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements WaveformV
                                                      UnitImpl.DIMENSONLESS);
         }
 
-        IterDeconConfig config = new IterDeconConfig(gwidth, maxBumps, tol);
         cache.insert(origin,
                      event.get_attributes(),
                      config,
@@ -114,6 +125,8 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements WaveformV
         WaveformVectorResult result = new WaveformVectorResult(seismograms, new StringTreeLeaf(this, true));
         return result;
     }
+    
+    boolean overwrite = false;
     
     RecFuncCacheOperations cache;
     

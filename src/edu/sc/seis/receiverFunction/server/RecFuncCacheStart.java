@@ -14,6 +14,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.omg.CORBA.ORB;
 import edu.iris.Fissures.model.AllVTFactory;
 import edu.sc.seis.IfReceiverFunction.RecFuncCache;
+import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.namingService.FissuresNamingService;
 
@@ -36,6 +37,7 @@ public class RecFuncCacheStart {
         vt.register(orb);
         
         try {
+            System.out.println("Create impl.");
             RecFuncCacheImpl impl = new RecFuncCacheImpl();
             RecFuncCache server = impl._this(orb);
             
@@ -49,7 +51,7 @@ public class RecFuncCacheStart {
             if (addNS != null) {
                 fissuresNamingService.addOtherNameServiceCorbaLoc(addNS);
             }
-            
+            System.out.println("rebind with NS.");
             fissuresNamingService.rebind(serviceDNS, serviceName, server, interfacename);
             
             logger.info("Bound to Name Service");
@@ -61,6 +63,7 @@ public class RecFuncCacheStart {
                                                         orb.resolve_initial_references("RootPOA"));
             org.omg.PortableServer.POAManager manager =
                 rootPOA.the_POAManager();
+            System.out.println("Activate POA and run ORB.");
             manager.activate();
             orb.run();
             System.out.println("ORB.run() finished.");
@@ -72,6 +75,8 @@ public class RecFuncCacheStart {
     private static Properties loadProps(String[] args) {
         
         Properties props = System.getProperties();
+
+        ConnMgr.addPropsLocation("edu/sc/seis/receiverFunction/server/");
         
         // get some defaults
         String propFilename=

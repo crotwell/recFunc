@@ -7,12 +7,15 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.omg.CORBA.UNKNOWN;
+import edu.iris.Fissures.Orientation;
 import edu.iris.Fissures.IfEvent.EventAttr;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
+import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.iris.dmc.seedcodec.CodecException;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
@@ -44,7 +47,6 @@ public class JDBCRecFunc extends JDBCTable {
                        JDBCChannel jdbcChannel,
                        String dataDirectory) throws SQLException, ConfigurationException {
         super("receiverFunction", conn);
-        ConnMgr.addPropsLocation("edu/sc/seis/receiverFunction/server/");
         this.jdbcOrigin = jdbcOrigin;
         this.jdbcEventAttr = jdbcEventAttr;
         this.jdbcChannel = jdbcChannel;
@@ -58,22 +60,30 @@ public class JDBCRecFunc extends JDBCTable {
         eventFormatter = new EventFormatter(true);
         putStmt = conn.prepareStatement(" INSERT INTO receiverFunction "+
                                         "(recFunc_id, "+
-                                   "origin_id,  "+
-                                   "eventAttr_id, "+
-                                   "chanA_id, "+
-                                   "seisA, "+
-                                   "chanB_id, "+
-                                   "seisB, "+
-                                   "chanZ_id, "+
-                                   "seisZ, "+
-                                   "recfuncITR,  "+
-                                   "itr_error, "+
-                                   "recFuncITT, "+
-                                   "itt_error, "+
-                                   "gwidth, "+
-                                   "maxbumps,  "+
-                                   "maxerror) "+
+                                        "origin_id,  "+
+                                        "eventAttr_id, "+
+                                        "chanA_id, "+
+                                        "seisA, "+
+                                        "chanB_id, "+
+                                        "seisB, "+
+                                        "chanZ_id, "+
+                                        "seisZ, "+
+                                        "recfuncITR,  "+
+                                        "itr_error, "+
+                                        "recFuncITT, "+
+                                        "itt_error, "+
+                                        "gwidth, "+
+                                        "maxbumps,  "+
+                                        "maxerror) "+
                                         "VALUES(?,?,?,?, ?,?,?,?, ?,?,?,?, ?,?,?,?)");
+//        isCachedStmt = conn.prepareStatement("SELECT recFunc_id from "+
+//                                             getTableName()+", "+jdbcOrigin.getTableName()+","+jdbcChannel.getTableName()+
+//                                             " WHERE "+getTableName()+".origin_id = "+jdbcOrigin.getTableName()+".origin_id "+
+//                                             " AND chanA_id = "+jdbcChannel.getTableName()+".chan_id "+
+//                                             " AND "+jdbcChannel.getTableName()+".chan_id "+
+//                                             );
+//        getConfigsStmt = conn.prepareStatement("SELECT gwidth, maxbumps, maxerror from "+getTableName()+
+//                                               " WHERE ");
     }
     
     public int put(Origin prefOrigin,
@@ -106,14 +116,38 @@ public class JDBCRecFunc extends JDBCTable {
                                                           cacheEvent,
                                                           fileType);
             }
+            Channel zeroChannel = channels[0];
+            ChannelId radialChannelId = new ChannelId(zeroChannel.get_id().network_id,
+                                                      zeroChannel.get_id().station_code,
+                                                      zeroChannel.get_id().site_code,
+                                                      "ITR",
+                                                      zeroChannel.get_id().begin_time);
+            Channel radialChannel = new ChannelImpl(radialChannelId,
+                                                     "receiver function fake channel for "+ChannelIdUtil.toStringNoDates(zeroChannel.get_id()),
+                                                     new Orientation(0, 0),
+                                                     zeroChannel.sampling_info,
+                                                     zeroChannel.effective_time,
+                                                     zeroChannel.my_site);
             File radialFile = URLDataSetSeismogram.saveAs((LocalSeismogramImpl)radial,
                                                           stationDir,
-                                                          channels[0],
+                                                          radialChannel,
                                                           cacheEvent,
                                                           fileType);
+            
+            ChannelId transverseChannelId = new ChannelId(zeroChannel.get_id().network_id,
+                                                      zeroChannel.get_id().station_code,
+                                                      zeroChannel.get_id().site_code,
+                                                      "ITT",
+                                                      zeroChannel.get_id().begin_time);
+            Channel transverseChannel = new ChannelImpl(transverseChannelId,
+                                                     "receiver function fake channel for "+ChannelIdUtil.toStringNoDates(zeroChannel.get_id()),
+                                                     new Orientation(0, 0),
+                                                     zeroChannel.sampling_info,
+                                                     zeroChannel.effective_time,
+                                                     zeroChannel.my_site);
             File transverseFile = URLDataSetSeismogram.saveAs((LocalSeismogramImpl)transverse,
                                                               stationDir,
-                                                              channels[0],
+                                                              transverseChannel,
                                                               cacheEvent,
                                                               fileType);
             int index = 1;
@@ -143,6 +177,17 @@ public class JDBCRecFunc extends JDBCTable {
         
     }
     
+//    public int getDbId(Origin prefOrigin,
+//                       ChannelId[] channels,
+//                       IterDeconConfig config) {
+//        int originDbId = jdbcOrigin.getDBId(prefOrigin);
+//        int[] chanDbId = new int[channels.length];
+//        for(int i = 0; i < channels.length; i++) {
+//            chanDbId[i] = jdbcChannel.getDBId(channels[i].)
+//        }
+//        return 0;
+//    }
+    
     private File dataDir;
     
     private EventFormatter eventFormatter;
@@ -155,7 +200,7 @@ public class JDBCRecFunc extends JDBCTable {
     
     private SeismogramFileTypes fileType = SeismogramFileTypes.SAC;
     
-    private PreparedStatement putStmt;
+    private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt;
 
     private JDBCSequence seq;
 }

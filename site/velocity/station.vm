@@ -51,7 +51,7 @@
 <td class="even">$sta.getDistanceDeg($eq)</td>
 <td class="even">$sta.getBaz($eq)</td>
 #set( $recFunc_id = $eq.getParam("recFunc_id") )
-<td class="odd"><a href="http://roo:8084/hkstackimage.png?rf=$recFunc_id">$eq.getRegion()</a></td>
+<td class="odd"><a href="http://roo:8084/stationEvent.html?rf=$recFunc_id">$eq.getRegion()</a></td>
 <td class="even">$eq.getTimePrecise()</td>
 <td class="odd">($eq.getLatitude(), $eq.getLongitude())</td>
 <td class="even">$eq.getDepth()</td>

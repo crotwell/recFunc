@@ -1,5 +1,4 @@
 <html>
-#macro(link $sta $eq)<a href="http://roo.seis.sc.edu/arrayMon/stationForEvent.html?station_dbid=$sta.DbId&eq=$eq.id">$sta.code - $sta.name</a>#end
 <head>
 <title>Station-Earthquake Result Viewer</title>
 <link rel="stylesheet" type="text/css" href="usarray.css"/>
@@ -36,28 +35,72 @@
 </table>
 
 <table>
-
-<table>
 <tr>
 <td class="odd">Network</td>
-<td class="even">Station</td>
-<td class="even">Distance</td>
-<td class="odd">$resultName</td>
+<td class="odd">$sta.getNet().getCode()</td>
 </tr>
 <tr>
-<td class="odd">$sta.getNet().getCode()</td>
-<td class="even">#link($sta $eq)</td>
-<td class="even">$fissures.formatQuantity($fissures.getDistance($sta, $eq.get_preferred_origin()))</td>
-#set($cookieList = $cookieMap.get($fissures.formatStation($sta.get_id())))
-<td class="even">
-#foreach($result in $cookieList)
-$result 
-#end
-</td>
+<td class="even">Station</td>
+<td class="odd">$sta.getCode()</td>
 </tr>
 </table>
 
+<table>
+<tr>
+<td class="even">Distance</td>
+<td class="odd">$sta.getDistanceDeg($eq)</td>
+</tr>
+<tr>
+<td class="even">Az</td>
+<td class="odd">$sta.getAz($eq)</td>
+</tr>
+<tr>
+<td class="even">Baz</td>
+<td class="odd">$sta.getBaz($eq)</td>
+</tr>
+</table>
 
+<img src="http://roo:8084/hkstackimage.png?rf=$rf"/>
+
+
+<table>
+<tr>
+<td class="odd">Radial Match</td>
+<td class="odd"> ${result.radialMatch} </td>
+</tr>
+<tr>
+<td class="odd">Radial Bump</td>
+<td class="odd"> $result.radialBump </td>
+</tr>
+<tr>
+<td class="odd">Transverse Match</td>
+<td class="odd">$result.transverseMatch</td>
+</tr>
+<tr>
+<td class="odd">Transverse Bump</td>
+<td class="odd">$result.transverseBump</td>
+</tr>
+<tr>
+<td class="odd">SOD ConfigId</td>
+<td class="odd">$result.sodConfigId</td>
+</tr>
+<tr>
+<td class="odd">Insert Time</td>
+<td class="odd">$result.insertTime</td>
+</tr>
+<tr>
+<td class="odd">GWidth</td>
+<td class="odd">$result.gwidth</td>
+</tr>
+<tr>
+<td class="odd">Max Bumps</td>
+<td class="odd">$result.maxBumps</td>
+</tr>
+<tr>
+<td class="odd">Tol</td>
+<td class="odd">$result.tol</td>
+</tr>
+</table>
 
 <div id="footer2" align="center">
   <a href="http://seis.sc.edu">

@@ -43,14 +43,11 @@ public class HKStackImageServlet  extends HttpServlet {
     public HKStackImageServlet() throws SQLException, ConfigurationException, Exception {
         Connection conn = ConnMgr.createConnection();
         jdbcEvent = new JDBCEventAccess(conn);
-        jdbcECStatus = new JDBCEventChannelStatus(conn);
         
         JDBCChannel jdbcChannel  = new JDBCChannel(conn);
         JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
         JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.getDataLoc());
         hkStack = new JDBCHKStack(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
-
-        
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -84,8 +81,6 @@ public class HKStackImageServlet  extends HttpServlet {
     private StationLocator staLoc;
     
     private JDBCEventAccess jdbcEvent;
-
-    private JDBCEventChannelStatus jdbcECStatus;
     
     private JDBCHKStack hkStack;
     

@@ -32,16 +32,13 @@ public class RFStationEvent extends Revlet {
 
     public RFStationEvent() throws SQLException, ConfigurationException, Exception {
         Connection conn = ConnMgr.createConnection();
-        jdbcCookies = new JDBCEventChannelCookieJar(conn);
         jdbcEvent = new JDBCEventAccess(conn);
-        jdbcECStatus = new JDBCEventChannelStatus(conn);
         
         JDBCChannel jdbcChannel  = new JDBCChannel(conn);
         JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
         JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.getDataLoc());
         hkStack = new JDBCHKStack(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
-
-        
+        staLoc = new StationLocator();
     }
     /**
      *
@@ -53,14 +50,16 @@ public class RFStationEvent extends Revlet {
             logger.debug("doGet called");
             res.setContentType("image/png");
             if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
-            CachedResult result = hkStack.getJDBCRecFunc().get(new Integer(req.getParameter("rf")).intValue());
+            CachedResult result = hkStack.getJDBCRecFunc().getWithoutSeismograms(new Integer(req.getParameter("rf")).intValue());
             CacheEvent eq = new CacheEvent(result.event_attr, result.prefOrigin);
-            VelocityEvent velEvent = new VelocityEvent(eq);
-            VelocityStation sta = staLoc.locate(req);
+            VelocityEvent velEvent = new VelocityEvent(new CacheEvent(result.event_attr, result.prefOrigin));
+            VelocityStation sta = new VelocityStation(result.channels[0].my_site.my_station);
             
             VelocityContext vContext = new VelocityContext();
             vContext.put("sta", sta);
             vContext.put("eq", velEvent);
+            vContext.put("result", new VelocityCachedResult(result));
+            vContext.put("rf", req.getParameter("rf"));
             RevletContext context = new RevletContext("rfStationEvent.vm", vContext);
             return context;
         } catch(Exception e) {
@@ -72,10 +71,6 @@ public class RFStationEvent extends Revlet {
     private StationLocator staLoc;
     
     private JDBCEventAccess jdbcEvent;
-
-    private JDBCEventChannelCookieJar jdbcCookies;
-
-    private JDBCEventChannelStatus jdbcECStatus;
     
     private JDBCHKStack hkStack;
     

@@ -310,6 +310,15 @@ public class JDBCRecFunc extends JDBCTable {
         throw new NotFound("No rec func entry found for dbid="+dbid);
     }
 
+    public CachedResult getWithoutSeismograms(int dbid) throws FileNotFoundException, FissuresException, NotFound, IOException, SQLException {
+        getByDbIdStmt.setInt(1, dbid);
+        ResultSet rs = getByDbIdStmt.executeQuery();
+        if (rs.next()) {
+            return extractWithoutSeismograms(rs);
+        }
+        throw new NotFound("No rec func entry found for dbid="+dbid);
+    }
+    
     public CachedResult get(Origin prefOrigin,
                             ChannelId[] channel,
                             IterDeconConfig config) throws NotFound, FileNotFoundException, IOException, SQLException, FissuresException {
@@ -320,25 +329,24 @@ public class JDBCRecFunc extends JDBCTable {
         }
         throw new NotFound("No rec func entry found");
     }
-    
+
     public CachedResult extract(ResultSet rs) throws NotFound, FileNotFoundException, IOException, SQLException, FissuresException {
-
-        Origin origin = jdbcOrigin.get(rs.getInt("origin_id"));
-        EventAttr eventAttr = jdbcEventAttr.get(rs.getInt("eventAttr_id"));
-        Channel[] channels = extractChannels(rs);
-
-        CacheEvent cacheEvent = new CacheEvent(eventAttr, origin);
-        File stationDir = getDir(cacheEvent, channels[0]);
+        CachedResult result = extractWithoutSeismograms(rs);
+        
+        CacheEvent cacheEvent = new CacheEvent(result.event_attr, result.prefOrigin);
+        File stationDir = getDir(cacheEvent, result.channels[0]);
         System.out.println("StationDir: "+stationDir);
         
         SacTimeSeries itrSAC = new SacTimeSeries();
         File f = new File(stationDir, rs.getString("recfuncITR"));
         itrSAC.read(new File(stationDir, rs.getString("recfuncITR")));
         LocalSeismogramImpl itrSeis = SacToFissures.getSeismogram(itrSAC);
+        result.radial = itrSeis;
         
         SacTimeSeries ittSAC = new SacTimeSeries();
         ittSAC.read(new File(stationDir, rs.getString("recfuncITT")));
         LocalSeismogramImpl ittSeis = SacToFissures.getSeismogram(ittSAC);
+        result.tansverse = ittSeis;
         
         LocalSeismogramImpl[] originals = new LocalSeismogramImpl[3];
         SacTimeSeries SACa = new SacTimeSeries();
@@ -350,6 +358,17 @@ public class JDBCRecFunc extends JDBCTable {
         SacTimeSeries SACz = new SacTimeSeries();
         SACz.read(new File(stationDir, rs.getString("seisZ")));
         originals[2] = SacToFissures.getSeismogram(SACz);
+        result.original = originals;
+        
+        return result;
+    }
+    
+    public CachedResult extractWithoutSeismograms(ResultSet rs) throws NotFound, FileNotFoundException, IOException, SQLException, FissuresException {
+
+        Origin origin = jdbcOrigin.get(rs.getInt("origin_id"));
+        EventAttr eventAttr = jdbcEventAttr.get(rs.getInt("eventAttr_id"));
+        Channel[] channels = extractChannels(rs);
+
         MicroSecondDate insertTime = new MicroSecondDate(rs.getTimestamp("inserttime"));
         
         CachedResult result = new CachedResult(origin,
@@ -358,11 +377,11 @@ public class JDBCRecFunc extends JDBCTable {
                                                rs.getInt("maxBumps"),
                                                rs.getFloat("tol")),
                                                channels,
-                                               originals,
-                                               itrSeis,
+                                               new LocalSeismogramImpl[0],
+                                               null,
                                                rs.getFloat("itr_match"),
                                                rs.getInt("itr_bump"),
-                                               ittSeis,
+                                               null,
                                                rs.getFloat("itt_match"),
                                                rs.getInt("itt_bump"),
                                                rs.getInt("sodConfig_id"),

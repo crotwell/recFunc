@@ -39,51 +39,51 @@ public class RecFuncTask {
 
     public void invoke() {
 	if (colSeis != null) {
-	    HashSet stations = new HashSet();
-	    HashMap events = new HashMap();
-	    LinkedList displays = 
-		colSeis.getDisplays();
-	    Iterator it = displays.iterator();
-	    while (it.hasNext()) {
-		BasicSeismogramDisplay currDisp = 
-		    ((BasicSeismogramDisplay)it.next());
-		DataSetSeismogram[] seismograms = 
-		    currDisp.getSeismograms();
-		for (int i=0; i<seismograms.length; i++) {
+// 	    HashSet stations = new HashSet();
+// 	    HashMap events = new HashMap();
+// 	    LinkedList displays = 
+// 		colSeis.getDisplays();
+// 	    Iterator it = displays.iterator();
+// 	    while (it.hasNext()) {
+// 		BasicSeismogramDisplay currDisp = 
+// 		    ((BasicSeismogramDisplay)it.next());
+// 		DataSetSeismogram[] seismograms = 
+// 		    currDisp.getSeismograms();
+// 		for (int i=0; i<seismograms.length; i++) {
 		     
-		    DataSetSeismogram currDS = seismograms[i];
-		    XMLDataSet dataSet =(XMLDataSet)currDS.getDataSet();
-		    EventAccessOperations currEvent = dataSet.getEvent();
-		    LocalSeismogramImpl seis = currDS.getSeismogram();
-		    ChannelId[] channelGroup = 
-			DataSetChannelGrouper.retrieveGrouping(dataSet, 
-							       seis.getChannelID());
-		    DataSetSeismogram[] chGrpSeismograms = new DataSetSeismogram[3];
-		    for(int counter = 0; counter < channelGroup.length; counter++) {
-			String name =
-			    DisplayUtils.getSeismogramName(channelGroup[counter], 
-							   dataSet, 
-	new edu.iris.Fissures.TimeRange(seis.getBeginTime().getFissuresTime(), 
-					seis.getEndTime().getFissuresTime()));
-			chGrpSeismograms[counter] = new DataSetSeismogram(dataSet.getSeismogram(name), dataSet);
-		    }
+// 		    DataSetSeismogram currDS = seismograms[i];
+// 		    XMLDataSet dataSet =(XMLDataSet)currDS.getDataSet();
+// 		    EventAccessOperations currEvent = dataSet.getEvent();
+// 		    LocalSeismogramImpl seis = currDS.getSeismogram();
+// 		    ChannelId[] channelGroup = 
+// 			DataSetChannelGrouper.retrieveGrouping(dataSet, 
+// 							       seis.getChannelID());
+// 		    DataSetSeismogram[] chGrpSeismograms = new DataSetSeismogram[3];
+// 		    for(int counter = 0; counter < channelGroup.length; counter++) {
+// 			String name =
+// 			    DisplayUtils.getSeismogramName(channelGroup[counter], 
+// 							   dataSet, 
+// 	new edu.iris.Fissures.TimeRange(seis.getBeginTime().getFissuresTime(), 
+// 					seis.getEndTime().getFissuresTime()));
+// 			chGrpSeismograms[counter] = new DataSetSeismogram(dataSet.getSeismogram(name), dataSet);
+// 		    }
 
-		    try {
+// 		    try {
 			 
-		    LocalSeismogramImpl[] tmpSeis = new LocalSeismogramImpl[3];
-		    tmpSeis[0] = chGrpSeismograms[0].getSeismogram();
-		    tmpSeis[1] = chGrpSeismograms[1].getSeismogram();
-		    tmpSeis[2] = chGrpSeismograms[2].getSeismogram();
-		    LocalMotionVectorImpl motionVec = 
-			MotionVectorUtil.create(tmpSeis);
-		    } catch (IncompatibleSeismograms e) {
+// 		    LocalSeismogramImpl[] tmpSeis = new LocalSeismogramImpl[3];
+// 		    tmpSeis[0] = chGrpSeismograms[0].getSeismogram();
+// 		    tmpSeis[1] = chGrpSeismograms[1].getSeismogram();
+// 		    tmpSeis[2] = chGrpSeismograms[2].getSeismogram();
+// 		    LocalMotionVectorImpl motionVec = 
+// 			MotionVectorUtil.create(tmpSeis);
+// 		    } catch (IncompatibleSeismograms e) {
 			
-		    } // end of try-catch
+// 		    } // end of try-catch
 		    
 		    
-		} // end of for (int i=0; i<seismograms.length; i++)
+//		} // end of for (int i=0; i<seismograms.length; i++)
 		
-	    }
+//	    }
 	}
     }
 

@@ -79,20 +79,9 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         <!-- Print out a line for each successful event -->
         <printLineEventProcess/>
         
-        <mapEventStatus xlink:href="status/eventMap.png"/>
         <eventStatusTemplate>
-            <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/timeSorted.xml"/>
+            <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/eventStatus.xml"/>
         </eventStatusTemplate>
-        <eventStatusTemplate>
-            <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/depthSorted.xml"/>
-        </eventStatusTemplate>
-        <eventStatusTemplate>
-            <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/locSorted.xml"/>
-        </eventStatusTemplate>
-        <eventStatusTemplate>
-            <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/magSorted.xml"/>
-        </eventStatusTemplate>
-        
     </eventArm>
     
     <networkArm>
@@ -184,7 +173,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <someCoverage/>
             </ORAvailableDataWrapper>
             
-            <ORLocalSeismogramSubsetterWrapper>
+            <ORLocalSeismogramWrapper>
                 <phaseSignalToNoise>
                     <modelName>prem</modelName>
                     <phaseName>P</phaseName>
@@ -206,10 +195,15 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                     </longOffsetEnd>
                     <ratio>2.7</ratio>
                 </phaseSignalToNoise>
-            </ORLocalSeismogramSubsetterWrapper>
+            </ORLocalSeismogramWrapper>
             
             
             <printlineSeismogramProcess/>
+            
+            <seismogramImageProcess>  
+                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
+                <prefix>orig_</prefix>
+            </seismogramImageProcess>
             
             <phaseCut>
                 <beginPhase>P</beginPhase>
@@ -223,10 +217,35 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                     <value>120</value>
                 </endOffset>
             </phaseCut>
+            <seismogramImageProcess>  
+                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
+                <prefix>cut_</prefix>
+            </seismogramImageProcess>
+            
             <rMean/>
+            <seismogramImageProcess>  
+                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
+                <prefix>rmean_</prefix>
+            </seismogramImageProcess>
+            
             <rTrend/>
+            <seismogramImageProcess>  
+                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
+                <prefix>rtrend_</prefix>
+            </seismogramImageProcess>
+            
             <taper/>
+            <seismogramImageProcess>  
+                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
+                <prefix>taper_</prefix>
+            </seismogramImageProcess>
+            
             <responseGainProcessor/>
+            <seismogramImageProcess>  
+                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
+                <prefix>gain_</prefix>
+            </seismogramImageProcess>
+            
             <phaseSignalToNoiseCalculator>
                 <modelName>prem</modelName>
                 <phaseName>P</phaseName>
@@ -259,6 +278,11 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <numPoles>2</numPoles>
                 <filterType>NONCAUSAL</filterType>
             </filter>
+            <seismogramImageProcess>  
+                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
+                <prefix>filter_</prefix>
+            </seismogramImageProcess>
+            
             
             
             <externalChannelGroupSeismogramProcess>

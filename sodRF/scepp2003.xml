@@ -109,12 +109,14 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
               <networkCode>SP</networkCode>
 
+    <stationAND>
         <stationEffectiveTimeOverlap>
-        <effectiveTimeOverlap>
-            <min>20030101T00:00:00.001Z</min>
-            <max>20041231T23:59:59.999Z</max>
-        </effectiveTimeOverlap>
+           <effectiveTimeOverlap>
+               <min>20030101T00:00:00.001Z</min>
+               <max>20041231T23:59:59.999Z</max>
+           </effectiveTimeOverlap>
         </stationEffectiveTimeOverlap>
+    </stationAND>
 
    <channelAND>
 <!-- Accept any channel with B band code -->
@@ -187,10 +189,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
     <externalSeismogramProcess>
         <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
         <dataDirectory>SP_recfunc</dataDirectory>
-                <eventDirLabel>
-                     <originTime>yyyy_DDD_HH_mm_ss</originTime>
-                     _<magnitude/>
-                </eventDirLabel>
+                <eventDirLabel><originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/></eventDirLabel>
     </externalSeismogramProcess>
 
     </localSeismogramArm>

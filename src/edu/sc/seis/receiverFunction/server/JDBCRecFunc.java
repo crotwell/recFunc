@@ -201,7 +201,7 @@ public class JDBCRecFunc extends JDBCTable {
                                                           cacheEvent,
                                                           fileType);
         int index = 1;
-        int id = seq.next();
+        int id = receiverFunctionSeq.next();
         putStmt.setInt(index++, id);
         putStmt.setInt(index++, originDbId);
         putStmt.setInt(index++, eventAttrDbId);
@@ -447,7 +447,7 @@ public class JDBCRecFunc extends JDBCTable {
     
     private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt, getByDbIdStmt;
     
-    private JDBCSequence seq;
+    private JDBCSequence receiverFunctionSeq;
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCRecFunc.class);
 }

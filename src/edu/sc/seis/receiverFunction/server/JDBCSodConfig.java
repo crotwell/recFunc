@@ -30,7 +30,7 @@ public class JDBCSodConfig  extends JDBCTable {
             return getDbId(sodConfig);
         } catch (NotFound e) {
             // not in db yet
-            int id = seq.next();
+            int id = sodConfigSeq.next();
             put.setInt(1, id);
             put.setString(2, sodConfig);
             put.executeUpdate();
@@ -56,7 +56,7 @@ public class JDBCSodConfig  extends JDBCTable {
         throw new NotFound("dbid not found for sodConfig");
     }
     
-    JDBCSequence seq;
+    JDBCSequence sodConfigSeq;
     
     PreparedStatement put, get, getDbId;
 }

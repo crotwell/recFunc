@@ -73,7 +73,7 @@ public class JDBCHKStack extends JDBCTable {
 
     public int put(int recfunc_id, HKStack stack) throws SQLException,
             IOException {
-        int hkstack_id = seq.next();
+        int hkstack_id = hkstackSeq.next();
         int index = 1;
         put.setInt(index++, hkstack_id);
         put.setInt(index++, recfunc_id);
@@ -281,7 +281,7 @@ public class JDBCHKStack extends JDBCTable {
 
     private JDBCRecFunc jdbcRecFunc;
 
-    private JDBCSequence seq;
+    private JDBCSequence hkstackSeq;
 
     private File dataDir;
 

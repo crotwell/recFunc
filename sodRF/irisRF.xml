@@ -81,8 +81,9 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         <!-- Print out a line for each successful event -->
         <printLineEventProcess/>
         
-        <eventStatusTemplate
-            xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/eventStatus.xml"/>
+        <eventStatusTemplate>
+            <template>jar:edu/sc/seis/sod/data/templates/eventArm/eventStatus.xml</template>
+        </eventStatusTemplate>
     </eventArm>
     
     <networkArm>
@@ -91,8 +92,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             <dns>edu/iris/dmc</dns>
             <!-- recheck channels after some time -->
             <refreshInterval>
-                <unit>MINUTE</unit>
-                <value>3000</value>
+                <unit>DAY</unit>
+                <value>3</value>
             </refreshInterval>
         </networkFinder>
         
@@ -127,14 +128,20 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         
         <printlineChannelProcessor/>
         <networkInfoTemplateGenerator>
-            <netConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/networks.xml"/>
-            <stationConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/stations.xml"/>
-            <channelConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/channels.xml"/>
+            <netConfig>
+                <template>jar:edu/sc/seis/sod/data/templates/networkArm/networks.xml</template>
+            </netConfig>
+            <stationConfig>
+                <template>jar:edu/sc/seis/sod/data/templates/networkArm/stations.xml</template>
+            </stationConfig>
+            <channelConfig>
+                <template>jar:edu/sc/seis/sod/data/templates/networkArm/channels.xml</template>
+            </channelConfig>
         </networkInfoTemplateGenerator>
     </networkArm>
     
     
-    <waveformArm>
+    <waveformVectorArm>
         <eventStationAND>
             <distanceRange>
                 <unit>DEGREE</unit>
@@ -147,7 +154,6 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             </phaseExists>
         </eventStationAND>
         
-        <motionVectorArm>
             
             <requestGeneratorWrapper>
                 <phaseRequest>
@@ -173,7 +179,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <someCoverage/>
             </ORAvailableDataWrapper>
             
-            <ORLocalSeismogramWrapper>
+            <ORWaveformProcessWrapper>
                 <phaseSignalToNoise>
                     <modelName>prem</modelName>
                     <phaseName>P</phaseName>
@@ -195,11 +201,11 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                     </longOffsetEnd>
                     <ratio>2.7</ratio>
                 </phaseSignalToNoise>
-            </ORLocalSeismogramWrapper>
+            </ORWaveformProcessWrapper>
             
             <printlineSeismogramProcess/>
 
-            <ANDLocalSeismogramWrapper>
+            <ANDWaveformProcessWrapper>
                <alwaysSuccess>
                 <phaseSignalToNoise>
                     <modelName>prem</modelName>
@@ -223,10 +229,12 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                     <ratio>0.0</ratio>
                 </phaseSignalToNoise>
                </alwaysSuccess>
-            </ANDLocalSeismogramWrapper>
+            </ANDWaveformProcessWrapper>
             
             <seismogramImageProcess>  
-                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
+                <seismogramConfig>
+                    <template>jar:edu/sc/seis/receiverFunction/rfTemplate.vm</template>
+                </seismogramConfig>
                 <prefix>orig_</prefix>
                 <fileType>pdf</fileType>
             </seismogramImageProcess>
@@ -244,7 +252,9 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 </endOffset>
             </phaseCut>
             <seismogramImageProcess>  
-                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
+                <seismogramConfig>
+                    <template>jar:edu/sc/seis/receiverFunction/rfTemplate.vm</template>
+                </seismogramConfig>
                 <prefix>cut_</prefix>
                 <fileType>pdf</fileType>
             </seismogramImageProcess>
@@ -266,11 +276,13 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             </filter>
             
             <seismogramImageProcess>  
-                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
+                <seismogramConfig>
+                    <template>jar:edu/sc/seis/receiverFunction/rfTemplate.vm</template>
+                </seismogramConfig>
                 <prefix>pre_</prefix>
                 <fileType>pdf</fileType>
             </seismogramImageProcess>
-            <externalChannelGroupSeismogramProcess>
+            <externalWaveformVectorProcess>
                 <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
                 <fileType>sac</fileType>
                 <dataDirectory>IRIS_recfunc</dataDirectory>
@@ -278,15 +290,15 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                     <originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/>
                 </eventDirLabel>
                 <gaussianWidth>3.0</gaussianWidth>
-            </externalChannelGroupSeismogramProcess>
+            </externalWaveformVectorProcess>
             
-            <localSeismogramTemplateGenerator  
-                xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
+            <localSeismogramTemplateGenerator>
+                <template>jar:edu/sc/seis/receiverFunction/rfTemplate.vm"</template>
+            </localSeismogramTemplateGenerator>
             
-        </motionVectorArm>
-        
-        <waveformEventTemplateGenerator
-            xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml"/>
+        <waveformEventTemplateGenerator>
+            <template>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml</template>
+        </waveformEventTemplateGenerator>
         <waveformNetworkStatus>
             <template>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformNetwork.xml</template>
             <networkListTemplate>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformNetworks.xml</networkListTemplate>
@@ -294,5 +306,5 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         <waveformStationStatus>
             <template>jar:edu/sc/seis/receiverFunction/waveformStation.xml</template>
         </waveformStationStatus>
-    </waveformArm>
+    </waveformVectorArm>
 </sod>

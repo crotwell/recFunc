@@ -179,7 +179,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                     bw.write("</br><pre>");bw.newLine();
                     stack.writeReport(bw);bw.newLine();
                     bw.write("</pre></br>");bw.newLine();
-                    bw.write("<img src="+quote+outImageFile+quote+"/>");
+                    bw.write("<img src="+quote+outImageFile.getName()+quote+"/>");
                     bw.write("</body>");bw.newLine();
                     bw.write("</html>");bw.newLine();
                     bw.close();
@@ -247,7 +247,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
             summaryPage.write("<body>");summaryPage.newLine();
             // we don't close the tags so that we can append to the file easily
         }
-        summaryPage.write(val);summaryPage.newLine();
+        summaryPage.write(val+"</br>");summaryPage.newLine();
         summaryPage.flush();
     }
 

@@ -10,6 +10,7 @@ import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
+import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.IfReceiverFunction.RecFuncCachePOA;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
@@ -105,7 +106,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                 jdbcHKStack.calc(recFuncDbId, 1, 1, 1);
             }
         } catch(Throwable e) {
-            GlobalExceptionHandler.handle(e);
+            GlobalExceptionHandler.handle("Problem with "+ChannelIdUtil.toString(channels[0].get_id())+" for origin time="+prefOrigin.origin_time.date_time, e);
             throw new UNKNOWN(e.toString(), 12, CompletionStatus.COMPLETED_MAYBE);
         }
     }

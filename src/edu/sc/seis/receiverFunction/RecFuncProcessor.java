@@ -38,6 +38,7 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import edu.iris.Fissures.model.MicroSecondDate;
+import edu.iris.Fissures.model.UnitImpl;
 
 public class RecFuncProcessor extends SacFileProcessor implements LocalSeismogramProcess {
 

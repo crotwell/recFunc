@@ -94,7 +94,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
             }
         }
 
-        DataSet dataset = getDataSet(event);
+        DataSet dataset = prepareDataset(event);
         DataSetSeismogram[] chGrpSeismograms =
             DisplayUtils.getComponents(dataset, available[0][0]);
 

@@ -101,6 +101,7 @@ public class JDBCRecFunc extends JDBCTable {
                    float radialError,
                    LocalSeismogram transverse,
                    float transverseError) throws SQLException, IOException, NoPreferredOrigin, CodecException, UnsupportedFileTypeException, SeedFormatException {
+        logger.debug("put: "+eventAttr.name+" "+ChannelIdUtil.toStringNoDates(channels[0].get_id()));
         int originDbId = jdbcOrigin.put(prefOrigin);
         int eventAttrDbId = jdbcEventAttr.put(eventAttr);
         int[] channelDbId = new int[channels.length];
@@ -175,6 +176,8 @@ public class JDBCRecFunc extends JDBCTable {
         putStmt.setFloat(index++, config.gwidth);
         putStmt.setInt(index++, config.maxBumps);
         putStmt.setFloat(index++, config.tol);
+        putStmt.executeUpdate();
+        logger.debug("insert: "+putStmt);
         return id;
         
     }
@@ -244,4 +247,6 @@ public class JDBCRecFunc extends JDBCTable {
     private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt;
     
     private JDBCSequence seq;
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCRecFunc.class);
 }

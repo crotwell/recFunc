@@ -109,10 +109,16 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                 Element alignElement = d.createElement("timeInterval");
                 XMLQuantity.insert(alignElement, shift);
                 predictedDSS[i].addAuxillaryData("recFunc.alignShift", alignElement);
-                Element percentMatchElement = d.createElement("percentMatch");
-                Text t = d.createTextNode(""+(100*ans[i].getResultPower()/ans[i].getNumeratorPower()));
-                percentMatchElement.appendChild(t);
-                predictedDSS[i].addAuxillaryData("recFunc.percentMatch", percentMatchElement);
+                Element auxElement = makeAuxElement(d,
+                                                             "percentMatch",
+                                                             ""+(100*ans[i].getResultPower()/ans[i].getNumeratorPower()));
+                predictedDSS[i].addAuxillaryData("recFunc.percentMatch", auxElement);
+
+                auxElement = makeAuxElement(d, "gwidth", ""+ans[i].getGWidth());
+                predictedDSS[i].addAuxillaryData("recFunc.gwidth", auxElement);
+
+                auxElement = makeAuxElement(d, "maxBumps", ""+ans[i].getMaxBumps());
+                predictedDSS[i].addAuxillaryData("recFunc.maxBumps", auxElement);
 
                 AuditInfo[] audit = new AuditInfo[1];
                 audit[0] =
@@ -159,6 +165,13 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
         } finally {
             recFuncFinished = true;
         }
+    }
+
+    Element makeAuxElement(Document d, String elName, String text) {
+        Element element = d.createElement(elName);
+        Text t = d.createTextNode(text);
+        element.appendChild(t);
+        return element;
     }
 
     MemoryDataSetSeismogram saveTimeSeries(float[] data,

@@ -42,6 +42,7 @@ import org.w3c.dom.Element;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 
 public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeismogramProcess {
 
@@ -178,6 +179,26 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements LocalSeism
                     bw.write("</br><pre>");bw.newLine();
                     stack.writeReport(bw);bw.newLine();
                     bw.write("</pre></br>");bw.newLine();
+                    it = aux.iterator();
+                    while (it.hasNext()) {
+                        Object key = it.next();
+                        Object val = predicted.getAuxillaryData(key);
+                        if (val instanceof Element) {
+                            Element e = (Element)val;
+                            StringWriter swriter = new StringWriter();
+                            edu.sc.seis.fissuresUtil.xml.Writer out = new edu.sc.seis.fissuresUtil.xml.Writer();
+                            out.setOutput(swriter);
+                            out.write(e);
+                            swriter.close();
+                            bw.write("<h3>"+key.toString()+"</h3>");bw.newLine();
+                            bw.write("<pre>");bw.newLine();
+                            bw.write(swriter.toString());bw.newLine();
+                            bw.write("</pre></br>");bw.newLine();
+                        } else {
+                            // oh well, use toString and hope for the best
+                            bw.write(key.toString()+" = "+val.toString()+"</br>");bw.newLine();
+                        }
+                    }
                     bw.write("<img src="+quote+outImageFile.getName()+quote+"/>");
                     bw.write("</body>");bw.newLine();
                     bw.write("</html>");bw.newLine();

@@ -184,9 +184,10 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                     synchronized(lSeisTemplateGen) {
                         RequestFilter[] zoomP = new RequestFilter[1];
                         MicroSecondDate oTime = new MicroSecondDate(event.get_preferred_origin().origin_time);
+                        MicroSecondDate pTime = oTime.add(new TimeInterval(arrival.getTime(), UnitImpl.SECOND));
                         zoomP[0] = new RequestFilter(recFuncChannel.get_id(),
-                                                     oTime.subtract(new TimeInterval(5, UnitImpl.SECOND)).getFissuresTime(),
-                                                     oTime.add(new TimeInterval(30, UnitImpl.SECOND)).getFissuresTime());
+                                                     pTime.subtract(new TimeInterval(5, UnitImpl.SECOND)).getFissuresTime(),
+                                                     pTime.add(new TimeInterval(30, UnitImpl.SECOND)).getFissuresTime());
                         lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP, zoomP, predicted.getCache(), cookieJar);
                         lSeisTemplateGen.getSeismogramImageProcess().process(event, recFuncChannel, zoomP, predicted.getCache(), lSeisTemplateGen.getSeismogramImageProcess().PDF);
                     }

@@ -1,5 +1,7 @@
 package edu.sc.seis.receiverFunction.server;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,6 +34,7 @@ import edu.sc.seis.fissuresUtil.database.event.JDBCEventAttr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCOrigin;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.RecFunc;
@@ -76,7 +79,7 @@ public class JDBCHKStack  extends JDBCTable {
         getForStationStmt = conn.prepareStatement(ConnMgr.getSQL("hkstack.getForStation"));
     }
     
-    public int put(int recfunc_id, HKStack stack) throws SQLException {
+    public int put(int recfunc_id, HKStack stack) throws SQLException, IOException {
         int hkstack_id = seq.next();
         int index = 1;
         putStmt.setInt(index++, hkstack_id);
@@ -101,7 +104,16 @@ public class JDBCHKStack  extends JDBCTable {
         putStmt.setFloat(index++, peakK);
         putStmt.setFloat(index++, peakVal);
         
-        putStmt.setObject(index++, stack.getStack());
+        float[][] vals = stack.getStack();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(out);
+        for(int i = 0; i < vals.length; i++) {
+            for(int j = 0; j < vals[i].length; j++) {
+                dos.writeFloat(vals[i][j]);
+            }
+        }
+        byte[] valBytes = out.toByteArray();
+        putStmt.setBytes(index++, valBytes);
         putStmt.setTimestamp(index++, ClockUtil.now().getTimestamp());
         try {
         putStmt.executeUpdate();

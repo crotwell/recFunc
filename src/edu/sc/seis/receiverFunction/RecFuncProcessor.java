@@ -247,7 +247,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
                             if (val instanceof Element) {
                                 Element e = (Element)val;
                                 StringWriter swriter = new StringWriter();
-                                edu.sc.seis.fissuresUtil.xml.Writer out = new edu.sc.seis.fissuresUtil.xml.Writer();
+                                edu.sc.seis.fissuresUtil.xml.Writer out = new edu.sc.seis.fissuresUtil.xml.Writer(false, true);
                                 out.setOutput(swriter);
                                 out.write(e);
                                 swriter.close();

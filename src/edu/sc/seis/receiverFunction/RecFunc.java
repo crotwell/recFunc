@@ -84,9 +84,7 @@ public class RecFunc {
         e = phaseCut.cut(staLoc, origin, e);
         z = phaseCut.cut(staLoc, origin, z);
         
-        DistAz distAz = new DistAz(staLoc.latitude, staLoc.longitude,
-                                   evtLoc.latitude, evtLoc.longitude);
-        float[][] rotated = Rotate.rotate(e, n, (180+distAz.baz)*Math.PI/180);
+        float[][] rotated = Rotate.rotateGCP(e, n, staLoc, evtLoc);
         
         // check lengths, trim if needed???
         float[] zdata = z.get_as_floats();
@@ -102,13 +100,13 @@ public class RecFunc {
         
         SamplingImpl samp = SamplingImpl.createSamplingImpl(z.sampling_info);
         double period = samp.getPeriod().convertTo(UnitImpl.SECOND).getValue();
-        IterDeconResult ansRadial = processComponent(rotated[0],
+        IterDeconResult ansRadial = processComponent(rotated[1],
                                                      zdata,
                                                          (float)period,
                                                      staLoc,
                                                      origin);
         
-        IterDeconResult ansTangential = processComponent(rotated[1],
+        IterDeconResult ansTangential = processComponent(rotated[0],
                                                          zdata,
                                                              (float)period,
                                                          staLoc,

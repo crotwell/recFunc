@@ -94,6 +94,27 @@ $fissures.formatMagnitude($m),
 <td>$velocity_date.format("MM/dd/yyyy HH:mm:ss ZZZ", $fissures.getRangeEnd($station.EffectiveTime))</td>
 </tr>
 </table>
+
+<h2>Receiver Function Info</h2>
+<table>
+<tr>
+<td><b>Crust2.0 Thickness</b></td>
+<td>$Crust2_H</td>
+</tr>
+<tr>
+<td><b>Crust2.0 Vp</b></td>
+<td>$Crust2_Vp</td>
+</tr>
+<tr>
+<td><b>Crust2.0 Vs</b></td>
+<td>$Crust2_Vs</td>
+</tr>
+<tr>
+<td><b>Crust2.0 Vp/Vs</b></td>
+<td>$Crust2_VpVs</td>
+</tr>
+</table>
+
 <h2>Seismograms</h2>
 <table>
 #foreach ($chanId in $allChanIds)

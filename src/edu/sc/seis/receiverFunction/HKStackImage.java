@@ -23,6 +23,10 @@ public class HKStackImage extends JComponent {
         setPreferredSize(imageSize);
     }
 
+    public void addMarker(int vpvsIndex, int depthIndex) {
+        // TODO
+    }
+
 
     public void paintComponent(Graphics graphics) {
         Graphics2D g = (Graphics2D)graphics;
@@ -40,6 +44,8 @@ public class HKStackImage extends JComponent {
             for (int k = 0; k < stackOut[j].length; k++) {
                 if (j== xyMax[0] && k==xyMax[1]) {
                     g.setColor(Color.red);
+                } else if (j== markerH && k==markerV) {
+                    g.setColor(Color.blue);
                 } else {
                     int colorVal = makeImageable(0, max, stackOut[j][k]);
                     g.setColor(new Color(colorVal, colorVal, colorVal));
@@ -59,6 +65,9 @@ public class HKStackImage extends JComponent {
     }
 
     protected HKStack stack;
+
+    protected int markerH = -1;
+    protected int markerV = -1;
 
 }
 

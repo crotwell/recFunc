@@ -6,58 +6,43 @@
 
 package edu.sc.seis.receiverFunction;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Collection;
-import java.util.Iterator;
+import edu.sc.seis.fissuresUtil.xml.*;
+import edu.sc.seis.sod.process.waveformArm.*;
+import java.io.*;
 
-import org.apache.log4j.Logger;
-import org.w3c.dom.Element;
-
-import edu.iris.Fissures.Orientation;
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
-import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.iris.Fissures.IfSeismogramDC.RequestFilter;
+import edu.iris.Fissures.Orientation;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
+import edu.iris.Fissures.network.StationIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.EventUtil;
 import edu.sc.seis.fissuresUtil.display.DisplayUtils;
-import edu.sc.seis.fissuresUtil.xml.DataSet;
-import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
-import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
-import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
-import edu.sc.seis.fissuresUtil.xml.SeismogramFileTypes;
-import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.receiverFunction.crust2.Crust2;
+import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 import edu.sc.seis.sod.ChannelGroup;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.Start;
-import edu.sc.seis.sod.process.waveformArm.ANDLocalSeismogramWrapper;
-import edu.sc.seis.sod.process.waveformArm.ChannelGroupLocalSeismogramProcess;
-import edu.sc.seis.sod.process.waveformArm.ChannelGroupLocalSeismogramResult;
-import edu.sc.seis.sod.process.waveformArm.LocalSeismogramResult;
-import edu.sc.seis.sod.process.waveformArm.LocalSeismogramTemplateGenerator;
-import edu.sc.seis.sod.process.waveformArm.SaveSeismogramToFile;
 import edu.sc.seis.sod.status.FissuresFormatter;
 import edu.sc.seis.sod.status.StringTreeLeaf;
+import java.awt.image.BufferedImage;
+import java.util.Collection;
+import java.util.Iterator;
+import org.apache.log4j.Logger;
+import org.w3c.dom.Element;
 
 public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGroupLocalSeismogramProcess {
 
@@ -289,17 +274,27 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
 
                         doSumHKStack(predicted,
                                      getParentDirectory(),
-                                     predicted.getRequestFilter().channel_id,
+                                     recFuncChannel,
                                      prefix,
                                      postfix,
                                      90);
 
                         doSumHKStack(predicted,
                                      getParentDirectory(),
-                                     predicted.getRequestFilter().channel_id,
+                                     recFuncChannel,
                                      prefix,
                                      postfix,
                                      80);
+
+                        if (crust2 != null) {
+                            Crust2Profile profile = crust2.getClosest(recFuncChannel.my_site.my_station.my_location.longitude,
+                                                                      recFuncChannel.my_site.my_station.my_location.latitude);
+                            cookieJar.put("Crust2_H", new Float(profile.getLayer(7).topDepth));
+                            cookieJar.put("Crust2_Vp", new Float(profile.getPWaveAvgVelocity()));
+                            cookieJar.put("Crust2_Vs", new Float(profile.getSWaveAvgVelocity()));
+                            cookieJar.put("Crust2_VpVs", new Float(profile.getPWaveAvgVelocity() /
+                                                                         profile.getSWaveAvgVelocity()));
+                        }
                     }
                 }
             } else {
@@ -354,13 +349,13 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
 
     void doSumHKStack(MemoryDataSetSeismogram predicted,
                       File parentDir,
-                      ChannelId chan,
+                      Channel recFuncChannel,
                       String prefix,
                       String postfix,
                       float minPercentMatch) throws IOException {
         // now update global per channel stack
         SumHKStack sum = SumHKStack.load(parentDir,
-                                         predicted.getRequestFilter().channel_id,
+                                         recFuncChannel,
                                          prefix,
                                          postfix,
                                          minPercentMatch);
@@ -398,6 +393,15 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements ChannelGro
     String[] pPhases = { "P" };
 
     static BufferedWriter summaryPage = null;
+
+    transient static Crust2 crust2 = null;
+    static {
+        try {
+            crust2 = new Crust2();
+        } catch (IOException e) {
+            GlobalExceptionHandler.handle("Couldn't load Crust2.0", e);
+        }
+    }
 
     public static final char quote = '"';
 

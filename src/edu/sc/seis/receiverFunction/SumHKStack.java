@@ -8,6 +8,7 @@ package edu.sc.seis.receiverFunction;
 
 import java.io.*;
 
+import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.sc.seis.sod.status.FissuresFormatter;
@@ -16,7 +17,7 @@ import java.util.LinkedList;
 
 public class SumHKStack {
     public SumHKStack(HKStack[] individuals,
-                      ChannelId chan,
+                      Channel chan,
                       float minPercentMatch) {
         this.individuals = individuals;
         this.minPercentMatch = minPercentMatch;
@@ -40,7 +41,7 @@ public class SumHKStack {
         sum.write(out);
     }
 
-    void calculate(ChannelId chan) {
+    void calculate(Channel chan) {
         float[][] stack = new float[individuals[0].getStack().length][individuals[0].getStack()[0].length];
         for (int i = 0; i < stack.length; i++) {
             for (int j = 0; j < stack[0].length; j++) {
@@ -62,7 +63,7 @@ public class SumHKStack {
                           chan);
     }
 
-    public static SumHKStack load(File parentDir, ChannelId chan, String prefix, String postfix, float minPercentMatch) throws IOException {
+    public static SumHKStack load(File parentDir, Channel chan, String prefix, String postfix, float minPercentMatch) throws IOException {
         File[] subdir = parentDir.listFiles();
         LinkedList stacks = new LinkedList();
         for (int i = 0; i < subdir.length; i++) {
@@ -70,7 +71,7 @@ public class SumHKStack {
                 continue;
             }
             File stackFile = new File(subdir[i],
-                                      FissuresFormatter.filize(prefix+ChannelIdUtil.toStringNoDates(chan)+postfix));
+                                      FissuresFormatter.filize(prefix+ChannelIdUtil.toStringNoDates(chan.get_id())+postfix));
             if ( ! stackFile.exists()) {
                 continue;
             }

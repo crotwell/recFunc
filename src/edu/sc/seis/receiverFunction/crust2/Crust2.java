@@ -97,8 +97,6 @@ public class Crust2 {
                 // end of file?
             }
         }
-        System.out.println("finsihed read, next line is :"+in.readLine());
-
     }
 
     private void parseLatLonModel() throws IOException {
@@ -126,7 +124,6 @@ public class Crust2 {
     }
 
     private ArrayList split(String line) {
-        System.out.println("line "+line);
         ArrayList list = new ArrayList();
         if (line == null) {
             return list;

@@ -6,21 +6,26 @@
 
 package edu.sc.seis.receiverFunction;
 import edu.iris.Fissures.FissuresException;
+import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.model.UnitRangeImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.iris.Fissures.network.StationIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.fissuresUtil.display.BorderedDisplay;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import edu.sc.seis.fissuresUtil.display.borders.Border;
 import edu.sc.seis.fissuresUtil.display.borders.UnitRangeBorder;
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.SeisDataChangeEvent;
 import edu.sc.seis.fissuresUtil.xml.SeisDataChangeListener;
 import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
 import edu.sc.seis.fissuresUtil.xml.XMLQuantity;
+import edu.sc.seis.receiverFunction.crust2.Crust2;
+import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 import edu.sc.seis.sod.SodUtil;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -73,6 +78,7 @@ public class HKStack implements Serializable {
                    DataSetSeismogram recFunc)  throws FissuresException {
         this(alpha,p, percentMatch, minH ,stepH ,numH ,minK ,stepK ,numK );
         this.recFunc = recFunc;
+        this.chan = recFunc.getDataSet().getChannel(recFunc.getRequestFilter().channel_id);
         calculate();
     }
 
@@ -104,6 +110,7 @@ public class HKStack implements Serializable {
                    DataSetSeismogram recFunc) {
         this(alpha,p, percentMatch ,minH ,stepH ,numH ,minK ,stepK ,numK, stack );
         this.recFunc = recFunc;
+        this.chan = recFunc.getDataSet().getChannel(recFunc.getRequestFilter().channel_id);
     }
 
     public HKStack(float alpha,
@@ -116,9 +123,9 @@ public class HKStack implements Serializable {
                    float stepK,
                    int numK,
                    float[][] stack,
-                   ChannelId chanId) {
+                   Channel chan) {
         this(alpha,p, percentMatch ,minH ,stepH ,numH ,minK ,stepK ,numK, stack );
-        this.chanId = chanId;
+        this.chan = chan;
     }
 
     /** returns the x and y indices for the max value in the stack. The
@@ -170,7 +177,18 @@ public class HKStack implements Serializable {
     }
 
     public JComponent getStackComponent() {
-        BorderedDisplay bd = new BorderedDisplay(new HKStackImage(this));
+        HKStackImage stackImage = new HKStackImage(this);
+        if (crust2 != null) {
+            Crust2Profile profile = crust2.getClosest(chan.my_site.my_station.my_location.longitude,
+                                                      chan.my_site.my_station.my_location.latitude);
+            int depthIndex = (int)Math.round((profile.getLayer(7).topDepth-minH)/stepH);
+            double vpvs = profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity();
+            int vpvsIndex = (int)Math.round((vpvs-minK)/stepK);
+            System.out.println("Crust2 "+StationIdUtil.toString(chan.my_site.my_station.get_id())+" depth="+
+                              profile.getLayer(7).topDepth+" "+depthIndex+"  VpVs="+vpvs+" "+vpvsIndex);
+            stackImage.addMarker(vpvsIndex, depthIndex);
+        }
+        BorderedDisplay bd = new BorderedDisplay(stackImage);
         UnitRangeBorder depthLeftBorder = new UnitRangeBorder(Border.LEFT,
                                                               Border.DESCENDING,
                                                               "Depth",
@@ -292,7 +310,7 @@ public class HKStack implements Serializable {
         }
         Element shiftElement =
             (Element)recFunc.getAuxillaryData("recFunc.alignShift");
-        QuantityImpl shift = (QuantityImpl)XMLQuantity.getQuantity(shiftElement);
+        QuantityImpl shift = XMLQuantity.getQuantity(shiftElement);
         shift = shift.convertTo(UnitImpl.SECOND);
         DataGetter dataGetter = new DataGetter();
         recFunc.retrieveData(dataGetter);
@@ -344,7 +362,7 @@ public class HKStack implements Serializable {
         if (recFunc != null) {
             return getRecFunc().getRequestFilter().channel_id;
         } else {
-            return chanId;
+            return chan.get_id();
         }
     }
 
@@ -482,10 +500,19 @@ public class HKStack implements Serializable {
     float stepK;
     int numK;
 
+    transient static Crust2 crust2 = null;
+    static {
+        try {
+            crust2 = new Crust2();
+        } catch (IOException e) {
+            GlobalExceptionHandler.handle("Couldn't load Crust2.0", e);
+        }
+    }
+
     // don't serialize the DSS
     transient DataSetSeismogram recFunc;
 
-    ChannelId chanId;
+    Channel chan;
 
     class DataGetter implements SeisDataChangeListener {
 

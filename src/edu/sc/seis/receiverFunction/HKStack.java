@@ -5,6 +5,7 @@
  */
 
 package edu.sc.seis.receiverFunction;
+import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
@@ -22,24 +23,23 @@ import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
 import edu.sc.seis.fissuresUtil.xml.XMLQuantity;
 import edu.sc.seis.sod.SodUtil;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.LinkedList;
 import javax.swing.JComponent;
-import org.w3c.dom.Element;
 import javax.swing.JFrame;
-import java.awt.Dimension;
-import java.io.Writer;
-import java.io.BufferedWriter;
-import edu.iris.Fissures.FissuresException;
+import org.w3c.dom.Element;
 
 
 
-public class HKStack {
+public class HKStack implements Serializable {
 
     protected HKStack(float alpha,
                       float p,

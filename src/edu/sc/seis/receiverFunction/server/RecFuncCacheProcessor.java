@@ -163,8 +163,6 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
 
     String dns = "edu/sc/seis";
 
-    String interfaceName = "IfReceiverFunction";
-
     String serverName = "Ears";
 
     int sodconfig_id = -1;

@@ -288,15 +288,6 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                                      postfix,
                                      80);
 
-                        if (crust2 != null) {
-                            Crust2Profile profile = crust2.getClosest(recFuncChannel.my_site.my_station.my_location.longitude,
-                                                                      recFuncChannel.my_site.my_station.my_location.latitude);
-                            cookieJar.put("Crust2_H", new Float(profile.getLayer(7).topDepth));
-                            cookieJar.put("Crust2_Vp", new Float(profile.getPWaveAvgVelocity()));
-                            cookieJar.put("Crust2_Vs", new Float(profile.getSWaveAvgVelocity()));
-                            cookieJar.put("Crust2_VpVs", new Float(profile.getPWaveAvgVelocity() /
-                                                                         profile.getSWaveAvgVelocity()));
-                        }
                     }
                 }
             } else {
@@ -395,15 +386,6 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
     String[] pPhases = { "P" };
 
     static BufferedWriter summaryPage = null;
-
-    transient static Crust2 crust2 = null;
-    static {
-        try {
-            crust2 = new Crust2();
-        } catch (IOException e) {
-            GlobalExceptionHandler.handle("Couldn't load Crust2.0", e);
-        }
-    }
 
     public static final char quote = '"';
 

@@ -266,6 +266,9 @@ public class HKStack implements Serializable {
         return peakVal;
     }
     
+    public float getVs() {
+        return getAlpha()/getMaxValueK();
+    }
     
     public JComponent getStackComponent() {
         return getStackComponent(minH);

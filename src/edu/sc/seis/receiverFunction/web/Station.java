@@ -13,6 +13,7 @@ import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
+import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.receiverFunction.HKStack;
@@ -109,10 +110,17 @@ public class Station extends Revlet {
                 markerList.add(new Marker("Wilson et. al.", result.getVpVs(), result.getH(), Color.GREEN));
             }
         }
-        int summaryDbId = jdbcSummaryHKStack.getDbIdForStation(net.get_id(), staCode);
-        SumHKStack summary = jdbcSummaryHKStack.get(summaryDbId);
         
         RevletContext context = new RevletContext("station.vm");
+        
+        try {
+            int summaryDbId = jdbcSummaryHKStack.getDbIdForStation(net.get_id(), staCode);
+            SumHKStack summary = jdbcSummaryHKStack.get(summaryDbId);
+            context.put("summary", summary);
+        } catch(NotFound e) {
+            // no summary, oh well...
+        }
+        
         context.put("stationList", stationList);
         context.put("stacode", staCode);
         context.put("net", net);
@@ -121,7 +129,6 @@ public class Station extends Revlet {
         context.put("numEighty", ""+numEighty);
         context.put("markerList", markerList);
         context.put("smallestH", smallestH+"");
-        context.put("summary", summary);
         return context;
     }
 

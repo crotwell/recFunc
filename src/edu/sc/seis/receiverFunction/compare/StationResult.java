@@ -1,5 +1,6 @@
 package edu.sc.seis.receiverFunction.compare;
 
+import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.StationId;
 
 /**
@@ -8,10 +9,14 @@ import edu.iris.Fissures.IfNetwork.StationId;
  */
 public class StationResult {
 
-    public StationResult(StationId stationId, float h, float vpVs) {
+
+    public StationResult(NetworkId networkId, String stationCode, float h, float vpVs, float vp, StationResultRef ref) {
         this.h = h;
+        this.vp = vp;
         this.vpVs = vpVs;
-        this.stationId = stationId;
+        this.networkId = networkId;
+        this.ref = ref;
+        this.stationCode = stationCode;
     }
     
     public float getH() {
@@ -21,14 +26,32 @@ public class StationResult {
     public float getVpVs() {
         return vpVs;
     }
-
-    public StationId getStationId() {
-        return stationId;
+    
+    public float getVp() {
+        return vp;
     }
 
-    private StationId stationId;
+    public NetworkId getNetworkId() {
+        return networkId;
+    }
+
+    public StationResultRef getRef() {
+        return ref;
+    }
+    
+    public String getStationCode() {
+        return stationCode;
+    }
+
+    private String stationCode;
+    
+    private StationResultRef ref;
+
+    private NetworkId networkId;
 
     private float h;
 
     private float vpVs;
+    
+    private float vp;
 }

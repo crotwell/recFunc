@@ -29,22 +29,26 @@
 </table>
 
 <table>
-<tr><td class="odd">Thickness Estimate</td><td class="even">$summary.getSum().getMaxValueH()</td></tr>
-<tr><td class="odd">Thickness StdDev</td><td class="even">$summary.getHStdDev()</td></tr>
-<tr><td class="odd">Vp/Vs Estimate</td><td class="even">$summary.getSum().getMaxValueK()</td></tr>
-<tr><td class="odd">Vp/Vs StdDev</td><td class="even">$summary.getKStdDev()</td></tr>
-<tr><td class="odd">Peak Value</td><td class="even">$summary.getSum().getMaxValue()</td></tr>
-<tr><td class="odd">Assumed Vp</td><td class="even">$summary.getSum().getAlpha()</td></tr>
-<tr><td class="odd">Ps Weight</td><td class="even">$summary.getSum().getWeightPs()</td></tr>
-<tr><td class="odd">PsPs Weight</td><td class="even">$summary.getSum().getWeightPsPs()</td></tr>
-<tr><td class="odd">PpPs Weight</td><td class="even">$summary.getSum().getWeightPpPs()</td></tr>
+<tr><td class="odd">Thickness Estimate</td><td class="even">$!summary.getSum().getMaxValueH()</td></tr>
+<tr><td class="odd">Thickness StdDev</td><td class="even">$!summary.getHStdDev()</td></tr>
+<tr><td class="odd">Vp/Vs Estimate</td><td class="even">$!summary.getSum().getMaxValueK()</td></tr>
+<tr><td class="odd">Vp/Vs StdDev</td><td class="even">$!summary.getKStdDev()</td></tr>
+<tr><td class="odd">Vs Estimate</td><td class="even">$!summary.getSum().getVs()</td></tr>
+<tr><td class="odd">Peak Value</td><td class="even">$!summary.getSum().getMaxValue()</td></tr>
+<tr><td class="odd">Assumed Vp</td><td class="even">$!summary.getSum().getAlpha()</td></tr>
+<tr><td class="odd">Ps Weight</td><td class="even">$!summary.getSum().getWeightPs()</td></tr>
+<tr><td class="odd">PsPs Weight</td><td class="even">$!summary.getSum().getWeightPsPs()</td></tr>
+<tr><td class="odd">PpPs Weight</td><td class="even">$!summary.getSum().getWeightPpPs()</td></tr>
 </table>
 
 <p>$numNinty with match > 90% and $numEighty with match > 80%.</p>
 
+#if( $numEighty > 0)
 <img class="dataimg" src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=${smallestH}"/>
+#end
 
-<p><a href="stationsNearBy.html?lat=$sta.getLatitude()&lon=$sta.getLongitude()&delta=2">Nearby stations</a></p>
+#set ($firstSta = $stationList.get(0) )
+<p><a href="stationsNearBy.html?lat=$firstSta.getLatitude()&lon=$firstSta.getLongitude()&delta=2">Nearby stations</a></p>
 
 <p><b>Prior Results for this Station</b></p>
 <table>

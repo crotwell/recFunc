@@ -15,6 +15,7 @@ import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
+import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.receiverFunction.SumHKStack;
@@ -88,12 +89,16 @@ public class StationsNearBy extends Revlet {
         Iterator it = stationList.iterator();
         HashMap summary = new HashMap();
         while(it.hasNext()) {
+            try {
             VelocityStation sta = (VelocityStation)it.next();
             sta.setDbId(jdbcChannel.getStationTable().getDBId(sta.get_id()));
-            sta.getNet().setDbId(jdbcChannel.getNetworkTable().getDBId(sta.getNet().get_id()));
+            sta.getNet().setDbId(jdbcChannel.getNetworkTable().getDbId(sta.getNet().get_id()));
             int dbid = jdbcSumHKStack.getDbIdForStation(sta.my_network.get_id(), sta.get_code());
             SumHKStack sumStack = jdbcSumHKStack.get(dbid);
             summary.put(sta, sumStack);
+            } catch (NotFound e) {
+                // oh well, skip this station
+            }
         }
         RevletContext context = new RevletContext("stationsNearBy.vm");
         context.put("stationList", stationList);

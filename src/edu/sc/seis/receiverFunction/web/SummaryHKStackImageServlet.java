@@ -78,9 +78,10 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                                            staCode,
                                            minPercentMatch,
                                            smallestH);
-               int dbid = jdbcSumHKStack.put(sumStack);
-               
-               logger.debug("finish calc stack summary: "+dbid+"  numH="+sumStack.getSum().getNumH());
+                if (sumStack != null) {
+                    int dbid = jdbcSumHKStack.put(sumStack);
+                    logger.debug("finish calc stack summary: "+dbid+"  numH="+sumStack.getSum().getNumH());
+                }
             }
                 
             logger.info("before check for null");

@@ -161,7 +161,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
         int index = 1;
         getForStation.setInt(index++, jdbcHKStack.getJDBCChannel()
                 .getNetworkTable()
-                .getDBId(net));
+                .getDbId(net));
         getForStation.setString(index++, station_code);
         ResultSet rs = getForStation.executeQuery();
         if(rs.next()) { return rs.getInt("hksummary_id"); }

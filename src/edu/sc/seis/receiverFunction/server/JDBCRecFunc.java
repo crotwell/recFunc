@@ -69,6 +69,7 @@ public class JDBCRecFunc extends JDBCTable {
                        JDBCSodConfig jdbcSodConfig,
                        String dataDirectory) throws SQLException, ConfigurationException, Exception {
         super("receiverFunction", conn);
+        this.dataDirectory = dataDirectory;
         this.jdbcOrigin = jdbcEventAccess.getJDBCOrigin();
         this.jdbcEventAttr = jdbcEventAccess.getJDBCAttr();
         this.jdbcEventAccess = jdbcEventAccess;
@@ -77,8 +78,6 @@ public class JDBCRecFunc extends JDBCTable {
         receiverFunctionSeq  = new JDBCSequence(conn, getTableName()+"Seq");
         TableSetup.setup(getTableName(), conn, this, "edu/sc/seis/receiverFunction/server/default.props");
         
-        dataDir = new File(dataDirectory);
-        dataDir.mkdirs();
         eventFormatter = new EventFormatter(true);
         putStmt = conn.prepareStatement(" INSERT INTO receiverFunction "+
                                         "(recFunc_id, "+
@@ -489,13 +488,19 @@ public class JDBCRecFunc extends JDBCTable {
     }
     
     protected File getDir(CacheEvent cacheEvent, Channel chan) {
+        if(dataDir == null) {
+            dataDir = new File(dataDirectory);
+            dataDir.mkdirs();
+        }
+        
         File eventDir = new File(dataDir, eventFormatter.getResult(cacheEvent));
         File netDir = new File(eventDir, chan.get_id().network_id.network_code);
         File stationDir = new File(netDir, chan.get_id().station_code);
         return stationDir;
     }
     
-    private File dataDir;
+    private String dataDirectory;
+    private File dataDir = null;
     
     private EventFormatter eventFormatter;
     

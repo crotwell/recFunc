@@ -1,26 +1,11 @@
 package edu.sc.seis.receiverFunction;
 
-import edu.sc.seis.fissuresUtil.xml.*;
-
-import edu.iris.Fissures.AuditInfo;
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
-import edu.iris.Fissures.IfEvent.Origin;
-import edu.iris.Fissures.IfNetwork.Channel;
-import edu.iris.Fissures.IfNetwork.ChannelId;
-import edu.iris.Fissures.Location;
-import edu.iris.Fissures.model.MicroSecondDate;
-import edu.iris.Fissures.model.SamplingImpl;
-import edu.iris.Fissures.model.TimeInterval;
-import edu.iris.Fissures.model.UnitImpl;
-import edu.iris.Fissures.network.ChannelIdUtil;
-import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
-import edu.sc.seis.TauP.Arrival;
-import edu.sc.seis.fissuresUtil.bag.DistAz;
-import edu.sc.seis.fissuresUtil.bag.PhaseCut;
-import edu.sc.seis.fissuresUtil.bag.Rotate;
-import edu.sc.seis.fissuresUtil.chooser.DataSetChannelGrouper;
 import edu.sc.seis.fissuresUtil.display.BasicSeismogramDisplay;
+import edu.sc.seis.fissuresUtil.display.DisplayUtils;
+import edu.sc.seis.fissuresUtil.xml.DataSet;
+import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.vsnexplorer.CommonAccess;
 import edu.sc.seis.vsnexplorer.configurator.ConfigurationException;
 import edu.sc.seis.vsnexplorer.task.GUITask;
@@ -96,9 +81,7 @@ public class RecFuncTask  extends MouseAdapter implements GUITask {
                 DataSet dataSet = seis.getDataSet();
                 EventAccessOperations currEvent = dataSet.getEvent();
                 DataSetSeismogram[] chGrpSeismograms =
-                    DataSetChannelGrouper.retrieveSeismogramGrouping(dataSet,
-                                                                     seis);
-                
+                    DisplayUtils.getComponents(seis);
                 DataSetRecFuncProcessor processor =
                     new DataSetRecFuncProcessor(chGrpSeismograms,
                                                 currEvent,

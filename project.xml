@@ -28,7 +28,6 @@
         <developer>
             <name>Philip Crotwell</name>
             <id>crotwell</id>
-            <email>crotwell@seis.sc.edu</email>
             <organization>University of South Carolina</organization>
             <roles>
                 <role>Module Maintainer</role>
@@ -38,7 +37,6 @@
         <developer>
             <name>Srinivasa Telukutla</name>
             <id>telukutl</id>
-            <email>telukutl@seis.sc.edu</email>
             <organization>University of South Carolina</organization>
             <roles>
                 <role>Java Developer</role>
@@ -47,7 +45,6 @@
         <developer>
             <name>Charlie Groves</name>
             <id>groves</id>
-            <email>groves@seis.sc.edu</email>
             <organization>University of South Carolina</organization>
             <roles>
                 <role>Java Developer</role>

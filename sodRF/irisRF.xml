@@ -67,13 +67,40 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         </eventFinder>
         
         <originAND>
-            <originPointDistance>
-                <latitude>35</latitude>
-                <longitude>-95</longitude>
-                <unit>DEGREE</unit>
-                <min>20</min>
-                <max>135</max>
-            </originPointDistance>
+            <originOR>
+                <!-- California -->
+                <originPointDistance>
+                    <latitude>25</latitude>
+                    <longitude>-120</longitude>
+                    <unit>DEGREE</unit>
+                    <min>20</min>
+                    <max>115</max>
+                </originPointDistance>
+                <!-- Florida -->
+                <originPointDistance>
+                    <latitude>25</latitude>
+                    <longitude>-80</longitude>
+                    <unit>DEGREE</unit>
+                    <min>20</min>
+                    <max>115</max>
+                </originPointDistance>
+                <!-- Maine -->
+                <originPointDistance>
+                    <latitude>49</latitude>
+                    <longitude>-80</longitude>
+                    <unit>DEGREE</unit>
+                    <min>20</min>
+                    <max>115</max>
+                </originPointDistance>
+                <!-- Washington -->
+                <originPointDistance>
+                    <latitude>49</latitude>
+                    <longitude>-125</longitude>
+                    <unit>DEGREE</unit>
+                    <min>20</min>
+                    <max>115</max>
+                </originPointDistance>
+            </originOR>
             <removeEventDuplicate/>
         </originAND>
 

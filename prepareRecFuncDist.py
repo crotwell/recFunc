@@ -3,9 +3,17 @@ import sys, os, time
 sys.path.append("../devTools/maven")
 sys.path.append("./scripts")
 sys.path.append("../sod/scripts")
-import distBuilder, buildSodScripts, ProjectParser
+import distBuilder, buildSodScripts, ProjectParser,  mavenExecutor
 
 def buildDist(proj, name=None):
+    curdir = os.path.abspath('.')
+    os.chdir(proj.path)
+    allProj = [ProjectParser.ProjectParser('../fissures/project.xml'),
+               ProjectParser.ProjectParser('../fissuresUtil/project.xml'),
+               ProjectParser.ProjectParser('../sod/project.xml'),
+               proj]
+    for otherProj in allProj: mavenExecutor.mavenExecutor(otherProj).jarinst()
+    os.chdir(curdir)
     if not os.path.exists('scripts/logs'): os.mkdir('scripts/logs')
     extras = [('sodRF/scepp2003.xml', 'scepp2003.xml'),
               ('sodRF/Bolivia.xml', 'Bolivia.xml'),

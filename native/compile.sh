@@ -3,6 +3,9 @@
 # http://developer.apple.com/techpubs/macosx/Java/JavaDevelopment/overview/chapter_2_section_8.html
 #
 #
+# to make available without setting this env var, copy to
+# /Users/crotwell/Library/Java/Extensions/libnativeFFT.jnilib
+#
 
 setenv DYLD_LIBRARY_PATH `pwd`
 

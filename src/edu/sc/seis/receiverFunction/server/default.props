@@ -34,4 +34,7 @@ receiverFunctionSeq.nextVal=SELECT NEXTVAL ('receiverFunctionSeq')
 
 
 # specifies the database URL
-URL=jdbc:hsqldb:Ears/EarsDb
+#    for hsqldb
+#URL=jdbc:hsqldb:Ears/EarsDb
+#    for postgres
+URL=jdbc:postgresql:ears

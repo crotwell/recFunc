@@ -27,6 +27,9 @@ import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
 import edu.sc.seis.vsnexplorer.CommonAccess;
 import edu.sc.seis.vsnexplorer.configurator.ConfigurationException;
 import org.apache.log4j.Logger;
+import edu.sc.seis.fissuresUtil.xml.XMLQuantity;
+import org.w3c.dom.Element;
+import edu.sc.seis.fissuresUtil.xml.DataSetToXML;
 
 public class DataSetRecFuncProcessor implements SeisDataChangeListener {
     DataSetRecFuncProcessor(DataSetSeismogram[] seis,
@@ -118,7 +121,9 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                 predictedDSS[i] =
                     new MemoryDataSetSeismogram(predSeis,
                                                 "receiver function "+localSeis[0].channel_id.station_code);
-                
+                Element alignElement = DataSetToXML.getDocumentBuilder().newDocument().createElement("timeInterval");
+                XMLQuantity.insert(alignElement, shift);
+                predictedDSS[i].addAuxillaryData("alignShift", alignElement);
                 AuditInfo[] audit = new AuditInfo[1];
                 audit[0] =
                     new AuditInfo("Calculated receiver function",

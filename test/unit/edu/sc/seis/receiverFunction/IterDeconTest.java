@@ -58,6 +58,7 @@ public class IterDeconTest
     }
 
     public void testNoGauussProcess() throws Exception {
+        float delta = 0.05f;
         float[] numData   = new float[2048];
         numData[100] = 2;
         numData[200] = -1.5f;
@@ -67,25 +68,26 @@ public class IterDeconTest
 
         // without gaussian filter
         IterDecon zeroGauss = new IterDecon(3, true, 0.001f, 0.0f);
-        IterDeconResult result = zeroGauss.process(numData, denomData, .05f);
+        IterDeconResult result = zeroGauss.process(numData, denomData, delta);
         float[] pred = result.getPredicted();
         int[] s = result.getShifts();
         float[] a = result.getAmps();
         assertEquals("zeroGauss spike 0",  0, s[0]);
-        assertEquals("zeroGauss amp 0",    4,    a[0], 0.0001f);
+        assertEquals("zeroGauss amp 0",    4/delta,    a[0], 0.0001f);
         assertEquals("zeroGauss spike 1",  100, s[1]);
-        assertEquals("zeroGauss amp 1",   -3,    a[1], 0.0001f);
+        assertEquals("zeroGauss amp 1",   -3/delta,    a[1], 0.0001f);
         assertEquals("zeroGauss spike 2 a="+a[2],  200, s[2]);
-        assertEquals("zeroGauss amp 2",  .5f,    a[2], 0.0001f);
-        assertEquals("zeroGauss pred 0",   4, pred[0], 0.0001f);
+        assertEquals("zeroGauss amp 2",  .5f/delta,    a[2], 0.0001f);
+        assertEquals("zeroGauss pred 0",   4/delta, pred[0], 0.0001f);
         assertEquals("zeroGauss pred 1",   0, pred[1], 0.0001f);
-        assertEquals("zeroGauss pred 100",  -3, pred[100], 0.0001f);
+        assertEquals("zeroGauss pred 100",  -3/delta, pred[100], 0.0001f);
         assertEquals("zeroGauss pred 101",   0, pred[3], 0.0001f);
-        assertEquals("zeroGauss pred 200", .5f, pred[200], 0.0001f);
+        assertEquals("zeroGauss pred 200", .5f/delta, pred[200], 0.0001f);
         assertEquals("zeroGauss pred 201",   0, pred[5], 0.0001f);
     }
 
     public void testWithGauussProcess() throws Exception {
+        float delta = 0.05f;
         IterDecon withGaussIterdecon = new edu.sc.seis.receiverFunction.IterDecon(200, true, .001f, 2.5f);
         // with gaussian filter
         float[] numData   = new float[2048];
@@ -96,7 +98,6 @@ public class IterDeconTest
         float[] denomData = new float[numData.length];
         denomData[100] = .5f;
 
-        float delta = 0.05f;
         SamplingImpl sampling = new SamplingImpl(1, new TimeInterval(delta, UnitImpl.SECOND));
 
         LocalSeismogramImpl fakeNum = SimplePlotUtil.createTestData("num");
@@ -132,14 +133,14 @@ public class IterDeconTest
         int[] s = result.getShifts();
         float[] a = result.getAmps();
         assertEquals("gauss spike 0",  0, s[0]);
-        assertEquals("gauss amp 0",    4,    a[0], 0.0001f);
+        assertEquals("gauss amp 0",    4/delta,    a[0], 0.0001f);
         assertEquals("gauss spike 1",  100, s[1]);
-        assertEquals("gauss amp 1",   -3,    a[1], 0.0001f);
+        assertEquals("gauss amp 1",   -3/delta,    a[1], 0.0001f);
         assertEquals("gauss spike 2 a="+a[2],  200, s[2]);
-        assertEquals("gauss amp 2",  .5f,    a[2], 0.0001f);
+        assertEquals("gauss amp 2",  .5f/delta,    a[2], 0.0001f);
 
         assertEquals("position 0 "+fortranData[0]+"  "+pred[0]+"  ratio="+(fortranData[0]/pred[0]), fortranData[0], pred[0], 0.0001f);
-        assertEquals("position 100 "+fortranData[100]+"  "+pred[100]+"  ratio="+(fortranData[100]/pred[100]), fortranData[100], pred[100]/delta, 0.0001f);
+        assertEquals("position 100 "+fortranData[100]+"  "+pred[100]+"  ratio="+(fortranData[100]/pred[100]), fortranData[100], pred[100], 0.0001f);
         assertEquals("position 200 "+fortranData[200]+"  "+pred[200]+"  ratio="+(fortranData[200]/pred[200]), fortranData[200], pred[200], 0.0001f);
         assertEquals("position 300 "+fortranData[300]+"  "+pred[300]+"  ratio="+(fortranData[300]/pred[300]), fortranData[300], pred[300], 0.0001f);
         ArrayAssert.assertEquals("data from fortran", fortranData, pred, 0.0001f);
@@ -213,13 +214,13 @@ public class IterDeconTest
         }
 
         assertEquals("fake data spike 0",  0, s[0]);
-        assertEquals("fake data amp 0",    .33,    a[0], 0.0001f);
+        assertEquals("fake data amp 0",    .33/delta,    a[0], 0.0001f);
         assertEquals("fake data spike 1",  Math.round(timePs/delta), s[1], 0.1f);
-        assertEquals("fake data amp 1",   .33f*.5f,    a[1], 0.001f);
+        assertEquals("fake data amp 1",   .33f*.5f/delta,    a[1], 0.01f);
         assertEquals("fake data spike 2 a="+a[2],  Math.round(timePpPs/delta), s[2], 0.1f);
-        assertEquals("fake data amp 2",  .33f*.3f,    a[2], 0.001f);
+        assertEquals("fake data amp 2",  .33f*.3f/delta,    a[2], 0.01f);
         assertEquals("fake data spike 3 a="+a[3],  Math.round(timePsPs/delta), s[3], 0.1f);
-        assertEquals("fake data amp 3",  .33f*.2f,    a[3], 0.001f);
+        assertEquals("fake data amp 3",  .33f*.2f/delta,    a[3], 0.01f);
 
         // JUnitDoclet end method process
     }
@@ -318,7 +319,7 @@ public class IterDeconTest
     public void testConvolve() {
         float[] fData = { 0, 0, 2, 0, 0, 0, 0, 0};
         float[] gData = { 0, 1, 0, 0, 0, 0, 0, 0};
-        float[] corr = iterdecon.convolve(fData, gData);
+        float[] corr = iterdecon.convolve(fData, gData, 1);
         assertEquals("lag 0", 0f, corr[0], 0.00001f);
         assertEquals("lag 1", 0f, corr[1], 0.00001f);
         assertEquals("lag 2", 0f, corr[2], 0.00001f);

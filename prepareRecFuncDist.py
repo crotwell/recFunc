@@ -11,6 +11,7 @@ def buildDist(proj, name=None):
     allProj = [ProjectParser.ProjectParser('../fissures/project.xml'),
                ProjectParser.ProjectParser('../fissuresUtil/project.xml'),
                ProjectParser.ProjectParser('../sod/project.xml'),
+               ProjectParser.ProjectParser('../gee/project.xml'),
                proj]
     for otherProj in allProj: mavenExecutor.mavenExecutor(otherProj).jarinst()
     os.chdir(curdir)

@@ -163,16 +163,16 @@ public class JDBCHKStack extends JDBCTable {
         return hkstack_id;
     }
 
-    public ArrayList calc(String netCode,
+    public void calc(String netCode,
                           String staCode,
                           float percentMatch,
                           boolean save) throws FileNotFoundException,
             FissuresException, NotFound, IOException, SQLException,
             TauModelException {
-        return calc(netCode, staCode, percentMatch, save, 1, 1, 1);
+        calc(netCode, staCode, percentMatch, save, 1, 1, 1);
     }
 
-    public ArrayList calc(String netCode,
+    public void calc(String netCode,
                           String staCode,
                           float percentMatch,
                           boolean save,
@@ -186,10 +186,10 @@ public class JDBCHKStack extends JDBCTable {
         uncalculated.setString(2, staCode);
         uncalculated.setFloat(3, percentMatch);
         ResultSet rs = uncalculated.executeQuery();
-        return calcStmt(rs, save, weightPs, weightPpPs, weightPsPs);
+        calcStmt(rs, save, weightPs, weightPpPs, weightPsPs);
     }
 
-    public ArrayList calcAll(String netCode,
+    public void calcAll(String netCode,
                              String staCode,
                              float percentMatch,
                              boolean save,
@@ -203,17 +203,16 @@ public class JDBCHKStack extends JDBCTable {
         calcByPercent.setString(2, staCode);
         calcByPercent.setFloat(3, percentMatch);
         ResultSet rs = calcByPercent.executeQuery();
-        return calcStmt(rs, save, weightPs, weightPpPs, weightPsPs);
+        calcStmt(rs, save, weightPs, weightPpPs, weightPsPs);
     }
 
-    public ArrayList calcStmt(ResultSet rs,
+    public void calcStmt(ResultSet rs,
                               boolean save,
                               float weightPs,
                               float weightPpPs,
                               float weightPsPs) throws FileNotFoundException,
             FissuresException, SQLException, TauModelException, NotFound,
             IOException {
-        ArrayList individualHK = new ArrayList();
         while(rs.next()) {
             int recFuncDbId = rs.getInt(1);
             System.out.println("Calc for " + recFuncDbId);
@@ -221,9 +220,7 @@ public class JDBCHKStack extends JDBCTable {
             if(save) {
                 int hkstack_id = put(recFuncDbId, stack);
             }
-            individualHK.add(stack);
         }
-        return individualHK;
     }
     
     void calcAndStore(int recFuncDbId,
@@ -364,7 +361,7 @@ public class JDBCHKStack extends JDBCTable {
         }
         float minPercentMatch = 80;
         try {
-            System.out.println("calc with weights of 1/3");
+            System.out.println("calc for percent match > "+minPercentMatch+" with weights of 1/3");
                        float weightPs = 1/3f;
                        float weightPpPs = 1/3f;
                        float weightPsPs = 1 - weightPs - weightPpPs;
@@ -374,7 +371,7 @@ public class JDBCHKStack extends JDBCTable {
         }
     }
 
-    public static ArrayList calcAndSave(String[] args,
+    public static void calcAndSave(String[] args,
                                         float minPercentMatch,
                                         boolean save,
                                         boolean forceAllCalc,
@@ -415,12 +412,12 @@ public class JDBCHKStack extends JDBCTable {
         }
         if (staCode.length() > 0 && netCode.length() == 0 ) {
             System.err.println("If using -sta, you must also use -net netCode");
-            return new ArrayList();
+            return;
         }
         if(staCode.length() > 0) {
             System.out.println("calc for " + netCode + "." + staCode);
             if(forceAllCalc) {
-                return jdbcHKStack.calcAll(netCode,
+                jdbcHKStack.calcAll(netCode,
                                            staCode,
                                            minPercentMatch,
                                            save,
@@ -428,7 +425,7 @@ public class JDBCHKStack extends JDBCTable {
                                            weightPpPs,
                                            weightPsPs);
             } else {
-                return jdbcHKStack.calc(netCode,
+                jdbcHKStack.calc(netCode,
                                         staCode,
                                         minPercentMatch,
                                         save,
@@ -444,7 +441,6 @@ public class JDBCHKStack extends JDBCTable {
             JDBCNetwork jdbcNetwork = jdbcStation.getNetTable();
             NetworkId[] netId = jdbcNetwork.getAllNetworkIds();
             System.out.println("Found " + netId.length + " networks.");
-            ArrayList out = new ArrayList();
             for(int i = 0; i < netId.length; i++) {
                 System.out.println("Network: "
                         + NetworkIdUtil.toString(netId[i]));
@@ -455,13 +451,13 @@ public class JDBCHKStack extends JDBCTable {
                         System.out.println("calc for " + netId[i].network_code
                                 + "." + station[j].get_code());
                         try {
-                            out.addAll(jdbcHKStack.calc(netId[i].network_code,
+                            jdbcHKStack.calc(netId[i].network_code,
                                                         station[j].get_code(),
                                                         minPercentMatch,
                                                         save,
                                                         weightPs,
                                                         weightPpPs,
-                                                        weightPsPs));
+                                                        weightPsPs);
                         } catch(IllegalArgumentException e) {
                             System.out.println("Problem with receiver function, skipping station. "
                                     + e);
@@ -474,7 +470,6 @@ public class JDBCHKStack extends JDBCTable {
                     }
                 }
             }
-            return out;
         }
     }
 

@@ -29,14 +29,14 @@ public class WeightTrial {
             //weightPs = 0.5f ; weightPpPs = 0.25f;
             
             weightPpSs = 1 - weightPs - weightPpPs;
-            ArrayList list = JDBCHKStack.calcAndSave(args,
+            JDBCHKStack.calcAndSave(args,
                                                      minPercentMatch,
                                                      false,
                                                      true,
                                                      weightPs,
                                                      weightPpPs,
                                                      weightPpSs);
-            System.out.println("Got "+list.size()+" item in stack.");
+            /*System.out.println("Got "+list.size()+" item in stack.");
             HKStack[] stackArray = (HKStack[])list.toArray(new HKStack[0]);
             SumHKStack sumStack = new SumHKStack(stackArray,
                                                  stackArray[0].getChannel(),
@@ -46,7 +46,7 @@ public class WeightTrial {
                                    stackArray[0].getChannel().my_site.my_station.get_id(),
                                    new File("."),
                                    minPercentMatch,
-                                   smallestH);
+                                   smallestH);*/
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);
         }

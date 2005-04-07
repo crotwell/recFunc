@@ -5,6 +5,7 @@ import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.StationId;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.sc.seis.fissuresUtil.bag.PoissonsRatio;
+import edu.sc.seis.sod.status.FissuresFormatter;
 
 /**
  * Stores the crustal thickness and vp/vs ratio for a station from a previous study.
@@ -24,7 +25,7 @@ public class StationResult {
     }
 
     public String formatH() {
-        return getH().toString();
+        return FissuresFormatter.formatDepth(getH());
     }
     
     public String formatVpVs() {
@@ -32,11 +33,11 @@ public class StationResult {
     }
     
     public String formatVp() {
-        return vpvsFormat.format(getVp());
+        return FissuresFormatter.formatQuantity(getVp());
     }
     
     public String formatVs() {
-        return vpvsFormat.format(getVs());
+        return FissuresFormatter.formatQuantity(getVs());
     }
 
     public String formatPoissonsRatio() {

@@ -31,17 +31,17 @@
 </table>
 
 <table>
-<tr><td class="odd">Thickness Estimate</td><td class="even">$!summary.getSum().getMaxValueH()</td><td class="even">km</td></tr>
-<tr><td class="odd">Thickness StdDev</td><td class="even">$!summary.getHStdDev()</td><td class="even">km</td></tr>
-<tr><td class="odd">Vp/Vs Estimate</td><td class="even">$!summary.getSum().getMaxValueK()</td><td class="even"></td></tr>
-<tr><td class="odd">Vp/Vs StdDev</td><td class="even">$!summary.getKStdDev()</td><td class="even"></td></tr>
-<tr><td class="odd">Vs Estimate</td><td class="even">$!summary.getSum().getVs()</td><td class="even">km/s</td></tr>
-<tr><td class="odd">Poisson's Ratio</td><td class="even">$!summary.getSum().getPoissonsRatio()</td><td class="even"></td></tr>
-<tr><td class="odd">Peak Value</td><td class="even">$!summary.getSum().getMaxValue()</td><td class="even"></td></tr>
-<tr><td class="odd">Assumed Vp</td><td class="even">$!summary.getSum().getAlpha()</td><td class="even">km/s</td></tr>
-<tr><td class="odd">Ps Weight</td><td class="even">$!summary.getSum().getWeightPs()</td><td class="even"></td></tr>
-<tr><td class="odd">PpPs Weight</td><td class="even">$!summary.getSum().getWeightPpPs()</td><td class="even"></td></tr>
-<tr><td class="odd">PsPs Weight</td><td class="even">$!summary.getSum().getWeightPsPs()</td><td class="even"></td></tr>
+<tr><td class="odd">Thickness Estimate</td><td class="even">$fissures.formatDepth($!summary.getSum().getMaxValueH())</td></tr>
+<tr><td class="odd">Thickness StdDev</td><td class="even">$fissures.formatQuantity($!summary.getHStdDev())</td></tr>
+<tr><td class="odd">Vp/Vs Estimate</td><td class="even">$!summary.getSum().getMaxValueK()</td></tr>
+<tr><td class="odd">Vp/Vs StdDev</td><td class="even">$!summary.getKStdDev()</td></tr>
+<tr><td class="odd">Vs Estimate</td><td class="even">$fissures.formatQuantity($!summary.getSum().getVs())</td></tr>
+<tr><td class="odd">Poisson's Ratio</td><td class="even">$!summary.getSum().getPoissonsRatio()</td></tr>
+<tr><td class="odd">Peak Value</td><td class="even">$!summary.getSum().getMaxValue()</td></tr>
+<tr><td class="odd">Assumed Vp</td><td class="even">$fissures.formatQuantity($!summary.getSum().getAlpha())</td></tr>
+<tr><td class="odd">Ps Weight</td><td class="even">$!summary.getSum().getWeightPs()</td></tr>
+<tr><td class="odd">PpPs Weight</td><td class="even">$!summary.getSum().getWeightPpPs()</td></tr>
+<tr><td class="odd">PsPs Weight</td><td class="even">$!summary.getSum().getWeightPsPs()</td></tr>
 </table>
 
 <p>$numNinty with match > 90% and $numEighty with match > 80%.</p>

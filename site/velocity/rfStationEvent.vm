@@ -62,7 +62,7 @@
 </tr>
 <tr>
 <td class="even">Estimated Moho Depth</td>
-<td class="odd">$stack.getMaxValueH() km</td>
+<td class="odd">$fissures.formatQuantity($stack.getMaxValueH())</td>
 </tr>
 <tr>
 <td class="even">Estimated Crust Vp/Vs</td>
@@ -70,11 +70,11 @@
 </tr>
 <tr>
 <td class="even">Assumed Crust Vp</td>
-<td class="odd">$stack.getAlpha()</td>
+<td class="odd">$fissures.formatQuantity($stack.getAlpha())</td>
 </tr>
 <tr>
 <td class="even">Estimated Crust Vs</td>
-<td class="odd">$stack.getVs()</td>
+<td class="odd">$fissures.formatQuantity($stack.getVs())</td>
 </tr>
 <tr>
 <td class="even">Estimated Crust Poisson's Ratio</td>
@@ -89,7 +89,7 @@
 <table>
 <tr>
 <td class="odd">Radial Match</td>
-<td class="odd"> ${result.radialMatch} </td>
+<td class="odd"> ${result.radialMatch} %</td>
 </tr>
 <tr>
 <td class="odd">Radial Bump</td>
@@ -97,7 +97,7 @@
 </tr>
 <tr>
 <td class="odd">Transverse Match</td>
-<td class="odd">$result.transverseMatch</td>
+<td class="odd">$result.transverseMatch %</td>
 </tr>
 <tr>
 <td class="odd">Transverse Bump</td>

@@ -69,6 +69,8 @@ public class SeismogramImage extends HttpServlet {
             int rf_id = new Integer(req.getParameter("rf")).intValue();
             int xdim = RevUtil.getInt("xdim", req, xdimDefault);
             int ydim = RevUtil.getInt("ydim", req, ydimDefault);
+            TimeInterval prePhase = new TimeInterval(RevUtil.getFloat("prePhase", req, 10), UnitImpl.SECOND);
+            TimeInterval window = new TimeInterval(RevUtil.getFloat("window", req, 120), UnitImpl.SECOND);
             Dimension dim = new Dimension(xdim, ydim);
             CachedResult stack = jdbcRecFunc.get(rf_id);
             CacheEvent event = new CacheEvent(stack.event_attr,
@@ -123,7 +125,6 @@ public class SeismogramImage extends HttpServlet {
             dataset.addParameter(DataSet.EVENT, event, emptyAudit);
             disp.add(new DataSetSeismogram[] {radialDSS, zDSS, aDSS, bDSS});
             MicroSecondTimeRange mstr = disp.getTimeConfig().getTime();
-            TimeInterval window = new TimeInterval(120, UnitImpl.SECOND);
             disp.getTimeConfig().shaleTime(0,
                                            window.divideBy(mstr.getInterval())
                                                    .convertTo(SEC_PER_SEC)

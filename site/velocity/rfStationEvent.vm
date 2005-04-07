@@ -125,7 +125,14 @@
 </tr>
 </table>
 
-<img class="dataimg" src="waveforms.png?rf=$rf"/>
+<img class="dataimg" src="waveforms.png?rf=$rf&window=120"/>
+
+<table>
+<tr><td colspan=2>Arrivals</td></tr>
+<tr><td class="odd">Ps</td><td class="even">$timePs</tr>
+<tr><td class="odd">PpPs</td><td class="even">$timePpPs</tr>
+<tr><td class="odd">PsPs/PpSs</td><td class="even">$timePsPs</tr>
+</table>
 
 <div id="footer2" align="center">
   <a href="http://seis.sc.edu">

@@ -3,6 +3,7 @@ package edu.sc.seis.receiverFunction.compare;
 import java.text.DecimalFormat;
 import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.StationId;
+import edu.iris.Fissures.model.QuantityImpl;
 import edu.sc.seis.fissuresUtil.bag.PoissonsRatio;
 
 /**
@@ -12,8 +13,9 @@ import edu.sc.seis.fissuresUtil.bag.PoissonsRatio;
 public class StationResult {
 
 
-    public StationResult(NetworkId networkId, String stationCode, float h, float vpVs, float vp, StationResultRef ref) {
+    public StationResult(NetworkId networkId, String stationCode, QuantityImpl h, float vpVs, float vp, StationResultRef ref) {
         this.h = h;
+        h.setFormat(depthFormat);
         this.vp = vp;
         this.vpVs = vpVs;
         this.networkId = networkId;
@@ -22,7 +24,7 @@ public class StationResult {
     }
 
     public String formatH() {
-        return depthFormat.format(getH());
+        return getH().toString();
     }
     
     public String formatVpVs() {
@@ -40,7 +42,7 @@ public class StationResult {
     public String formatPoissonsRatio() {
         return vpvsFormat.format(PoissonsRatio.calcPoissonsRatio(getVpVs()));
     }
-    public float getH() {
+    public QuantityImpl getH() {
         return h;
     }
 
@@ -75,7 +77,7 @@ public class StationResult {
 
     private NetworkId networkId;
 
-    private float h;
+    private QuantityImpl h;
 
     private float vpVs;
     

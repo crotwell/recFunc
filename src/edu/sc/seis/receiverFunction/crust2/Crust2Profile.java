@@ -6,6 +6,8 @@
 
 package edu.sc.seis.receiverFunction.crust2;
 
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.TauP.VelocityLayer;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 
@@ -52,8 +54,8 @@ public class Crust2Profile {
         return travelTime/layers[layers.length-1].topDepth;
     }
     
-    public double getCrustThickness() {
-        return layers[7].topDepth;
+    public QuantityImpl getCrustThickness() {
+        return new QuantityImpl(layers[7].topDepth, UnitImpl.KILOMETER);
     }
 
     String name;

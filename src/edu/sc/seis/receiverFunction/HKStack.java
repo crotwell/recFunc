@@ -235,10 +235,6 @@ public class HKStack implements Serializable {
     }
 
     public int getHIndex(QuantityImpl h) {
-        return getHIndex((float)h.getValue());
-    }
-    
-    public int getHIndex(float h) {
         return Math.round(getHIndexFloat(h));
     }
     
@@ -246,8 +242,8 @@ public class HKStack implements Serializable {
         return Math.round(getKIndexFloat(k));
     }
     
-    public float getHIndexFloat(double h) {
-        return (float)((h-getMinH().getValue())/getStepH().getValue());
+    public float getHIndexFloat(QuantityImpl h) {
+        return (float)(h.subtract(getMinH()).divideBy(getStepH())).getValue();
     }
     
     public float getKIndexFloat(double k) {
@@ -301,27 +297,16 @@ public class HKStack implements Serializable {
     }
     
     public JComponent getStackComponent(QuantityImpl smallestH) {
-        int startHIndex = getHIndex((float)smallestH.getValue());
+        int startHIndex = getHIndex(smallestH);
         HKStackImage stackImage = new HKStackImage(this, startHIndex);
         if (crust2 != null) {
-            Crust2Profile profile = crust2.getClosest(chan.my_site.my_station.my_location.longitude,
-                                                      chan.my_site.my_station.my_location.latitude);
-            int depthIndex = getHIndex((float)profile.getCrustThickness());
-            double vpvs = profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity();
-            int vpvsIndex = (int)Math.round((vpvs-minK)/stepK);
-            System.out.println("Crust2 "+StationIdUtil.toString(chan.my_site.my_station.get_id())+" depth="+
-                              profile.getLayer(7).topDepth+" "+depthIndex+"  VpVs="+vpvs+" "+vpvsIndex);
-            stackImage.addMarker("Crust2", profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity(), profile.getCrustThickness(), Color.blue);
+            StationResult result = crust2.getStationResult(chan.my_site.my_station);
+            stackImage.addMarker(result, Color.blue);
         }
         if (wilson != null) {
             StationResult result = wilson.getResult(chan.my_site.my_station.get_id());
             if (result != null) {
-                int depthIndex = getHIndex(result.getH());
-                double vpvs = result.getVpVs();
-                int vpvsIndex = (int)Math.round((vpvs-minK)/stepK);
-                System.out.println("Wilson "+StationIdUtil.toString(chan.my_site.my_station.get_id())+" depth="+
-                                   result.getH()+" "+depthIndex+"  VpVs="+vpvs+" "+vpvsIndex);
-                stackImage.addMarker("Wilson", result.getVpVs(), result.getH(), Color.GREEN);
+                stackImage.addMarker(result, Color.GREEN);
             }
         }
         BorderedDisplay bd = new BorderedDisplay(stackImage);
@@ -357,6 +342,7 @@ public class HKStack implements Serializable {
                             dim.height+kTopBorder.getPreferredSize().height+kBottomBorder.getPreferredSize().height);
         bd.setPreferredSize(dim);
         bd.setSize(dim);
+        logger.info("end getStackComponent");
         return bd;
     }
 
@@ -423,7 +409,6 @@ public class HKStack implements Serializable {
             String maxString = "Max="+max;
             int stringWidth = fm.stringWidth(maxString);
             g.drawString(maxString, size.width-5-stringWidth, 15+fm.getHeight());
-
         } finally {
             if (g != null) {
                 g.dispose();
@@ -489,6 +474,30 @@ public class HKStack implements Serializable {
                     - weightPsPs * getAmp(seis, timePsPs);
             }
         }
+    }
+    
+    public TimeInterval getTimePs() {
+        float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
+        float beta = alpha/getMaxValueK();
+        float etaS = (float) Math.sqrt(1/(beta*beta)-p*p);
+        float h = getMaxValueH();
+        return new TimeInterval(h * (etaS - etaP), UnitImpl.SECOND);
+    }
+    
+    public TimeInterval getTimePpPs() {
+        float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
+        float beta = alpha/getMaxValueK();
+        float etaS = (float) Math.sqrt(1/(beta*beta)-p*p);
+        float h = getMaxValueH();
+        return new TimeInterval(h * (etaS + etaP), UnitImpl.SECOND);
+    }
+    
+    public TimeInterval getTimePsPs() {
+        float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
+        float beta = alpha/getMaxValueK();
+        float etaS = (float) Math.sqrt(1/(beta*beta)-p*p);
+        float h = getMaxValueH();
+        return new TimeInterval(h * (2 * etaS), UnitImpl.SECOND);
     }
 
 

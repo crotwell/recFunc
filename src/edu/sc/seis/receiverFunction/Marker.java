@@ -2,6 +2,8 @@ package edu.sc.seis.receiverFunction;
 
 import java.awt.Color;
 import java.text.DecimalFormat;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.sc.seis.receiverFunction.compare.StationResult;
 
 
 /**
@@ -9,23 +11,21 @@ import java.text.DecimalFormat;
  * Created on Mar 2, 2005
  */
 public class Marker {
-    public Marker(String name, double vpvs, double depth, Color color) {
-        this.name = name;
-        this.vpvs = vpvs;
-        this.depth = depth;
+    public Marker(StationResult result, Color color) {
+        this.result = result;
         this.color = color;
     }
     public Color getColor() {
         return color;
     }
-    public double getDepth() {
-        return depth;
+    public QuantityImpl getDepth() {
+        return result.getH();
     }
     public String getName() {
-        return name;
+        return result.getRef().getName();
     }
     public double getVpvs() {
-        return vpvs;
+        return result.getVpVs();
     }
     public String formatDepth() {
         return depthFormat.format(getDepth());
@@ -33,9 +33,7 @@ public class Marker {
     public String formatVpvs() {
         return vpvsFormat.format(getVpvs());
     }
-    private String name;
-    private double vpvs;
-    private double depth;
+    private StationResult result;
     private Color color;
     
     private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");

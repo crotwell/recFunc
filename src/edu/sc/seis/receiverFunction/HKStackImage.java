@@ -13,7 +13,10 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JComponent;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
+import edu.sc.seis.receiverFunction.compare.StationResult;
 
 public class HKStackImage extends JComponent {
 
@@ -30,8 +33,8 @@ public class HKStackImage extends JComponent {
         setPreferredSize(imageSize);
     }
 
-    public void addMarker(String name, double vpvs, double depth, Color color) {
-        markers.add(new Marker(name, vpvs, depth, color));
+    public void addMarker(StationResult result, Color color) {
+        markers.add(new Marker(result, color));
     }
 
     public void paintComponent(Graphics graphics) {
@@ -64,15 +67,18 @@ public class HKStackImage extends JComponent {
         TradeoffCurve tradeoff = new TradeoffCurve(stack);
         float[] curve = tradeoff.getH_Ps();
         for (int k = 0; k < stackOut[0].length-1; k++) {
-            g.drawLine(2*k, Math.round(2*stack.getHIndexFloat(curve[k])), 2*(k+1), 2*stack.getHIndex(curve[k+1]));
+            g.drawLine(2*k, Math.round(2*stack.getHIndexFloat(new QuantityImpl(curve[k], UnitImpl.KILOMETER))),
+                       2*(k+1), 2*stack.getHIndex(new QuantityImpl(curve[k+1], UnitImpl.KILOMETER)));
         }
         curve = tradeoff.getH_PpPs();
         for (int k = 0; k < stackOut[0].length-1; k++) {
-            g.drawLine(2*k, Math.round(2*stack.getHIndexFloat(curve[k])), 2*(k+1), 2*stack.getHIndex(curve[k+1]));
+            g.drawLine(2*k, Math.round(2*stack.getHIndexFloat(new QuantityImpl(curve[k], UnitImpl.KILOMETER))),
+                       2*(k+1), 2*stack.getHIndex(new QuantityImpl(curve[k+1], UnitImpl.KILOMETER)));
         }
         curve = tradeoff.getH_PsPs();
         for (int k = 0; k < stackOut[0].length-1; k++) {
-            g.drawLine(2*k, Math.round(2*stack.getHIndexFloat(curve[k])), 2*(k+1), 2*stack.getHIndex(curve[k+1]));
+            g.drawLine(2*k, Math.round(2*stack.getHIndexFloat(new QuantityImpl(curve[k], UnitImpl.KILOMETER))),
+                       2*(k+1), 2*stack.getHIndex(new QuantityImpl(curve[k+1], UnitImpl.KILOMETER)));
         }
         
         Iterator it = markers.iterator();
@@ -97,5 +103,7 @@ public class HKStackImage extends JComponent {
     protected ArrayList markers = new ArrayList();
 
     protected int smallestHindex = 0;
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(HKStackImage.class);
 }
 

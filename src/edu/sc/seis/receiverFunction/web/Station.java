@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.Time;
 import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
@@ -96,11 +98,11 @@ public class Station extends Revlet {
         
         VelocityStation sta = (VelocityStation)stationList.get(0);
         ArrayList markerList = new ArrayList();
-        float smallestH = 20;
+        QuantityImpl smallestH = new QuantityImpl(20, UnitImpl.KILOMETER);
         if (crust2 != null) {
             StationResult result = crust2.getStationResult(sta);
-            if (result.getH() < smallestH + 10) {
-                smallestH = (float)result.getH() - 10;
+            if (result.getH().lessThan(smallestH.add(TEN_KM))) {
+                smallestH = result.getH().subtract(TEN_KM);
             }
             markerList.add(result);
         }
@@ -126,10 +128,12 @@ public class Station extends Revlet {
         context.put("numNinty", new Integer(numNinty));
         context.put("numEighty", new Integer(numEighty));
         context.put("markerList", markerList);
-        context.put("smallestH", smallestH+"");
+        context.put("smallestH", smallestH);
         return context;
     }
 
+    static final QuantityImpl TEN_KM = new QuantityImpl(10, UnitImpl.KILOMETER);
+    
     transient static Crust2 crust2 = HKStack.getCrust2();
     
     static ITRMatchComparator itrMatchComparator = new ITRMatchComparator();

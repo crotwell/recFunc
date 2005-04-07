@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import edu.iris.Fissures.IfNetwork.StationId;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.StationIdUtil;
 
 
@@ -25,7 +27,7 @@ public class WilsonRistra implements StationCompare {
         if (props.containsKey(prefix+"_H")) {
             return new StationResult(stationId.network_id,
                                      stationId.station_code,
-                                     Float.parseFloat(props.getProperty(prefix+"_H")),
+                                     new QuantityImpl(Float.parseFloat(props.getProperty(prefix+"_H")), UnitImpl.KILOMETER),
                                      Float.parseFloat(props.getProperty(prefix+"_VpVs")),
                                      6,
                                      new StationResultRef("a","b","c"));

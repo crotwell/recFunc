@@ -17,6 +17,8 @@ import java.util.StringTokenizer;
 import com.sun.rsasign.j;
 import edu.iris.Fissures.IfNetwork.NetworkAttr;
 import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
@@ -47,7 +49,7 @@ public class JDBCStationResult extends JDBCTable {
         int index = 1;
         put.setInt(index++, jdbcNetwork.put(result.getNetworkId()));
         put.setString(index++, result.getStationCode());
-        put.setFloat(index++, result.getH());
+        put.setFloat(index++, (float)result.getH().convertTo(UnitImpl.KILOMETER).getValue());
         put.setFloat(index++, result.getVpVs());
         put.setFloat(index++, result.getVp());
         put.setInt(index++, ref_id);
@@ -67,7 +69,7 @@ public class JDBCStationResult extends JDBCTable {
             StationResultRef ref = jdbcStationResultRef.extract(rs);
             list.add(new StationResult(networkId,
                                        stationCode,
-                                       rs.getFloat("h"),
+                                       new QuantityImpl(rs.getFloat("h"), UnitImpl.KILOMETER),
                                        rs.getFloat("vpvs"),
                                        rs.getFloat("vp"),
                                        ref));
@@ -86,7 +88,7 @@ public class JDBCStationResult extends JDBCTable {
             StationResultRef ref = jdbcStationResultRef.extract(rs);
             list.add(new StationResult(jdbcNetwork.getNetworkId(rs.getInt("net_id")),
                                        rs.getString("sta_code"),
-                                       rs.getFloat("h"),
+                                       new QuantityImpl(rs.getFloat("h"), UnitImpl.KILOMETER),
                                        rs.getFloat("vpvs"),
                                        rs.getFloat("vp"),
                                        ref));
@@ -182,7 +184,7 @@ public class JDBCStationResult extends JDBCTable {
                 networkId = attr[0].get_id();
             }
             if (networkId != null) {
-            jdbc.put(new StationResult(networkId, sta, h, vpvs, vp, ref));
+            jdbc.put(new StationResult(networkId, sta, new QuantityImpl(h, UnitImpl.KILOMETER), vpvs, vp, ref));
             } else {
                 throw new NotFound(net+"  "+netYear);
             }

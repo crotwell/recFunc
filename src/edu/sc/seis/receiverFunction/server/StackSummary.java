@@ -78,15 +78,15 @@ public class StackSummary {
                     Crust2Profile crust2 = HKStack.getCrust2()
                             .getClosest(station[j].my_location.longitude,
                                         station[j].my_location.latitude);
-                    double crust2H = crust2.getCrustThickness();
+                    QuantityImpl crust2H = crust2.getCrustThickness();
                     SumHKStack sumStack;
-                    if(crust2H > smallestH.getValue() + 5) {
+                    if(crust2H.subtract(smallestH).getValue() > 5) {
                         sumStack = createSummary(station[j].get_id(),
                                                  parentDir,
                                                  minPercentMatch,
                                                  smallestH);
                     } else {
-                        QuantityImpl modSmallestH = new QuantityImpl(crust2H - 5, UnitImpl.KILOMETER);
+                        QuantityImpl modSmallestH = crust2H.subtract(new QuantityImpl(5, UnitImpl.KILOMETER));
                         if(modSmallestH.lessThan(JDBCHKStack.getDefaultMinH())) {
                             modSmallestH = JDBCHKStack.getDefaultMinH();
                         }
@@ -114,7 +114,7 @@ public class StackSummary {
                             + (float)(2 * Math.sqrt(sumStack.getHVariance()))
                             + " "
                             + (float)(2 * Math.sqrt(sumStack.getKVariance()));
-                    double depth = crust2.getCrustThickness();
+                    QuantityImpl depth = crust2.getCrustThickness();
                     double vpvs = crust2.getPWaveAvgVelocity()
                             / crust2.getSWaveAvgVelocity();
                     outStr += " " + depth + " " + vpvs;

@@ -65,7 +65,7 @@ public class Crust2 {
                                            station.my_location.latitude);
         return new StationResult(station.my_network.get_id(),
                                  station.get_code(),
-                                 (float)profile.getCrustThickness(),
+                                 profile.getCrustThickness(),
                                  (float)(profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity()),
                                  (float)profile.getPWaveAvgVelocity(),
                                  getReference());

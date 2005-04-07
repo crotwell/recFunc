@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.VelocityContext;
+import edu.iris.Fissures.model.TimeInterval;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
@@ -23,6 +24,7 @@ import edu.sc.seis.rev.velocity.VelocityStation;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.database.waveform.JDBCEventChannelCookieJar;
 import edu.sc.seis.sod.database.waveform.JDBCEventChannelStatus;
+import edu.sc.seis.sod.status.FissuresFormatter;
 
 
 /**
@@ -64,6 +66,15 @@ public class RFStationEvent extends Revlet {
             vContext.put("result", new VelocityCachedResult(result));
             vContext.put("rf", req.getParameter("rf"));
             vContext.put("stack", stack);
+            TimeInterval timePs = stack.getTimePs();
+            timePs.setFormat(FissuresFormatter.getDepthFormat());
+            vContext.put("timePs", timePs);
+            TimeInterval timePpPs = stack.getTimePpPs();
+            timePpPs.setFormat(FissuresFormatter.getDepthFormat());
+            vContext.put("timePpPs", timePpPs);
+            TimeInterval timePsPs = stack.getTimePsPs();
+            timePsPs.setFormat(FissuresFormatter.getDepthFormat());
+            vContext.put("timePsPs", timePsPs);
             RevletContext context = new RevletContext("rfStationEvent.vm", vContext);
             return context;
         } catch(Exception e) {

@@ -13,7 +13,7 @@ import edu.sc.seis.fissuresUtil.bag.PoissonsRatio;
 public class StationResult {
 
 
-    public StationResult(NetworkId networkId, String stationCode, QuantityImpl h, float vpVs, float vp, StationResultRef ref) {
+    public StationResult(NetworkId networkId, String stationCode, QuantityImpl h, float vpVs, QuantityImpl vp, StationResultRef ref) {
         this.h = h;
         h.setFormat(depthFormat);
         this.vp = vp;
@@ -51,12 +51,12 @@ public class StationResult {
         return vpVs;
     }
     
-    public float getVp() {
+    public QuantityImpl getVp() {
         return vp;
     }
     
-    public float getVs() {
-        return getVp()/getVpVs();
+    public QuantityImpl getVs() {
+        return getVp().divideBy(getVpVs());
     }
 
     public NetworkId getNetworkId() {
@@ -81,7 +81,7 @@ public class StationResult {
 
     private float vpVs;
     
-    private float vp;
+    private QuantityImpl vp;
     
     private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
 

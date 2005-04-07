@@ -96,7 +96,7 @@ public class JDBCHKStack extends JDBCTable {
                }
            }
            Channel chan = JDBCChannel.extract(rs, jdbcChannel.getSiteTable(), jdbcChannel.getTimeTable(), jdbcChannel.getQuantityTable());
-           return new HKStack(rs.getFloat("alpha"),
+           return new HKStack(new QuantityImpl(rs.getFloat("alpha"), UnitImpl.KILOMETER_PER_SECOND),
                               rs.getFloat("p"),
                               rs.getFloat("percentMatch"),
                               new QuantityImpl(rs.getFloat("minH"), UnitImpl.KILOMETER),
@@ -123,7 +123,7 @@ public class JDBCHKStack extends JDBCTable {
         int index = 1;
         put.setInt(index++, hkstack_id);
         put.setInt(index++, recfunc_id);
-        put.setFloat(index++, stack.getAlpha());
+        put.setFloat(index++, (float)stack.getAlpha().getValue(UnitImpl.KILOMETER_PER_SECOND));
         put.setFloat(index++, stack.getP());
         put.setFloat(index++, stack.getPercentMatch());
         put.setFloat(index++, (float)stack.getMinH().getValue());
@@ -132,12 +132,13 @@ public class JDBCHKStack extends JDBCTable {
         put.setFloat(index++, stack.getMinK());
         put.setFloat(index++, stack.getStepK());
         put.setInt(index++, stack.getNumK());
-        float peakH, peakK, peakVal = 0;
+        QuantityImpl peakH;
+        float peakK, peakVal = 0;
         int[] indicies = stack.getMaxValueIndices();
         peakH = stack.getMaxValueH();
         peakK = stack.getMaxValueK();
         peakVal = stack.getMaxValue();
-        put.setFloat(index++, peakH);
+        put.setFloat(index++, (float)peakH.convertTo(UnitImpl.KILOMETER).getValue());
         put.setFloat(index++, peakK);
         put.setFloat(index++, peakVal);
         put.setFloat(index++, stack.getWeightPs());
@@ -303,7 +304,7 @@ public class JDBCHKStack extends JDBCTable {
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
         float[][] data = extractData(rs, numH, numK);
-        HKStack out = new HKStack(rs.getFloat("alpha"),
+        HKStack out = new HKStack(new QuantityImpl(rs.getFloat("alpha"), UnitImpl.KILOMETER_PER_SECOND),
                                   rs.getFloat("p"),
                                   rs.getFloat("percentMatch"),
                                   new QuantityImpl(rs.getFloat("minH"), UnitImpl.KILOMETER),

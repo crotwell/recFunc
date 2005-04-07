@@ -47,12 +47,13 @@ import edu.sc.seis.receiverFunction.compare.WilsonRistra;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 import edu.sc.seis.sod.SodUtil;
+import edu.sc.seis.sod.status.FissuresFormatter;
 
 
 
 public class HKStack implements Serializable {
 
-    protected HKStack(float alpha,
+    protected HKStack(QuantityImpl alpha,
                       float p,
                       float percentMatch,
                       QuantityImpl minH,
@@ -78,7 +79,7 @@ public class HKStack implements Serializable {
         this.weightPsPs = weightPsPs;
     }
 
-    public HKStack(float alpha,
+    public HKStack(QuantityImpl alpha,
                    float p,
                    float percentMatch,
                    QuantityImpl minH,
@@ -98,7 +99,7 @@ public class HKStack implements Serializable {
         calculate();
     }
 
-    public HKStack(float alpha,
+    public HKStack(QuantityImpl alpha,
                    float p,
                    float percentMatch,
                    QuantityImpl minH,
@@ -120,7 +121,7 @@ public class HKStack implements Serializable {
         calculate(recFuncSeis, shift);
     }
     
-    public HKStack(float alpha,
+    public HKStack(QuantityImpl alpha,
                    float p,
                    float percentMatch,
                    QuantityImpl minH,
@@ -139,7 +140,7 @@ public class HKStack implements Serializable {
         this.stack = stack;
     }
 
-    public HKStack(float alpha,
+    public HKStack(QuantityImpl alpha,
                    float p,
                    float percentMatch,
                    QuantityImpl minH,
@@ -159,7 +160,7 @@ public class HKStack implements Serializable {
         this.chan = recFunc.getDataSet().getChannel(recFunc.getRequestFilter().channel_id);
     }
 
-    public HKStack(float alpha,
+    public HKStack(QuantityImpl alpha,
                    float p,
                    float percentMatch,
                    QuantityImpl minH,
@@ -250,14 +251,14 @@ public class HKStack implements Serializable {
         return (float)((k-getMinK())/getStepK());
     }
     
-    public float getMaxValueH() {
+    public QuantityImpl getMaxValueH() {
         int[] indicies = getMaxValueIndices();
-        float peakH = (float)(getMinH().get_value() + getStepH().getValue() * indicies[0]);
+        QuantityImpl peakH = getMinH().add( getStepH().multiplyBy(indicies[0]) );
         return peakH;
     }
     
     public String formatMaxValueH() {
-        return depthFormat.format(getMaxValueH());
+        return FissuresFormatter.formatQuantity(getMaxValueH());
     }
     
     public float getMaxValueK() {
@@ -276,12 +277,12 @@ public class HKStack implements Serializable {
         return peakVal;
     }
     
-    public float getVs() {
-        return getAlpha()/getMaxValueK();
+    public QuantityImpl getVs() {
+        return getAlpha().divideBy(getMaxValueK());
     }
     
     public String formatVs() {
-        return vpvsFormat.format(getVs());
+        return FissuresFormatter.formatQuantity(getVs());
     }
     
     public float getPoissonsRatio() {
@@ -453,12 +454,13 @@ public class HKStack implements Serializable {
     
     void calculate(LocalSeismogramImpl seis, QuantityImpl shift) throws FissuresException  {
         stack = createArray(numH, numK);
-        float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
+        float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND).getValue();
+        float etaP = (float) Math.sqrt(1/(a*a) - p*p);
         if (Float.isNaN(etaP)) {
             System.out.println("Warning: Eta P is NaN alpha="+alpha+"  p="+p);
         }
         for (int kIndex = 0; kIndex < numK; kIndex++) {
-            float beta = alpha/(minK + kIndex*stepK);
+            float beta = a/(minK + kIndex*stepK);
             float etaS = (float) Math.sqrt(1/(beta*beta)-p*p);
             if (Float.isNaN(etaS)) {
                 System.out.println("Warning: Eta S is NaN "+kIndex+"  beta="+beta+"  p="+p);
@@ -477,26 +479,29 @@ public class HKStack implements Serializable {
     }
     
     public TimeInterval getTimePs() {
-        float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
-        float beta = alpha/getMaxValueK();
+        float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND).getValue();
+        float etaP = (float) Math.sqrt(1/(a*a)-p*p);
+        float beta = a/getMaxValueK();
         float etaS = (float) Math.sqrt(1/(beta*beta)-p*p);
-        float h = getMaxValueH();
+        double h = getMaxValueH().getValue();
         return new TimeInterval(h * (etaS - etaP), UnitImpl.SECOND);
     }
     
     public TimeInterval getTimePpPs() {
-        float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
-        float beta = alpha/getMaxValueK();
+        float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND).getValue();
+        float etaP = (float) Math.sqrt(1/(a*a)-p*p);
+        float beta = a/getMaxValueK();
         float etaS = (float) Math.sqrt(1/(beta*beta)-p*p);
-        float h = getMaxValueH();
+        double h = getMaxValueH().getValue();
         return new TimeInterval(h * (etaS + etaP), UnitImpl.SECOND);
     }
     
     public TimeInterval getTimePsPs() {
-        float etaP = (float) Math.sqrt(1/(alpha*alpha)-p*p);
-        float beta = alpha/getMaxValueK();
+        float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND).getValue();
+        float etaP = (float) Math.sqrt(1/(a*a)-p*p);
+        float beta = a/getMaxValueK();
         float etaS = (float) Math.sqrt(1/(beta*beta)-p*p);
-        float h = getMaxValueH();
+        double h = getMaxValueH().getValue();
         return new TimeInterval(h * (2 * etaS), UnitImpl.SECOND);
     }
 
@@ -550,12 +555,12 @@ public class HKStack implements Serializable {
         return vpvsFormat.format(getP());
     }
 
-    public float getAlpha() {
+    public QuantityImpl getAlpha() {
         return alpha;
     }
     
     public String formatAlpha() {
-        return vpvsFormat.format(getAlpha());
+        return FissuresFormatter.formatQuantity(getAlpha());
     }
 
     public float getPercentMatch() {
@@ -642,9 +647,9 @@ public class HKStack implements Serializable {
      */
     public void write(DataOutputStream out) throws IOException {
         out.writeFloat(p);
-        out.writeFloat(alpha);
+        out.writeFloat((float)alpha.getValue(UnitImpl.KILOMETER_PER_SECOND));
         out.writeFloat(percentMatch);
-        out.writeFloat((float)minH.convertTo(UnitImpl.KILOMETER).get_value());
+        out.writeFloat((float)minH.getValue(UnitImpl.KILOMETER));
         out.writeFloat((float)stepH.getValue());
         out.writeInt(numH);
         out.writeFloat(minK);
@@ -673,7 +678,7 @@ public class HKStack implements Serializable {
      */
     public static HKStack read(DataInputStream in) throws IOException {
         float p = in.readFloat();
-        float alpha = in.readFloat();
+        QuantityImpl alpha = new QuantityImpl(in.readFloat(), UnitImpl.KILOMETER_PER_SECOND);
         float percentMatch = in.readFloat();
         QuantityImpl minH = new QuantityImpl(in.readFloat(), UnitImpl.KILOMETER);
         QuantityImpl stepH = new QuantityImpl(in.readFloat(), UnitImpl.KILOMETER);
@@ -696,7 +701,7 @@ public class HKStack implements Serializable {
 
     float[][] stack;
     float p;
-    float alpha;
+    QuantityImpl alpha;
     float percentMatch;
     QuantityImpl minH;
     QuantityImpl stepH;

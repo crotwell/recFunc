@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import edu.iris.Fissures.IfNetwork.Station;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.TauP.VelocityLayer;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
@@ -67,7 +69,7 @@ public class Crust2 {
                                  station.get_code(),
                                  profile.getCrustThickness(),
                                  (float)(profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity()),
-                                 (float)profile.getPWaveAvgVelocity(),
+                                 new QuantityImpl((float)profile.getPWaveAvgVelocity(), UnitImpl.KILOMETER_PER_SECOND),
                                  getReference());
     }
 

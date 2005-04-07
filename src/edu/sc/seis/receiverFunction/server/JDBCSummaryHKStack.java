@@ -100,7 +100,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
                 .getDBId(summary.getChannel().get_id()));
         stmt.setInt(index++, jdbcHKStack.getJDBCChannel()
                 .getDBId(summary.getChannel().get_id()));
-        stmt.setFloat(index++, summary.getSum().getAlpha());
+        stmt.setFloat(index++, (float)summary.getSum().getAlpha().getValue(UnitImpl.KILOMETER_PER_SECOND));
         stmt.setFloat(index++, summary.getMinPercentMatch());
         stmt.setFloat(index++, (float)summary.getSmallestH().convertTo(UnitImpl.KILOMETER).getValue());
         stmt.setFloat(index++, (float)summary.getSum().getStepH().convertTo(UnitImpl.KILOMETER).getValue());
@@ -108,7 +108,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
         stmt.setFloat(index++, summary.getSum().getMinK());
         stmt.setFloat(index++, summary.getSum().getStepK());
         stmt.setInt(index++, summary.getSum().getNumK());
-        stmt.setFloat(index++, summary.getSum().getMaxValueH());
+        stmt.setFloat(index++, (float)summary.getSum().getMaxValueH().convertTo(UnitImpl.KILOMETER).getValue());
         stmt.setFloat(index++, summary.getSum().getMaxValueK());
         stmt.setFloat(index++, summary.getSum().getMaxValue());
         stmt.setFloat(index++, summary.getSum().getWeightPs());
@@ -136,7 +136,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
         float[][] data = jdbcHKStack.extractData(rs, numH, numK);
-        HKStack stack = new HKStack(rs.getFloat("alpha"),
+        HKStack stack = new HKStack(new QuantityImpl(rs.getFloat("alpha"), UnitImpl.KILOMETER_PER_SECOND),
                                     0,
                                     rs.getFloat("minPercentMatch"),
                                     new QuantityImpl(rs.getFloat("minH"), UnitImpl.KILOMETER),

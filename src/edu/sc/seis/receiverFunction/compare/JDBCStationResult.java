@@ -51,7 +51,7 @@ public class JDBCStationResult extends JDBCTable {
         put.setString(index++, result.getStationCode());
         put.setFloat(index++, (float)result.getH().convertTo(UnitImpl.KILOMETER).getValue());
         put.setFloat(index++, result.getVpVs());
-        put.setFloat(index++, result.getVp());
+        put.setFloat(index++, (float)result.getVp().getValue(UnitImpl.KILOMETER_PER_SECOND));
         put.setInt(index++, ref_id);
         put.executeUpdate();
     }
@@ -71,7 +71,7 @@ public class JDBCStationResult extends JDBCTable {
                                        stationCode,
                                        new QuantityImpl(rs.getFloat("h"), UnitImpl.KILOMETER),
                                        rs.getFloat("vpvs"),
-                                       rs.getFloat("vp"),
+                                       new QuantityImpl(rs.getFloat("vp"), UnitImpl.KILOMETER_PER_SECOND),
                                        ref));
         }
         return (StationResult[])list.toArray(new StationResult[0]);
@@ -90,7 +90,7 @@ public class JDBCStationResult extends JDBCTable {
                                        rs.getString("sta_code"),
                                        new QuantityImpl(rs.getFloat("h"), UnitImpl.KILOMETER),
                                        rs.getFloat("vpvs"),
-                                       rs.getFloat("vp"),
+                                       new QuantityImpl(rs.getFloat("vp"), UnitImpl.KILOMETER_PER_SECOND),
                                        ref));
         }
         return (StationResult[])list.toArray(new StationResult[0]);
@@ -184,7 +184,7 @@ public class JDBCStationResult extends JDBCTable {
                 networkId = attr[0].get_id();
             }
             if (networkId != null) {
-            jdbc.put(new StationResult(networkId, sta, new QuantityImpl(h, UnitImpl.KILOMETER), vpvs, vp, ref));
+            jdbc.put(new StationResult(networkId, sta, new QuantityImpl(h, UnitImpl.KILOMETER), vpvs, new QuantityImpl(vp, UnitImpl.KILOMETER_PER_SECOND), ref));
             } else {
                 throw new NotFound(net+"  "+netYear);
             }

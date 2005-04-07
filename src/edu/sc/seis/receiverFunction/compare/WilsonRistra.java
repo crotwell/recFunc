@@ -29,7 +29,7 @@ public class WilsonRistra implements StationCompare {
                                      stationId.station_code,
                                      new QuantityImpl(Float.parseFloat(props.getProperty(prefix+"_H")), UnitImpl.KILOMETER),
                                      Float.parseFloat(props.getProperty(prefix+"_VpVs")),
-                                     6,
+                                     new QuantityImpl(6, UnitImpl.KILOMETER_PER_SECOND),
                                      new StationResultRef("a","b","c"));
         } else {
             return null;

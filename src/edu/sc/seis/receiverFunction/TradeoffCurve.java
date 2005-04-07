@@ -6,6 +6,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.UnitImpl;
 
 
 /**
@@ -36,23 +38,25 @@ public class TradeoffCurve  {
         outH_Ps = new float[stack.getNumK()];
         outH_PpPs = new float[stack.getNumK()];
         outH_PsPs = new float[stack.getNumK()];
+        float a = (float)stack.getAlpha().getValue(UnitImpl.KILOMETER_PER_SECOND);
         for(int i = 0; i < stack.getNumK(); i++) {
             float ki = stack.getMinK()+i*stack.getStepK();
-            float vsi = stack.getAlpha()/ki;
-            float vso = stack.getAlpha()/peakK;
+            float vsi = a/ki;
+            float vso = a/peakK;
             // Ps
-            outH_Ps[i] = (float)(peakH*Math.sqrt(1/vso-1/stack.getAlpha())/
-                    Math.sqrt(1/vsi-1/stack.getAlpha()));
+            outH_Ps[i] = (float)(peakH.getValue()*Math.sqrt(1/vso-1/a)/
+                    Math.sqrt(1/vsi-1/a));
             // PpPs
-            outH_PpPs[i] = (float)(peakH*Math.sqrt(1/vso+1/stack.getAlpha())/
-                    Math.sqrt(1/vsi+1/stack.getAlpha()));
+            outH_PpPs[i] = (float)(peakH.getValue()*Math.sqrt(1/vso+1/a)/
+                    Math.sqrt(1/vsi+1/a));
             //PsPs
-            outH_PsPs[i] = (float)(peakH*Math.sqrt(1/vso)/
+            outH_PsPs[i] = (float)(peakH.getValue()*Math.sqrt(1/vso)/
                     Math.sqrt(1/vsi));
         }
     }
     
-    float peakH, peakK;
+    QuantityImpl peakH;
+    float peakK;
     int[] peakIndices;
     HKStack stack;
 

@@ -44,6 +44,7 @@ import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.SeisDataErrorEvent;
 import edu.sc.seis.fissuresUtil.xml.SeismogramFileTypes;
 import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
+import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.sod.ChannelGroup;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
@@ -241,7 +242,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                     rfTemplate.process(cookieJar.getContext(), velocityOutFile);
 
                     if (ITR_ITT.equals("ITR")) {
-                        HKStack stack = new HKStack(6.5f,
+                        HKStack stack = new HKStack(new QuantityImpl(6.5, UnitImpl.KILOMETER_PER_SECOND),
                                                     kmRayParam,
                                                     HKStack.getPercentMatch(saved),
                                                     new QuantityImpl(10, UnitImpl.KILOMETER), new QuantityImpl(.25f, UnitImpl.KILOMETER), 240,

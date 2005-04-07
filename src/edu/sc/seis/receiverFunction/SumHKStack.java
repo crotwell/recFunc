@@ -142,8 +142,8 @@ public class SumHKStack {
         return kVariance;
     }
     
-    public double getHStdDev() {
-        return Math.sqrt(hVariance);
+    public QuantityImpl getHStdDev() {
+        return new QuantityImpl(Math.sqrt(hVariance), UnitImpl.KILOMETER) ;
     }
 
     public double getKStdDev() {

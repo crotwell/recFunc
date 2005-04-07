@@ -103,7 +103,8 @@ public class StackSummary {
                             + station[j].my_location.latitude
                             + " "
                             + station[j].my_location.longitude;
-                    float peakH, peakK, peakVal = 0;
+                    QuantityImpl peakH;
+                    float peakK, peakVal = 0;
                     int[] indicies = sumStack.getSum().getMaxValueIndices();
                     peakH = sumStack.getSum().getMaxValueH();
                     peakK = sumStack.getSum().getMaxValueK();

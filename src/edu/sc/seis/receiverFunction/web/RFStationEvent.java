@@ -18,7 +18,7 @@ import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
-import edu.sc.seis.rev.StationLocator;
+import edu.sc.seis.rev.locator.StationLocator;
 import edu.sc.seis.rev.velocity.VelocityEvent;
 import edu.sc.seis.rev.velocity.VelocityStation;
 import edu.sc.seis.sod.ConfigurationException;

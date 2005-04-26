@@ -24,7 +24,7 @@ import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.rev.RevUtil;
-import edu.sc.seis.rev.StationLocator;
+import edu.sc.seis.rev.locator.StationLocator;
 import edu.sc.seis.rev.velocity.VelocityNetwork;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.database.waveform.JDBCEventChannelStatus;

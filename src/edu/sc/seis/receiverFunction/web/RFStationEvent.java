@@ -2,11 +2,17 @@ package edu.sc.seis.receiverFunction.web;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.VelocityContext;
 import edu.iris.Fissures.model.TimeInterval;
+import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
+import edu.sc.seis.fissuresUtil.bag.LongShortTrigger;
+import edu.sc.seis.fissuresUtil.bag.SimplePhaseStoN;
+import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
@@ -24,6 +30,7 @@ import edu.sc.seis.rev.velocity.VelocityStation;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.database.waveform.JDBCEventChannelCookieJar;
 import edu.sc.seis.sod.database.waveform.JDBCEventChannelStatus;
+import edu.sc.seis.sod.process.waveform.PhaseSignalToNoise;
 import edu.sc.seis.sod.status.FissuresFormatter;
 
 
@@ -42,6 +49,12 @@ public class RFStationEvent extends Revlet {
         JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.getDataLoc());
         hkStack = new JDBCHKStack(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
         staLoc = new StationLocator();
+        ston = new SimplePhaseStoN("P",
+                                   new TimeInterval(-1, UnitImpl.SECOND),
+                                   new TimeInterval(5, UnitImpl.SECOND),
+                                   new TimeInterval(-30, UnitImpl.SECOND),
+                                   new TimeInterval(-5, UnitImpl.SECOND),
+                                   TauPUtil.getTauPUtil("prem"));
     }
     /**
      *
@@ -54,7 +67,7 @@ public class RFStationEvent extends Revlet {
             res.setContentType("image/png");
             if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
             int rfid = new Integer(req.getParameter("rf")).intValue();
-            CachedResult result = hkStack.getJDBCRecFunc().getWithoutSeismograms(rfid);
+            CachedResult result = hkStack.getJDBCRecFunc().get(rfid);
             CacheEvent eq = new CacheEvent(result.event_attr, result.prefOrigin);
             HKStack stack = hkStack.get(rfid);
             VelocityEvent velEvent = new VelocityEvent(new CacheEvent(result.event_attr, result.prefOrigin));
@@ -75,6 +88,15 @@ public class RFStationEvent extends Revlet {
             TimeInterval timePsPs = stack.getTimePsPs();
             timePsPs.setFormat(FissuresFormatter.getDepthFormat());
             vContext.put("timePsPs", timePsPs);
+            
+            LocalSeismogramImpl[] seis = (LocalSeismogramImpl[])result.original;
+            ArrayList triggers = new ArrayList();
+            for(int i = 0; i < seis.length; i++) {
+                LongShortTrigger trigger = ston.process(sta.my_location, velEvent.get_preferred_origin(), seis[i]);
+                triggers.add(trigger);
+            }
+            vContext.put("ston", triggers);
+            
             RevletContext context = new RevletContext("rfStationEvent.vm", vContext);
             return context;
         } catch(Exception e) {
@@ -83,6 +105,8 @@ public class RFStationEvent extends Revlet {
         }
     }
 
+    private SimplePhaseStoN ston;
+    
     private StationLocator staLoc;
     
     private JDBCEventAccess jdbcEvent;

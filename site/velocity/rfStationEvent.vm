@@ -39,46 +39,50 @@
 <table>
 <tr>
 <td class="odd">Network</td>
-<td class="even">$sta.getNet().getCode()</td>
+<td class="even">$sta.getNet().getCode() $sta.getNet().getName()</td>
 </tr>
 <tr>
 <td class="odd">Station</td>
-<td class="even">$sta.getCode()</td>
+<td class="even">$sta.getCode() $sta.getName()</td>
+</tr>
+<tr>
+<td class="odd">Lat/Lon</td>
+<td class="even">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
 </tr>
 </table>
 
 <table>
 <tr>
-<td class="even">Distance</td>
-<td class="odd">$sta.getDistanceDeg($eq)</td>
+<td class="odd">Distance</td>
+<td class="even">$sta.getDistanceDeg($eq)</td>
 </tr>
 <tr>
-<td class="even">Az</td>
-<td class="odd">$sta.getAz($eq)</td>
+<td class="odd">Az</td>
+<td class="even">$sta.getAz($eq)</td>
 </tr>
 <tr>
-<td class="even">Baz</td>
-<td class="odd">$sta.getBaz($eq)</td>
+<td class="odd">Baz</td>
+<td class="even">$sta.getBaz($eq)</td>
 </tr>
 <tr>
-<td class="even">Estimated Moho Depth</td>
-<td class="odd">$fissures.formatQuantity($stack.getMaxValueH())</td>
+<td class="odd">Estimated Moho Depth</td>
+<td class="even">$fissures.formatQuantity($stack.getMaxValueH())</td>
 </tr>
 <tr>
-<td class="even">Estimated Crust Vp/Vs</td>
-<td class="odd">$stack.getMaxValueK()</td>
+<td class="odd">Estimated Crust Vp/Vs</td>
+<td class="even">$stack.getMaxValueK()</td>
 </tr>
 <tr>
-<td class="even">Assumed Crust Vp</td>
-<td class="odd">$fissures.formatQuantity($stack.getAlpha())</td>
+<td class="odd">Assumed Crust Vp</td>
+<td class="even">$fissures.formatQuantity($stack.getAlpha())</td>
 </tr>
 <tr>
-<td class="even">Estimated Crust Vs</td>
-<td class="odd">$fissures.formatQuantity($stack.getVs())</td>
+<td class="odd">Estimated Crust Vs</td>
+<td class="even">$fissures.formatQuantity($stack.getVs())</td>
 </tr>
 <tr>
-<td class="even">Estimated Crust Poisson's Ratio</td>
-<td class="odd">$stack.getPoissonsRatio()</td>
+<td class="odd">Estimated Crust Poisson's Ratio</td>
+<td class="even">$stack.getPoissonsRatio()</td>
 </tr>
 </table>
 
@@ -89,43 +93,51 @@
 <table>
 <tr>
 <td class="odd">Radial Match</td>
-<td class="odd"> ${result.radialMatch} %</td>
+<td class="even"> ${result.radialMatch} %</td>
 </tr>
 <tr>
 <td class="odd">Radial Bump</td>
-<td class="odd"> $result.radialBump </td>
+<td class="even"> $result.radialBump </td>
 </tr>
 <tr>
 <td class="odd">Transverse Match</td>
-<td class="odd">$result.transverseMatch %</td>
+<td class="even">$result.transverseMatch %</td>
 </tr>
 <tr>
 <td class="odd">Transverse Bump</td>
-<td class="odd">$result.transverseBump</td>
+<td class="even">$result.transverseBump</td>
 </tr>
 <tr>
 <td class="odd">SOD ConfigId</td>
-<td class="odd">$result.sodConfigId</td>
+<td class="even">$result.sodConfigId</td>
 </tr>
 <tr>
 <td class="odd">Insert Time</td>
-<td class="odd">$result.insertTime</td>
+<td class="even">$result.insertTime</td>
 </tr>
 <tr>
 <td class="odd">GWidth</td>
-<td class="odd">$result.gwidth</td>
+<td class="even">$result.gwidth</td>
 </tr>
 <tr>
 <td class="odd">Max Bumps</td>
-<td class="odd">$result.maxBumps</td>
+<td class="even">$result.maxBumps</td>
 </tr>
 <tr>
 <td class="odd">Tol</td>
-<td class="odd">$result.tol</td>
+<td class="even">$result.tol</td>
 </tr>
 </table>
 
 <img class="dataimg" src="waveforms.png?rf=$rf&window=120"/>
+
+<p>Signal To Noise<p/>
+<table>
+<tr><td class="headodd">Channel</td><td class="headodd">StoN</td><td class="headodd">STA</td><td class="headodd">LTA</td></tr>
+#foreach($trig in $ston )
+<tr><td class="odd">$trig.getChannelId()</td><td class="even">$trig.getValue()</td><td class="odd">$trig.getSTA()</td><td class="even">$trig.getLTA()</td></tr>
+#end
+</table>
 
 <table>
 <tr><td colspan=2>Arrivals</td></tr>

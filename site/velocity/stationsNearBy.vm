@@ -27,14 +27,15 @@
 #foreach($sta in $stationList)
 <tr>
 <td class="odd">$sta.getNet().getCodeWithYear()</td>
-<td class="even">$sta.getCode()</td>
-<td class="odd"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()">$sta.getName()</a></td>
-<td class="even">$sta.getLatitude()/$sta.getLongitude()</td>
-<td class="odd">$!summary.get($sta).getSum().getMaxValueH()</td>
-<td class="even">$!summary.get($sta).getSum().getMaxValueK()</td>
-<td class="odd">$!summary.get($sta).getSum().getAlpha()</td>
-<td class="even">$!summary.get($sta).getSum().getVs()</td>
-<td class="odd">$!summary.get($sta).getSum().getPoissonsRatio()</td>
+
+<td class="odd">$sta.getCode()</td>
+<td class="even"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()">$sta.getName()</a></td>
+<td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
+<td class="even">$fissures.formatQuantity($!summary.get($sta).getSum().getMaxValueH())</td>
+<td class="odd">$!summary.get($sta).getSum().getMaxValueK()</td>
+<td class="even">$fissures.formatQuantity($!summary.get($sta).getSum().getAlpha())</td>
+<td class="odd">$fissures.formatQuantity($!summary.get($sta).getSum().getVs())</td>
+<td class="even">$!summary.get($sta).getSum().getPoissonsRatio()</td>
 <td class="odd">$!numEQ.get($sta)</td>
 </tr>
 #end

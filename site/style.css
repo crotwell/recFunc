@@ -9,11 +9,11 @@ body {
 
 
 img.dataimg {
-margin: 20px 20% 20px 10%; 
+margin: 20px 20% 20px 5%; 
 }
 
 table {
-    margin: 20px 20px 20px 10%;
+    margin: 20px 20px 20px 5%;
     width: 80%;
     
 }
@@ -68,13 +68,13 @@ a img {
 }
 
 p {
-     margin-left: 10%;
+     margin-left: 5%;
        color: #007C39;
        padding-top: 10px;
 }
 
 li {
-     margin-left: 10%;
+     margin-left: 5%;
        color: #007C39;
        padding-top: 10px;
        list-style: none;

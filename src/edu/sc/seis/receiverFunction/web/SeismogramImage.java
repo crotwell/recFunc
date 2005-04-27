@@ -16,6 +16,7 @@ import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
+import edu.sc.seis.fissuresUtil.bag.Hilbert;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
@@ -58,7 +59,6 @@ public class SeismogramImage extends HttpServlet {
                                       jdbcChannel,
                                       jdbcSodConfig,
                                       RecFuncCacheImpl.getDataLoc());
-        relTime.setPhaseName("ttp");
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -73,57 +73,13 @@ public class SeismogramImage extends HttpServlet {
             TimeInterval window = new TimeInterval(RevUtil.getFloat("window", req, 120), UnitImpl.SECOND);
             Dimension dim = new Dimension(xdim, ydim);
             CachedResult stack = jdbcRecFunc.get(rf_id);
-            CacheEvent event = new CacheEvent(stack.event_attr,
-                                              stack.prefOrigin);
             OutputStream out = res.getOutputStream();
             if(stack == null) { return; }
             MultiSeismogramWindowDisplay disp = new MultiSeismogramWindowDisplay(new SeismogramSorter());
             disp.setTimeConfig(relTime);
-            LocalSeismogramImpl radial = (LocalSeismogramImpl)stack.radial;
-            MemoryDataSetSeismogram radialDSS = new MemoryDataSetSeismogram(radial,
-                                                                            "radial RF");
-            DataSet dataset = new MemoryDataSet("temp", "Temp Dataset for "
-                    + radialDSS.getName(), "temp", new AuditInfo[0]);
-            dataset.addDataSetSeismogram(radialDSS, emptyAudit);
-            String channelParamName = StdDataSetParamNames.CHANNEL
-                    + ChannelIdUtil.toString(radial.channel_id);
-            dataset.addParameter(channelParamName,
-                                 stack.channels[0],
-                                 emptyAudit);
-            LocalSeismogramImpl zSeis = (LocalSeismogramImpl)stack.original[0];
-            MemoryDataSetSeismogram zDSS = new MemoryDataSetSeismogram(zSeis,
-                                                                       zSeis.getName());
-            dataset.addDataSetSeismogram(zDSS, emptyAudit);
-            channelParamName = StdDataSetParamNames.CHANNEL
-                    + ChannelIdUtil.toString(stack.channels[0].get_id());
-            dataset.addParameter(channelParamName,
-                                 stack.channels[0],
-                                 emptyAudit);
-            LocalSeismogramImpl aSeis = (LocalSeismogramImpl)stack.original[1];
-            MemoryDataSetSeismogram aDSS = new MemoryDataSetSeismogram(aSeis,
-                                                                       aSeis.getName());
-            dataset.addDataSetSeismogram(aDSS, emptyAudit);
-            channelParamName = StdDataSetParamNames.CHANNEL
-                    + ChannelIdUtil.toString(stack.channels[1].get_id());
-            dataset.addParameter(channelParamName,
-                                 stack.channels[1],
-                                 emptyAudit);
-            LocalSeismogramImpl bSeis = (LocalSeismogramImpl)stack.original[2];
-            MemoryDataSetSeismogram bDSS = new MemoryDataSetSeismogram(bSeis,
-                                                                       bSeis.getName());
-            channelParamName = StdDataSetParamNames.CHANNEL
-                    + ChannelIdUtil.toString(stack.channels[2].get_id());
-            System.out.println("Chan: "
-                    + channelParamName
-                    + "  seis:"
-                    + ChannelIdUtil.toString(bDSS.getRequestFilter().channel_id));
-            dataset.addParameter(channelParamName,
-                                 stack.channels[2],
-                                 emptyAudit);
-            dataset.addDataSetSeismogram(bDSS, emptyAudit);
-            Origin o = stack.prefOrigin;
-            dataset.addParameter(DataSet.EVENT, event, emptyAudit);
-            disp.add(new DataSetSeismogram[] {radialDSS, zDSS, aDSS, bDSS});
+            
+            disp.add(getDSS(stack));
+            
             MicroSecondTimeRange mstr = disp.getTimeConfig().getTime();
             disp.getTimeConfig().shaleTime(0,
                                            window.divideBy(mstr.getInterval())
@@ -145,6 +101,56 @@ public class SeismogramImage extends HttpServlet {
             throw new RuntimeException(e);
         }
     }
+    
+    public DataSetSeismogram[] getDSS(CachedResult stack) {
+        CacheEvent event = new CacheEvent(stack.event_attr,
+                                          stack.prefOrigin);
+        
+        LocalSeismogramImpl radial = (LocalSeismogramImpl)stack.radial;
+        MemoryDataSetSeismogram radialDSS = new MemoryDataSetSeismogram(radial,
+                                                                        "radial RF");
+        DataSet dataset = new MemoryDataSet("temp", "Temp Dataset for "
+                + radialDSS.getName(), "temp", new AuditInfo[0]);
+        dataset.addDataSetSeismogram(radialDSS, emptyAudit);
+        String channelParamName = StdDataSetParamNames.CHANNEL
+                + ChannelIdUtil.toString(radial.channel_id);
+        dataset.addParameter(channelParamName,
+                             stack.channels[0],
+                             emptyAudit);
+        LocalSeismogramImpl zSeis = (LocalSeismogramImpl)stack.original[0];
+        MemoryDataSetSeismogram zDSS = new MemoryDataSetSeismogram(zSeis,
+                                                                   zSeis.getName());
+        dataset.addDataSetSeismogram(zDSS, emptyAudit);
+        channelParamName = StdDataSetParamNames.CHANNEL
+                + ChannelIdUtil.toString(stack.channels[0].get_id());
+        dataset.addParameter(channelParamName,
+                             stack.channels[0],
+                             emptyAudit);
+        LocalSeismogramImpl aSeis = (LocalSeismogramImpl)stack.original[1];
+        MemoryDataSetSeismogram aDSS = new MemoryDataSetSeismogram(aSeis,
+                                                                   aSeis.getName());
+        dataset.addDataSetSeismogram(aDSS, emptyAudit);
+        channelParamName = StdDataSetParamNames.CHANNEL
+                + ChannelIdUtil.toString(stack.channels[1].get_id());
+        dataset.addParameter(channelParamName,
+                             stack.channels[1],
+                             emptyAudit);
+        LocalSeismogramImpl bSeis = (LocalSeismogramImpl)stack.original[2];
+        MemoryDataSetSeismogram bDSS = new MemoryDataSetSeismogram(bSeis,
+                                                                   bSeis.getName());
+        channelParamName = StdDataSetParamNames.CHANNEL
+                + ChannelIdUtil.toString(stack.channels[2].get_id());
+        System.out.println("Chan: "
+                + channelParamName
+                + "  seis:"
+                + ChannelIdUtil.toString(bDSS.getRequestFilter().channel_id));
+        dataset.addParameter(channelParamName,
+                             stack.channels[2],
+                             emptyAudit);
+        dataset.addDataSetSeismogram(bDSS, emptyAudit);
+        dataset.addParameter(DataSet.EVENT, event, emptyAudit);
+        return new DataSetSeismogram[] {radialDSS, zDSS, aDSS, bDSS};
+    }
 
     private static final UnitImpl SEC_PER_SEC = UnitImpl.divide(UnitImpl.SECOND,
                                                    UnitImpl.SECOND);
@@ -157,7 +163,7 @@ public class SeismogramImage extends HttpServlet {
 
     JDBCRecFunc jdbcRecFunc;
 
-    PhaseAlignedTimeConfig relTime = new PhaseAlignedTimeConfig();
+    PhaseAlignedTimeConfig relTime = new PhaseAlignedTimeConfig("ttp");
 
     private SeismogramDisplayConfiguration sdc = new SeismogramDisplayConfiguration();
 

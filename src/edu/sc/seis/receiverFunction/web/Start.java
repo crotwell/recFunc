@@ -77,6 +77,12 @@ public class Start {
                                               "edu.sc.seis.receiverFunction.web.ComparePriorResultTxt",
                                               servletStrings,
                                               sh);
+        edu.sc.seis.rev.RevUtil.populateJetty("/analyticWaveforms.png",
+                                              "/analyticWaveforms.png",
+                                              "edu.sc.seis.receiverFunction.web.AnalyticPhaseSeismogramImage",
+                                              servletStrings,
+                                              sh);
+        
         edu.sc.seis.rev.Start.runREV(args, sh);
     }
 }

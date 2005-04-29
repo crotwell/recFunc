@@ -62,6 +62,11 @@ public class Start {
                                               "edu.sc.seis.receiverFunction.web.HKStackImageServlet",
                                               servletStrings,
                                               sh);
+        edu.sc.seis.rev.RevUtil.populateJetty("/hkphasestackimage.png",
+                                              "/hkphasestackimage.png",
+                                              "edu.sc.seis.receiverFunction.web.HKPhaseStackImage",
+                                              servletStrings,
+                                              sh);
         edu.sc.seis.rev.RevUtil.populateJetty("/waveforms.png",
                                               "/waveforms.png",
                                               "edu.sc.seis.receiverFunction.web.SeismogramImage",

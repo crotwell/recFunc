@@ -13,12 +13,15 @@ import java.sql.SQLException;
 import java.util.Properties;
 import org.apache.log4j.PropertyConfigurator;
 import edu.iris.Fissures.FissuresException;
+import edu.iris.Fissures.IfNetwork.Network;
+import edu.iris.Fissures.IfNetwork.NetworkAttr;
 import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.IfNetwork.StationId;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
@@ -73,8 +76,6 @@ public class StackSummary {
             if(net.equals("-all") || netId[i].network_code.equals(net)) {
                 Station[] station = jdbcStation.getAllStations(netId[i]);
                 for(int j = 0; j < station.length; j++) {
-                    System.out.println("calc for "
-                            + StationIdUtil.toStringNoDates(station[j].get_id()));
                     Crust2Profile crust2 = HKStack.getCrust2()
                             .getClosest(station[j].my_location.longitude,
                                         station[j].my_location.latitude);
@@ -87,8 +88,8 @@ public class StackSummary {
                                                  smallestH);
                     } else {
                         QuantityImpl modSmallestH = crust2H.subtract(new QuantityImpl(5, UnitImpl.KILOMETER));
-                        if(modSmallestH.lessThan(JDBCHKStack.getDefaultMinH())) {
-                            modSmallestH = JDBCHKStack.getDefaultMinH();
+                        if(modSmallestH.lessThan(HKStack.getDefaultMinH())) {
+                            modSmallestH = HKStack.getDefaultMinH();
                         }
                         sumStack = createSummary(station[j].get_id(),
                                                  parentDir,
@@ -133,6 +134,8 @@ public class StackSummary {
                                     float minPercentMatch,
                                     QuantityImpl smallestH) throws FissuresException,
             NotFound, IOException, SQLException {
+        System.out.println("calc for "
+                           + StationIdUtil.toStringNoDates(station));
         SumHKStack sumStack = jdbcHKStack.sum(station.network_id.network_code,
                                               station.station_code,
                                               minPercentMatch,
@@ -149,6 +152,7 @@ public class StackSummary {
                 jdbcSummary.put(sumStack);
             }
         }
+        
         //        saveImage(sumStack,
         //                   station,
         //                   parentDir,
@@ -239,15 +243,39 @@ public class StackSummary {
             float minPercentMatch = 80f;
             int smallestH = 25;
             String netArg = "";
+            String staArg = "";
             for(int i = 0; i < args.length; i++) {
                 if(args[i].equals("-net")) {
                     netArg = args[i + 1];
+                } else if(args[i].equals("-sta")) {
+                    staArg = args[i + 1];
                 } else if(args[i].equals("-all")) {
                     netArg = args[i];
                 }
             }
+            if (staArg.equals("")) {
             summary.createSummary(netArg, new File("stackImages" + smallestH
                     + "_" + minPercentMatch), minPercentMatch, new QuantityImpl(smallestH, UnitImpl.KILOMETER));
+            } else {
+                JDBCStation jdbcStation = summary.jdbcHKStack.getJDBCChannel().getStationTable();
+                NetworkAttr[] nets = jdbcStation.getNetTable().getByCode(netArg);
+                int sta_dbid = -1;
+                for(int i = 0; i < nets.length; i++) {
+                    try {
+                        int[] tmp = jdbcStation.getDBIds(nets[i].get_id() ,staArg);
+                        if (tmp.length > 0) {
+                            sta_dbid = tmp[0];
+                            summary.createSummary(jdbcStation.get(sta_dbid).get_id(),
+                                                  new File("stackImages" + smallestH+ "_" + minPercentMatch),
+                                                  minPercentMatch,
+                                                  new QuantityImpl(smallestH, UnitImpl.KILOMETER));
+                        }
+                    } catch (NotFound e) {
+                        System.out.println("NotFound for :"+NetworkIdUtil.toStringNoDates(nets[i].get_id()));
+                        // go to next network
+                    }
+                }
+            }
         } catch(Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

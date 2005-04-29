@@ -13,6 +13,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.model.QuantityImpl;
@@ -142,12 +143,24 @@ public class SumHKStack {
         return kVariance;
     }
     
+    public double getMixedVariance() {
+        return mixedVariance;
+    }
+    
     public QuantityImpl getHStdDev() {
         return new QuantityImpl(Math.sqrt(hVariance), UnitImpl.KILOMETER) ;
     }
 
     public double getKStdDev() {
         return Math.sqrt(kVariance);
+    }
+    
+    public String formatKStdDev() {
+        return vpvsFormat.format(getKStdDev());
+    }
+    
+    public double getMixedStdDev() {
+        return Math.sqrt(getMixedVariance());
     }
     
     public float getMinPercentMatch() {
@@ -166,56 +179,127 @@ public class SumHKStack {
         }
         Statistics stat = new Statistics(peakVals);
         maxVariance = stat.var();
-        // H is first index, K is second
-        double a;
-        double b;
-        double c;
+        // H is first index, K is second, f first difference, s second difference, abc for left, center right
+        double hsa;
+        double hsb;
+        double hsc;
         if (maxIndices[0] == 0) {
-            // off edge, shift by 1???
-            a = sum.getStack()[maxIndices[0]][maxIndices[1]];
-            b = sum.getStack()[maxIndices[0]+1][maxIndices[1]];
-            c = sum.getStack()[maxIndices[0]+2][maxIndices[1]];
+            // off edge, shift by 1 for second diff???
+            hsa = sum.getStack()[maxIndices[0]][maxIndices[1]];
+            hsb = sum.getStack()[maxIndices[0]+1][maxIndices[1]];
+            hsc = sum.getStack()[maxIndices[0]+2][maxIndices[1]];
         } else if (maxIndices[0] == sum.getStack().length-1) {
-            //          off edge, shift by 1???
-            a = sum.getStack()[maxIndices[0]-2][maxIndices[1]];
-            b = sum.getStack()[maxIndices[0]-1][maxIndices[1]];
-            c = sum.getStack()[maxIndices[0]][maxIndices[1]];
+            // off edge, shift by 1 for second difference???
+            hsa = sum.getStack()[maxIndices[0]-2][maxIndices[1]];
+            hsb = sum.getStack()[maxIndices[0]-1][maxIndices[1]];
+            hsc = sum.getStack()[maxIndices[0]][maxIndices[1]];
         } else {
             // normal case in interior
-            a = sum.getStack()[maxIndices[0]-1][maxIndices[1]];
-            b = sum.getStack()[maxIndices[0]][maxIndices[1]];
-            c = sum.getStack()[maxIndices[0]+1][maxIndices[1]];
+            hsa = sum.getStack()[maxIndices[0]-1][maxIndices[1]];
+            hsb = sum.getStack()[maxIndices[0]][maxIndices[1]];
+            hsc = sum.getStack()[maxIndices[0]+1][maxIndices[1]];
         }
-        double denom = a-2*b+c;
-        if (denom != 0) {
-            hVariance = -2*Math.sqrt(maxVariance)/(denom/(sum.getStepH().getValue()*sum.getStepH().getValue()));
-        } else {
-            logger.error("hVariance is NaN: a="+a+"  b="+b+"  c="+c);
-            hVariance = Double.MAX_VALUE;
-        }
+        double ksa;
+        double ksb;
+        double ksc;
         if (maxIndices[1] == 0) {
             // off edge, shift by 1???
-            a = sum.getStack()[maxIndices[0]][maxIndices[1]];
-            b = sum.getStack()[maxIndices[0]][maxIndices[1]+1];
-            c = sum.getStack()[maxIndices[0]][maxIndices[1]+2];
+            ksa = sum.getStack()[maxIndices[0]][maxIndices[1]];
+            ksb = sum.getStack()[maxIndices[0]][maxIndices[1]+1];
+            ksc = sum.getStack()[maxIndices[0]][maxIndices[1]+2];
         } else if (maxIndices[1] == sum.getStack()[0].length-1) {
             // off edge, shift by 1???
-            a = sum.getStack()[maxIndices[0]][maxIndices[1]-2];
-            b = sum.getStack()[maxIndices[0]][maxIndices[1]-1];
-            c = sum.getStack()[maxIndices[0]][maxIndices[1]];
+            ksa = sum.getStack()[maxIndices[0]][maxIndices[1]-2];
+            ksb = sum.getStack()[maxIndices[0]][maxIndices[1]-1];
+            ksc = sum.getStack()[maxIndices[0]][maxIndices[1]];
         } else {
             // normal case
-            a = sum.getStack()[maxIndices[0]][maxIndices[1]-1];
-            b = sum.getStack()[maxIndices[0]][maxIndices[1]];
-            c = sum.getStack()[maxIndices[0]][maxIndices[1]+1];
+            ksa = sum.getStack()[maxIndices[0]][maxIndices[1]-1];
+            ksb = sum.getStack()[maxIndices[0]][maxIndices[1]];
+            ksc = sum.getStack()[maxIndices[0]][maxIndices[1]+1];
         }
-        denom = a-2*b+c;
-        if (denom != 0) {
-            kVariance = -2*Math.sqrt(maxVariance)/(denom/(sum.getStepK()*sum.getStepK()));
+        // for corners/sides for partial H partial K
+        // 4* happens for each corner as both are simple first difference
+        // 2* happens for sides as one is simple first difference, other is centered first difference
+        // normal case is both centered first difference
+        // see for example http://snowball.millersville.edu/~adecaria/ESCI445/esci445_03_finite_diff_I.html
+        double hkaa, hkab, hkba, hkbb;
+        if (maxIndices[1] == 0) {
+            if (maxIndices[0] == 0) {
+                hkaa = 4*sum.getStack()[maxIndices[0]][maxIndices[1]];
+                hkab = 4*sum.getStack()[maxIndices[0]][maxIndices[1]+1];
+                hkba = 4*sum.getStack()[maxIndices[0]+1][maxIndices[1]];
+                hkbb = 4*sum.getStack()[maxIndices[0]+1][maxIndices[1]+1];
+            } else if (maxIndices[0] == sum.getStack().length-1) {
+                hkaa = 4*sum.getStack()[maxIndices[0]-1][maxIndices[1]];
+                hkab = 4*sum.getStack()[maxIndices[0]-1][maxIndices[1]+1];
+                hkba = 4*sum.getStack()[maxIndices[0]][maxIndices[1]];
+                hkbb = 4*sum.getStack()[maxIndices[0]][maxIndices[1]+1];
+            } else {
+                hkaa = 2*sum.getStack()[maxIndices[0]-1][maxIndices[1]];
+                hkab = 2*sum.getStack()[maxIndices[0]-1][maxIndices[1]+1];
+                hkba = 2*sum.getStack()[maxIndices[0]+1][maxIndices[1]];
+                hkbb = 2*sum.getStack()[maxIndices[0]+1][maxIndices[1]+1];
+            }
+        } else if (maxIndices[1] == sum.getStack()[0].length-1) {
+            if (maxIndices[0] == 0) {
+                hkaa = 4*sum.getStack()[maxIndices[0]][maxIndices[1]-1];
+                hkab = 4*sum.getStack()[maxIndices[0]][maxIndices[1]];
+                hkba = 4*sum.getStack()[maxIndices[0]+1][maxIndices[1]-1];
+                hkbb = 4*sum.getStack()[maxIndices[0]+1][maxIndices[1]];
+            } else if (maxIndices[0] == sum.getStack().length-1) {
+                hkaa = 4*sum.getStack()[maxIndices[0]-1][maxIndices[1]-1];
+                hkab = 4*sum.getStack()[maxIndices[0]-1][maxIndices[1]];
+                hkba = 4*sum.getStack()[maxIndices[0]][maxIndices[1]-1];
+                hkbb = 4*sum.getStack()[maxIndices[0]][maxIndices[1]];
+            } else {
+                hkaa = 2*sum.getStack()[maxIndices[0]-1][maxIndices[1]-1];
+                hkab = 2*sum.getStack()[maxIndices[0]-1][maxIndices[1]];
+                hkba = 2*sum.getStack()[maxIndices[0]+1][maxIndices[1]-1];
+                hkbb = 2*sum.getStack()[maxIndices[0]+1][maxIndices[1]];
+            }
         } else {
-            logger.error("kVariance is NaN: a="+a+"  b="+b+"  c="+c);
-            kVariance = Double.MAX_VALUE;
+            if (maxIndices[0] == 0) {
+                hkaa = 2*sum.getStack()[maxIndices[0]][maxIndices[1]-1];
+                hkab = 2*sum.getStack()[maxIndices[0]][maxIndices[1]+1];
+                hkba = 2*sum.getStack()[maxIndices[0]+1][maxIndices[1]-1];
+                hkbb = 2*sum.getStack()[maxIndices[0]+1][maxIndices[1]+1];
+            } else if (maxIndices[0] == sum.getStack().length-1) {
+                hkaa = 2*sum.getStack()[maxIndices[0]-1][maxIndices[1]-1];
+                hkab = 2*sum.getStack()[maxIndices[0]-1][maxIndices[1]+1];
+                hkba = 2*sum.getStack()[maxIndices[0]][maxIndices[1]-1];
+                hkbb = 2*sum.getStack()[maxIndices[0]][maxIndices[1]+1];
+            } else {
+                // normal case
+                hkaa = sum.getStack()[maxIndices[0]-1][maxIndices[1]-1];
+                hkab = sum.getStack()[maxIndices[0]-1][maxIndices[1]+1];
+                hkba = sum.getStack()[maxIndices[0]+1][maxIndices[1]-1];
+                hkbb = sum.getStack()[maxIndices[0]+1][maxIndices[1]+1];
+            }
         }
+        double stepH = sum.getStepH().getValue(UnitImpl.KILOMETER);
+        double stepK = sum.getStepK();
+        double secPartialH = (hsa-2*hsb+hsc)/(stepH*stepH);
+        double secPartialK = (ksa-2*ksb+ksc)/(stepK*stepK);
+        double mixedPartialHK = ((hkbb-hkba)-(hkab-hkaa))/(4*stepK*stepH);
+        double denom = (secPartialH*secPartialK-mixedPartialHK*mixedPartialHK);
+        if (secPartialH == 0 || secPartialK == 0 || mixedPartialHK == 0 || denom <= 0) {
+            logger.error("h or k Variance is NaN: index h/k: "+maxIndices[0]+"/"+maxIndices[1]+" delta h/k: "+stepH+"/"+stepK);
+            logger.error("h: a="+hsa+"  b="+hsb+"  c="+hsc+"  "+secPartialH);
+            logger.error("k: a="+ksa+"  b="+ksb+"  c="+ksc+"  "+secPartialK);
+            logger.error("mixed: hkaa="+hkaa+" hkab="+hkab+" hkba="+hkba+" hkbb="+hkbb+"  "+mixedPartialHK);
+            logger.error("denom "+denom);
+            hVariance = 9999;
+            kVariance = 9999;
+            mixedVariance = 9999;
+            return;
+        }
+        
+        hVariance = -2*maxVariance* secPartialK / denom;
+        kVariance = -2*maxVariance* secPartialH / denom;
+        mixedVariance = -2*maxVariance* mixedPartialHK / denom;
+        logger.debug("partials: "+ secPartialH +" "+ secPartialK +" "+mixedPartialHK  +" "+ denom);
+        logger.debug("Variances: "+hVariance+"  "+kVariance+"  "+mixedVariance);
     }
 
     protected Channel channel;
@@ -226,6 +310,9 @@ public class SumHKStack {
     protected double maxVariance;
     protected double hVariance;
     protected double kVariance;
+    protected double mixedVariance;
+    
+    private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumHKStack.class);
 }

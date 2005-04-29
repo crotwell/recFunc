@@ -21,6 +21,7 @@ import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
+import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.locator.StationLocator;
 import edu.sc.seis.rev.velocity.VelocityStation;
 import edu.sc.seis.sod.ConfigurationException;
@@ -55,7 +56,7 @@ public class HKStackImageServlet  extends HttpServlet {
         try {
             logger.debug("doGet called");
             if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
-            int rf_id = new Integer(req.getParameter("rf")).intValue();
+            int rf_id = RevUtil.getInt("rf", req);
             //CachedResult result = hkStack.getJDBCRecFunc().get(rf_id);
             HKStack stack = hkStack.get(rf_id);
             OutputStream out = res.getOutputStream();
@@ -82,7 +83,7 @@ public class HKStackImageServlet  extends HttpServlet {
     
     private JDBCEventAccess jdbcEvent;
     
-    private JDBCHKStack hkStack;
+    protected JDBCHKStack hkStack;
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(HKStackImageServlet.class);
     

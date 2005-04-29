@@ -31,42 +31,33 @@ public class AnalyticPhaseSeismogramImage extends SeismogramImage {
         DataSetSeismogram[] tmp = super.getDSS(stack);
         try {
             DataSetSeismogram[] out = new DataSetSeismogram[tmp.length+4];
-            System.arraycopy(tmp, 0, out, 0, tmp.length);
+            System.arraycopy(tmp, 0, out, 1, tmp.length);
             LocalSeismogramImpl radial = ((MemoryDataSetSeismogram)tmp[0]).getCache()[0];
             
             LocalSeismogramImpl hilbertSeis = hilbert.apply(radial);
             MemoryDataSetSeismogram radialDSS = new MemoryDataSetSeismogram(hilbertSeis, "hilbert RF");
             tmp[0].getDataSet().addDataSetSeismogram(radialDSS, emptyAudit);
-            out[tmp.length] = radialDSS;
+            out[tmp.length+1] = radialDSS;
             
             Cmplx[] analytic = hilbert.analyticSignal(radial);
-            float[] amp = new float[analytic.length];
-            double[] phase = new double[analytic.length];
-            for(int i = 0; i < analytic.length; i++) {
-                amp[i] = (float)analytic[i].mag();
-            }
-
-            phase = hilbert.unwrapPhase(analytic);
-            double[] freq = new double[phase.length];
-            freq[0] = phase[0];
-            for(int i = 1; i < freq.length; i++) {
-                freq[i] = (phase[i]-phase[i-1])/radial.getSampling().getPeriod().getValue(UnitImpl.SECOND);
-            }
+            double[] amp = hilbert.envelope(analytic);
+            double[] phase = hilbert.unwrapPhase(analytic);
+            double[] freq = hilbert.instantFreq(analytic);
             
             LocalSeismogramImpl hilbertAmp = new LocalSeismogramImpl(hilbertSeis, amp);
             MemoryDataSetSeismogram radialAmp = new MemoryDataSetSeismogram(hilbertAmp, "analytic amp");
             tmp[0].getDataSet().addDataSetSeismogram(radialAmp, emptyAudit);
-            out[tmp.length+1] = radialAmp;
+            out[tmp.length+2] = radialAmp;
 
             LocalSeismogramImpl hilbertPhs = new LocalSeismogramImpl(hilbertSeis, phase);
             MemoryDataSetSeismogram radialPhs = new MemoryDataSetSeismogram(hilbertPhs, "analytic phase");
             tmp[0].getDataSet().addDataSetSeismogram(radialPhs, emptyAudit);
-            out[tmp.length+2] = radialPhs;
+            out[tmp.length+3] = radialPhs;
 
             LocalSeismogramImpl hilbertFreq = new LocalSeismogramImpl(hilbertSeis, freq);
             MemoryDataSetSeismogram radialFreq = new MemoryDataSetSeismogram(hilbertFreq, "analytic freq");
             tmp[0].getDataSet().addDataSetSeismogram(radialFreq, emptyAudit);
-            out[tmp.length+3] = radialFreq;
+            out[0] = radialFreq;
             
             return out;
         } catch (Exception e) {
@@ -77,4 +68,6 @@ public class AnalyticPhaseSeismogramImage extends SeismogramImage {
     }
     
     Hilbert hilbert = new Hilbert();
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AnalyticPhaseSeismogramImage.class);
 }

@@ -77,7 +77,6 @@ public class JDBCHKStack extends JDBCTable {
         dataDir = new File(RecFuncCacheImpl.getDataLoc());
         dataDir.mkdirs();
         eventFormatter = new EventFormatter(true);
-        tauPTime = TauPUtil.getTauPUtil(modelName);
     }
     
     public HKStack get(int recfunc_id) throws IOException, SQLException, NotFound {
@@ -241,29 +240,7 @@ public class JDBCHKStack extends JDBCTable {
             FileNotFoundException, FissuresException, NotFound, IOException,
             SQLException {
         CachedResult cachedResult = jdbcRecFunc.get(recFuncDbId);
-        String[] pPhases = {"P"};
-        Arrival[] arrivals = tauPTime.calcTravelTimes(cachedResult.channels[0].my_site.my_station,
-                                                      cachedResult.prefOrigin,
-                                                      pPhases);
-        // convert radian per sec ray param into km per sec
-        float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
-                .getRadiusOfEarth());
-        StationResult staResult = crust2.getStationResult(cachedResult.channels[0].my_site.my_station);
-        HKStack stack = new HKStack(staResult.getVp(),
-                                    kmRayParam,
-                                    cachedResult.radialMatch,
-                                    getDefaultMinH(),
-                                    new QuantityImpl(.25f, UnitImpl.KILOMETER),
-                                    240,
-                                    1.6f,
-                                    .0025f,
-                                    200,
-                                    weightPs,
-                                    weightPpPs,
-                                    weightPsPs,
-                                    (LocalSeismogramImpl)cachedResult.radial,
-                                    cachedResult.channels[0],
-                                    RecFunc.getDefaultShift());
+        HKStack stack = HKStack.create(cachedResult, weightPs, weightPpPs, weightPsPs);
         System.out.println("Stack calc for "
                 + ChannelIdUtil.toStringNoDates(cachedResult.channels[0]));
         return stack;
@@ -346,12 +323,6 @@ public class JDBCHKStack extends JDBCTable {
     private File dataDir;
 
     private EventFormatter eventFormatter;
-
-    String modelName = "iasp91";
-
-    private TauPUtil tauPTime;
-
-    private static final QuantityImpl DEFAULT_MIN_H = new QuantityImpl(10, UnitImpl.KILOMETER);
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCHKStack.class);
 
@@ -484,14 +455,6 @@ public class JDBCHKStack extends JDBCTable {
 
     public JDBCRecFunc getJDBCRecFunc() {
         return jdbcRecFunc;
-    }
-
-    public TauPUtil getTauPTime() {
-        return tauPTime;
-    }
-
-    public static QuantityImpl getDefaultMinH() {
-        return DEFAULT_MIN_H;
     }
     
     Crust2 crust2;

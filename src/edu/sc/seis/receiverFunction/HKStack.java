@@ -30,7 +30,11 @@ import edu.iris.Fissures.model.UnitRangeImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
+import edu.sc.seis.IfReceiverFunction.CachedResult;
+import edu.sc.seis.TauP.Arrival;
+import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.PoissonsRatio;
+import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.display.BorderedDisplay;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import edu.sc.seis.fissuresUtil.display.borders.Border;
@@ -471,11 +475,47 @@ public class HKStack implements Serializable {
                 double timePpPs = h * (etaS + etaP) + shift.value;
                 double timePsPs = h * (2 * etaS) + shift.value;
                 
-                stack[hIndex][kIndex] += weightPs * getAmp(seis, timePs)
-                    + weightPpPs * getAmp(seis, timePpPs)
-                    - weightPsPs * getAmp(seis, timePsPs);
+                stack[hIndex][kIndex] += calcForStack(seis, timePs, timePpPs, timePsPs);
             }
         }
+    }
+    
+    public float calcForStack(LocalSeismogramImpl seis, double timePs, double timePpPs, double timePsPs) throws FissuresException {
+        return weightPs * getAmp(seis, timePs)
+        + weightPpPs * getAmp(seis, timePpPs)
+        - weightPsPs * getAmp(seis, timePsPs);
+    }
+    
+    public static HKStack create(CachedResult cachedResult,
+                                 float weightPs,
+                                 float weightPpPs,
+                                 float weightPsPs) throws TauModelException, FissuresException {
+        String[] pPhases = {"P"};
+
+        TauPUtil tauPTime = TauPUtil.getTauPUtil(modelName);
+        Arrival[] arrivals = tauPTime.calcTravelTimes(cachedResult.channels[0].my_site.my_station,
+                                                      cachedResult.prefOrigin,
+                                                      pPhases);
+        // convert radian per sec ray param into km per sec
+        float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
+                .getRadiusOfEarth());
+        StationResult staResult = crust2.getStationResult(cachedResult.channels[0].my_site.my_station);
+        HKStack stack = new HKStack(staResult.getVp(),
+                                    kmRayParam,
+                                    cachedResult.radialMatch,
+                                    getDefaultMinH(),
+                                    new QuantityImpl(.25f, UnitImpl.KILOMETER),
+                                    240,
+                                    1.6f,
+                                    .0025f,
+                                    200,
+                                    weightPs,
+                                    weightPpPs,
+                                    weightPsPs,
+                                    (LocalSeismogramImpl)cachedResult.radial,
+                                    cachedResult.channels[0],
+                                    RecFunc.getDefaultShift());
+        return stack;
     }
     
     public TimeInterval getTimePs() {
@@ -713,6 +753,10 @@ public class HKStack implements Serializable {
     float weightPs = 1;
     float weightPpPs = 1;
     float weightPsPs = 1;
+
+    private static final QuantityImpl DEFAULT_MIN_H = new QuantityImpl(10, UnitImpl.KILOMETER);
+    
+    static String modelName = "iasp91";
     
     transient static Crust2 crust2 = null;
     transient static WilsonRistra wilson = null;
@@ -738,6 +782,10 @@ public class HKStack implements Serializable {
         return wilson;
     }
 
+    public static QuantityImpl getDefaultMinH() {
+        return DEFAULT_MIN_H;
+    }
+    
     // don't serialize the DSS
     transient DataSetSeismogram recFunc;
 

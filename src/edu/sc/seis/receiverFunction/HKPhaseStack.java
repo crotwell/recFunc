@@ -178,10 +178,11 @@ public class HKPhaseStack extends HKStack {
         float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
                 .getRadiusOfEarth());
         StationResult staResult = crust2.getStationResult(cachedResult.channels[0].my_site.my_station);
+        QuantityImpl smallestH = new QuantityImpl(25, UnitImpl.KILOMETER);
         HKPhaseStack stack = new HKPhaseStack(staResult.getVp(),
                                     kmRayParam,
                                     cachedResult.radialMatch,
-                                    getDefaultMinH(),
+                                    getBestSmallestH(cachedResult.channels[0].my_site.my_station, smallestH),
                                     new QuantityImpl(.25f, UnitImpl.KILOMETER),
                                     240,
                                     1.6f,
@@ -195,6 +196,7 @@ public class HKPhaseStack extends HKStack {
                                     RecFunc.getDefaultShift());
         return stack;
     }
+    
     void calculate(LocalSeismogramImpl seis, QuantityImpl shift)
             throws FissuresException {
         //set up analytic signal

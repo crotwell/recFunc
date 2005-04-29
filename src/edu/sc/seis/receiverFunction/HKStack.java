@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
+import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
@@ -784,6 +785,21 @@ public class HKStack implements Serializable {
 
     public static QuantityImpl getDefaultMinH() {
         return DEFAULT_MIN_H;
+    }
+    
+    public static QuantityImpl getBestSmallestH(Station station, QuantityImpl smallestH) {
+        Crust2Profile crust2 = HKStack.getCrust2()
+                .getClosest(station.my_location.longitude,
+                            station.my_location.latitude);
+        QuantityImpl crust2H = crust2.getCrustThickness();
+        QuantityImpl modSmallestH = smallestH;
+        if(crust2H.subtract(smallestH).getValue() < 5) {
+            modSmallestH = crust2H.subtract(new QuantityImpl(5, UnitImpl.KILOMETER));
+            if(modSmallestH.lessThan(HKStack.getDefaultMinH())) {
+                modSmallestH = HKStack.getDefaultMinH();
+            }
+        }
+        return modSmallestH;
     }
     
     // don't serialize the DSS

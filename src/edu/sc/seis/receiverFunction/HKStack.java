@@ -491,6 +491,15 @@ public class HKStack implements Serializable {
                                  float weightPs,
                                  float weightPpPs,
                                  float weightPsPs) throws TauModelException, FissuresException {
+        return create(cachedResult, weightPs, weightPpPs, weightPsPs, 
+                      crust2.getStationResult(cachedResult.channels[0].my_site.my_station));
+    }
+
+    public static HKStack create(CachedResult cachedResult,
+                                 float weightPs,
+                                 float weightPpPs,
+                                 float weightPsPs,
+                                 StationResult staResult) throws TauModelException, FissuresException {
         String[] pPhases = {"P"};
 
         TauPUtil tauPTime = TauPUtil.getTauPUtil(modelName);
@@ -500,7 +509,6 @@ public class HKStack implements Serializable {
         // convert radian per sec ray param into km per sec
         float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
                 .getRadiusOfEarth());
-        StationResult staResult = crust2.getStationResult(cachedResult.channels[0].my_site.my_station);
         HKStack stack = new HKStack(staResult.getVp(),
                                     kmRayParam,
                                     cachedResult.radialMatch,
@@ -551,7 +559,8 @@ public class HKStack implements Serializable {
     float getAmp(LocalSeismogramImpl seis, double time)  throws FissuresException {
         double sampOffset = time/seis.getSampling().getPeriod().convertTo(UnitImpl.SECOND).value;
         if (sampOffset < 0 || sampOffset > seis.getNumPoints()-2) {
-            throw new IllegalArgumentException("time "+time+" is outside of seismogram: "+seis.getBeginTime()+" - "+seis.getEndTime());
+            //throw new IllegalArgumentException("time "+time+" is outside of seismogram: "+seis.getBeginTime()+" - "+seis.getEndTime());
+            return 0;
         }
         int offset = (int)Math.floor(sampOffset);
 

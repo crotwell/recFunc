@@ -1,6 +1,7 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -10,17 +11,23 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import edu.iris.Fissures.FissuresException;
+import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
+import edu.sc.seis.TauP.TauModelException;
+import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.receiverFunction.HKStack;
+import edu.sc.seis.receiverFunction.RecFuncException;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
+import edu.sc.seis.receiverFunction.server.SyntheticFactory;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.locator.StationLocator;
 import edu.sc.seis.rev.velocity.VelocityStation;
@@ -56,9 +63,15 @@ public class HKStackImageServlet  extends HttpServlet {
         try {
             logger.debug("doGet called");
             if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
-            int rf_id = RevUtil.getInt("rf", req);
-            //CachedResult result = hkStack.getJDBCRecFunc().get(rf_id);
-            HKStack stack = hkStack.get(rf_id);
+
+            HKStack stack;
+            if (req.getParameter("rf").equals("synth")) {
+                 stack = SyntheticFactory.getHKStack();
+            } else {
+                int rf_id = RevUtil.getInt("rf", req);
+                stack = hkStack.get(rf_id);
+            }
+            
             OutputStream out = res.getOutputStream();
             if (stack == null) {
                 return;
@@ -79,6 +92,17 @@ public class HKStackImageServlet  extends HttpServlet {
         }
     }
 
+    CachedResult getCachedResult(HttpServletRequest req)
+            throws NoPreferredOrigin, IncompatibleSeismograms,
+            TauModelException, RecFuncException, FileNotFoundException, FissuresException, NotFound, IOException, SQLException {
+        if (req.getParameter("rf").equals("synth")) {
+            return SyntheticFactory.getCachedResult();
+        } else {
+            int rf_id = RevUtil.getInt("rf", req);
+            return hkStack.getJDBCRecFunc().get(rf_id);
+        }
+    }
+    
     private StationLocator staLoc;
     
     private JDBCEventAccess jdbcEvent;

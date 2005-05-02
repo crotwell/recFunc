@@ -413,9 +413,9 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
     TauPUtil tauPTime;
     LocalSeismogramTemplateGenerator lSeisTemplateGen = null;
 
-    static float DEFAULT_GWIDTH = 2.5f;
-    static int DEFAULT_MAXBUMPS = 400;
-    static float DEFAULT_TOL = 0.001f;
+    public static float DEFAULT_GWIDTH = 2.5f;
+    public static int DEFAULT_MAXBUMPS = 400;
+    public static float DEFAULT_TOL = 0.001f;
     
     protected float gwidth;
 

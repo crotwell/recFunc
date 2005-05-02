@@ -15,6 +15,7 @@ import edu.sc.seis.fissuresUtil.bag.SimplePhaseStoN;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
+import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.receiverFunction.HKStack;
@@ -22,6 +23,8 @@ import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
+import edu.sc.seis.receiverFunction.server.SyntheticFactory;
+import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.rev.locator.StationLocator;
@@ -66,11 +69,15 @@ public class RFStationEvent extends Revlet {
             logger.debug("doGet called");
             res.setContentType("image/png");
             if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
-            int rfid = new Integer(req.getParameter("rf")).intValue();
-            CachedResult result = hkStack.getJDBCRecFunc().get(rfid);
+            CachedResult result;
+            if (req.getParameter("rf").equals("synth")) {
+                result = SyntheticFactory.getCachedResult();
+            } else {
+                int rfid = RevUtil.getInt("rf", req);
+                result = hkStack.getJDBCRecFunc().get(rfid);
+            }
             CacheEvent eq = new CacheEvent(result.event_attr, result.prefOrigin);
-            HKStack stack = hkStack.get(rfid);
-            VelocityEvent velEvent = new VelocityEvent(new CacheEvent(result.event_attr, result.prefOrigin));
+            VelocityEvent velEvent = new VelocityEvent(eq);
             VelocityStation sta = new VelocityStation(result.channels[0].my_site.my_station);
             
             VelocityContext vContext = new VelocityContext();
@@ -78,16 +85,26 @@ public class RFStationEvent extends Revlet {
             vContext.put("eq", velEvent);
             vContext.put("result", new VelocityCachedResult(result));
             vContext.put("rf", req.getParameter("rf"));
-            vContext.put("stack", stack);
-            TimeInterval timePs = stack.getTimePs();
-            timePs.setFormat(FissuresFormatter.getDepthFormat());
-            vContext.put("timePs", timePs);
-            TimeInterval timePpPs = stack.getTimePpPs();
-            timePpPs.setFormat(FissuresFormatter.getDepthFormat());
-            vContext.put("timePpPs", timePpPs);
-            TimeInterval timePsPs = stack.getTimePsPs();
-            timePsPs.setFormat(FissuresFormatter.getDepthFormat());
-            vContext.put("timePsPs", timePsPs);
+            try {
+                HKStack stack;
+                if (req.getParameter("rf").equals("synth")) {
+                    stack = SyntheticFactory.getHKStack();
+                } else {
+                    stack = hkStack.get(RevUtil.getInt("rf", req));
+                }
+                vContext.put("stack", stack);
+                TimeInterval timePs = stack.getTimePs();
+                timePs.setFormat(FissuresFormatter.getDepthFormat());
+                vContext.put("timePs", timePs);
+                TimeInterval timePpPs = stack.getTimePpPs();
+                timePpPs.setFormat(FissuresFormatter.getDepthFormat());
+                vContext.put("timePpPs", timePpPs);
+                TimeInterval timePsPs = stack.getTimePsPs();
+                timePsPs.setFormat(FissuresFormatter.getDepthFormat());
+                vContext.put("timePsPs", timePsPs);
+            } catch(NotFound e) {
+                logger.warn("Assume percent match below threshold. rf="+req.getParameter("rf"), e);
+            }
             
             LocalSeismogramImpl[] seis = (LocalSeismogramImpl[])result.original;
             ArrayList triggers = new ArrayList();

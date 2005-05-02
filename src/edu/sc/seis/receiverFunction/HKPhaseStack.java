@@ -168,6 +168,15 @@ public class HKPhaseStack extends HKStack {
                                  float weightPs,
                                  float weightPpPs,
                                  float weightPsPs) throws TauModelException, FissuresException {
+        return create(cachedResult, weightPs, weightPpPs, weightPsPs, 
+                      crust2.getStationResult(cachedResult.channels[0].my_site.my_station));
+    }
+    
+    public static HKStack create(CachedResult cachedResult,
+                                 float weightPs,
+                                 float weightPpPs,
+                                 float weightPsPs,
+                                 StationResult staResult) throws TauModelException, FissuresException {
         String[] pPhases = {"P"};
 
         TauPUtil tauPTime = TauPUtil.getTauPUtil(modelName);
@@ -177,7 +186,6 @@ public class HKPhaseStack extends HKStack {
         // convert radian per sec ray param into km per sec
         float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
                 .getRadiusOfEarth());
-        StationResult staResult = crust2.getStationResult(cachedResult.channels[0].my_site.my_station);
         QuantityImpl smallestH = new QuantityImpl(25, UnitImpl.KILOMETER);
         HKPhaseStack stack = new HKPhaseStack(staResult.getVp(),
                                     kmRayParam,

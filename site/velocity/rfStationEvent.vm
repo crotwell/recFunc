@@ -64,6 +64,7 @@
 <td class="odd">Baz</td>
 <td class="even">$sta.getBaz($eq)</td>
 </tr>
+#if($stack)
 <tr>
 <td class="odd">Estimated Moho Depth</td>
 <td class="even">$fissures.formatQuantity($stack.getMaxValueH())</td>
@@ -86,9 +87,12 @@
 </tr>
 </table>
 
-
 <img class="dataimg" src="hkstackimage.png?rf=$rf"/>
 
+#else
+</table>
+<p>The percent match for this event was below the threshold and hence was not used in the summary stack.</p>
+#end
 
 <table>
 <tr>

@@ -35,6 +35,7 @@ import edu.sc.seis.fissuresUtil.xml.StdDataSetParamNames;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
+import edu.sc.seis.receiverFunction.server.SyntheticFactory;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.sod.ConfigurationException;
 
@@ -66,13 +67,19 @@ public class SeismogramImage extends HttpServlet {
         try {
             logger.debug("doGet called");
             if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
-            int rf_id = new Integer(req.getParameter("rf")).intValue();
+
+            CachedResult stack;
+            if (req.getParameter("rf").equals("synth")) {
+                stack = SyntheticFactory.getCachedResult();
+            } else {
+                int rf_id = new Integer(req.getParameter("rf")).intValue();
+                stack = jdbcRecFunc.get(rf_id);
+            }
             int xdim = RevUtil.getInt("xdim", req, xdimDefault);
             int ydim = RevUtil.getInt("ydim", req, ydimDefault);
             TimeInterval prePhase = new TimeInterval(RevUtil.getFloat("prePhase", req, 10), UnitImpl.SECOND);
             TimeInterval window = new TimeInterval(RevUtil.getFloat("window", req, 120), UnitImpl.SECOND);
             Dimension dim = new Dimension(xdim, ydim);
-            CachedResult stack = jdbcRecFunc.get(rf_id);
             OutputStream out = res.getOutputStream();
             if(stack == null) { return; }
             MultiSeismogramWindowDisplay disp = new MultiSeismogramWindowDisplay(new SeismogramSorter());

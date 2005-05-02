@@ -384,6 +384,13 @@
                     <include>CN-README</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>src/edu/sc/seis/receiverFunction/server/synthetic</directory>
+                <targetPath>edu/sc/seis/receiverFunction/server/synthetic</targetPath>
+                <includes>
+                    <include>*</include>
+                </includes>
+            </resource>
         </resources>
         <unitTest>
             <resources>

@@ -121,7 +121,7 @@ public class RecFunc {
         return ans;
     }
 
-    protected IterDeconResult processComponent(float[] component,
+    public IterDeconResult processComponent(float[] component,
                                                float[] zdata,
                                                float period,
                                                Location staLoc,

@@ -12,6 +12,7 @@ import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.receiverFunction.HKPhaseStack;
 import edu.sc.seis.receiverFunction.HKStack;
+import edu.sc.seis.receiverFunction.server.SyntheticFactory;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.sod.ConfigurationException;
 
@@ -38,10 +39,14 @@ public class HKPhaseStackImage extends HKStackImageServlet {
         try {
             logger.debug("doGet called");
             if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
-            int rf_id = RevUtil.getInt("rf", req);
-            CachedResult result = hkStack.getJDBCRecFunc().get(rf_id);
-            
-            HKPhaseStack stack = (HKPhaseStack)HKPhaseStack.create(result, .3f, .3f, .3f);
+            CachedResult result;
+            if (req.getParameter("rf").equals("synth")) {
+                result = SyntheticFactory.getCachedResult();
+            } else {
+                int rf_id = RevUtil.getInt("rf", req);
+                result = hkStack.getJDBCRecFunc().get(rf_id);
+            }
+            HKPhaseStack stack = (HKPhaseStack)HKPhaseStack.create(result, .3f, .3f, .3f, SyntheticFactory.getStationResult());
             OutputStream out = res.getOutputStream();
             if (stack == null) {
                 return;

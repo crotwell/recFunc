@@ -88,6 +88,11 @@ public class Start {
                                               servletStrings,
                                               sh);
         
+        edu.sc.seis.rev.RevUtil.populateJetty("/hklatlon.png",
+                                              "/hklatlon.png",
+                                              "edu.sc.seis.receiverFunction.web.HKLatLonPlot",
+                                              servletStrings,
+                                              sh);
         edu.sc.seis.rev.Start.runREV(args, sh);
     }
 }

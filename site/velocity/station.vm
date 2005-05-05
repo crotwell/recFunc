@@ -36,7 +36,7 @@
 <tr><td class="odd">Vp/Vs Estimate</td><td class="even">$!summary.getSum().getMaxValueK()</td></tr>
 <tr><td class="odd">Vp/Vs StdDev</td><td class="even">$!summary.getKStdDev()</td></tr>
 <tr><td class="odd">Vs Estimate</td><td class="even">$fissures.formatQuantity($!summary.getSum().getVs())</td></tr>
-<tr><td class="odd">Poisson's Ratio</td><td class="even">$!summary.getSum().getPoissonsRatio()</td></tr>
+<tr><td class="odd">Poisson's Ratio</td><td class="even">$!summary.getSum().formatPoissonsRatio()</td></tr>
 <tr><td class="odd">Peak Value</td><td class="even">$!summary.getSum().getMaxValue()</td></tr>
 <tr><td class="odd">Assumed Vp</td><td class="even">$fissures.formatQuantity($!summary.getSum().getAlpha())</td></tr>
 <tr><td class="odd">Ps Weight</td><td class="even">$!summary.getSum().getWeightPs()</td></tr>
@@ -59,6 +59,14 @@
 <td class="headodd">Vp</td>
 <td class="headodd">Vs</td>
 <td class="headodd">Poissons Ratio</td>
+ <tr>
+ <td class="odd">EARS</td>
+ <td class="even">$fissures.formatDepth($!summary.getSum().getMaxValueH())</td>
+ <td class="odd">$!summary.getSum().getMaxValueK()</td>
+ <td class="even">$fissures.formatQuantity($!summary.getSum().getAlpha())</td>
+ <td class="odd">$fissures.formatQuantity($!summary.getSum().getVs())</td>
+ <td class="even">$!summary.getSum().formatPoissonsRatio()</td>
+</tr>
 </tr>
 #foreach( $marker in $markerList)
  <tr>
@@ -93,7 +101,7 @@
 <td class="even">$sta.getBaz($eq)</td>
 #set( $recFunc_id = $eq.getParam("recFunc_id") )
 <td class="odd"><a href="stationEvent.html?rf=$recFunc_id">$eq.getRegion()</a></td>
-<td class="even">$eq.getTimePrecise()</td>
+<td class="even">$eq.getTime()</td>
 <td class="odd">($eq.getLatitude(), $eq.getLongitude())</td>
 <td class="even">$eq.getDepth()</td>
 <td class="odd">$eq.getAllMagnitudes()</td>

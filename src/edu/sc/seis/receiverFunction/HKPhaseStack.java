@@ -223,8 +223,10 @@ public class HKPhaseStack extends HKStack {
                               double timePs,
                               double timePpPs,
                               double timePsPs) throws FissuresException {
-        return super.calcForStack(seis, timePs, timePpPs, timePsPs) * Math.abs(weightPs * getAmp(phase, timePs) + weightPpPs
-                * getAmp(phase, timePpPs) - weightPsPs * getAmp(phase, timePsPs));
+        return super.calcForStack(seis, timePs, timePpPs, timePsPs) * 
+        (float)Math.pow(Math.abs(weightPs * getAmp(phase, timePs) + 
+                                 weightPpPs * getAmp(phase, timePpPs) - 
+                                 weightPsPs * getAmp(phase, timePsPs)), 2);
     }
 
     private LocalSeismogramImpl phase;

@@ -45,7 +45,10 @@ $name
 
 <img src="earslogo.png"/><br/>
 
-<p><b>Comparison with Prior Result $name</p>
+<p><b>Comparison with Prior Result $name
+#if($hDiff)
+ for results with a difference > $hDiff.
+#end</p>
 <p>Bibliographic Entry: $ref.getReference()</p>
 <p>Reference URL: <a href="$ref.getURL()">$ref.getURL()</a></p>
 <p>Study type: $ref.getMethod()</p>

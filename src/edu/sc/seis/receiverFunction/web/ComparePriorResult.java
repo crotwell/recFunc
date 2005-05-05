@@ -1,12 +1,16 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.IfNetwork.Station;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.JDBCStationResult;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
@@ -40,6 +44,10 @@ public class ComparePriorResult extends StationList {
         ArrayList stations = new ArrayList();
         String name = RevUtil.get("name", req);
         context.put("name", name);
+        float hDiff = RevUtil.getFloat("hDiff", req, -1);
+        if (hDiff != -1) {
+            context.put("hDiff", RevUtil.get("hDiff", req));
+        }
         HashMap prior = new HashMap();
         context.put("prior", prior);
         StationResult[] results;
@@ -68,6 +76,36 @@ public class ComparePriorResult extends StationList {
             }
         }
         return stations;
+    }
+    
+    public HashMap getSummaries(ArrayList stationList, RevletContext context) throws SQLException, IOException {
+        // clean station/prior results if they agree within hDiff km
+        HashMap summary = super.getSummaries(stationList, context);
+        HashMap prior = (HashMap)context.get("prior");
+        float hDiff = Float.parseFloat((String)context.get("hDiff"));
+        if (hDiff > 0) {
+            Iterator it = stationList.iterator();
+            while(it.hasNext()) {
+                VelocityStation station = (VelocityStation)it.next();
+                StationResult result = (StationResult)prior.get(station);
+                SumHKStack sumStack = (SumHKStack)summary.get(station);
+                boolean remove = false;
+                if (result == null || sumStack == null) {
+                    remove = true;
+                } else {
+                    double diff =sumStack.getSum().getMaxValueH().subtract(result.getH()).getValue(UnitImpl.KILOMETER); 
+                    if (Math.abs(diff) < hDiff ) {
+                        remove = true;
+                    }
+                }
+                if (remove) {
+                    it.remove();
+                    prior.remove(station);
+                }
+                
+            }
+        }
+        return summary;
     }
 
     public String getVelocityTemplate() {

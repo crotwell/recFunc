@@ -63,6 +63,9 @@ public class HKStackImage extends JComponent {
             }
             //System.out.println("");
         }
+        
+        // tradeoff curves
+        /*
         g.setColor(Color.CYAN);
         TradeoffCurve tradeoff = new TradeoffCurve(stack);
         float[] curve = tradeoff.getH_Ps();
@@ -79,7 +82,7 @@ public class HKStackImage extends JComponent {
         for (int k = 0; k < stackOut[0].length-1; k++) {
             g.drawLine(2*k, Math.round(2*stack.getHIndexFloat(new QuantityImpl(curve[k], UnitImpl.KILOMETER))),
                        2*(k+1), 2*stack.getHIndex(new QuantityImpl(curve[k+1], UnitImpl.KILOMETER)));
-        }
+        }*/
         
         Iterator it = markers.iterator();
         while(it.hasNext()) {

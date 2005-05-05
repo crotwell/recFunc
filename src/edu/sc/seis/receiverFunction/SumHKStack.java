@@ -34,6 +34,7 @@ public class SumHKStack {
         this.smallestH = smallestH;
         this.hVariance = hVariance;
         this.kVariance = kVariance;
+        this.channel = sum.chan;
     }
     
     public SumHKStack(HKStack[] individuals,

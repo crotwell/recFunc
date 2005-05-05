@@ -60,7 +60,7 @@ public class StationList extends Revlet {
         RevletContext context = new RevletContext(getVelocityTemplate());
         ArrayList stationList = getStations(req, context);
         logger.debug("getStations done");
-        HashMap summary = getSummaries(stationList);
+        HashMap summary = getSummaries(stationList, context);
         logger.debug("getSummaries done");
         HashMap numEQ = new HashMap();
         Iterator it = stationList.iterator();
@@ -94,10 +94,11 @@ public class StationList extends Revlet {
     /** 
      * Populates a hashmap with keys (objects of type Station) from the list
      * and values of SumHKStack. Also populates the dbid for the stations and network.
+     * @param context TODO
      * @throws SQLException
      * @throws IOException
      */
-    public HashMap getSummaries(ArrayList stationList) throws SQLException, IOException {
+    public HashMap getSummaries(ArrayList stationList, RevletContext context) throws SQLException, IOException {
         Iterator it = stationList.iterator();
         HashMap summary = new HashMap();
         while(it.hasNext()) {
@@ -110,6 +111,18 @@ public class StationList extends Revlet {
             summary.put(sta, sumStack);
             } catch (NotFound e) {
                 // oh well, skip this station
+            }
+        }
+        return summary;
+    }
+    
+    public HashMap cleanSummaries(ArrayList stationList, HashMap summary) {
+        Iterator it = stationList.iterator();
+        while(it.hasNext()) {
+            Object next = it.next();
+            if (summary.get(next) == null) {
+                summary.remove(next);
+                it.remove();
             }
         }
         return summary;

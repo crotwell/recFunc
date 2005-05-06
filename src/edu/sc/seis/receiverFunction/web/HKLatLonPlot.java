@@ -50,7 +50,8 @@ public class HKLatLonPlot extends HttpServlet {
             RevletContext context = new RevletContext("unused");
             ArrayList stationList = stationsNearBy.getStations(req, context);
             HashMap summary = stationsNearBy.cleanSummaries(stationList,
-                                                            stationsNearBy.getSummaries(stationList, context));
+                                                            stationsNearBy.getSummaries(stationList,
+                                                                                        context));
             XYZDataset dataset = new StationSummaryDataset(stationList,
                                                            summary,
                                                            RevUtil.get("xAxis",
@@ -88,19 +89,27 @@ public class HKLatLonPlot extends HttpServlet {
                                                               legend,
                                                               tooltips,
                                                               urls);
-            logger.debug("chart renderer: "+chart.getXYPlot().getRenderer().getClass().getName());
-            double minZ = dataset.getZValue(0, 0);
-            for(int i = 0; i < dataset.getItemCount(0); i++) {
-                double tmp = dataset.getZValue(0, i);
-                if(minZ > tmp) {
-                    minZ = tmp;
+            double minZ, maxZ;
+            if(RevUtil.exists("minZ", req)) {
+                minZ = RevUtil.getFloat("minZ", req);
+            } else {
+                minZ = dataset.getZValue(0, 0);
+                for(int i = 0; i < dataset.getItemCount(0); i++) {
+                    double tmp = dataset.getZValue(0, i);
+                    if(minZ > tmp) {
+                        minZ = tmp;
+                    }
                 }
             }
-            double maxZ = dataset.getZValue(0, 0);
-            for(int i = 0; i < dataset.getItemCount(0); i++) {
-                double tmp = dataset.getZValue(0, i);
-                if(maxZ < tmp) {
-                    maxZ = tmp;
+            if(RevUtil.exists("maxZ", req)) {
+                maxZ = RevUtil.getFloat("maxZ", req);
+            } else {
+                maxZ = dataset.getZValue(0, 0);
+                for(int i = 0; i < dataset.getItemCount(0); i++) {
+                    double tmp = dataset.getZValue(0, i);
+                    if(maxZ < tmp) {
+                        maxZ = tmp;
+                    }
                 }
             }
             chart.getXYPlot()

@@ -1,33 +1,49 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.awt.Paint;
+import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.chart.urls.XYURLGenerator;
 import org.jfree.data.xy.XYZDataset;
 
-
 /**
- * @author crotwell
- * Created on May 4, 2005
+ * Colors the data points based on the Z value in the XYZDataset.
+ * 
+ * @author crotwell Created on May 4, 2005
  */
 public class ZColorXYDotRenderer extends StandardXYItemRenderer {
 
-    /**
-     *
-     */
     public ZColorXYDotRenderer(XYZDataset dataset, GMTColorPallete colors) {
         super(StandardXYItemRenderer.SHAPES);
+        setConstructorValues(dataset, colors);
+    }
+    
+    public ZColorXYDotRenderer(int type, XYZDataset dataset, GMTColorPallete colors) {
+        super(type);
+        setConstructorValues(dataset, colors);
+    }
+
+    public ZColorXYDotRenderer(int type, XYToolTipGenerator toolTipGenerator, XYZDataset dataset, GMTColorPallete colors) {
+        super(type, toolTipGenerator);
+        setConstructorValues(dataset, colors);
+    }
+
+    public ZColorXYDotRenderer(int type, XYToolTipGenerator toolTipGenerator,
+            XYURLGenerator urlGenerator, XYZDataset dataset, GMTColorPallete colors) {
+        super(type, toolTipGenerator, urlGenerator);
+        setConstructorValues(dataset, colors);
+    }
+
+    private void setConstructorValues(XYZDataset dataset, GMTColorPallete colors) {
         this.dataset = dataset;
         this.colormap = colors;
     }
     
     public Paint getItemPaint(int series, int item) {
-        logger.debug("getItemPaint "+item+"  color="+colormap.getColor(dataset.getZValue(series, item))+"  val="+dataset.getZValue(series, item));
         return colormap.getColor(dataset.getZValue(series, item));
     }
-    
+
     XYZDataset dataset;
-    
+
     GMTColorPallete colormap;
-    
-    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ZColorXYDotRenderer.class);
 }

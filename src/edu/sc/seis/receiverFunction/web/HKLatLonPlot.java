@@ -88,6 +88,7 @@ public class HKLatLonPlot extends HttpServlet {
                                                               legend,
                                                               tooltips,
                                                               urls);
+            logger.debug("chart renderer: "+chart.getXYPlot().getRenderer().getClass().getName());
             double minZ = dataset.getZValue(0, 0);
             for(int i = 0; i < dataset.getItemCount(0); i++) {
                 double tmp = dataset.getZValue(0, i);

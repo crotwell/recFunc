@@ -8,13 +8,13 @@ import java.awt.Color;
  * @see http://gmt.soest.hawaii.edu/gmt/doc/html/GMT_Docs/node51.html
  * @author crotwell Created on May 5, 2005
  */
-public class GMTColorPallete {
+public class GMTColorPalette {
 
-    public GMTColorPallete(ColorRange[] range) {
+    public GMTColorPalette(ColorRange[] range) {
         this(range, Color.CYAN, Color.MAGENTA, Color.BLACK);
     }
 
-    public GMTColorPallete(ColorRange[] range, Color smallColor,
+    public GMTColorPalette(ColorRange[] range, Color smallColor,
             Color largeColor, Color NaNColor) {
         this.range = range;
         this.smallColor = smallColor;
@@ -48,8 +48,8 @@ public class GMTColorPallete {
         return NaNColor;
     }
 
-    public static GMTColorPallete getDefault(double min, double max) {
-        return new GMTColorPallete(new ColorRange[] {new ColorRange(min,
+    public static GMTColorPalette getDefault(double min, double max) {
+        return new GMTColorPalette(new ColorRange[] {new ColorRange(min,
                                                                     Color.RED,
                                                                     max,
                                                                     Color.BLUE)});

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.JDBCStationResult;
 import edu.sc.seis.receiverFunction.compare.StationResult;
@@ -82,7 +83,13 @@ public class ComparePriorResult extends StationList {
         // clean station/prior results if they agree within hDiff km
         HashMap summary = super.getSummaries(stationList, context);
         HashMap prior = (HashMap)context.get("prior");
-        float hDiff = Float.parseFloat((String)context.get("hDiff"));
+        
+        float hDiff;
+        if (context.containsKey("hDiff")) {
+            hDiff = Float.parseFloat((String)context.get("hDiff"));
+        } else {
+            hDiff = -1;
+        }
         if (hDiff > 0) {
             Iterator it = stationList.iterator();
             while(it.hasNext()) {

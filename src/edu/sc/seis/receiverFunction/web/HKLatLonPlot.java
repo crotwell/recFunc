@@ -41,6 +41,11 @@ public class HKLatLonPlot extends HttpServlet {
         stationsNearBy = new StationsNearBy();
     }
 
+    protected void doPost(HttpServletRequest arg0, HttpServletResponse arg1)
+            throws ServletException, IOException {
+        doGet(arg0, arg1);
+    }
+
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         try {
@@ -90,27 +95,32 @@ public class HKLatLonPlot extends HttpServlet {
                                                               tooltips,
                                                               urls);
             double minZ, maxZ;
-            if(RevUtil.exists("minZ", req)) {
-                minZ = RevUtil.getFloat("minZ", req);
-            } else {
-                minZ = dataset.getZValue(0, 0);
-                for(int i = 0; i < dataset.getItemCount(0); i++) {
-                    double tmp = dataset.getZValue(0, i);
-                    if(minZ > tmp) {
-                        minZ = tmp;
+            if(dataset.getItemCount(0) != 0) {
+                if(RevUtil.exists("minZ", req)) {
+                    minZ = RevUtil.getFloat("minZ", req);
+                } else {
+                    minZ = dataset.getZValue(0, 0);
+                    for(int i = 0; i < dataset.getItemCount(0); i++) {
+                        double tmp = dataset.getZValue(0, i);
+                        if(minZ > tmp) {
+                            minZ = tmp;
+                        }
                     }
                 }
-            }
-            if(RevUtil.exists("maxZ", req)) {
-                maxZ = RevUtil.getFloat("maxZ", req);
-            } else {
-                maxZ = dataset.getZValue(0, 0);
-                for(int i = 0; i < dataset.getItemCount(0); i++) {
-                    double tmp = dataset.getZValue(0, i);
-                    if(maxZ < tmp) {
-                        maxZ = tmp;
+                if(RevUtil.exists("maxZ", req)) {
+                    maxZ = RevUtil.getFloat("maxZ", req);
+                } else {
+                    maxZ = dataset.getZValue(0, 0);
+                    for(int i = 0; i < dataset.getItemCount(0); i++) {
+                        double tmp = dataset.getZValue(0, i);
+                        if(maxZ < tmp) {
+                            maxZ = tmp;
+                        }
                     }
                 }
+            } else {
+                minZ = 0;
+                maxZ = 0;
             }
             chart.getXYPlot()
                     .setRenderer(new ZColorXYDotRenderer(dataset,

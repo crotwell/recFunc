@@ -105,9 +105,9 @@ public class StationList extends Revlet {
             try {
             VelocityStation sta = (VelocityStation)it.next();
             sta.setDbId(jdbcChannel.getStationTable().getDBId(sta.get_id()));
-            sta.getNet().setDbId(jdbcChannel.getNetworkTable().getDbId(sta.getNet().get_id()));
-            int dbid = jdbcSumHKStack.getDbIdForStation(sta.my_network.get_id(), sta.get_code());
-            SumHKStack sumStack = jdbcSumHKStack.get(dbid);
+            int netDbId = jdbcChannel.getNetworkTable().getDbId(sta.getNet().get_id());
+            sta.getNet().setDbId(netDbId);
+            SumHKStack sumStack = jdbcSumHKStack.getForStation(netDbId, sta.get_code());
             summary.put(sta, sumStack);
             } catch (NotFound e) {
                 // oh well, skip this station

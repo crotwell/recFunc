@@ -100,15 +100,25 @@ public class JDBCSummaryHKStack extends JDBCTable {
                 .getDBId(summary.getChannel().get_id()));
         stmt.setInt(index++, jdbcHKStack.getJDBCChannel()
                 .getDBId(summary.getChannel().get_id()));
-        stmt.setFloat(index++, (float)summary.getSum().getAlpha().getValue(UnitImpl.KILOMETER_PER_SECOND));
+        stmt.setFloat(index++, (float)summary.getSum()
+                .getAlpha()
+                .getValue(UnitImpl.KILOMETER_PER_SECOND));
         stmt.setFloat(index++, summary.getMinPercentMatch());
-        stmt.setFloat(index++, (float)summary.getSmallestH().convertTo(UnitImpl.KILOMETER).getValue());
-        stmt.setFloat(index++, (float)summary.getSum().getStepH().convertTo(UnitImpl.KILOMETER).getValue());
+        stmt.setFloat(index++, (float)summary.getSmallestH()
+                .convertTo(UnitImpl.KILOMETER)
+                .getValue());
+        stmt.setFloat(index++, (float)summary.getSum()
+                .getStepH()
+                .convertTo(UnitImpl.KILOMETER)
+                .getValue());
         stmt.setInt(index++, summary.getSum().getNumH());
         stmt.setFloat(index++, summary.getSum().getMinK());
         stmt.setFloat(index++, summary.getSum().getStepK());
         stmt.setInt(index++, summary.getSum().getNumK());
-        stmt.setFloat(index++, (float)summary.getSum().getMaxValueH().convertTo(UnitImpl.KILOMETER).getValue());
+        stmt.setFloat(index++, (float)summary.getSum()
+                .getMaxValueH()
+                .convertTo(UnitImpl.KILOMETER)
+                .getValue());
         stmt.setFloat(index++, summary.getSum().getMaxValueK());
         stmt.setFloat(index++, summary.getSum().getMaxValue());
         stmt.setFloat(index++, summary.getSum().getWeightPs());
@@ -136,11 +146,14 @@ public class JDBCSummaryHKStack extends JDBCTable {
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
         float[][] data = jdbcHKStack.extractData(rs, numH, numK);
-        HKStack stack = new HKStack(new QuantityImpl(rs.getFloat("alpha"), UnitImpl.KILOMETER_PER_SECOND),
+        HKStack stack = new HKStack(new QuantityImpl(rs.getFloat("alpha"),
+                                                     UnitImpl.KILOMETER_PER_SECOND),
                                     0,
                                     rs.getFloat("minPercentMatch"),
-                                    new QuantityImpl(rs.getFloat("minH"), UnitImpl.KILOMETER),
-                                    new QuantityImpl(rs.getFloat("stepH"), UnitImpl.KILOMETER),
+                                    new QuantityImpl(rs.getFloat("minH"),
+                                                     UnitImpl.KILOMETER),
+                                    new QuantityImpl(rs.getFloat("stepH"),
+                                                     UnitImpl.KILOMETER),
                                     numH,
                                     rs.getFloat("minK"),
                                     rs.getFloat("stepK"),
@@ -151,11 +164,28 @@ public class JDBCSummaryHKStack extends JDBCTable {
                                     data,
                                     chan);
         SumHKStack sum = new SumHKStack(rs.getFloat("minPercentMatch"),
-                                        new QuantityImpl(rs.getFloat("minH"), UnitImpl.KILOMETER),
+                                        new QuantityImpl(rs.getFloat("minH"),
+                                                         UnitImpl.KILOMETER),
                                         stack,
                                         rs.getFloat("hVariance"),
                                         rs.getFloat("kVariance"));
         return sum;
+    }
+
+    public SumHKStack getForStation(NetworkId net, String station_code)
+            throws NotFound, SQLException, IOException {
+        return getForStation(jdbcHKStack.getJDBCChannel().getNetworkTable().getDbId(net), station_code);
+    }
+
+    public SumHKStack getForStation(int netId, String station_code)
+            throws NotFound, SQLException, IOException {
+        int index = 1;
+        getForStation.setInt(index++, netId);
+        getForStation.setString(index++, station_code);
+        ResultSet rs = getForStation.executeQuery();
+        if(rs.next()) { return extract(rs); }
+        throw new NotFound("No Summary stack for "
+                + netId + " " + station_code);
     }
 
     public int getDbIdForStation(NetworkId net, String station_code)
@@ -176,6 +206,6 @@ public class JDBCSummaryHKStack extends JDBCTable {
     JDBCSequence hksummarySeq;
 
     PreparedStatement uncalculated, get, put, update, getForStation;
-    
+
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCSummaryHKStack.class);
 }

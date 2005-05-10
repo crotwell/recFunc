@@ -13,28 +13,28 @@ import org.jfree.data.xy.XYZDataset;
  */
 public class ZColorXYDotRenderer extends StandardXYItemRenderer {
 
-    public ZColorXYDotRenderer(XYZDataset dataset, GMTColorPallete colors) {
+    public ZColorXYDotRenderer(XYZDataset dataset, GMTColorPalette colors) {
         super(StandardXYItemRenderer.SHAPES);
         setConstructorValues(dataset, colors);
     }
     
-    public ZColorXYDotRenderer(int type, XYZDataset dataset, GMTColorPallete colors) {
+    public ZColorXYDotRenderer(int type, XYZDataset dataset, GMTColorPalette colors) {
         super(type);
         setConstructorValues(dataset, colors);
     }
 
-    public ZColorXYDotRenderer(int type, XYToolTipGenerator toolTipGenerator, XYZDataset dataset, GMTColorPallete colors) {
+    public ZColorXYDotRenderer(int type, XYToolTipGenerator toolTipGenerator, XYZDataset dataset, GMTColorPalette colors) {
         super(type, toolTipGenerator);
         setConstructorValues(dataset, colors);
     }
 
     public ZColorXYDotRenderer(int type, XYToolTipGenerator toolTipGenerator,
-            XYURLGenerator urlGenerator, XYZDataset dataset, GMTColorPallete colors) {
+            XYURLGenerator urlGenerator, XYZDataset dataset, GMTColorPalette colors) {
         super(type, toolTipGenerator, urlGenerator);
         setConstructorValues(dataset, colors);
     }
 
-    private void setConstructorValues(XYZDataset dataset, GMTColorPallete colors) {
+    private void setConstructorValues(XYZDataset dataset, GMTColorPalette colors) {
         this.dataset = dataset;
         this.colormap = colors;
     }
@@ -45,5 +45,5 @@ public class ZColorXYDotRenderer extends StandardXYItemRenderer {
 
     XYZDataset dataset;
 
-    GMTColorPallete colormap;
+    GMTColorPalette colormap;
 }

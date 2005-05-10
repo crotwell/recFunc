@@ -124,7 +124,7 @@ public class HKLatLonPlot extends HttpServlet {
             }
             chart.getXYPlot()
                     .setRenderer(new ZColorXYDotRenderer(dataset,
-                                                         GMTColorPallete.getDefault(minZ,
+                                                         GMTColorPalette.getDefault(minZ,
                                                                                     maxZ)));
             System.out.println(chart.getXYPlot().getClass().getName());
             OutputStream out = res.getOutputStream();

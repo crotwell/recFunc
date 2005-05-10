@@ -51,6 +51,7 @@ import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.WilsonRistra;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
+import edu.sc.seis.receiverFunction.web.GMTColorPalette;
 import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.status.FissuresFormatter;
 
@@ -298,11 +299,11 @@ public class HKStack implements Serializable {
         return vpvsFormat.format(getPoissonsRatio());
     }
     
-    public JComponent getStackComponent() {
+    public BorderedDisplay getStackComponent() {
         return getStackComponent(minH);
     }
     
-    public JComponent getStackComponent(QuantityImpl smallestH) {
+    public BorderedDisplay getStackComponent(QuantityImpl smallestH) {
         int startHIndex = getHIndex(smallestH);
         HKStackImage stackImage = new HKStackImage(this, startHIndex);
         if (crust2 != null) {
@@ -353,7 +354,7 @@ public class HKStack implements Serializable {
     }
 
     public BufferedImage createStackImage() {
-        JComponent comp =  getStackComponent();
+        BorderedDisplay comp =  getStackComponent();
         JFrame frame = null;
         Graphics2D g = null;
         BufferedImage bufImage = null;
@@ -402,14 +403,15 @@ public class HKStack implements Serializable {
             g.drawString("    K="+(getMinK()+xyMax[1]*getStepK()), 0, 2*fm.getHeight());
             g.translate(0, 2*fm.getHeight());
 
-            int minColor = HKStackImage.makeImageable(0, max, 0);
-            g.setColor(new Color(minColor, minColor, minColor));
+            GMTColorPalette colorPallete = ((HKStackImage)comp.get(BorderedDisplay.CENTER)).getColorPallete();
+            Color minColor = colorPallete.getColor(0);
+            g.setColor(minColor);
             g.fillRect(0, 0, 15, 15);
             g.setColor(Color.white);
             g.drawString("Min=0", 0, 15+fm.getHeight());
 
-            int maxColor = HKStackImage.makeImageable(min, max, max);
-            g.setColor(new Color(maxColor, maxColor, maxColor));
+            Color maxColor = colorPallete.getColor(max);
+            g.setColor(maxColor);
             g.fillRect(size.width-20, 0, 15, 15);
             g.setColor(Color.white);
             String maxString = "Max="+max;

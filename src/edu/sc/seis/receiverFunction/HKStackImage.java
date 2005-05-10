@@ -17,6 +17,7 @@ import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.web.GMTColorPalette;
 
 public class HKStackImage extends JComponent {
 
@@ -49,14 +50,16 @@ public class HKStackImage extends JComponent {
         float min = stack.stack[xyMin[0]][xyMin[1]];
         float max = stack.stack[xyMax[0]][xyMax[1]];
 
+        colorPallete = GMTColorPalette.getDefault(0, max);
+        
         for (int j = smallestHindex; j < stackOut.length; j++) {
             //System.out.print(j+" : ");
             for (int k = 0; k < stackOut[j].length; k++) {
                 if (j== xyMax[0] && k==xyMax[1]) {
                     g.setColor(Color.red);
                 } else {
-                    int colorVal = makeImageable(0, max, stackOut[j][k]);
-                    g.setColor(new Color(colorVal, colorVal, colorVal));
+                    Color color = colorPallete.getColor(stackOut[j][k]);
+                    g.setColor(color);
                 }
                 g.fillRect( 2*k, 2*(j-smallestHindex), 2, 2);
                 //System.out.print(colorVal+" ");
@@ -94,13 +97,12 @@ public class HKStackImage extends JComponent {
         g.setColor(origColor);
     }
     
-
-    static int makeImageable(float min, float max, float val) {
-        if (val > max) { return makeImageable(min, max, max); }
-        if (val < min) { return makeImageable(min, max, min); }
-        return (int)SimplePlotUtil.linearInterp(min, 255, max, 0, val);
+    public GMTColorPalette getColorPallete() {
+        return colorPallete;
     }
-
+    
+    GMTColorPalette colorPallete;
+    
     protected HKStack stack;
 
     protected ArrayList markers = new ArrayList();

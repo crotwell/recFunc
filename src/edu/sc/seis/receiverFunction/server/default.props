@@ -282,3 +282,4 @@ hksummary.getForStation=SELECT * from network \
                    WHERE net_id = ? \
                    AND sta_code = ? 
 
+hksummary.index_chanz=create index hksummary_chanz_idx on hksummary ( chanZ_id )

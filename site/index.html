@@ -6,7 +6,7 @@
 <body>
 <img src="earslogo.png"/><br/>
 <br/>
-<a href="networkList.html">Networks</a><br/>
+<p><a href="networkList.html">Networks</a></p>
 <p>Compare with:</a>
 <ul>
 <li><a href="comparePriorResult?name=crust2.0">Crust2.0</a> <a href="comparePriorResultTxt?name=crust2.0">(text only)</a></li>
@@ -15,5 +15,34 @@
 <li><a href="comparePriorResult?name=Zhu S. Cal.">Zhu southern California</a> <a href="comparePriorResultTxt?name=Zhu S. Cal.">(text only)</a></li>
 </ul>
 
+<br/>
+<p>Graph results near:</p>
+<form action="/ears_tmp/hklatlon.png" method="get">
+<p>
+<label for="lat">Latitude: </label><input type="text" name="lat" value="31"/><br/>
+<label for="lon">Longitude: </label><input type="text" name="lon" value="-81"/><br/>
+<label for="delta">Delta: </label><input type="text" name="delta" value="2"/><br/>
+
+<label for="xAxis">X Axis: </label>
+<input type="radio" name="xAxis" value="lat"> Latitude
+<input type="radio" name="xAxis" value="lon" checked="true"> Longitude
+<input type="radio" name="xAxis" value="H"> Thickness
+<input type="radio" name="xAxis" value="vpvs"> Vp/Vs<br/>
+
+<label for="yAxis">Y Axis: </label>
+<input type="radio" name="yAxis" value="lat" checked="true"> Latitude
+<input type="radio" name="yAxis" value="lon"> Longitude
+<input type="radio" name="yAxis" value="H"> Thickness
+<input type="radio" name="yAxis" value="vpvs"> Vp/Vs<br/>
+
+<label for="zAxis">Z (Color) Axis: </label>
+<input type="radio" name="zAxis" value="lat"> Latitude
+<input type="radio" name="zAxis" value="lon"> Longitude
+<input type="radio" name="zAxis" value="H" checked="true"> Thickness
+<input type="radio" name="zAxis" value="vpvs"> Vp/Vs<br/>
+
+<input type="submit" value="Send"/>
+    </p>
+ </form>
 </body>
 </html>

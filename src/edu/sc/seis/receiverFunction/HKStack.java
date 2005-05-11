@@ -406,13 +406,13 @@ public class HKStack implements Serializable {
             GMTColorPalette colorPallete = ((HKStackImage)comp.get(BorderedDisplay.CENTER)).getColorPallete();
             Color minColor = colorPallete.getColor(0);
             g.setColor(minColor);
-            g.fillRect(0, 0, 15, 15);
+            for(int i = 0; i < size.width; i++) {
+                g.setColor(colorPallete.getColor(SimplePlotUtil.linearInterp(0, 0, size.width, max, i)));
+                g.fillRect(i, 0, 1, 15);
+            }
             g.setColor(Color.white);
             g.drawString("Min=0", 0, 15+fm.getHeight());
 
-            Color maxColor = colorPallete.getColor(max);
-            g.setColor(maxColor);
-            g.fillRect(size.width-20, 0, 15, 15);
             g.setColor(Color.white);
             String maxString = "Max="+max;
             int stringWidth = fm.stringWidth(maxString);

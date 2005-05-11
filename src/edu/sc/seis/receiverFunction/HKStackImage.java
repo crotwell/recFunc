@@ -10,6 +10,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JComponent;
@@ -50,8 +53,16 @@ public class HKStackImage extends JComponent {
         float min = stack.stack[xyMin[0]][xyMin[1]];
         float max = stack.stack[xyMax[0]][xyMax[1]];
 
-        colorPallete = GMTColorPalette.getDefault(0, max);
         
+        try {
+            BufferedReader buf = new BufferedReader(new FileReader("/seis/local/src/GMT/GMT4.0/share/cpt/GMT_wysiwyg.cpt"));
+            colorPallete = GMTColorPalette.load(buf).renormalize(0, max, Color.BLACK, Color.MAGENTA, Color.CYAN);
+            
+            buf.close();
+        } catch (IOException e) {
+            logger.warn(e);
+            colorPallete = GMTColorPalette.getDefault(0, max);
+        }
         for (int j = smallestHindex; j < stackOut.length; j++) {
             //System.out.print(j+" : ");
             for (int k = 0; k < stackOut[j].length; k++) {

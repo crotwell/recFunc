@@ -222,23 +222,74 @@ public class HKStack implements Serializable {
      * grater than minH. 
      */
     public int[] getMaxValueIndices(int startHIndex) {
+        return getLocalMaxima(startHIndex, 1)[0];
+    }
+
+    public int[][] getLocalMaxima(int startHIndex, int num) {
         float[][] stackOut = getStack();
+        int[][] out = new int[num][2];
+        float[] maxima = new float[num];
+        maxima[0] = Math.min(0, stackOut[0][0]);
+        for(int i = 1; i < maxima.length; i++) {
+            maxima[i] = maxima[0];
+        }
         float max = stackOut[startHIndex][0];
         int maxIndexX = 0;
         int maxIndexY = 0;
         for (int j = startHIndex; j < stackOut.length; j++) {
             for (int k = 0; k < stackOut[j].length; k++) {
-                if (stackOut[j][k] > max) {
-                    max = stackOut[j][k];
-                    maxIndexX = j;
-                    maxIndexY = k;
+                if (isLocalMaxima(j, k, stackOut)) {
+                    // check list and see if it is in top num
+                    for(int i = 0; i < maxima.length; i++) {
+                        if(maxima[i] < stackOut[j][k]) {
+                            // shift others down
+                            if (i != maxima.length - 1) {
+                                System.arraycopy(maxima, i, maxima, i+1, maxima.length-i-1);
+                                System.arraycopy(out, i, out, i+1, out.length-i-1);
+                            }
+                            maxima[i] = stackOut[j][k];
+                            out[i] = new int[2];
+                            out[i][0] = j;
+                            out[i][1] = k;
+                            break;
+                        }
+                    }
                 }
             }
         }
-        int[] xy = new int[2];
-        xy[0] = maxIndexX;
-        xy[1] = maxIndexY;
-        return xy;
+        for(int i = 0; i < maxima.length; i++) {
+            int j = out[i][0];
+            int k = out[i][1];
+            System.out.println(i+" "+j+" "+k);
+            for (int a = j-1; a <= j+1 && a < stackOut.length; a++) {
+                if (a==-1) { a++; }
+                for (int b = k-1; b <= k+1 && b < stackOut[i].length; b++) {
+                    if (b==-1) { b++; }
+                    System.out.print(a+" "+b+" "+stackOut[a][b]+"    ");
+                }
+                System.out.println();
+            }
+        }
+        return out;
+    }
+    
+    private boolean isLocalMaxima(int j, int k, float[][] stackOut) {
+        String outString = "";
+        if (j!=0 && stackOut[j-1][k] > stackOut[j][k]) { return false; }
+        if (j!= stackOut.length-1 && stackOut[j+1][k] > stackOut[j][k]) { return false; } 
+        if (k!=0 && stackOut[j][k-1] > stackOut[j][k]) { return false; } 
+        if (k!= stackOut[0].length-1 && stackOut[j][k+1] > stackOut[j][k]) { return false; }
+        // check corners
+        if (j != 0) {
+            if (k!=0 && stackOut[j-1][k-1] > stackOut[j][k]) { return false; } 
+            if (k!= stackOut[0].length-1 && stackOut[j-1][k+1] > stackOut[j][k]) { return false; }
+        }
+        if (j != stackOut.length-1) {
+            if (k!=0 && stackOut[j+1][k-1] > stackOut[j][k]) { return false; } 
+            if (k!= stackOut[0].length-1 && stackOut[j+1][k+1] > stackOut[j][k]) { return false; }
+        }
+        // must be a maxima
+        return true;
     }
 
     public int getHIndex(QuantityImpl h) {
@@ -258,9 +309,18 @@ public class HKStack implements Serializable {
     }
     
     public QuantityImpl getMaxValueH() {
+        try {
         int[] indicies = getMaxValueIndices();
         QuantityImpl peakH = getMinH().add( getStepH().multiplyBy(indicies[0]) );
         return peakH;
+        } catch(Throwable e) {
+            GlobalExceptionHandler.handle(e);
+            return new QuantityImpl(0, UnitImpl.METER);
+        }
+    }
+    
+    public QuantityImpl getHFromIndex(int index) {
+        return getMinH().add( getStepH().multiplyBy(index) );
     }
     
     public String formatMaxValueH() {
@@ -271,6 +331,10 @@ public class HKStack implements Serializable {
         int[] indicies = getMaxValueIndices();
         float peakK = getMinK() + getStepK() * indicies[1];
         return peakK;
+    }
+
+    public float getKFromIndex(int index) {
+        return getMinK() + getStepK() * index;
     }
     
     public String formatMaxValueK() {
@@ -404,8 +468,6 @@ public class HKStack implements Serializable {
             g.translate(0, 2*fm.getHeight());
 
             GMTColorPalette colorPallete = ((HKStackImage)comp.get(BorderedDisplay.CENTER)).getColorPallete();
-            Color minColor = colorPallete.getColor(0);
-            g.setColor(minColor);
             for(int i = 0; i < size.width; i++) {
                 g.setColor(colorPallete.getColor(SimplePlotUtil.linearInterp(0, 0, size.width, max, i)));
                 g.fillRect(i, 0, 1, 15);

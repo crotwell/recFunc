@@ -57,10 +57,18 @@ import edu.sc.seis.sod.status.FissuresFormatter;
 
 public class HKStack implements Serializable {
 
-    protected HKStack(QuantityImpl alpha, float p, float percentMatch,
-            QuantityImpl minH, QuantityImpl stepH, int numH, float minK,
-            float stepK, int numK, float weightPs, float weightPpPs,
-            float weightPsPs) {
+    protected HKStack(QuantityImpl alpha,
+                      float p,
+                      float percentMatch,
+                      QuantityImpl minH,
+                      QuantityImpl stepH,
+                      int numH,
+                      float minK,
+                      float stepK,
+                      int numK,
+                      float weightPs,
+                      float weightPpPs,
+                      float weightPsPs) {
         this.alpha = alpha;
         this.p = p;
         this.percentMatch = percentMatch;
@@ -75,11 +83,19 @@ public class HKStack implements Serializable {
         this.weightPsPs = weightPsPs;
     }
 
-    public HKStack(QuantityImpl alpha, float p, float percentMatch,
-            QuantityImpl minH, QuantityImpl stepH, int numH, float minK,
-            float stepK, int numK, float weightPs, float weightPpPs,
-            float weightPsPs, DataSetSeismogram recFunc)
-            throws FissuresException {
+    public HKStack(QuantityImpl alpha,
+                   float p,
+                   float percentMatch,
+                   QuantityImpl minH,
+                   QuantityImpl stepH,
+                   int numH,
+                   float minK,
+                   float stepK,
+                   int numK,
+                   float weightPs,
+                   float weightPpPs,
+                   float weightPsPs,
+                   DataSetSeismogram recFunc) throws FissuresException {
         this(alpha,
              p,
              percentMatch,
@@ -98,11 +114,21 @@ public class HKStack implements Serializable {
         calculate();
     }
 
-    public HKStack(QuantityImpl alpha, float p, float percentMatch,
-            QuantityImpl minH, QuantityImpl stepH, int numH, float minK,
-            float stepK, int numK, float weightPs, float weightPpPs,
-            float weightPsPs, LocalSeismogramImpl recFuncSeis, Channel chan,
-            TimeInterval shift) throws FissuresException {
+    public HKStack(QuantityImpl alpha,
+                   float p,
+                   float percentMatch,
+                   QuantityImpl minH,
+                   QuantityImpl stepH,
+                   int numH,
+                   float minK,
+                   float stepK,
+                   int numK,
+                   float weightPs,
+                   float weightPpPs,
+                   float weightPsPs,
+                   LocalSeismogramImpl recFuncSeis,
+                   Channel chan,
+                   TimeInterval shift) throws FissuresException {
         this(alpha,
              p,
              percentMatch,
@@ -120,10 +146,19 @@ public class HKStack implements Serializable {
         calculate(recFuncSeis, shift);
     }
 
-    public HKStack(QuantityImpl alpha, float p, float percentMatch,
-            QuantityImpl minH, QuantityImpl stepH, int numH, float minK,
-            float stepK, int numK, float weightPs, float weightPpPs,
-            float weightPsPs, float[][] stack) {
+    public HKStack(QuantityImpl alpha,
+                   float p,
+                   float percentMatch,
+                   QuantityImpl minH,
+                   QuantityImpl stepH,
+                   int numH,
+                   float minK,
+                   float stepK,
+                   int numK,
+                   float weightPs,
+                   float weightPpPs,
+                   float weightPsPs,
+                   float[][] stack) {
         this(alpha,
              p,
              percentMatch,
@@ -140,10 +175,20 @@ public class HKStack implements Serializable {
         this.stack = stack;
     }
 
-    public HKStack(QuantityImpl alpha, float p, float percentMatch,
-            QuantityImpl minH, QuantityImpl stepH, int numH, float minK,
-            float stepK, int numK, float weightPs, float weightPpPs,
-            float weightPsPs, float[][] stack, DataSetSeismogram recFunc) {
+    public HKStack(QuantityImpl alpha,
+                   float p,
+                   float percentMatch,
+                   QuantityImpl minH,
+                   QuantityImpl stepH,
+                   int numH,
+                   float minK,
+                   float stepK,
+                   int numK,
+                   float weightPs,
+                   float weightPpPs,
+                   float weightPsPs,
+                   float[][] stack,
+                   DataSetSeismogram recFunc) {
         this(alpha,
              p,
              percentMatch,
@@ -162,10 +207,20 @@ public class HKStack implements Serializable {
                 .getChannel(recFunc.getRequestFilter().channel_id);
     }
 
-    public HKStack(QuantityImpl alpha, float p, float percentMatch,
-            QuantityImpl minH, QuantityImpl stepH, int numH, float minK,
-            float stepK, int numK, float weightPs, float weightPpPs,
-            float weightPsPs, float[][] stack, Channel chan) {
+    public HKStack(QuantityImpl alpha,
+                   float p,
+                   float percentMatch,
+                   QuantityImpl minH,
+                   QuantityImpl stepH,
+                   int numH,
+                   float minK,
+                   float stepK,
+                   int numK,
+                   float weightPs,
+                   float weightPpPs,
+                   float weightPsPs,
+                   float[][] stack,
+                   Channel chan) {
         this(alpha,
              p,
              percentMatch,
@@ -228,9 +283,9 @@ public class HKStack implements Serializable {
         return getLocalMaxima(startHIndex, num, 2, .04f);
     }
 
-    /** 
-     * Finds the top num local maxuma that are not within minDeltaH and minDeltaK of another local
-     * maxima.
+    /**
+     * Finds the top num local maxuma that are not within minDeltaH and
+     * minDeltaK of another local maxima.
      */
     public int[][] getLocalMaxima(int startHIndex,
                                   int num,
@@ -280,7 +335,8 @@ public class HKStack implements Serializable {
                                                      out.length - i - 1);
                                 }
                                 maxima[i] = stackOut[j][k];
-                                // must create a new int[] as out[i] and out[i+1] now point to the same int[] object
+                                // must create a new int[] as out[i] and
+                                // out[i+1] now point to the same int[] object
                                 out[i] = new int[2];
                                 out[i][0] = j;
                                 out[i][1] = k;
@@ -367,6 +423,10 @@ public class HKStack implements Serializable {
         int[] indicies = getMaxValueIndices();
         float peakVal = getStack()[indicies[0]][indicies[1]];
         return peakVal;
+    }
+
+    public String formatMaxValue() {
+        return maxValueFormat.format(getMaxValue());
     }
 
     public QuantityImpl getVs() {
@@ -979,6 +1039,8 @@ public class HKStack implements Serializable {
     Channel chan;
 
     private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
+
+    private static DecimalFormat maxValueFormat = new DecimalFormat("0.0000");
 
     private static DecimalFormat depthFormat = new DecimalFormat("0.##");
 

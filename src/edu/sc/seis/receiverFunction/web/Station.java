@@ -131,11 +131,11 @@ public class Station extends Revlet {
                                                                    staCode);
             SumHKStack summary = jdbcSummaryHKStack.get(summaryDbId);
             context.put("summary", summary);
-            StationResultRef earsStaRef = new StationResultRef("ears",
-                                                               "ears",
-                                                               "ears");
             int[][] localMaxima = summary.getSum().getLocalMaxima(20, 5);
             for(int i = 0; i < localMaxima.length; i++) {
+                StationResultRef earsStaRef = new StationResultRef(i==0?"Global Maxima":"Local Maxima "+i,
+                                                                   "ears",
+                                                                   "ears");
                 markerList.add(new StationResult(net.get_id(),
                                                  staCode,
                                                  summary.getSum().getHFromIndex(localMaxima[i][0]),

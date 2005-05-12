@@ -351,20 +351,36 @@ public class HKStack implements Serializable {
     }
 
     private boolean isLocalMaxima(int j, int k, float[][] stackOut) {
-        if(j != 0 && stackOut[j - 1][k] > stackOut[j][k]) { return false; }
-        if(j != stackOut.length - 1 && stackOut[j + 1][k] > stackOut[j][k]) { return false; }
-        if(k != 0 && stackOut[j][k - 1] > stackOut[j][k]) { return false; }
-        if(k != stackOut[0].length - 1 && stackOut[j][k + 1] > stackOut[j][k]) { return false; }
+        if(j != 0 && stackOut[j - 1][k] > stackOut[j][k]) {
+            return false;
+        }
+        if(j != stackOut.length - 1 && stackOut[j + 1][k] > stackOut[j][k]) {
+            return false;
+        }
+        if(k != 0 && stackOut[j][k - 1] > stackOut[j][k]) {
+            return false;
+        }
+        if(k != stackOut[0].length - 1 && stackOut[j][k + 1] > stackOut[j][k]) {
+            return false;
+        }
         // check corners
         if(j != 0) {
-            if(k != 0 && stackOut[j - 1][k - 1] > stackOut[j][k]) { return false; }
+            if(k != 0 && stackOut[j - 1][k - 1] > stackOut[j][k]) {
+                return false;
+            }
             if(k != stackOut[0].length - 1
-                    && stackOut[j - 1][k + 1] > stackOut[j][k]) { return false; }
+                    && stackOut[j - 1][k + 1] > stackOut[j][k]) {
+                return false;
+            }
         }
         if(j != stackOut.length - 1) {
-            if(k != 0 && stackOut[j + 1][k - 1] > stackOut[j][k]) { return false; }
+            if(k != 0 && stackOut[j + 1][k - 1] > stackOut[j][k]) {
+                return false;
+            }
             if(k != stackOut[0].length - 1
-                    && stackOut[j + 1][k + 1] > stackOut[j][k]) { return false; }
+                    && stackOut[j + 1][k + 1] > stackOut[j][k]) {
+                return false;
+            }
         }
         // must be a maxima
         return true;

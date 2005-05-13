@@ -51,6 +51,8 @@ receiverFunction.getOriginByStation=SELECT * FROM network \
     NATURAL JOIN site \
     NATURAL JOIN channel \
     JOIN  receiverFunction ON (chanz_id = chan_id ) \
+    JOIN origin ON (receiverfunction.origin_id = origin.origin_id) \
+    JOIN eventattr ON (receiverfunction.eventattr_id = eventattr.eventattr_id) \
     WHERE net_id = ? \
     AND sta_code = ?
                    

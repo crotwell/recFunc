@@ -418,8 +418,8 @@ public class JDBCRecFunc extends JDBCTable {
         ResultSet rs = getOriginByStation.executeQuery();
         ArrayList out = new ArrayList();
         while(rs.next()) {
-            Origin o = jdbcOrigin.get(rs.getInt("origin_id"));
-            EventAttr attr = jdbcEventAttr.get(rs.getInt("eventAttr_id"));
+            Origin o = jdbcOrigin.extract(rs);
+            EventAttr attr = jdbcEventAttr.extract(rs);
             CacheEvent event = new CacheEvent(attr, o);
             ParameterRef[] parms = o.parm_ids;
             ParameterRef[] newParms = new ParameterRef[parms.length+2];

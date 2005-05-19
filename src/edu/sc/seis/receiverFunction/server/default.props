@@ -47,22 +47,22 @@ receiverFunction.index_origin=create index receiverfunction_origin_idx on receiv
 receiverFunction.index_chanz=create index receiverfunction_chanz_idx on receiverfunction ( chanz_id )
 
 receiverFunction.getOriginByStation=SELECT * FROM network \
-    NATURAL JOIN station \
-    NATURAL JOIN site \
-    NATURAL JOIN channel \
+    JOIN station ON (network.net_id = station.net_id ) \
+    JOIN site ON (station.sta_id = site.sta_id ) \
+    JOIN channel ON (channel.site_id = site.site_id ) \
     JOIN  receiverFunction ON (chanz_id = chan_id ) \
     JOIN origin ON (receiverfunction.origin_id = origin.origin_id) \
     JOIN eventattr ON (receiverfunction.eventattr_id = eventattr.eventattr_id) \
     JOIN location ON (origin.origin_location_id = location.loc_id) \
     JOIN catalog ON (origin.origin_catalog_id = catalog.catalog_id) \
     JOIN contributor ON (catalog_contributor_id =   contributor.contributor_id) \
-    WHERE net_id = ? \
-    AND sta_code = ?
+    WHERE network.net_id = ? \
+    AND station.sta_code = ?
                    
 receiverFunction.getOriginByStationByPercent=SELECT count(*) FROM  \
     station \
-    NATURAL JOIN site \
-    NATURAL JOIN channel \
+    JOIN site ON (station.sta_id = site.sta_id ) \
+    JOIN channel ON (channel.site_id = site.site_id ) \
     JOIN  receiverFunction ON (chanz_id = chan_id ) \
     WHERE net_id = ? \
     AND sta_code = ? \
@@ -93,26 +93,26 @@ hkstack.create=CREATE TABLE $tablename ( \
                    REFERENCES receiverFunction (recFunc_id) )
 
 hkstack.calcbypercent=SELECT receiverFunction.recfunc_id FROM network \
-                   NATURAL JOIN station \
-                   NATURAL JOIN site \
-                   NATURAL JOIN channel \
+                   JOIN station ON (network.net_id = station.net_id ) \
+                   JOIN site ON (station.sta_id = site.sta_id ) \
+                   JOIN channel ON (channel.site_id = site.site_id ) \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
                    WHERE net_code = ? \
                    AND sta_code = ? \
                    AND receiverFunction.itr_match >= ?
                    
 hkstack.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
-                   NATURAL JOIN station \
-                   NATURAL JOIN site \
-                   NATURAL JOIN channel \
+    JOIN station ON (network.net_id = station.net_id ) \
+    JOIN site ON (station.sta_id = site.sta_id ) \
+    JOIN channel ON (channel.site_id = site.site_id ) \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
                    WHERE net_code = ? \
                    AND sta_code = ? \
                    AND receiverFunction.itr_match >= ? \
                    EXCEPT SELECT receiverFunction.recfunc_id from network \
-                       NATURAL JOIN station \
-                       NATURAL JOIN site \
-                       NATURAL JOIN channel \
+                       JOIN station ON (network.net_id = station.net_id ) \
+                       JOIN site ON (station.sta_id = site.sta_id ) \
+                       JOIN channel ON (channel.site_id = site.site_id ) \
                        JOIN receiverFunction ON (chanz_id = chan_id ) \
                        , hkStack \
                        WHERE receiverFunction.recfunc_id = hkstack.recfunc_id
@@ -143,9 +143,9 @@ hkstack.put=INSERT INTO hkstack ( \
 
 hkstack.get=SELECT * FROM  \
                    network \
-                   NATURAL JOIN station \
-                   NATURAL JOIN site \
-                   NATURAL JOIN channel \
+                   JOIN station ON (network.net_id = station.net_id ) \
+                   JOIN site ON (station.sta_id = site.sta_id ) \
+                   JOIN channel ON (channel.site_id = site.site_id ) \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
                    , hkStack \
                    WHERE  \
@@ -153,9 +153,9 @@ hkstack.get=SELECT * FROM  \
                    hkstack.recfunc_id = ?
 
 hkstack.getForStation=SELECT * FROM network \
-                   NATURAL JOIN station \
-                   NATURAL JOIN site \
-                   NATURAL JOIN channel \
+                   JOIN station ON (network.net_id = station.net_id ) \
+                   JOIN site ON (station.sta_id = site.sta_id ) \
+                   JOIN channel ON (channel.site_id = site.site_id ) \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
                    ,hkStack \
                    WHERE net_code = ? \
@@ -258,18 +258,18 @@ hksummary.update=UPDATE $tablename SET chanA_id = ? , \
                    WHERE hksummary_id = ?
                    
 hksummary.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
-                   NATURAL JOIN station \
-                   NATURAL JOIN site \
-                   NATURAL JOIN channel \
+    JOIN station ON (network.net_id = station.net_id ) \
+    JOIN site ON (station.sta_id = site.sta_id ) \
+    JOIN channel ON (channel.site_id = site.site_id ) \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
                    NATURAL JOIN hkstack \
                    WHERE network.network_dbid = ? \
                    AND sta_code = ? \
                    AND receiverFunction.itr_match >= ? \
                    EXCEPT SELECT receiverFunction.recfunc_id from network \
-                       NATURAL JOIN station \
-                       NATURAL JOIN site \
-                       NATURAL JOIN channel \
+                       JOIN station ON (network.net_id = station.net_id ) \
+                       JOIN site ON (station.sta_id = site.sta_id ) \
+                       JOIN channel ON (channel.site_id = site.site_id ) \
                        JOIN receiverFunction ON (chanz_id = chan_id ) \
                        JOIN hkStack ON ( receiverFunction.recfunc_id = hkstack.recfunc_id ) \
                        JOIN hkstackToSummary ON ( hkStack.hkstack_id = hkstackToSummary.hkstack_id ) \
@@ -280,11 +280,11 @@ hksummary.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
                        AND hksummary.minPercentMatch = ? \
                        
 hksummary.getForStation=SELECT * from network \
-                   NATURAL JOIN station \
-                   NATURAL JOIN site \
-                   NATURAL JOIN channel \
+    JOIN station ON (network.net_id = station.net_id ) \
+    JOIN site ON (station.sta_id = site.sta_id ) \
+    JOIN channel ON (channel.site_id = site.site_id ) \
                    JOIN  $tablename  ON (chanz_id = chan_id ) \
-                   WHERE net_id = ? \
+                   WHERE network.net_id = ? \
                    AND sta_code = ? 
 
 hksummary.index_chanz=create index hksummary_chanz_idx on hksummary ( chanZ_id )

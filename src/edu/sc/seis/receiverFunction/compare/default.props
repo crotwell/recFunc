@@ -38,3 +38,29 @@ stationResultRef.getDbId=SELECT ref_id FROM $tablename \
     AND reference = ? \
     AND method = ? \
     AND url = ?
+    
+griddedResult.create=CREATE TABLE $tablename ( \
+	lat float, \
+	lon float, \
+    h float, \
+    herror float, \
+    vpvs float, \
+    vpvserror float, \
+    vp float, \
+    vperror float, \
+    ref_id int \
+	)
+
+griddedResult.get=SELECT * FROM $tablename \
+    JOIN stationResultRef ON ( griddedResult.ref_id = stationResultRef.ref_id )  \
+    WHERE lat >= ? AND lat <= ?
+    
+griddedResult.getNorthPole=SELECT * FROM $tablename \
+    JOIN stationResultRef ON ( griddedResult.ref_id = stationResultRef.ref_id )  \
+    WHERE lat >= ?
+    
+griddedResult.getSouthPole=SELECT * FROM $tablename \
+    JOIN stationResultRef ON ( griddedResult.ref_id = stationResultRef.ref_id )  \
+    WHERE lat <= ?
+    
+    

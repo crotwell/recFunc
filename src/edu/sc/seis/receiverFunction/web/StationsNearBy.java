@@ -28,8 +28,8 @@ import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
-import edu.sc.seis.rev.velocity.VelocityStation;
 import edu.sc.seis.sod.ConfigurationException;
+import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 /**
  * @author crotwell Created on Mar 16, 2005

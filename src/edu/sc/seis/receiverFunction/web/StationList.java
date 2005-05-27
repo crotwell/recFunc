@@ -24,9 +24,9 @@ import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
-import edu.sc.seis.rev.velocity.VelocityNetwork;
-import edu.sc.seis.rev.velocity.VelocityStation;
 import edu.sc.seis.sod.ConfigurationException;
+import edu.sc.seis.sod.velocity.network.VelocityNetwork;
+import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 
 /**

@@ -52,9 +52,9 @@ import edu.sc.seis.fissuresUtil.sac.SacToFissures;
 import edu.sc.seis.fissuresUtil.xml.SeismogramFileTypes;
 import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.UnsupportedFileTypeException;
-import edu.sc.seis.rev.velocity.VelocityEvent;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.status.EventFormatter;
+import edu.sc.seis.sod.velocity.event.VelocityEvent;
 
 
 /**

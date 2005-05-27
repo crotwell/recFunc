@@ -28,13 +28,13 @@ import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.rev.locator.StationLocator;
-import edu.sc.seis.rev.velocity.VelocityEvent;
-import edu.sc.seis.rev.velocity.VelocityStation;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.database.waveform.JDBCEventChannelCookieJar;
 import edu.sc.seis.sod.database.waveform.JDBCEventChannelStatus;
 import edu.sc.seis.sod.process.waveform.PhaseSignalToNoise;
 import edu.sc.seis.sod.status.FissuresFormatter;
+import edu.sc.seis.sod.velocity.event.VelocityEvent;
+import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 
 /**

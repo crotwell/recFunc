@@ -9,8 +9,8 @@ import edu.iris.Fissures.IfNetwork.NetworkAttr;
 import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
-import edu.sc.seis.rev.velocity.VelocityNetwork;
 import edu.sc.seis.sod.status.FissuresFormatter;
+import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
 
 /**

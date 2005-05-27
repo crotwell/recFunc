@@ -15,8 +15,8 @@ import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.RevletContext;
-import edu.sc.seis.rev.velocity.VelocityStation;
 import edu.sc.seis.sod.ConfigurationException;
+import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 /**
  * @author crotwell Created on Mar 30, 2005

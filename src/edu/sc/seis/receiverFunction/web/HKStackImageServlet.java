@@ -30,10 +30,10 @@ import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.receiverFunction.server.SyntheticFactory;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.locator.StationLocator;
-import edu.sc.seis.rev.velocity.VelocityStation;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.database.waveform.JDBCEventChannelCookieJar;
 import edu.sc.seis.sod.database.waveform.JDBCEventChannelStatus;
+import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 /**
  * @author crotwell Created on Feb 16, 2005

@@ -46,6 +46,7 @@ import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
+import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.RecFunc;
@@ -245,12 +246,10 @@ public class JDBCHKStack extends JDBCTable {
                 + ChannelIdUtil.toStringNoDates(cachedResult.channels[0]));
         return stack;
     }
-
-    public SumHKStack sum(String netCode,
-                          String staCode,
-                          float percentMatch,
-                          QuantityImpl smallestH) throws FissuresException, NotFound,
-            IOException, SQLException {
+    
+    public ArrayList getForStation(String netCode,
+                                   String staCode,
+                                   float percentMatch) throws FissuresException, NotFound, IOException, SQLException {
         ArrayList individualHK = new ArrayList();
         int index = 1;
         getForStation.setString(index++, netCode);
@@ -261,18 +260,7 @@ public class JDBCHKStack extends JDBCTable {
             individualHK.add(extract(rs));
         }
         rs.close();
-        rs = null;
-        // if there is only 1 eq that matches, then we can't really do a stack
-        if(individualHK.size() > 1) {
-            HKStack temp = (HKStack)individualHK.get(0);
-            SumHKStack sumStack = new SumHKStack((HKStack[])individualHK.toArray(new HKStack[0]),
-                                                 temp.getChannel(),
-                                                 percentMatch,
-                                                 smallestH);
-            return sumStack;
-        } else {
-            return null;
-        }
+        return individualHK;
     }
 
     public HKStack extract(ResultSet rs) throws FissuresException, NotFound,

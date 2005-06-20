@@ -54,6 +54,7 @@ public class HKLatLonPlot extends HttpServlet {
             int ydim = RevUtil.getInt("ydim", req, ydimDefault);
             RevletContext context = new RevletContext("unused");
             ArrayList stationList = stationsNearBy.getStations(req, context);
+            logger.debug(stationList.size()+" stations nearby");
             HashMap summary = stationsNearBy.cleanSummaries(stationList,
                                                             stationsNearBy.getSummaries(stationList,
                                                                                         context));
@@ -71,14 +72,19 @@ public class HKLatLonPlot extends HttpServlet {
             boolean legend = false;
             boolean tooltips = true;
             boolean urls = true;
+            String titleString = 
+                "Ears results near "
+                + RevUtil.get(LATITUDE,
+                              req)
+                + ", "
+                + RevUtil.get(LONGITUDE,
+                              req);
+            if (summary.size() == 0) {
+                titleString = "No "+titleString;
+            }
             JFreeChart chart = ChartFactory.createScatterPlot(RevUtil.get("title",
                                                                           req,
-                                                                          "Ears results near "
-                                                                                  + RevUtil.get(LATITUDE,
-                                                                                                req)
-                                                                                  + ", "
-                                                                                  + RevUtil.get(LONGITUDE,
-                                                                                                req)),
+                                                                          titleString),
                                                               RevUtil.get("xAxisLabel",
                                                                           req,
                                                                           getLabel(RevUtil.get("xAxis",

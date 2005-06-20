@@ -1,12 +1,13 @@
 #Velocity File Location Properties
 file.resource.loader.path=.,site/velocity
 file.resource.loader.cache=true
-file.resource.loader.modificationCheckInterval=1000
+file.resource.loader.modificationCheckInterval=2
 rev.sodoutputbase=status
 rev.resources=site
 rev.host=roo.seis.sc.edu
 #rev.host=localhost
 rev.port=8084
+rev.visibleURL=http://roo.seis.sc.edu/ears_tmp/
 
 velocimacro.library.autoreload = false
 #
@@ -16,4 +17,32 @@ velocimacro.library.autoreload = false
 # for connecting to the arraymon sod db on roo
 #sod.dburl=jdbc:hsqldb:hsql://localhost:9002
 sod.dburl=jdbc:postgresql:ears
+
+log4j.rootCategory=debug, everything, error, consoleError
+log4j.logpath=logs
+
+log4j.appender.C=org.apache.log4j.ConsoleAppender
+log4j.appender.C.layout=org.apache.log4j.PatternLayout
+log4j.appender.C.layout.ConversionPattern=%d{ISO8601} %p %t %c{2} - %m%n
+log4j.appender.C.Threshold=debug
+
+log4j.appender.consoleError=org.apache.log4j.ConsoleAppender
+log4j.appender.consoleError.layout=org.apache.log4j.PatternLayout
+log4j.appender.consoleError.layout.ConversionPattern=%d{ISO8601} %p %t %c{2} - %m%n
+log4j.appender.consoleError.Threshold=warn
+
+log4j.appender.everything=org.apache.log4j.RollingFileAppender
+log4j.appender.everything.File=${log4j.logpath}/viewResults.log
+log4j.appender.everything.MaxFileSize=1000000KB
+log4j.appender.everything.MaxBackupIndex=4
+log4j.appender.everything.layout=org.apache.log4j.PatternLayout
+log4j.appender.everything.layout.ConversionPattern=%d{ISO8601} %p %t %c{2} - %m%n
+
+log4j.appender.error=org.apache.log4j.RollingFileAppender
+log4j.appender.error.File=${log4j.logpath}/error.log
+log4j.appender.error.MaxFileSize=50000KB
+log4j.appender.error.MaxBackupIndex=50
+log4j.appender.error.layout=org.apache.log4j.PatternLayout
+log4j.appender.error.layout.ConversionPattern=%d{ISO8601} %p %t %c{2} - %m%n
+log4j.appender.error.Threshold=error
 

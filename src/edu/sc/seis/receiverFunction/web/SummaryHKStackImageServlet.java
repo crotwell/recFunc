@@ -23,6 +23,7 @@ import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
+import edu.sc.seis.receiverFunction.server.StackSummary;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.locator.StationLocator;
 import edu.sc.seis.sod.ConfigurationException;
@@ -44,14 +45,9 @@ public class SummaryHKStackImageServlet extends HttpServlet {
      */
     public SummaryHKStackImageServlet() throws SQLException, ConfigurationException, Exception {
         Connection conn = ConnMgr.createConnection();
-        jdbcEvent = new JDBCEventAccess(conn);
-        jdbcECStatus = new JDBCEventChannelStatus(conn);
-        
-        JDBCChannel jdbcChannel  = new JDBCChannel(conn);
-        JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
-        JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.getDataLoc());
-        jdbcHKStack = new JDBCHKStack(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
-        jdbcSumHKStack = new JDBCSummaryHKStack(jdbcHKStack);
+        stackSummary = new StackSummary(conn);
+        jdbcHKStack = stackSummary.getJDBCHKStack();
+        jdbcSumHKStack = stackSummary.getJdbcSummary();
     }
     
     public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -76,7 +72,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                 sumStack = jdbcSumHKStack.get(dbid);
                 System.out.println("Got summary plot from database "+dbid);
             }catch (NotFound e) {
-                sumStack = jdbcHKStack.sum(net.getCode(),
+                sumStack = stackSummary.sum(net.getCode(),
                                            staCode,
                                            minPercentMatch,
                                            smallestH);
@@ -114,9 +110,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
 
     private StationLocator staLoc;
     
-    private JDBCEventAccess jdbcEvent;
-
-    private JDBCEventChannelStatus jdbcECStatus;
+    private StackSummary stackSummary;
     
     private JDBCHKStack jdbcHKStack;
     

@@ -35,7 +35,8 @@ public class JDBCStationResult extends JDBCTable {
     }
 
     public JDBCStationResult(JDBCNetwork jdbcNetwork,
-            JDBCStationResultRef jdbcStationResultRef) throws SQLException {
+                             JDBCStationResultRef jdbcStationResultRef)
+            throws SQLException {
         super("stationResult", jdbcStationResultRef.getConnection());
         TableSetup.setup(this,
                          "edu/sc/seis/receiverFunction/compare/default.props");
@@ -48,9 +49,12 @@ public class JDBCStationResult extends JDBCTable {
         int index = 1;
         put.setInt(index++, jdbcNetwork.put(result.getNetworkId()));
         put.setString(index++, result.getStationCode());
-        put.setFloat(index++, (float)result.getH().convertTo(UnitImpl.KILOMETER).getValue());
+        put.setFloat(index++, (float)result.getH()
+                .convertTo(UnitImpl.KILOMETER)
+                .getValue());
         put.setFloat(index++, result.getVpVs());
-        put.setFloat(index++, (float)result.getVp().getValue(UnitImpl.KILOMETER_PER_SECOND));
+        put.setFloat(index++, (float)result.getVp()
+                .getValue(UnitImpl.KILOMETER_PER_SECOND));
         put.setInt(index++, ref_id);
         put.executeUpdate();
     }
@@ -58,38 +62,43 @@ public class JDBCStationResult extends JDBCTable {
     public StationResult[] get(NetworkId networkId, String stationCode)
             throws SQLException, NotFound {
         try {
-        int networkDbId = jdbcNetwork.getDbId(networkId);
-        int index = 1;
-        get.setInt(index++, networkDbId);
-        get.setString(index++, stationCode);
-        ResultSet rs = get.executeQuery();
-        ArrayList list = new ArrayList();
-        while(rs.next()) {
-            StationResultRef ref = jdbcStationResultRef.extract(rs);
-            list.add(new StationResult(networkId,
-                                       stationCode,
-                                       new QuantityImpl(rs.getFloat("h"), UnitImpl.KILOMETER),
-                                       rs.getFloat("vpvs"),
-                                       new QuantityImpl(rs.getFloat("vp"), UnitImpl.KILOMETER_PER_SECOND),
-                                       ref));
-        }
-        return (StationResult[])list.toArray(new StationResult[0]);
-        } catch (SQLException e) {
-            throw new WrappedSQLException(e.getMessage()+"     sql:"+get, e);
+            int networkDbId = jdbcNetwork.getDbId(networkId);
+            int index = 1;
+            get.setInt(index++, networkDbId);
+            get.setString(index++, stationCode);
+            ResultSet rs = get.executeQuery();
+            ArrayList list = new ArrayList();
+            while(rs.next()) {
+                StationResultRef ref = jdbcStationResultRef.extract(rs);
+                list.add(new StationResult(networkId,
+                                           stationCode,
+                                           new QuantityImpl(rs.getFloat("h"),
+                                                            UnitImpl.KILOMETER),
+                                           rs.getFloat("vpvs"),
+                                           new QuantityImpl(rs.getFloat("vp"),
+                                                            UnitImpl.KILOMETER_PER_SECOND),
+                                           ref));
+            }
+            return (StationResult[])list.toArray(new StationResult[0]);
+        } catch(SQLException e) {
+            throw new WrappedSQLException(e.getMessage() + "     sql:" + get, e);
         }
     }
-    
-    public  StationResult[] getAll(String referenceName) throws SQLException, NotFound {
+
+    public StationResult[] getAll(String referenceName) throws SQLException,
+            NotFound {
         getAllForName.setString(1, referenceName);
         ArrayList list = new ArrayList();
         ResultSet rs = getAllForName.executeQuery();
-        while (rs.next()) {
+        while(rs.next()) {
             StationResultRef ref = jdbcStationResultRef.extract(rs);
             list.add(new StationResult(jdbcNetwork.getNetworkId(rs.getInt("net_id")),
                                        rs.getString("sta_code"),
-                                       new QuantityImpl(rs.getFloat("h"), UnitImpl.KILOMETER),
+                                       new QuantityImpl(rs.getFloat("h"),
+                                                        UnitImpl.KILOMETER),
                                        rs.getFloat("vpvs"),
-                                       new QuantityImpl(rs.getFloat("vp"), UnitImpl.KILOMETER_PER_SECOND),
+                                       new QuantityImpl(rs.getFloat("vp"),
+                                                        UnitImpl.KILOMETER_PER_SECOND),
                                        ref));
         }
         return (StationResult[])list.toArray(new StationResult[0]);
@@ -126,12 +135,15 @@ public class JDBCStationResult extends JDBCTable {
         JDBCStationResultRef jdbcRef = new JDBCStationResultRef(conn);
         JDBCNetwork jdbcNetwork = new JDBCNetwork(conn);
         JDBCStationResult jdbc = new JDBCStationResult(jdbcNetwork, jdbcRef);
-        StationResultRef ref = new StationResultRef(name, reference, method, url);
+        StationResultRef ref = new StationResultRef(name,
+                                                    reference,
+                                                    method,
+                                                    url);
         System.out.println("StationResultRef:");
         System.out.println(name);
         System.out.println(reference);
-        System.out.println( method);
-        System.out.println( url);
+        System.out.println(method);
+        System.out.println(url);
         int refDbId = jdbcRef.put(ref);
         File inFile = new File(filename);
         if(!inFile.exists()) {
@@ -148,8 +160,13 @@ public class JDBCStationResult extends JDBCTable {
                 String token = st.nextToken();
                 switch(i){
                     case 0:
-                        net = token.substring(0, 2);
-                        netYear = token.substring(2);
+                        if (token.length() > 2) {
+                            net = token.substring(0, 2);
+                            netYear = token.substring(2);
+                        } else {
+                            net = token;
+                            netYear = "";
+                        }
                         break;
                     case 1:
                         sta = token;
@@ -169,23 +186,32 @@ public class JDBCStationResult extends JDBCTable {
             }
             NetworkAttr[] attr = jdbcNetwork.getByCode(net);
             NetworkId networkId = null;
-            if(net.startsWith("X") || net.startsWith("Y")
-                    || net.startsWith("Z")) {
-                // maybe several nets with that code
-                for(int j = 0; j < attr.length; j++) {
-                    if(attr[j].get_id().begin_time.date_time.substring(2, 4)
-                            .equals(netYear)) {
-                        // found it
-                        networkId = attr[j].get_id();
+            if(attr.length != 0) {
+                if(net.startsWith("X") || net.startsWith("Y")
+                        || net.startsWith("Z")) {
+                    // maybe several nets with that code
+                    for(int j = 0; j < attr.length; j++) {
+                        if(attr[j].get_id().begin_time.date_time.substring(2, 4)
+                                .equals(netYear)) {
+                            // found it
+                            networkId = attr[j].get_id();
+                        }
                     }
+                } else {
+                    networkId = attr[0].get_id();
                 }
-            } else {
-                networkId = attr[0].get_id();
             }
-            if (networkId != null) {
-            jdbc.put(new StationResult(networkId, sta, new QuantityImpl(h, UnitImpl.KILOMETER), vpvs, new QuantityImpl(vp, UnitImpl.KILOMETER_PER_SECOND), ref));
+            if(networkId != null) {
+                jdbc.put(new StationResult(networkId,
+                                           sta,
+                                           new QuantityImpl(h,
+                                                            UnitImpl.KILOMETER),
+                                           vpvs,
+                                           new QuantityImpl(vp,
+                                                            UnitImpl.KILOMETER_PER_SECOND),
+                                           ref));
             } else {
-                throw new NotFound(net+"  "+netYear);
+                logger.error(net + "  " + netYear);
             }
         }
     }
@@ -195,4 +221,6 @@ public class JDBCStationResult extends JDBCTable {
     JDBCStationResultRef jdbcStationResultRef;
 
     JDBCNetwork jdbcNetwork;
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCStationResult.class);
 }

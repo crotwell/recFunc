@@ -112,7 +112,7 @@ public class SeismogramImage extends HttpServlet {
     public DataSetSeismogram[] getDSS(CachedResult stack) {
         CacheEvent event = new CacheEvent(stack.event_attr,
                                           stack.prefOrigin);
-        
+        // radial RF
         LocalSeismogramImpl radial = (LocalSeismogramImpl)stack.radial;
         MemoryDataSetSeismogram radialDSS = new MemoryDataSetSeismogram(radial,
                                                                         "radial RF");
@@ -124,6 +124,17 @@ public class SeismogramImage extends HttpServlet {
         dataset.addParameter(channelParamName,
                              stack.channels[0],
                              emptyAudit);
+        // tangential RF
+        LocalSeismogramImpl tangential = (LocalSeismogramImpl)stack.tansverse;
+        MemoryDataSetSeismogram tangentialDSS = new MemoryDataSetSeismogram(tangential,
+                                                                        "tangential RF");
+        dataset.addDataSetSeismogram(tangentialDSS, emptyAudit);
+        channelParamName = StdDataSetParamNames.CHANNEL
+                + ChannelIdUtil.toString(tangential.channel_id);
+        dataset.addParameter(channelParamName,
+                             stack.channels[0],
+                             emptyAudit);
+        // Z
         LocalSeismogramImpl zSeis = (LocalSeismogramImpl)stack.original[0];
         MemoryDataSetSeismogram zDSS = new MemoryDataSetSeismogram(zSeis,
                                                                    zSeis.getName());
@@ -133,6 +144,7 @@ public class SeismogramImage extends HttpServlet {
         dataset.addParameter(channelParamName,
                              stack.channels[0],
                              emptyAudit);
+        // a horizontal
         LocalSeismogramImpl aSeis = (LocalSeismogramImpl)stack.original[1];
         MemoryDataSetSeismogram aDSS = new MemoryDataSetSeismogram(aSeis,
                                                                    aSeis.getName());
@@ -142,21 +154,19 @@ public class SeismogramImage extends HttpServlet {
         dataset.addParameter(channelParamName,
                              stack.channels[1],
                              emptyAudit);
+        // b horizontal
         LocalSeismogramImpl bSeis = (LocalSeismogramImpl)stack.original[2];
         MemoryDataSetSeismogram bDSS = new MemoryDataSetSeismogram(bSeis,
                                                                    bSeis.getName());
         channelParamName = StdDataSetParamNames.CHANNEL
                 + ChannelIdUtil.toString(stack.channels[2].get_id());
-        System.out.println("Chan: "
-                + channelParamName
-                + "  seis:"
-                + ChannelIdUtil.toString(bDSS.getRequestFilter().channel_id));
         dataset.addParameter(channelParamName,
                              stack.channels[2],
                              emptyAudit);
         dataset.addDataSetSeismogram(bDSS, emptyAudit);
+        
         dataset.addParameter(DataSet.EVENT, event, emptyAudit);
-        return new DataSetSeismogram[] {radialDSS, zDSS, aDSS, bDSS};
+        return new DataSetSeismogram[] {radialDSS, tangentialDSS, zDSS, aDSS, bDSS};
     }
 
     private static final UnitImpl SEC_PER_SEC = UnitImpl.divide(UnitImpl.SECOND,

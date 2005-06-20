@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Properties;
 import org.apache.log4j.PropertyConfigurator;
 import edu.iris.Fissures.FissuresException;
@@ -30,6 +31,7 @@ import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
 import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
+import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
@@ -124,9 +126,9 @@ public class StackSummary {
                                     float minPercentMatch,
                                     QuantityImpl smallestH) throws FissuresException,
             NotFound, IOException, SQLException {
-        System.out.println("calc for "
+        System.out.println("createSummary for "
                            + StationIdUtil.toStringNoDates(station));
-        SumHKStack sumStack = jdbcHKStack.sum(station.network_id.network_code,
+        SumHKStack sumStack = sum(station.network_id.network_code,
                                               station.station_code,
                                               minPercentMatch,
                                               smallestH);
@@ -151,6 +153,28 @@ public class StackSummary {
         return sumStack;
     }
 
+    public SumHKStack sum(String netCode,
+                          String staCode,
+                          float percentMatch,
+                          QuantityImpl smallestH) throws FissuresException, NotFound,
+            IOException, SQLException {
+        logger.info("in sum for "+netCode+"."+staCode);
+        TimeOMatic.start();
+        ArrayList individualHK = jdbcHKStack.getForStation(netCode, staCode, percentMatch);
+        // if there is only 1 eq that matches, then we can't really do a stack
+        if(individualHK.size() > 1) {
+            HKStack temp = (HKStack)individualHK.get(0);
+            SumHKStack sumStack = new SumHKStack((HKStack[])individualHK.toArray(new HKStack[0]),
+                                                 temp.getChannel(),
+                                                 percentMatch,
+                                                 smallestH);
+            TimeOMatic.print("sum for "+netCode+"."+staCode);
+            return sumStack;
+        } else {
+            return null;
+        }
+    }
+    
     public static void saveImage(SumHKStack sumStack,
                                  StationId station,
                                  File parentDir,
@@ -218,57 +242,73 @@ public class StackSummary {
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StackSummary.class);
 
+    public static Connection initDB(Properties props) throws IOException, SQLException {
+        ConnMgr.setDB(ConnMgr.POSTGRES);
+        String dbURL = props.getProperty("cormorant.servers.ears.databaseURL");
+        ConnMgr.setURL(dbURL);
+        Connection conn = ConnMgr.createConnection();
+        return conn;
+    }
+    
+    public static void parseArgsAndRun(String[] args, StackSummary summary) throws FissuresException, NotFound, IOException, SQLException {
+        float minPercentMatch = 80f;
+        int smallestH = 25;
+        String netArg = "";
+        String staArg = "";
+        for(int i = 0; i < args.length; i++) {
+            if(args[i].equals("-net")) {
+                netArg = args[i + 1];
+            } else if(args[i].equals("-sta")) {
+                staArg = args[i + 1];
+            } else if(args[i].equals("-all")) {
+                netArg = args[i];
+            }
+        }
+        if (staArg.equals("")) {
+        summary.createSummary(netArg, new File("stackImages" + smallestH
+                + "_" + minPercentMatch), minPercentMatch, new QuantityImpl(smallestH, UnitImpl.KILOMETER));
+        } else {
+            logger.info("calc for station");
+            JDBCStation jdbcStation = summary.jdbcHKStack.getJDBCChannel().getStationTable();
+            NetworkAttr[] nets = jdbcStation.getNetTable().getByCode(netArg);
+            int sta_dbid = -1;
+            for(int i = 0; i < nets.length; i++) {
+                try {
+                    int[] tmp = jdbcStation.getDBIds(nets[i].get_id() ,staArg);
+                    if (tmp.length > 0) {
+                        sta_dbid = tmp[0];
+                        summary.createSummary(jdbcStation.get(sta_dbid).get_id(),
+                                              new File("stackImages" + smallestH+ "_" + minPercentMatch),
+                                              minPercentMatch,
+                                              new QuantityImpl(smallestH, UnitImpl.KILOMETER));
+                    }
+                } catch (NotFound e) {
+                    System.out.println("NotFound for :"+NetworkIdUtil.toStringNoDates(nets[i].get_id()));
+                    // go to next network
+                }
+            }
+        }
+    }
+    
     public static void main(String[] args) {
         if(args.length == 0) {
-            System.out.println("Usage: StackSummary netCode");
+            System.out.println("Usage: StackSummary -net netCode [ -sta staCode ]");
             return;
         }
         try {
             Properties props = loadProps(args);
-            ConnMgr.setDB(ConnMgr.POSTGRES);
-            String dbURL = props.getProperty("cormorant.servers.ears.databaseURL");
-            ConnMgr.setURL(dbURL);
-            Connection conn = ConnMgr.createConnection();
+            Connection conn = initDB(props);
             StackSummary summary = new StackSummary(conn);
-            float minPercentMatch = 80f;
-            int smallestH = 25;
-            String netArg = "";
-            String staArg = "";
-            for(int i = 0; i < args.length; i++) {
-                if(args[i].equals("-net")) {
-                    netArg = args[i + 1];
-                } else if(args[i].equals("-sta")) {
-                    staArg = args[i + 1];
-                } else if(args[i].equals("-all")) {
-                    netArg = args[i];
-                }
-            }
-            if (staArg.equals("")) {
-            summary.createSummary(netArg, new File("stackImages" + smallestH
-                    + "_" + minPercentMatch), minPercentMatch, new QuantityImpl(smallestH, UnitImpl.KILOMETER));
-            } else {
-                JDBCStation jdbcStation = summary.jdbcHKStack.getJDBCChannel().getStationTable();
-                NetworkAttr[] nets = jdbcStation.getNetTable().getByCode(netArg);
-                int sta_dbid = -1;
-                for(int i = 0; i < nets.length; i++) {
-                    try {
-                        int[] tmp = jdbcStation.getDBIds(nets[i].get_id() ,staArg);
-                        if (tmp.length > 0) {
-                            sta_dbid = tmp[0];
-                            summary.createSummary(jdbcStation.get(sta_dbid).get_id(),
-                                                  new File("stackImages" + smallestH+ "_" + minPercentMatch),
-                                                  minPercentMatch,
-                                                  new QuantityImpl(smallestH, UnitImpl.KILOMETER));
-                        }
-                    } catch (NotFound e) {
-                        System.out.println("NotFound for :"+NetworkIdUtil.toStringNoDates(nets[i].get_id()));
-                        // go to next network
-                    }
-                }
-            }
+            parseArgsAndRun(args, summary);
         } catch(Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e);
         }
+    }
+    
+    public JDBCHKStack getJDBCHKStack() {
+        return jdbcHKStack;
+    }
+    public JDBCSummaryHKStack getJdbcSummary() {
+        return jdbcSummary;
     }
 }

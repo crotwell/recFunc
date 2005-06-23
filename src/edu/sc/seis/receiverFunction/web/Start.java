@@ -24,7 +24,7 @@ public class Start {
     public static void main(String[] args) throws Exception {
         Properties props = Initializer.loadProperties(args);
         ConnMgr.setDB(ConnMgr.POSTGRES);
-        ConnMgr.setURL(props.getProperty("sod.dburl"));
+        ConnMgr.setURL(props.getProperty("fissuresUtil.database.url"));
         Set servletStrings = new HashSet();
         ServletHandler sh = new ServletFromSet(servletStrings);
         edu.sc.seis.rev.RevUtil.populateJetty("/networkList.html",

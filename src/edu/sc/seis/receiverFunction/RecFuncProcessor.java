@@ -252,12 +252,6 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
 
                         String prefix = "HKstack_";
                         String postfix = ".raw";
-                        File stackOutFile = new File(getEventDirectory(event),
-                                                     FissuresFormatter.filize(prefix+channelIdString+postfix));
-                        DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(stackOutFile)));
-                        stack.write(dos);
-                        dos.close();
-
 
                         File imageDir = lSeisTemplateGen.getOutputFile(event, zeroChannel).getParentFile();
                         imageDir.mkdirs();
@@ -311,19 +305,6 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                         float max = stack.stack[xyMax[0]][xyMax[1]];
                         appendToSummaryPage("<tr><td>"+getEventDirectory(event).getName()+"</td><td>"+channelIdString+"</td><td>"+stack.getPercentMatch()+"</td><td>"+(stack.getMaxValueH())+"</td><td>"+(stack.getMinK()+xyMax[1]*stack.getStepK())+"</td></tr>");
 
-                        doSumHKStack(predicted,
-                                     getParentDirectory(),
-                                     recFuncChannel,
-                                     prefix,
-                                     postfix,
-                                     90);
-
-                        doSumHKStack(predicted,
-                                     getParentDirectory(),
-                                     recFuncChannel,
-                                     prefix,
-                                     postfix,
-                                     80);
 
                     }
                 }
@@ -375,33 +356,6 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
         }
         summaryPage.write(val);summaryPage.newLine();
         summaryPage.flush();
-    }
-
-    void doSumHKStack(MemoryDataSetSeismogram predicted,
-                      File parentDir,
-                      Channel recFuncChannel,
-                      String prefix,
-                      String postfix,
-                      float minPercentMatch) throws IOException {
-        // now update global per channel stack
-        SumHKStack sum = SumHKStack.load(parentDir,
-                                         recFuncChannel,
-                                         prefix,
-                                         postfix,
-                                         minPercentMatch);
-        if (sum != null) {
-            // at least on event meet the min percent match
-            File sumStackOutFile = new File(parentDir,"SumHKStack_"+minPercentMatch+"_"+FissuresFormatter.filize(ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+postfix));
-            if (sumStackOutFile.exists()) {sumStackOutFile.delete();}
-            DataOutputStream sumdos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(sumStackOutFile)));
-            sum.write(sumdos);
-            sumdos.close();
-
-            File outSumImageFile  = new File(parentDir,"SumHKStack_"+minPercentMatch+"_"+FissuresFormatter.filize(ChannelIdUtil.toStringNoDates(predicted.getRequestFilter().channel_id)+".png"));
-            if (outSumImageFile.exists()) {outSumImageFile.delete();}
-            BufferedImage bufSumImage = sum.createStackImage();
-            javax.imageio.ImageIO.write(bufSumImage, "png", outSumImageFile);
-        }
     }
 
     boolean isDataComplete(LocalSeismogram seis) {

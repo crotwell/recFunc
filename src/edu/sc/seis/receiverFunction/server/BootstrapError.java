@@ -135,11 +135,13 @@ public class BootstrapError extends StackSummary {
             }
             
             Statistics hStat = new Statistics(hErrors);
+            hStdDev = (float)hStat.stddev();
             Statistics kStat = new Statistics(kErrors);
+            kStdDev = (float)kStat.stddev();
             TimeOMatic.print("Stat for "
                     + ChannelIdUtil.toStringNoDates(temp.getChannel())
-                    + " h stddev=" + hStat.stddev() + "  k stddev="
-                    + kStat.stddev());
+                    + " h stddev=" + hStdDev + "  k stddev="
+                    + kStdDev);
         }
 
         int randomInt(int top) {
@@ -148,7 +150,7 @@ public class BootstrapError extends StackSummary {
 
         int iterations;
 
-        float hError, kError;
+        float hStdDev, kStdDev;
     }
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(BootstrapError.class);

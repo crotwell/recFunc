@@ -68,6 +68,28 @@ receiverFunction.getOriginByStationByPercent=SELECT count(*) FROM  \
     AND sta_code = ? \
     AND itr_match >= ?
     
+hkrealimag.create=CREATE TABLE $tablename ( \
+	hkrealimag_id int, \
+	PsReal bytea, \
+	PsImag bytea, \
+	PpPsReal bytea, \
+	PpPsImag bytea, \
+	PsPsReal bytea, \
+	PsPsImag bytea, \
+	PRIMARY KEY (hkrealimag_id) )
+	
+hkrealImag.put=INSERT INTO $tablename ( \
+	hkrealimag_id, \
+	PsReal, \
+	PsImag , \
+	PpPsReal , \
+	PpPsImag , \
+	PsPsReal , \
+	PsPsImag \
+	 ) VALUES ( ?, ?, ?, ?, ?,   ?, ? )
+	 
+hkrealImag.get=SELECT * FROM $tablename WHERE hkrealimag_id = ?
+
 hkstack.create=CREATE TABLE $tablename ( \
                    hkstack_id int, \
                    recFunc_id int, \
@@ -86,11 +108,14 @@ hkstack.create=CREATE TABLE $tablename ( \
                    weightPs float, \
                    weightPpPs float, \
                    weightPsPs float, \
-                   data bytea, \
+                   hkrealimag_id int, \
                    insertTime timestamp, \
                    PRIMARY KEY (hkstack_id), \
                    FOREIGN KEY (recFunc_id) \
-                   REFERENCES receiverFunction (recFunc_id) )
+                   REFERENCES receiverFunction (recFunc_id),
+                   FOREIGN KEY (hkrealimag_id) \
+                   REFERENCES hkrealimag (hkrealimag_id) \ 
+                   )
 
 hkstack.calcbypercent=SELECT receiverFunction.recfunc_id FROM network \
                    JOIN station ON (network.net_id = station.net_id ) \
@@ -135,7 +160,7 @@ hkstack.put=INSERT INTO hkstack ( \
                    weightPs , \
                    weightPpPs , \
                    weightPsPs , \
-                   data , \
+                   hkrealimag_id , \
                    insertTime) \
                    VALUES ( \
                    ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?, ?,?,?)
@@ -147,9 +172,8 @@ hkstack.get=SELECT * FROM  \
                    JOIN site ON (station.sta_id = site.sta_id ) \
                    JOIN channel ON (channel.site_id = site.site_id ) \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
-                   , hkStack \
+                   JOIN hkStack ON (hkstack.recfunc_id = receiverFunction.recfunc_id ) \
                    WHERE  \
-                   hkstack.recfunc_id = receiverFunction.recfunc_id AND \
                    hkstack.recfunc_id = ?
 
 hkstack.getForStation=SELECT * FROM network \
@@ -157,11 +181,10 @@ hkstack.getForStation=SELECT * FROM network \
                    JOIN site ON (station.sta_id = site.sta_id ) \
                    JOIN channel ON (channel.site_id = site.site_id ) \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
-                   ,hkStack \
+                   JOIN hkStack ON (hkstack.recfunc_id = receiverFunction.recfunc_id ) \
                    WHERE net_code = ? \
                    AND sta_code = ? \
-                   AND percentMatch > ? \
-                   AND receiverfunction.recfunc_id = hkstack.recfunc_id
+                   AND percentMatch > ?
 
 hkstackToSummary.create=CREATE TABLE $tablename ( \
 					hkstack_id int , \
@@ -192,7 +215,7 @@ hksummary.create=CREATE TABLE $tablename ( \
                    weightPs float, \
                    weightPpPs float, \
                    weightPsPs float, \
-                   data bytea, \
+                   hkrealimag_id int, \
                    insertTime timestamp, \
                    hVariance float, \
                    kVariance float, \
@@ -203,6 +226,8 @@ hksummary.create=CREATE TABLE $tablename ( \
                    REFERENCES channel (chan_id), \
                    FOREIGN KEY (chanZ_id) \
                    REFERENCES channel (chan_id) \
+                   FOREIGN KEY (hkrealimag_id) \
+                   REFERENCES hkrealimag (hkrealimag_id), \
                    )
 	
 hksummary.put=INSERT INTO hksummary ( \
@@ -224,7 +249,7 @@ hksummary.put=INSERT INTO hksummary ( \
                    weightPs , \
                    weightPpPs , \
                    weightPsPs , \
-                   data , \
+                   hkrealimag_id , \
                    insertTime , \
                    hVariance , \
                    kVariance  \
@@ -251,7 +276,7 @@ hksummary.update=UPDATE $tablename SET chanA_id = ? , \
                    weightPs = ? , \
                    weightPpPs = ? , \
                    weightPsPs = ? , \
-                   data = ? , \
+                   hkrealimag_id = ? , \
                    insertTime = ? , \
                    hVariance = ? , \
                    kVariance = ? \

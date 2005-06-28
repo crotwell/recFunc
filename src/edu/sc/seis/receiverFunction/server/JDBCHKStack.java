@@ -45,6 +45,7 @@ import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
 import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
@@ -69,6 +70,7 @@ public class JDBCHKStack extends JDBCTable {
         this.jdbcEventAccess = jdbcEventAccess;
         this.jdbcChannel = jdbcChannel;
         this.jdbcRecFunc = jdbcRecFunc;
+        this.jdbcHKRealImag = new JDBCHKRealImag(conn);
         hkstackSeq = new JDBCSequence(conn, getTableName()+"Seq");
         TableSetup.setup(getTableName(),
                          conn,
@@ -84,32 +86,7 @@ public class JDBCHKStack extends JDBCTable {
        get.setInt(1, recfunc_id);
        ResultSet rs = get.executeQuery();
        if (rs.next()) {
-           byte[] stackBytes = rs.getBytes("data");
-           int numH = rs.getInt("numH");
-           int numK = rs.getInt("numK");
-           float[][] data = new float[numH][numK];
-           ByteArrayInputStream out = new ByteArrayInputStream(stackBytes);
-           DataInputStream dos = new DataInputStream(out);
-           for(int i = 0; i < data.length; i++) {
-               for(int j = 0; j < data[i].length; j++) {
-                   data[i][j] = dos.readFloat();
-               }
-           }
-           Channel chan = JDBCChannel.extract(rs, jdbcChannel.getSiteTable(), jdbcChannel.getTimeTable(), jdbcChannel.getQuantityTable());
-           return new HKStack(new QuantityImpl(rs.getFloat("alpha"), UnitImpl.KILOMETER_PER_SECOND),
-                              rs.getFloat("p"),
-                              rs.getFloat("percentMatch"),
-                              new QuantityImpl(rs.getFloat("minH"), UnitImpl.KILOMETER),
-                              new QuantityImpl(rs.getFloat("stepH"), UnitImpl.KILOMETER),
-                              numH,
-                              rs.getFloat("minK"),
-                              rs.getFloat("stepK"),
-                              numK,
-                              rs.getFloat("weightPs"),
-                              rs.getFloat("weightPpPs"),
-                              rs.getFloat("weightPsPs"),
-                              data,
-                              chan);
+           return extract(rs);
        } else {
            System.out.println("get hkstack: "+get);
            rs.close();
@@ -120,6 +97,7 @@ public class JDBCHKStack extends JDBCTable {
     public int put(int recfunc_id, HKStack stack) throws SQLException,
             IOException {
         int hkstack_id = hkstackSeq.next();
+        int hkrealimag_id = jdbcHKRealImag.put(stack.getAnalyticPs(), stack.getAnalyticPpPs(), stack.getAnalyticPsPs());
         int index = 1;
         put.setInt(index++, hkstack_id);
         put.setInt(index++, recfunc_id);
@@ -138,22 +116,13 @@ public class JDBCHKStack extends JDBCTable {
         peakH = stack.getMaxValueH();
         peakK = stack.getMaxValueK();
         peakVal = stack.getMaxValue();
-        put.setFloat(index++, (float)peakH.convertTo(UnitImpl.KILOMETER).getValue());
+        put.setFloat(index++, (float)peakH.getValue(UnitImpl.KILOMETER));
         put.setFloat(index++, peakK);
         put.setFloat(index++, peakVal);
         put.setFloat(index++, stack.getWeightPs());
         put.setFloat(index++, stack.getWeightPpPs());
         put.setFloat(index++, stack.getWeightPsPs());
-        float[][] data = stack.getStack();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(out);
-        for(int i = 0; i < data.length; i++) {
-            for(int j = 0; j < data[i].length; j++) {
-                dos.writeFloat(data[i][j]);
-            }
-        }
-        byte[] valBytes = out.toByteArray();
-        put.setBytes(index++, valBytes);
+        put.setInt(index++, hkrealimag_id);
         put.setTimestamp(index++, ClockUtil.now().getTimestamp());
         try {
             put.executeUpdate();
@@ -263,12 +232,12 @@ public class JDBCHKStack extends JDBCTable {
         return individualHK;
     }
 
-    public HKStack extract(ResultSet rs) throws FissuresException, NotFound,
+    public HKStack extract(ResultSet rs) throws  NotFound,
             IOException, SQLException {
         Channel[] channels = jdbcRecFunc.extractChannels(rs);
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
-        float[][] data = extractData(rs, numH, numK);
+        Cmplx[][][] data = jdbcHKRealImag.extractData(rs, numH, numK);
         HKStack out = new HKStack(new QuantityImpl(rs.getFloat("alpha"), UnitImpl.KILOMETER_PER_SECOND),
                                   rs.getFloat("p"),
                                   rs.getFloat("percentMatch"),
@@ -281,22 +250,13 @@ public class JDBCHKStack extends JDBCTable {
                                   rs.getFloat("weightPs"),
                                   rs.getFloat("weightPpPs"),
                                   rs.getFloat("weightPsPs"),
-                                  data,
+                                  data[0],
+                                  data[1],
+                                  data[2],
                                   channels[0]);
         return out;
     }
     
-    public float[][] extractData(ResultSet rs, int numH, int numK) throws SQLException, IOException {
-        byte[] dataBytes = rs.getBytes("data");
-        float[][] data = HKStack.createArray(numH, numK);
-        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(dataBytes));
-        for(int i = 0; i < data.length; i++) {
-            for(int j = 0; j < data[i].length; j++) {
-                data[i][j] = dis.readFloat();
-            }
-        }
-        return data;
-    }
 
     private PreparedStatement uncalculated, calcByPercent, put, get, getForStation;
 
@@ -308,6 +268,8 @@ public class JDBCHKStack extends JDBCTable {
 
     private JDBCSequence hkstackSeq;
 
+    private JDBCHKRealImag jdbcHKRealImag;
+    
     private File dataDir;
 
     private EventFormatter eventFormatter;
@@ -446,4 +408,8 @@ public class JDBCHKStack extends JDBCTable {
     }
     
     Crust2 crust2;
+    
+    public JDBCHKRealImag getJDBCHKRealImag() {
+        return jdbcHKRealImag;
+    }
 }

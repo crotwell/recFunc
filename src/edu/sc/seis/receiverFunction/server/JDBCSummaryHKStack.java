@@ -17,6 +17,7 @@ import edu.sc.seis.fissuresUtil.database.JDBCSequence;
 import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.util.TableSetup;
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
 
@@ -124,16 +125,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
         stmt.setFloat(index++, summary.getSum().getWeightPs());
         stmt.setFloat(index++, summary.getSum().getWeightPpPs());
         stmt.setFloat(index++, summary.getSum().getWeightPsPs());
-        float[][] data = summary.getSum().getStack();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(out);
-        for(int i = 0; i < data.length; i++) {
-            for(int j = 0; j < data[i].length; j++) {
-                dos.writeFloat(data[i][j]);
-            }
-        }
-        byte[] valBytes = out.toByteArray();
-        stmt.setBytes(index++, valBytes);
+        stmt.setInt(index++, jdbcHKStack.getJDBCHKRealImag().put(summary.getSum().getAnalyticPs(), summary.getSum().getAnalyticPpPs(), summary.getSum().getAnalyticPsPs()));
         stmt.setTimestamp(index++, ClockUtil.now().getTimestamp());
         stmt.setFloat(index++, (float)summary.getHVariance());
         stmt.setFloat(index++, (float)summary.getKVariance());
@@ -145,7 +137,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
         Channel chan = jdbcHKStack.getJDBCChannel().get(rs.getInt("chanZ_id"));
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
-        float[][] data = jdbcHKStack.extractData(rs, numH, numK);
+        Cmplx[][][] data = jdbcHKStack.getJDBCHKRealImag().extractData(rs, numH, numK);
         HKStack stack = new HKStack(new QuantityImpl(rs.getFloat("alpha"),
                                                      UnitImpl.KILOMETER_PER_SECOND),
                                     0,
@@ -161,7 +153,9 @@ public class JDBCSummaryHKStack extends JDBCTable {
                                     rs.getFloat("weightPs"),
                                     rs.getFloat("weightPpPs"),
                                     rs.getFloat("weightPsPs"),
-                                    data,
+                                    data[0],
+                                    data[1],
+                                    data[2],
                                     chan);
         SumHKStack sum = new SumHKStack(rs.getFloat("minPercentMatch"),
                                         new QuantityImpl(rs.getFloat("minH"),

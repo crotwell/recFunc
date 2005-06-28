@@ -14,12 +14,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Random;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.sod.status.FissuresFormatter;
 
 public class SumHKStack {
@@ -57,15 +61,12 @@ public class SumHKStack {
             }
             // need to do more of this checking...
         }
-        calculate(chan);
+        sum = calculate(chan, individuals, smallestH, minPercentMatch);
+        calcVarianceBootstrap();
     }
 
     public BufferedImage createStackImage() {
         return sum.createStackImage();
-    }
-
-    public void write(DataOutputStream out)  throws IOException {
-        sum.write(out);
     }
     
     public Channel getChannel() {
@@ -80,17 +81,27 @@ public class SumHKStack {
         return individuals;
     }
     
-    void calculate(Channel chan) {
+    static HKStack calculate(Channel chan, HKStack[] individuals, QuantityImpl smallestH, float minPercentMatch) {
         int smallestHIndex = individuals[0].getHIndex(smallestH);
-        float[][] stack = new float[individuals[0].getStack().length-smallestHIndex][individuals[0].getStack()[0].length];
-        for (int i = 0; i < stack.length; i++) {
-            for (int j = 0; j < stack[0].length; j++) {
+        Cmplx[][] analyticPs = new Cmplx[individuals[0].getStack().length-smallestHIndex][individuals[0].getStack()[0].length];
+        Cmplx[][] analyticPpPs = new Cmplx[analyticPs.length-smallestHIndex][analyticPs[0].length];
+        Cmplx[][] analyticPsPs = new Cmplx[analyticPs.length-smallestHIndex][analyticPs[0].length];
+        for (int hIndex = 0; hIndex < analyticPs.length; hIndex++) {
+            for (int kIndex = 0; kIndex < analyticPs[0].length; kIndex++) {
+                Cmplx aPs = new Cmplx(0,0);
+                Cmplx aPpPs = new Cmplx(0,0);
+                Cmplx aPsPs = new Cmplx(0,0);
                 for (int s = 0; s < individuals.length; s++) {
-                    stack[i][j] += individuals[s].getStack()[i+smallestHIndex][j];
+                    aPs = Cmplx.add(aPs, individuals[s].getAnalyticPs()[hIndex][kIndex]);
+                    aPpPs = Cmplx.add(aPpPs, individuals[s].getAnalyticPpPs()[hIndex][kIndex]);
+                    aPsPs = Cmplx.add(aPsPs, individuals[s].getAnalyticPsPs()[hIndex][kIndex]);
                 }
+                analyticPs[hIndex][kIndex] = aPs;
+                analyticPpPs[hIndex][kIndex] = aPpPs;
+                analyticPsPs[hIndex][kIndex] = aPsPs;
             }
         }
-        sum = new HKStack(individuals[0].getAlpha(),
+        return new HKStack(individuals[0].getAlpha(),
                           0f,
                           minPercentMatch,
                           individuals[0].getMinH().add(  individuals[0].getStepH().multiplyBy(smallestHIndex)  ),
@@ -102,38 +113,10 @@ public class SumHKStack {
                           individuals[0].getWeightPs(),
                           individuals[0].getWeightPpPs(),
                           individuals[0].getWeightPsPs(),
-                          stack,
-                          chan);
-        calcVariance();   
-    }
-
-    public static SumHKStack load(File parentDir, Channel chan, String prefix, String postfix, float minPercentMatch) throws IOException {
-        File[] subdir = parentDir.listFiles();
-        LinkedList stacks = new LinkedList();
-        for (int i = 0; i < subdir.length; i++) {
-            if ( ! subdir[i].isDirectory()) {
-                continue;
-            }
-            File stackFile = new File(subdir[i],
-                                      FissuresFormatter.filize(prefix+ChannelIdUtil.toStringNoDates(chan.get_id())+postfix));
-            if ( ! stackFile.exists()) {
-                continue;
-            }
-            // found a file with the correct name, load it
-            DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(stackFile)));
-            HKStack individual = HKStack.read(dis);
-            if (individual.getPercentMatch() > minPercentMatch) {
-                stacks.add(individual);
-            }
-        }
-        if (stacks.size() != 0) {
-            return new SumHKStack((HKStack[])stacks.toArray(new HKStack[0]),
-                                  chan,
-                                  minPercentMatch,
-                                  ((HKStack)stacks.get(0)).getMinH());
-        } else {
-            return null;
-        }
+                          analyticPs,
+                          analyticPpPs,
+                          analyticPsPs,
+                          chan);  
     }
 
     public double getHVariance() {
@@ -172,7 +155,38 @@ public class SumHKStack {
         return smallestH;
     }
     
-    protected void calcVariance() {
+    protected void calcVarianceBootstrap() {
+        HKStack temp = individuals[0];
+        Random random = new Random();
+        double[] hErrors = new double[bootstrapIterations];
+        double[] kErrors = new double[bootstrapIterations];
+        TimeOMatic.start();
+        for(int i = 0; i < bootstrapIterations; i++) {
+            ArrayList sample = new ArrayList();
+            for(int j = 0; j < individuals.length; j++) {
+                sample.add(individuals[randomInt(individuals.length)]);
+            }
+            HKStack sampleStack = calculate(temp.chan, (HKStack[])sample.toArray(new HKStack[0]), smallestH, minPercentMatch);
+            hErrors[i] = sampleStack.getMaxValueH().getValue(UnitImpl.KILOMETER);
+            kErrors[i] = sampleStack.getMaxValueK();
+            System.out.println(i+" "+hErrors[i]+"  "+kErrors[i]);
+        }
+        
+        Statistics hStat = new Statistics(hErrors);
+        hVariance = (float)hStat.var();
+        Statistics kStat = new Statistics(kErrors);
+        kVariance = (float)kStat.var();
+        TimeOMatic.print("Stat for "
+                + ChannelIdUtil.toStringNoDates(temp.getChannel())
+                + " h stddev=" + getHStdDev() + "  k stddev="
+                + getKStdDev());
+    }
+
+    protected int randomInt(int top) {
+        return (int)Math.floor(Math.random() * top);
+    }
+    
+    protected void calcVarianceSecondDerivative() {
         float[] peakVals = new float[individuals.length];
         int[] maxIndices = sum.getMaxValueIndices();
         for (int s = 0; s < individuals.length; s++) {
@@ -303,6 +317,8 @@ public class SumHKStack {
         logger.debug("Variances: "+hVariance+"  "+kVariance+"  "+mixedVariance);
     }
 
+    protected int bootstrapIterations = 100;
+    
     protected Channel channel;
     protected HKStack[] individuals;
     protected HKStack sum;

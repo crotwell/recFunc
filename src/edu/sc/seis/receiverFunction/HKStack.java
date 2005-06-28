@@ -34,6 +34,7 @@ import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
+import edu.sc.seis.fissuresUtil.bag.Hilbert;
 import edu.sc.seis.fissuresUtil.bag.PoissonsRatio;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.display.BorderedDisplay;
@@ -41,6 +42,7 @@ import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import edu.sc.seis.fissuresUtil.display.borders.Border;
 import edu.sc.seis.fissuresUtil.display.borders.UnitRangeBorder;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.SeisDataChangeEvent;
@@ -158,7 +160,9 @@ public class HKStack implements Serializable {
                    float weightPs,
                    float weightPpPs,
                    float weightPsPs,
-                   float[][] stack) {
+                   Cmplx[][] analyticPs,
+                   Cmplx[][] analyticPpPs,
+                   Cmplx[][] analyticPsPs) {
         this(alpha,
              p,
              percentMatch,
@@ -172,7 +176,10 @@ public class HKStack implements Serializable {
              weightPpPs,
              weightPsPs);
         this.recFunc = null;
-        this.stack = stack;
+        this.analyticPs = analyticPs;
+        this.analyticPpPs = analyticPpPs;
+        this.analyticPsPs = analyticPsPs;
+        calcPhaseStack();
     }
 
     public HKStack(QuantityImpl alpha,
@@ -187,7 +194,9 @@ public class HKStack implements Serializable {
                    float weightPs,
                    float weightPpPs,
                    float weightPsPs,
-                   float[][] stack,
+                   Cmplx[][] analyticPs,
+                   Cmplx[][] analyticPpPs,
+                   Cmplx[][] analyticPsPs,
                    DataSetSeismogram recFunc) {
         this(alpha,
              p,
@@ -201,7 +210,9 @@ public class HKStack implements Serializable {
              weightPs,
              weightPpPs,
              weightPsPs,
-             stack);
+             analyticPs,
+             analyticPpPs,
+             analyticPsPs);
         this.recFunc = recFunc;
         this.chan = recFunc.getDataSet()
                 .getChannel(recFunc.getRequestFilter().channel_id);
@@ -219,7 +230,9 @@ public class HKStack implements Serializable {
                    float weightPs,
                    float weightPpPs,
                    float weightPsPs,
-                   float[][] stack,
+                   Cmplx[][] analyticPs,
+                   Cmplx[][] analyticPpPs,
+                   Cmplx[][] analyticPsPs,
                    Channel chan) {
         this(alpha,
              p,
@@ -233,7 +246,9 @@ public class HKStack implements Serializable {
              weightPs,
              weightPpPs,
              weightPsPs,
-             stack);
+             analyticPs,
+             analyticPpPs,
+             analyticPsPs);
         this.chan = chan;
     }
 
@@ -631,7 +646,19 @@ public class HKStack implements Serializable {
 
     void calculate(LocalSeismogramImpl seis, QuantityImpl shift)
             throws FissuresException {
-        stack = createArray(numH, numK);
+        //set up analytic signal
+        Hilbert hilbert = new Hilbert();
+        Cmplx[] analytic = hilbert.analyticSignal(seis);
+        float[] realFloats = new float[analytic.length];
+        float[] imagFloats = new float[analytic.length];
+        // normalize to unit length cmplx
+        for(int i = 0; i < analytic.length; i++) {
+            analytic[i] = Cmplx.div(analytic[i], analytic[i].mag());
+            realFloats[i] = (float)analytic[i].real();
+            imagFloats[i] = (float)analytic[i].imag();
+        }
+        LocalSeismogramImpl imag = new LocalSeismogramImpl(seis, imagFloats);
+        
         float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND)
                 .getValue();
         float etaP = (float)Math.sqrt(1 / (a * a) - p * p);
@@ -651,20 +678,28 @@ public class HKStack implements Serializable {
                 double timePs = h * (etaS - etaP) + shift.value;
                 double timePpPs = h * (etaS + etaP) + shift.value;
                 double timePsPs = h * (2 * etaS) + shift.value;
-                stack[hIndex][kIndex] += calcForStack(seis,
+                calcForStack(seis,
+                                                      imag,
                                                       timePs,
                                                       timePpPs,
-                                                      timePsPs);
+                                                      timePsPs,
+                                                      hIndex,
+                                                      kIndex);
             }
         }
+        calcPhaseStack();
     }
 
-    public float calcForStack(LocalSeismogramImpl seis,
+    public void calcForStack(LocalSeismogramImpl seis,
+                              LocalSeismogramImpl imag,
                               double timePs,
                               double timePpPs,
-                              double timePsPs) throws FissuresException {
-        return weightPs * getAmp(seis, timePs) + weightPpPs
-                * getAmp(seis, timePpPs) - weightPsPs * getAmp(seis, timePsPs);
+                              double timePsPs,
+                              int hIndex,
+                              int kIndex) throws FissuresException {
+        analyticPs[hIndex][kIndex] = Cmplx.mul(weightPs, new Cmplx(getAmp(seis, timePs), getAmp(imag, timePs)));
+        analyticPpPs[hIndex][kIndex] = Cmplx.mul(weightPpPs, new Cmplx(getAmp(seis, timePpPs), getAmp(imag, timePpPs)));
+        analyticPsPs[hIndex][kIndex] = Cmplx.mul(weightPsPs, new Cmplx(getAmp(seis, timePsPs), getAmp(imag, timePsPs)));
     }
 
     public static HKStack create(CachedResult cachedResult,
@@ -897,83 +932,49 @@ public class HKStack implements Serializable {
         out.write("stack[0].length=" + stack[0].length);
         out.newLine();
     }
-
-    /**
-     * Writes the HKStack to the DataOutputStream. The DataSetSeismogram is NOT
-     * written as it is assumed that this will be saved separately.
-     */
-    public void write(DataOutputStream out) throws IOException {
-        out.writeFloat(p);
-        out.writeFloat((float)alpha.getValue(UnitImpl.KILOMETER_PER_SECOND));
-        out.writeFloat(percentMatch);
-        out.writeFloat((float)minH.getValue(UnitImpl.KILOMETER));
-        out.writeFloat((float)stepH.getValue());
-        out.writeInt(numH);
-        out.writeFloat(minK);
-        out.writeFloat(stepK);
-        out.writeInt(numK);
-        out.writeInt(stack.length);
-        out.writeInt(stack[0].length);
+    
+    float calcPhaseStack(int hIndex,
+                           int kIndex) {
+        return (float)(calcRegStack(hIndex, kIndex) * calcPhaseWeight(hIndex, kIndex));
+    }
+    
+    double calcRegStack(int hIndex,
+                       int kIndex) {
+        return weightPs * analyticPs[hIndex][kIndex].real() + weightPpPs
+        * analyticPpPs[hIndex][kIndex].real() - weightPsPs * analyticPsPs[hIndex][kIndex].real();
+    }
+    
+    double calcPhaseWeight(int hIndex,
+                          int kIndex) {
+        return 
+        Math.pow(Cmplx.sub(Cmplx.add(analyticPs[hIndex][kIndex], analyticPpPs[hIndex][kIndex]), analyticPsPs[hIndex][kIndex]).mag(), 2);
+    }
+    
+    void calcPhaseStack() {
+        stack = createArray(numH, numK);
         for(int i = 0; i < stack.length; i++) {
-            for(int j = 0; j < stack[0].length; j++) {
-                out.writeFloat(stack[i][j]);
+            for(int j = 0; j < stack[i].length; j++) {
+                stack[i][j] = calcPhaseStack(i, j);
             }
         }
     }
-
-    /**
-     * Reads the HKStack from the DataInputStream. The DataSetSeismogram is NOT
-     * read as it is assumed that this will be saved separatedly.
-     */
-    public static HKStack read(DataInputStream in, DataSetSeismogram recFunc)
-            throws IOException {
-        HKStack hks = read(in);
-        hks.recFunc = recFunc;
-        return hks;
-    }
-
-    /**
-     * Reads the HKStack from the DataInputStream. The DataSetSeismogram is NOT
-     * read as it is assumed that this will be saved separatedly.
-     */
-    public static HKStack read(DataInputStream in) throws IOException {
-        float p = in.readFloat();
-        QuantityImpl alpha = new QuantityImpl(in.readFloat(),
-                                              UnitImpl.KILOMETER_PER_SECOND);
-        float percentMatch = in.readFloat();
-        QuantityImpl minH = new QuantityImpl(in.readFloat(), UnitImpl.KILOMETER);
-        QuantityImpl stepH = new QuantityImpl(in.readFloat(),
-                                              UnitImpl.KILOMETER);
-        int numH = in.readInt();
-        float minK = in.readFloat();
-        float stepK = in.readFloat();
-        int numK = in.readInt();
-        int iDim = in.readInt();
-        int jDim = in.readInt();
-        float[][] stack = new float[iDim][jDim];
-        System.out.println("WARNING: weights are assumed to be  1");
-        HKStack out = new HKStack(alpha,
-                                  p,
-                                  percentMatch,
-                                  minH,
-                                  stepH,
-                                  numH,
-                                  minK,
-                                  stepK,
-                                  numK,
-                                  1,
-                                  1,
-                                  1,
-                                  stack);
-        for(int i = 0; i < stack.length; i++) {
-            for(int j = 0; j < stack[0].length; j++) {
-                stack[i][j] = in.readFloat();
-            }
-        }
-        return out;
-    }
-
+    
     float[][] stack;
+    
+    public Cmplx[][] getAnalyticPpPs() {
+        return analyticPpPs;
+    }
+    public Cmplx[][] getAnalyticPs() {
+        return analyticPs;
+    }
+    public Cmplx[][] getAnalyticPsPs() {
+        return analyticPsPs;
+    }
+    Cmplx[][] analyticPs;
+    
+    Cmplx[][] analyticPpPs;
+    
+    Cmplx[][] analyticPsPs;
 
     float p;
 

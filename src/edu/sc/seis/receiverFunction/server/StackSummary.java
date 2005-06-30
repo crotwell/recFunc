@@ -270,11 +270,11 @@ public class StackSummary {
         } else {
             logger.info("calc for station");
             JDBCStation jdbcStation = summary.jdbcHKStack.getJDBCChannel().getStationTable();
-            NetworkAttr[] nets = jdbcStation.getNetTable().getByCode(netArg);
+            NetworkId[] nets = jdbcStation.getNetTable().getByCode(netArg);
             int sta_dbid = -1;
             for(int i = 0; i < nets.length; i++) {
                 try {
-                    int[] tmp = jdbcStation.getDBIds(nets[i].get_id() ,staArg);
+                    int[] tmp = jdbcStation.getDBIds(nets[i],staArg);
                     if (tmp.length > 0) {
                         sta_dbid = tmp[0];
                         summary.createSummary(jdbcStation.get(sta_dbid).get_id(),
@@ -283,7 +283,7 @@ public class StackSummary {
                                               new QuantityImpl(smallestH, UnitImpl.KILOMETER));
                     }
                 } catch (NotFound e) {
-                    System.out.println("NotFound for :"+NetworkIdUtil.toStringNoDates(nets[i].get_id()));
+                    System.out.println("NotFound for :"+NetworkIdUtil.toStringNoDates(nets[i]));
                     // go to next network
                 }
             }

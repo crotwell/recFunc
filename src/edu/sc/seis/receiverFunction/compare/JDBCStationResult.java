@@ -184,21 +184,21 @@ public class JDBCStationResult extends JDBCTable {
                         break;
                 }
             }
-            NetworkAttr[] attr = jdbcNetwork.getByCode(net);
+            NetworkId[] ids = jdbcNetwork.getByCode(net);
             NetworkId networkId = null;
-            if(attr.length != 0) {
+            if(ids.length != 0) {
                 if(net.startsWith("X") || net.startsWith("Y")
                         || net.startsWith("Z")) {
                     // maybe several nets with that code
-                    for(int j = 0; j < attr.length; j++) {
-                        if(attr[j].get_id().begin_time.date_time.substring(2, 4)
+                    for(int j = 0; j < ids.length; j++) {
+                        if(ids[j].begin_time.date_time.substring(2, 4)
                                 .equals(netYear)) {
                             // found it
-                            networkId = attr[j].get_id();
+                            networkId = ids[j];
                         }
                     }
                 } else {
-                    networkId = attr[0].get_id();
+                    networkId = ids[0];
                 }
             }
             if(networkId != null) {

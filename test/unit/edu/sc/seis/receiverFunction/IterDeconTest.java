@@ -9,7 +9,7 @@ import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import edu.sc.seis.fissuresUtil.sac.FissuresToSac;
-import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
+import edu.sc.seis.seisFile.sac.SacTimeSeries;
 // JUnitDoclet end import
 
 /**

@@ -5,7 +5,7 @@ import java.io.File;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
-import edu.sc.seis.fissuresUtil.sac.SacTimeSeries;
+import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import edu.sc.seis.fissuresUtil.sac.SacToFissures;
 
 /**

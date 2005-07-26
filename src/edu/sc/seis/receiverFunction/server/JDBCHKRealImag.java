@@ -26,7 +26,7 @@ public class JDBCHKRealImag extends JDBCTable {
      *
      */
     public JDBCHKRealImag(Connection conn) throws SQLException {
-        super("hkampphase", conn);
+        super("hkrealimag", conn);
         TableSetup.setup(getTableName(),
                          conn,
                          this,
@@ -56,7 +56,7 @@ public class JDBCHKRealImag extends JDBCTable {
         ByteArrayOutputStream real = new ByteArrayOutputStream();
         DataOutputStream realdos = new DataOutputStream(real);
         ByteArrayOutputStream imag = new ByteArrayOutputStream();
-        DataOutputStream imagdos = new DataOutputStream(real);
+        DataOutputStream imagdos = new DataOutputStream(imag);
         for(int i = 0; i < data.length; i++) {
             for(int j = 0; j < data[i].length; j++) {
                 realdos.writeDouble(data[i][j].real());
@@ -73,36 +73,36 @@ public class JDBCHKRealImag extends JDBCTable {
     public Cmplx[][][] extractData(ResultSet rs, int numH, int numK) throws SQLException, IOException {
         Cmplx[][][] data = new Cmplx[3][numH][numK];
         // Ps
-        byte[] dataBytes = rs.getBytes("PsReal");
+        byte[] dataBytes = rs.getBytes("psreal");
         DataInputStream realdis = new DataInputStream(new ByteArrayInputStream(dataBytes));
-        dataBytes = rs.getBytes("PsImag");
+        dataBytes = rs.getBytes("psimag");
         DataInputStream imagdis = new DataInputStream(new ByteArrayInputStream(dataBytes));
-        for(int i = 0; i < data.length; i++) {
-            for(int j = 0; j < data[i].length; j++) {
+        for(int i = 0; i < data[0].length; i++) {
+            for(int j = 0; j < data[0][i].length; j++) {
                 data[0][i][j] = new Cmplx(realdis.readDouble(), imagdis.readDouble());
             }
         }
         realdis.close();
         imagdis.close();
         // PpPs
-        dataBytes = rs.getBytes("PpPsReal");
+        dataBytes = rs.getBytes("pppsreal");
         realdis = new DataInputStream(new ByteArrayInputStream(dataBytes));
-        dataBytes = rs.getBytes("PpPsImag");
+        dataBytes = rs.getBytes("pppsImag");
         imagdis = new DataInputStream(new ByteArrayInputStream(dataBytes));
-        for(int i = 0; i < data.length; i++) {
-            for(int j = 0; j < data[i].length; j++) {
+        for(int i = 0; i < data[1].length; i++) {
+            for(int j = 0; j < data[1][i].length; j++) {
                 data[1][i][j] = new Cmplx(realdis.readDouble(), imagdis.readDouble());
             }
         }
         realdis.close();
         imagdis.close();
         // Ps
-        dataBytes = rs.getBytes("PsPsReal");
+        dataBytes = rs.getBytes("pspsreal");
         realdis = new DataInputStream(new ByteArrayInputStream(dataBytes));
-        dataBytes = rs.getBytes("PsPsImag");
+        dataBytes = rs.getBytes("pspsimag");
         imagdis = new DataInputStream(new ByteArrayInputStream(dataBytes));
-        for(int i = 0; i < data.length; i++) {
-            for(int j = 0; j < data[i].length; j++) {
+        for(int i = 0; i < data[2].length; i++) {
+            for(int j = 0; j < data[2][i].length; j++) {
                 data[2][i][j] = new Cmplx(realdis.readDouble(), imagdis.readDouble());
             }
         }

@@ -7,7 +7,7 @@
 	
 <div id="content">
 
-<img src="earslogo.png"/><br/>
+$header
 
 <p><b>Stations within $delta degrees of ($lat, $lon)</p>
 

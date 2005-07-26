@@ -7,7 +7,7 @@
 	
 <div id="content">
 
-<img src="earslogo.png"/><br/>
+$header
 
 #set ($firstSta = $stationList.get(0) )
 <p><b>Network: </b><a href="stationList.html?netdbid=$net.getDbId()">$net.getCodeWithYear() - $net.name</a></p>

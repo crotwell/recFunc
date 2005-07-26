@@ -7,7 +7,7 @@
 	
 <div id="content">
 
-<img src="earslogo.png"/><br/>
+$header
 
 <p><b>Network: </b>$net.getCodeWithYear() - $net.name</p>
 <p><b>Description: </b>$net.getDescription()</p>

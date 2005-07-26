@@ -43,7 +43,7 @@ $name
 	
 <div id="content">
 
-<img src="earslogo.png"/><br/>
+$header
 
 <p><b>Comparison with Prior Result $name
 #if($hDiff)

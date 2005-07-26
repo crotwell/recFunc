@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.JDBCStationResult;
 import edu.sc.seis.receiverFunction.compare.StationResult;
@@ -39,6 +40,7 @@ public class ComparePriorResult extends StationList {
 
     public ArrayList getStations(HttpServletRequest req, RevletContext context)
             throws SQLException, NotFound {
+        TimeOMatic.start();
         ArrayList stations = new ArrayList();
         String name = RevUtil.get("name", req);
         context.put("name", name);
@@ -73,10 +75,12 @@ public class ComparePriorResult extends StationList {
                 }
             }
         }
+        TimeOMatic.print("getStations");
         return stations;
     }
     
     public HashMap getSummaries(ArrayList stationList, RevletContext context) throws SQLException, IOException {
+        TimeOMatic.start();
         // clean station/prior results if they agree within hDiff km
         HashMap summary = super.getSummaries(stationList, context);
         HashMap prior = (HashMap)context.get("prior");
@@ -109,6 +113,7 @@ public class ComparePriorResult extends StationList {
                 
             }
         }
+        TimeOMatic.print("getSummaries");
         return summary;
     }
 

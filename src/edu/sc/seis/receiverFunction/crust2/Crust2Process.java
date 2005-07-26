@@ -33,7 +33,7 @@ public class Crust2Process implements WaveformVectorProcess  {
             Location loc = channelGroup.getChannels()[0].my_site.my_station.my_location;
             Crust2Profile profile = crust2.getClosest(loc.longitude,
                                                       loc.latitude);
-            cookieJar.put("Crust2_H", new Float(profile.getLayer(7).topDepth));
+            cookieJar.put("Crust2_H", new Float(profile.getLayer(7).getTopDepth()));
             cookieJar.put("Crust2_Vp", new Float(profile.getPWaveAvgVelocity()));
             cookieJar.put("Crust2_Vs", new Float(profile.getSWaveAvgVelocity()));
             cookieJar.put("Crust2_VpVs", new Float(profile.getPWaveAvgVelocity() /

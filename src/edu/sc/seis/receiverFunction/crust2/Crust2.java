@@ -101,23 +101,20 @@ public class Crust2 {
                 ArrayList rhoLine = split(in.readLine());
                 ArrayList thicknessLine = split(in.readLine());
                 VelocityLayer[] layers = new VelocityLayer[8];
-                float prevDepth = 0;
+                float top = 0;
+                float bottom = 0;
                 for(int i = 0; i < 8; i++) {
-                    layers[i] = new VelocityLayer(i);
-                    layers[i].topDepth = prevDepth;
+                    top = bottom;
                     if(i != 7) {
-                        prevDepth += Float.parseFloat((String)thicknessLine.get(i));
+                        bottom = top + Float.parseFloat((String)thicknessLine.get(i));
                     } else {
                         // last layer has inf as thickness
-                        prevDepth = 6371;
+                        bottom = 6371;
                     }
-                    layers[i].botDepth = prevDepth;
-                    layers[i].topDensity = Float.parseFloat((String)rhoLine.get(i));
-                    layers[i].botDensity = Float.parseFloat((String)rhoLine.get(i));
-                    layers[i].topPVelocity = Float.parseFloat((String)pLine.get(i));
-                    layers[i].botPVelocity = Float.parseFloat((String)pLine.get(i));
-                    layers[i].topSVelocity = Float.parseFloat((String)sLine.get(i));
-                    layers[i].botSVelocity = Float.parseFloat((String)sLine.get(i));
+                    layers[i] = new VelocityLayer(i, top, bottom, 
+                                                  Float.parseFloat((String)pLine.get(i)), Float.parseFloat((String)pLine.get(i)),
+                                                  Float.parseFloat((String)sLine.get(i)), Float.parseFloat((String)sLine.get(i)),
+                                                  Float.parseFloat((String)rhoLine.get(i)),Float.parseFloat((String)rhoLine.get(i)));
                 }
                 Crust2Profile profile = new Crust2Profile(code, name, layers);
                 profileMap.put(code, profile);

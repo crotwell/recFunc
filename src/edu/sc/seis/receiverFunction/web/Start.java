@@ -3,6 +3,7 @@ package edu.sc.seis.receiverFunction.web;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+import org.apache.velocity.VelocityContext;
 import org.mortbay.jetty.servlet.ServletHandler;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
@@ -62,11 +63,11 @@ public class Start {
                                               "edu.sc.seis.receiverFunction.web.HKStackImageServlet",
                                               servletStrings,
                                               sh);
-        edu.sc.seis.rev.RevUtil.populateJetty("/hkphasestackimage.png",
+       /* edu.sc.seis.rev.RevUtil.populateJetty("/hkphasestackimage.png",
                                               "/hkphasestackimage.png",
                                               "edu.sc.seis.receiverFunction.web.HKPhaseStackImage",
                                               servletStrings,
-                                              sh);
+                                              sh);*/
         edu.sc.seis.rev.RevUtil.populateJetty("/waveforms.png",
                                               "/waveforms.png",
                                               "edu.sc.seis.receiverFunction.web.SeismogramImage",
@@ -94,5 +95,11 @@ public class Start {
                                               servletStrings,
                                               sh);
         edu.sc.seis.rev.Start.runREV(args, sh);
+    }
+    
+    public static VelocityContext getDefaultContext() {
+        VelocityContext context = new VelocityContext();
+        context.put("header", "<a href=\"/ears_tmp\"><img src=\"earslogo.png\"/></a><br/>");
+        return context;
     }
 }

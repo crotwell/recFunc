@@ -31,6 +31,7 @@ import edu.iris.Fissures.model.UnitRangeImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
+import edu.iris.dmc.seedcodec.CodecException;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
@@ -71,6 +72,15 @@ public class HKStack implements Serializable {
                       float weightPs,
                       float weightPpPs,
                       float weightPsPs) {
+        if (alpha.getValue() <= 0) {
+            throw new IllegalArgumentException("alpha must be positive: "+alpha);
+        }
+        if (p < 0) {
+            throw new IllegalArgumentException("p must be nonnegative: "+p);
+        }
+        if (minK <= 0) {
+            throw new IllegalArgumentException("minK must be positive: "+minK);
+        }
         this.alpha = alpha;
         this.p = p;
         this.percentMatch = percentMatch;
@@ -145,6 +155,9 @@ public class HKStack implements Serializable {
              weightPsPs);
         this.recFunc = new MemoryDataSetSeismogram(recFuncSeis);
         this.chan = chan;
+        analyticPs = new Cmplx[numH][numK];
+        analyticPpPs = new Cmplx[numH][numK];
+        analyticPsPs = new Cmplx[numH][numK];
         calculate(recFuncSeis, shift);
     }
 
@@ -476,13 +489,13 @@ public class HKStack implements Serializable {
         return vpvsFormat.format(getPoissonsRatio());
     }
 
-    public BorderedDisplay getStackComponent() {
-        return getStackComponent(minH);
+    public BorderedDisplay getStackComponent(String phase) {
+        return getStackComponent(phase, minH);
     }
 
-    public BorderedDisplay getStackComponent(QuantityImpl smallestH) {
+    public BorderedDisplay getStackComponent(String phase, QuantityImpl smallestH) {
         int startHIndex = getHIndex(smallestH);
-        HKStackImage stackImage = new HKStackImage(this, startHIndex);
+        HKStackImage stackImage = new HKStackImage(this, phase, startHIndex);
         if(crust2 != null) {
             StationResult result = crust2.getStationResult(chan.my_site.my_station);
             stackImage.addMarker(result, Color.blue);
@@ -542,7 +555,11 @@ public class HKStack implements Serializable {
     }
 
     public BufferedImage createStackImage() {
-        BorderedDisplay comp = getStackComponent();
+        return createStackImage("all");
+    }
+
+    public BufferedImage createStackImage(String phase) {
+        BorderedDisplay comp = getStackComponent(phase);
         JFrame frame = null;
         Graphics2D g = null;
         BufferedImage bufImage = null;
@@ -649,12 +666,8 @@ public class HKStack implements Serializable {
         //set up analytic signal
         Hilbert hilbert = new Hilbert();
         Cmplx[] analytic = hilbert.analyticSignal(seis);
-        float[] realFloats = new float[analytic.length];
         float[] imagFloats = new float[analytic.length];
-        // normalize to unit length cmplx
         for(int i = 0; i < analytic.length; i++) {
-            analytic[i] = Cmplx.div(analytic[i], analytic[i].mag());
-            realFloats[i] = (float)analytic[i].real();
             imagFloats[i] = (float)analytic[i].imag();
         }
         LocalSeismogramImpl imag = new LocalSeismogramImpl(seis, imagFloats);
@@ -665,6 +678,8 @@ public class HKStack implements Serializable {
         if(Float.isNaN(etaP)) {
             System.out.println("Warning: Eta P is NaN alpha=" + alpha + "  p="
                     + p);
+        } else if (etaP <= 0) {
+            throw new RuntimeException("EtaP should never be negative: "+etaP+"  a="+a+"  p="+p);
         }
         for(int kIndex = 0; kIndex < numK; kIndex++) {
             float beta = a / (minK + kIndex * stepK);
@@ -672,9 +687,11 @@ public class HKStack implements Serializable {
             if(Float.isNaN(etaS)) {
                 System.out.println("Warning: Eta S is NaN " + kIndex
                         + "  beta=" + beta + "  p=" + p);
+            } else if (etaS <= 0) {
+                throw new RuntimeException("EtaS should never be negative: "+etaS+"   etaP="+etaP+"  beta="+beta);
             }
-            for(int hIndex = 0; hIndex < numH; hIndex++) {
-                float h = (float)(minH.getValue() + hIndex * stepH.getValue());
+            for(int hIndex = 0; hIndex < numH; hIndex++) { 
+                float h = (float)(minH.getValue(UnitImpl.KILOMETER) + hIndex * stepH.getValue(UnitImpl.KILOMETER));
                 double timePs = h * (etaS - etaP) + shift.value;
                 double timePpPs = h * (etaS + etaP) + shift.value;
                 double timePsPs = h * (2 * etaS) + shift.value;
@@ -697,9 +714,9 @@ public class HKStack implements Serializable {
                               double timePsPs,
                               int hIndex,
                               int kIndex) throws FissuresException {
-        analyticPs[hIndex][kIndex] = Cmplx.mul(weightPs, new Cmplx(getAmp(seis, timePs), getAmp(imag, timePs)));
-        analyticPpPs[hIndex][kIndex] = Cmplx.mul(weightPpPs, new Cmplx(getAmp(seis, timePpPs), getAmp(imag, timePpPs)));
-        analyticPsPs[hIndex][kIndex] = Cmplx.mul(weightPsPs, new Cmplx(getAmp(seis, timePsPs), getAmp(imag, timePsPs)));
+        analyticPs[hIndex][kIndex] = new Cmplx(getAmp(seis, timePs), getAmp(imag, timePs));
+        analyticPpPs[hIndex][kIndex] = new Cmplx(getAmp(seis, timePpPs), getAmp(imag, timePpPs));
+        analyticPsPs[hIndex][kIndex] = new Cmplx(getAmp(seis, timePsPs), getAmp(imag, timePsPs));
     }
 
     public static HKStack create(CachedResult cachedResult,
@@ -782,9 +799,8 @@ public class HKStack implements Serializable {
         double sampOffset = time
                 / seis.getSampling().getPeriod().convertTo(UnitImpl.SECOND).value;
         if(sampOffset < 0 || sampOffset > seis.getNumPoints() - 2) {
-            //throw new IllegalArgumentException("time "+time+" is outside of
-            // seismogram: "+seis.getBeginTime()+" - "+seis.getEndTime());
-            return 0;
+            throw new IllegalArgumentException("time "+time+" is outside of seismogram: "+seis.getBeginTime()+" - "+seis.getEndTime());
+            //return 0;
         }
         int offset = (int)Math.floor(sampOffset);
         float valA = seis.get_as_floats()[offset];
@@ -936,6 +952,7 @@ public class HKStack implements Serializable {
     float calcPhaseStack(int hIndex,
                            int kIndex) {
         return (float)(calcRegStack(hIndex, kIndex) * calcPhaseWeight(hIndex, kIndex));
+        //return (float)(calcRegStack(hIndex, kIndex));
     }
     
     double calcRegStack(int hIndex,
@@ -946,8 +963,19 @@ public class HKStack implements Serializable {
     
     double calcPhaseWeight(int hIndex,
                           int kIndex) {
-        return 
-        Math.pow(Cmplx.sub(Cmplx.add(analyticPs[hIndex][kIndex], analyticPpPs[hIndex][kIndex]), analyticPsPs[hIndex][kIndex]).mag(), 2);
+        Cmplx ps, ppps, psps;
+        double magPs = analyticPs[hIndex][kIndex].mag();
+        double magPpPs = analyticPpPs[hIndex][kIndex].mag();
+        double magPsPs = analyticPsPs[hIndex][kIndex].mag();
+        if (magPs == 0 || magPpPs == 0 || magPsPs == 0) { return 0;}
+        ps = Cmplx.div(analyticPs[hIndex][kIndex], magPs);
+        ppps = Cmplx.div(analyticPpPs[hIndex][kIndex], magPpPs);
+        psps = Cmplx.div(analyticPsPs[hIndex][kIndex], magPsPs);
+        Cmplx out = Cmplx.sub(Cmplx.add(ps, ppps), psps);
+        if (Double.isNaN(out.mag())) {
+            System.out.println("calcPhaseWeight: NaN  "+" mag"+magPs+"\n"+ps+"\n"+ppps+"\n"+psps);
+        }
+        return Math.pow(out.mag(), 2);
     }
     
     void calcPhaseStack() {

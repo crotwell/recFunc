@@ -19,19 +19,40 @@ import javax.swing.JComponent;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.web.GMTColorPalette;
 
 public class HKStackImage extends JComponent {
 
     HKStackImage(HKStack stack) {
-        this(stack, 0);
+        this(stack, "all", 0);
     }
 
-    HKStackImage(HKStack stack, int smallestHindex) {
+    HKStackImage(HKStack stack, String phase, int smallestHindex) {
         this.stack = stack;
         this.smallestHindex = smallestHindex;
-        float[][] stackOut = stack.getStack();
+        if (phase.equals("all")) {
+            stackOut = stack.getStack();
+        } else {
+            Cmplx[][] analytic = null;
+            if (phase.equals("Ps")) {
+                analytic = stack.getAnalyticPs();
+            } else if (phase.equals("PpPs")) {
+                analytic = stack.getAnalyticPpPs();
+            } else if (phase.equals("PsPs")) {
+                analytic = stack.getAnalyticPsPs();
+            }
+            stackOut = new float[analytic.length][analytic[0].length];
+            for(int i = 0; i < analytic.length; i++) {
+                for(int j = 0; j < analytic[i].length; j++) {
+                    stackOut[i][j] = (float)analytic[i][j].real();
+                    if (i==0) {
+                        System.out.println("stackOut "+stackOut[i][j]);
+                    }
+                }
+            }
+        }
         Dimension imageSize = new Dimension(2*stackOut[0].length, 2*(stackOut.length-smallestHindex));
         setMinimumSize(imageSize);
         setPreferredSize(imageSize);
@@ -44,8 +65,6 @@ public class HKStackImage extends JComponent {
     public void paintComponent(Graphics graphics) {
         Graphics2D g = (Graphics2D)graphics;
         Color origColor = g.getColor();
-
-        float[][] stackOut = stack.getStack();
 
         int[] xyMin = stack.getMinValueIndices();
         int[] xyMax = stack.getMaxValueIndices();
@@ -115,6 +134,8 @@ public class HKStackImage extends JComponent {
     GMTColorPalette colorPallete;
     
     protected HKStack stack;
+    
+    float[][] stackOut;
 
     protected ArrayList markers = new ArrayList();
 

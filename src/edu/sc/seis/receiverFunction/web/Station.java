@@ -18,6 +18,7 @@ import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.Marker;
 import edu.sc.seis.receiverFunction.SumHKStack;
@@ -93,7 +94,9 @@ public class Station extends Revlet {
                     .getStationTable()
                     .get(dbids[i]), dbids[i]));
         }
+        TimeOMatic.start();
         CacheEvent[] events = jdbcRecFunc.getSuccessfulEvents(netDbId, staCode);
+        TimeOMatic.print("successful events");
         ArrayList eventList = new ArrayList();
         int numNinty = 0;
         int numEighty = 0;
@@ -110,6 +113,7 @@ public class Station extends Revlet {
         }
         Collections.sort(eventList, itrMatchComparator);
         Collections.reverse(eventList);
+        TimeOMatic.print("sort");
         VelocityStation sta = (VelocityStation)stationList.get(0);
         ArrayList markerList = new ArrayList();
         QuantityImpl smallestH = new QuantityImpl(20, UnitImpl.KILOMETER);
@@ -120,12 +124,14 @@ public class Station extends Revlet {
             }
             markerList.add(result);
         }
+        TimeOMatic.print("crust2");
         StationResult[] results = jdbcStationResult.get(sta.my_network.get_id(),
                                                         sta.get_code());
         for(int i = 0; i < results.length; i++) {
             markerList.add(results[i]);
         }
-        RevletContext context = new RevletContext("station.vm");
+        TimeOMatic.print("other results");
+        RevletContext context = new RevletContext("station.vm", Start.getDefaultContext());
         try {
             int summaryDbId = jdbcSummaryHKStack.getDbIdForStation(net.get_id(),
                                                                    staCode);
@@ -146,6 +152,7 @@ public class Station extends Revlet {
         } catch(NotFound e) {
             // no summary, oh well...
         }
+        TimeOMatic.print("summary and local maxima");
         context.put("stationList", stationList);
         context.put("stacode", staCode);
         context.put("net", net);
@@ -154,6 +161,7 @@ public class Station extends Revlet {
         context.put("numEighty", new Integer(numEighty));
         context.put("markerList", markerList);
         context.put("smallestH", smallestH);
+        TimeOMatic.print("done");
         return context;
     }
 

@@ -68,6 +68,7 @@ public class StationsNearBy extends StationList {
         logger.info("getAllStations finished");
         for(int j = 0; j < stations.length; j++) {
             DistAz distAz = new DistAz(stations[j].my_location, loc);
+            System.out.println(stations[j].my_location.latitude+","+stations[j].my_location.longitude+" -> "+distAz.getDelta());
             if(distAz.getDelta() < delta) {
                 stationList.add(new VelocityStation(stations[j]));
             }

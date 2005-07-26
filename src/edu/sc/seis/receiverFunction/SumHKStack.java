@@ -84,8 +84,8 @@ public class SumHKStack {
     static HKStack calculate(Channel chan, HKStack[] individuals, QuantityImpl smallestH, float minPercentMatch) {
         int smallestHIndex = individuals[0].getHIndex(smallestH);
         Cmplx[][] analyticPs = new Cmplx[individuals[0].getStack().length-smallestHIndex][individuals[0].getStack()[0].length];
-        Cmplx[][] analyticPpPs = new Cmplx[analyticPs.length-smallestHIndex][analyticPs[0].length];
-        Cmplx[][] analyticPsPs = new Cmplx[analyticPs.length-smallestHIndex][analyticPs[0].length];
+        Cmplx[][] analyticPpPs = new Cmplx[analyticPs.length][analyticPs[0].length];
+        Cmplx[][] analyticPsPs = new Cmplx[analyticPs.length][analyticPs[0].length];
         for (int hIndex = 0; hIndex < analyticPs.length; hIndex++) {
             for (int kIndex = 0; kIndex < analyticPs[0].length; kIndex++) {
                 Cmplx aPs = new Cmplx(0,0);
@@ -169,7 +169,7 @@ public class SumHKStack {
             HKStack sampleStack = calculate(temp.chan, (HKStack[])sample.toArray(new HKStack[0]), smallestH, minPercentMatch);
             hErrors[i] = sampleStack.getMaxValueH().getValue(UnitImpl.KILOMETER);
             kErrors[i] = sampleStack.getMaxValueK();
-            System.out.println(i+" "+hErrors[i]+"  "+kErrors[i]);
+            System.out.println("calcVarianceBootstrap:  "+i+" "+hErrors[i]+"  "+kErrors[i]);
         }
         
         Statistics hStat = new Statistics(hErrors);

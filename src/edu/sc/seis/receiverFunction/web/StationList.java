@@ -57,7 +57,7 @@ public class StationList extends Revlet {
      */
     public RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
-        RevletContext context = new RevletContext(getVelocityTemplate());
+        RevletContext context = new RevletContext(getVelocityTemplate(), Start.getDefaultContext());
         ArrayList stationList = getStations(req, context);
         logger.debug("getStations done");
         HashMap summary = getSummaries(stationList, context);
@@ -102,8 +102,8 @@ public class StationList extends Revlet {
         Iterator it = stationList.iterator();
         HashMap summary = new HashMap();
         while(it.hasNext()) {
-            try {
             VelocityStation sta = (VelocityStation)it.next();
+            try {
             sta.setDbId(jdbcChannel.getStationTable().getDBId(sta.get_id()));
             int netDbId = jdbcChannel.getNetworkTable().getDbId(sta.getNet().get_id());
             sta.getNet().setDbId(netDbId);
@@ -111,12 +111,15 @@ public class StationList extends Revlet {
             summary.put(sta, sumStack);
             } catch (NotFound e) {
                 // oh well, skip this station
+                logger.warn("not found for "+sta.getNetCode()+"."+sta.get_code());
             }
         }
+        logger.debug("found "+summary.size()+" summaries");
         return summary;
     }
     
     public HashMap cleanSummaries(ArrayList stationList, HashMap summary) {
+        logger.debug("before cleanSummaries stationList.size()="+stationList.size()+"  summary.size()="+summary.size());
         Iterator it = stationList.iterator();
         while(it.hasNext()) {
             Object next = it.next();
@@ -125,6 +128,7 @@ public class StationList extends Revlet {
                 it.remove();
             }
         }
+        logger.debug("after cleanSummaries stationList.size()="+stationList.size()+"  summary.size()="+summary.size());
         return summary;
     }
     

@@ -72,6 +72,8 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                 sumStack = jdbcSumHKStack.get(dbid);
                 System.out.println("Got summary plot from database "+dbid);
             }catch (NotFound e) {
+                sumStack = null;
+                /*
                 sumStack = stackSummary.sum(net.getCode(),
                                            staCode,
                                            minPercentMatch,
@@ -79,7 +81,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                 if (sumStack != null) {
                     int dbid = jdbcSumHKStack.put(sumStack);
                     logger.debug("finish calc stack summary: "+dbid+"  numH="+sumStack.getSum().getNumH());
-                }
+                }*/
             }
                 
             logger.info("before check for null");

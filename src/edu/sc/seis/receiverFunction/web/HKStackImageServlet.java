@@ -72,12 +72,18 @@ public class HKStackImageServlet  extends HttpServlet {
                 stack = hkStack.get(rf_id);
             }
             
+            String phase = RevUtil.get("phase", req, "all");
             OutputStream out = res.getOutputStream();
             if (stack == null) {
                 return;
             }
-            BufferedImage image = stack.createStackImage();
-            
+            BufferedImage image;
+            if (phase.equals("all")) {
+                image = stack.createStackImage();
+            } else {
+                System.out.println("phase arg is "+phase);
+                image = stack.createStackImage(phase);
+            }
             res.setContentType("image/png");
             ImageIO.write(image, "png", out);
             out.close();

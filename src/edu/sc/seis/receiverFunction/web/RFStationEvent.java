@@ -80,7 +80,7 @@ public class RFStationEvent extends Revlet {
             VelocityEvent velEvent = new VelocityEvent(eq);
             VelocityStation sta = new VelocityStation(result.channels[0].my_site.my_station);
             
-            VelocityContext vContext = new VelocityContext();
+            VelocityContext vContext = new VelocityContext( Start.getDefaultContext());
             vContext.put("sta", sta);
             vContext.put("eq", velEvent);
             vContext.put("result", new VelocityCachedResult(result));

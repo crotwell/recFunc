@@ -39,9 +39,9 @@ public class Crust2Profile {
     public double getPWaveAvgVelocity() {
         double travelTime = 0;
         for (int i = 0; i < layers.length-1; i++) {
-            travelTime += layers[i].botPVelocity*(layers[i].botDepth-layers[i].topDepth);
+            travelTime += layers[i].getBotPVelocity()*(layers[i].getBotDepth()-layers[i].getTopDepth());
         }
-        return travelTime/layers[layers.length-1].topDepth;
+        return travelTime/layers[layers.length-1].getTopDepth();
     }
 
     /** Calculated for vertical incidence S wave, assumes layers are constant velocity
@@ -49,13 +49,13 @@ public class Crust2Profile {
     public double getSWaveAvgVelocity() {
         double travelTime = 0;
         for (int i = 0; i < layers.length-1; i++) {
-            travelTime += layers[i].botSVelocity*(layers[i].botDepth-layers[i].topDepth);
+            travelTime += layers[i].getBotSVelocity()*(layers[i].getBotDepth()-layers[i].getTopDepth());
         }
-        return travelTime/layers[layers.length-1].topDepth;
+        return travelTime/layers[layers.length-1].getTopDepth();
     }
     
     public QuantityImpl getCrustThickness() {
-        return new QuantityImpl(layers[7].topDepth, UnitImpl.KILOMETER);
+        return new QuantityImpl(layers[7].getTopDepth(), UnitImpl.KILOMETER);
     }
 
     String name;

@@ -15,11 +15,11 @@ public class Crust2Test extends TestCase {
         Crust2 crust2 = new Crust2();
         Crust2Profile profile = crust2.get(-180, 90);
         assertEquals("code", "A2", crust2.getCode(-180, 90));
-        assertEquals("-180, 90", 3.81f, profile.getLayer(0).botPVelocity, .01f);
+        assertEquals("-180, 90", 3.81f, profile.getLayer(0).getBotPVelocity(), .01f);
 
         profile = crust2.get(-176, 88);
         assertEquals("code", "A4", crust2.getCode(-176, 88));
-        assertEquals("-180, 90", 1.5f, profile.getLayer(3).botDepth-profile.getLayer(3).topDepth, .01f);
+        assertEquals("-180, 90", 1.5f, profile.getLayer(3).getBotDepth()-profile.getLayer(3).getTopDepth(), .01f);
     }
 
     public void testClosest() {

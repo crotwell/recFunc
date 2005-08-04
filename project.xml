@@ -17,9 +17,9 @@
         deconvolution method of Ammon. </description>
     <shortDescription>Caclulation of receiver functions.</shortDescription>
     <url>http://www.seis.sc.edu/software/${pom.artifactId}</url>
-    <siteAddress>www.seis.sc.edu</siteAddress>
-    <siteDirectory>/seis/raid1/Apache/htdocs/software/${pom.artifactId}</siteDirectory>
-    <distributionDirectory>/seis/raid1/Apache/htdocs/software/mavenRepository</distributionDirectory>
+    <siteAddress>roo.seis.sc.edu</siteAddress>
+    <siteDirectory>/Library/WebServer/software/${pom.artifactId}</siteDirectory>
+    <distributionDirectory>/Library/WebServer/software/mavenRepository</distributionDirectory>
     <repository>
         <url>http://roo.seis.sc.edu/fisheye/viewrep/CVS/seis/${pom.artifactId}</url>
     </repository>

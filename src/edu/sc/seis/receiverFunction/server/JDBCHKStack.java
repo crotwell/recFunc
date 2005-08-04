@@ -31,6 +31,7 @@ import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.sod.ConfigurationException;
@@ -59,6 +60,8 @@ public class JDBCHKStack extends JDBCTable {
         dataDir = new File(RecFuncCacheImpl.getDataLoc());
         dataDir.mkdirs();
         eventFormatter = new EventFormatter(true);
+        getForStation.setFetchSize(10);
+        getForStation.setFetchDirection(ResultSet.FETCH_FORWARD);
     }
     
     public HKStack get(int recfunc_id) throws IOException, SQLException, NotFound {
@@ -203,11 +206,18 @@ public class JDBCHKStack extends JDBCTable {
         getForStation.setString(index++, netCode);
         getForStation.setString(index++, staCode);
         getForStation.setFloat(index++, percentMatch);
+        getConnection().setAutoCommit(false);
+        System.out.println("JDBCHKStack: before executeQuery");
         ResultSet rs = getForStation.executeQuery();
+        System.out.println("JDBCHKStack: after executeQuery");
+        int num = 1;
         while(rs.next()) {
+            System.out.println("extract "+num++);
             individualHK.add(extract(rs));
         }
+        System.out.println("getForStation: "+rs.isAfterLast());
         rs.close();
+        getConnection().setAutoCommit(true);
         return individualHK;
     }
 
@@ -216,7 +226,7 @@ public class JDBCHKStack extends JDBCTable {
         Channel[] channels = jdbcRecFunc.extractChannels(rs);
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
-        Cmplx[][][] data = jdbcHKRealImag.extractData(rs, numH, numK);
+        CmplxArray2D[] data = jdbcHKRealImag.extractData(rs, numH, numK);
         HKStack out = new HKStack(new QuantityImpl(rs.getFloat("alpha"), UnitImpl.KILOMETER_PER_SECOND),
                                   rs.getFloat("p"),
                                   rs.getFloat("percentMatch"),

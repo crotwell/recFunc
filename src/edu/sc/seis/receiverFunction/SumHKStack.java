@@ -23,6 +23,7 @@ import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.sod.status.FissuresFormatter;
 
@@ -83,22 +84,22 @@ public class SumHKStack {
     
     static HKStack calculate(Channel chan, HKStack[] individuals, QuantityImpl smallestH, float minPercentMatch) {
         int smallestHIndex = individuals[0].getHIndex(smallestH);
-        Cmplx[][] analyticPs = new Cmplx[individuals[0].getStack().length-smallestHIndex][individuals[0].getStack()[0].length];
-        Cmplx[][] analyticPpPs = new Cmplx[analyticPs.length][analyticPs[0].length];
-        Cmplx[][] analyticPsPs = new Cmplx[analyticPs.length][analyticPs[0].length];
-        for (int hIndex = 0; hIndex < analyticPs.length; hIndex++) {
-            for (int kIndex = 0; kIndex < analyticPs[0].length; kIndex++) {
+        CmplxArray2D analyticPs = new CmplxArray2D(individuals[0].getStack().length-smallestHIndex, individuals[0].getStack()[0].length);
+        CmplxArray2D analyticPpPs = new CmplxArray2D(analyticPs.getXLength(), analyticPs.getYLength());
+        CmplxArray2D analyticPsPs = new CmplxArray2D(analyticPs.getXLength(), analyticPs.getYLength());
+        for (int hIndex = 0; hIndex < analyticPs.getXLength(); hIndex++) {
+            for (int kIndex = 0; kIndex < analyticPs.getYLength(); kIndex++) {
                 Cmplx aPs = new Cmplx(0,0);
                 Cmplx aPpPs = new Cmplx(0,0);
                 Cmplx aPsPs = new Cmplx(0,0);
                 for (int s = 0; s < individuals.length; s++) {
-                    aPs = Cmplx.add(aPs, individuals[s].getAnalyticPs()[hIndex][kIndex]);
-                    aPpPs = Cmplx.add(aPpPs, individuals[s].getAnalyticPpPs()[hIndex][kIndex]);
-                    aPsPs = Cmplx.add(aPsPs, individuals[s].getAnalyticPsPs()[hIndex][kIndex]);
+                    aPs = Cmplx.add(aPs, individuals[s].getAnalyticPs().get(hIndex, kIndex));
+                    aPpPs = Cmplx.add(aPpPs, individuals[s].getAnalyticPpPs().get(hIndex, kIndex));
+                    aPsPs = Cmplx.add(aPsPs, individuals[s].getAnalyticPsPs().get(hIndex, kIndex));
                 }
-                analyticPs[hIndex][kIndex] = aPs;
-                analyticPpPs[hIndex][kIndex] = aPpPs;
-                analyticPsPs[hIndex][kIndex] = aPsPs;
+                analyticPs.set(hIndex, kIndex, aPs);
+                analyticPpPs.set(hIndex, kIndex, aPpPs);
+                analyticPsPs.set(hIndex, kIndex, aPsPs);
             }
         }
         return new HKStack(individuals[0].getAlpha(),

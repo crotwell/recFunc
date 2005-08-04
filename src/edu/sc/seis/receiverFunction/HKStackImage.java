@@ -20,6 +20,7 @@ import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.web.GMTColorPalette;
 
@@ -35,7 +36,7 @@ public class HKStackImage extends JComponent {
         if (phase.equals("all")) {
             stackOut = stack.getStack();
         } else {
-            Cmplx[][] analytic = null;
+            CmplxArray2D analytic = null;
             if (phase.equals("Ps")) {
                 analytic = stack.getAnalyticPs();
             } else if (phase.equals("PpPs")) {
@@ -43,10 +44,10 @@ public class HKStackImage extends JComponent {
             } else if (phase.equals("PsPs")) {
                 analytic = stack.getAnalyticPsPs();
             }
-            stackOut = new float[analytic.length][analytic[0].length];
-            for(int i = 0; i < analytic.length; i++) {
-                for(int j = 0; j < analytic[i].length; j++) {
-                    stackOut[i][j] = (float)analytic[i][j].real();
+            stackOut = new float[analytic.getXLength()][analytic.getYLength()];
+            for(int i = 0; i < analytic.getXLength(); i++) {
+                for(int j = 0; j < analytic.getYLength(); j++) {
+                    stackOut[i][j] = analytic.getReal(i, j);
                     if (i==0) {
                         System.out.println("stackOut "+stackOut[i][j]);
                     }

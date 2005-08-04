@@ -18,6 +18,7 @@ import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
 
@@ -137,7 +138,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
         Channel chan = jdbcHKStack.getJDBCChannel().get(rs.getInt("chanZ_id"));
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
-        Cmplx[][][] data = jdbcHKStack.getJDBCHKRealImag().extractData(rs, numH, numK);
+        CmplxArray2D[] data = jdbcHKStack.getJDBCHKRealImag().extractData(rs, numH, numK);
         HKStack stack = new HKStack(new QuantityImpl(rs.getFloat("alpha"),
                                                      UnitImpl.KILOMETER_PER_SECOND),
                                     0,

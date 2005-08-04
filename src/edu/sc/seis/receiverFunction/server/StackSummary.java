@@ -302,6 +302,7 @@ public class StackSummary {
             parseArgsAndRun(args, summary);
         } catch(Exception e) {
             logger.error(e);
+            e.printStackTrace();
         }
     }
     

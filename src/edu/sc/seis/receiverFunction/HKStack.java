@@ -44,6 +44,7 @@ import edu.sc.seis.fissuresUtil.display.borders.Border;
 import edu.sc.seis.fissuresUtil.display.borders.UnitRangeBorder;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.SeisDataChangeEvent;
@@ -155,9 +156,9 @@ public class HKStack implements Serializable {
              weightPsPs);
         this.recFunc = new MemoryDataSetSeismogram(recFuncSeis);
         this.chan = chan;
-        analyticPs = new Cmplx[numH][numK];
-        analyticPpPs = new Cmplx[numH][numK];
-        analyticPsPs = new Cmplx[numH][numK];
+        analyticPs = new CmplxArray2D(numH, numK);
+        analyticPpPs = new CmplxArray2D(numH, numK);
+        analyticPsPs = new CmplxArray2D(numH, numK);
         calculate(recFuncSeis, shift);
     }
 
@@ -173,9 +174,9 @@ public class HKStack implements Serializable {
                    float weightPs,
                    float weightPpPs,
                    float weightPsPs,
-                   Cmplx[][] analyticPs,
-                   Cmplx[][] analyticPpPs,
-                   Cmplx[][] analyticPsPs) {
+                   CmplxArray2D analyticPs,
+                   CmplxArray2D analyticPpPs,
+                   CmplxArray2D analyticPsPs) {
         this(alpha,
              p,
              percentMatch,
@@ -207,9 +208,9 @@ public class HKStack implements Serializable {
                    float weightPs,
                    float weightPpPs,
                    float weightPsPs,
-                   Cmplx[][] analyticPs,
-                   Cmplx[][] analyticPpPs,
-                   Cmplx[][] analyticPsPs,
+                   CmplxArray2D analyticPs,
+                   CmplxArray2D analyticPpPs,
+                   CmplxArray2D analyticPsPs,
                    DataSetSeismogram recFunc) {
         this(alpha,
              p,
@@ -243,9 +244,9 @@ public class HKStack implements Serializable {
                    float weightPs,
                    float weightPpPs,
                    float weightPsPs,
-                   Cmplx[][] analyticPs,
-                   Cmplx[][] analyticPpPs,
-                   Cmplx[][] analyticPsPs,
+                   CmplxArray2D analyticPs,
+                   CmplxArray2D analyticPpPs,
+                   CmplxArray2D analyticPsPs,
                    Channel chan) {
         this(alpha,
              p,
@@ -714,9 +715,12 @@ public class HKStack implements Serializable {
                               double timePsPs,
                               int hIndex,
                               int kIndex) throws FissuresException {
-        analyticPs[hIndex][kIndex] = new Cmplx(getAmp(seis, timePs), getAmp(imag, timePs));
-        analyticPpPs[hIndex][kIndex] = new Cmplx(getAmp(seis, timePpPs), getAmp(imag, timePpPs));
-        analyticPsPs[hIndex][kIndex] = new Cmplx(getAmp(seis, timePsPs), getAmp(imag, timePsPs));
+        analyticPs.setReal(hIndex, kIndex, getAmp(seis, timePs));
+        analyticPs.setImag(hIndex, kIndex, getAmp(imag, timePs));
+        analyticPpPs.setReal(hIndex, kIndex, getAmp(seis, timePpPs));
+        analyticPpPs.setImag(hIndex, kIndex, getAmp(imag, timePpPs));
+        analyticPsPs.setReal(hIndex, kIndex, getAmp(seis, timePsPs));
+        analyticPsPs.setImag(hIndex, kIndex, getAmp(imag, timePsPs));
     }
 
     public static HKStack create(CachedResult cachedResult,
@@ -957,20 +961,20 @@ public class HKStack implements Serializable {
     
     double calcRegStack(int hIndex,
                        int kIndex) {
-        return weightPs * analyticPs[hIndex][kIndex].real() + weightPpPs
-        * analyticPpPs[hIndex][kIndex].real() - weightPsPs * analyticPsPs[hIndex][kIndex].real();
+        return weightPs * analyticPs.getReal(hIndex, kIndex) + weightPpPs
+        * analyticPpPs.getReal(hIndex, kIndex) - weightPsPs * analyticPsPs.getReal(hIndex, kIndex);
     }
     
     double calcPhaseWeight(int hIndex,
                           int kIndex) {
         Cmplx ps, ppps, psps;
-        double magPs = analyticPs[hIndex][kIndex].mag();
-        double magPpPs = analyticPpPs[hIndex][kIndex].mag();
-        double magPsPs = analyticPsPs[hIndex][kIndex].mag();
+        double magPs = analyticPs.mag(hIndex, kIndex);
+        double magPpPs = analyticPpPs.mag(hIndex, kIndex);
+        double magPsPs = analyticPsPs.mag(hIndex, kIndex);
         if (magPs == 0 || magPpPs == 0 || magPsPs == 0) { return 0;}
-        ps = Cmplx.div(analyticPs[hIndex][kIndex], magPs);
-        ppps = Cmplx.div(analyticPpPs[hIndex][kIndex], magPpPs);
-        psps = Cmplx.div(analyticPsPs[hIndex][kIndex], magPsPs);
+        ps = Cmplx.div(analyticPs.get(hIndex, kIndex), magPs);
+        ppps = Cmplx.div(analyticPpPs.get(hIndex, kIndex), magPpPs);
+        psps = Cmplx.div(analyticPsPs.get(hIndex, kIndex), magPsPs);
         Cmplx out = Cmplx.sub(Cmplx.add(ps, ppps), psps);
         if (Double.isNaN(out.mag())) {
             System.out.println("calcPhaseWeight: NaN  "+" mag"+magPs+"\n"+ps+"\n"+ppps+"\n"+psps);
@@ -989,20 +993,21 @@ public class HKStack implements Serializable {
     
     float[][] stack;
     
-    public Cmplx[][] getAnalyticPpPs() {
+    public CmplxArray2D getAnalyticPpPs() {
         return analyticPpPs;
     }
-    public Cmplx[][] getAnalyticPs() {
+    public CmplxArray2D getAnalyticPs() {
         return analyticPs;
     }
-    public Cmplx[][] getAnalyticPsPs() {
+    public CmplxArray2D getAnalyticPsPs() {
         return analyticPsPs;
     }
-    Cmplx[][] analyticPs;
     
-    Cmplx[][] analyticPpPs;
-    
-    Cmplx[][] analyticPsPs;
+    CmplxArray2D analyticPs;
+
+    CmplxArray2D analyticPpPs;
+
+    CmplxArray2D analyticPsPs;
 
     float p;
 

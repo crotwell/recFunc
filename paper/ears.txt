@@ -67,9 +67,13 @@ parameters can be stacked.
 
 In addition to this stacking idea based on predicted arrival times, we also make
 use of phase-weights for the stacks. This is a non-linear stacking technique
-that weights the straight amplitude stack by a sum of unit magnitude complex
+that weights the straight amplitude stack by the square of
+a sum of unit magnitude complex
 values constructed from the instantaeous phase of the receiver function. This
-technique greatly sharpens the stacks at the little expense of calculating the
+technique greatly sharpens the stacks for coherant signals
+ at the little expense of calculating the
 hilbert transform of the receiver functions.
 
-
+Once the stacks are calculated, the thickness and Vp/Vs corresponding to the
+maximum value of the stack is taken to be the estimate of the bulk crustal 
+properties. 

@@ -18,7 +18,7 @@ This has given us at the present time about 1700 stations.
 All events above magnitude 5.5 in the WHDF catalog from the NEIC are processed. 
 For each of these events, receiver functions are calculated for all
  stations with data between 30 and 100 degrees
-for which the P phase exists in the prem model are accepted.
+for which the P phase exists in the prem model.
 However, only only events-station pairs for which the iterative deconvolution
 has a greater than 80 percent match are used in the resulting stacks.
 
@@ -77,3 +77,28 @@ hilbert transform of the receiver functions.
 Once the stacks are calculated, the thickness and Vp/Vs corresponding to the
 maximum value of the stack is taken to be the estimate of the bulk crustal 
 properties. 
+
+Comparision with Prior Results
+
+Because of the automated nature of this study, a comparison with prior results
+is of great interest. We make comparisons with 4 studies to understand how
+well the automated system can do without resorting to a seismologist's
+intuition for reasonable and unreasonable results.
+
+Comparison with Zhu and Kanamori
+
+This paper introduced the HK stacking method, and so a comparison with their
+results is appropriate.  
+
+Comparison with Ristra
+
+Comparison with Moma
+
+Comparison with Crust2.0
+
+Because Crust2.0 is a global crustal model, it is particuarly useful to compare
+with EARS as there is not a bias to a particular region. We compare our results
+with the closest data point within the Crust2.0 model as well as interpolating
+from the closest 4 data points.
+
+

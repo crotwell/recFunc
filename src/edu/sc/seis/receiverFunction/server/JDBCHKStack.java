@@ -60,7 +60,7 @@ public class JDBCHKStack extends JDBCTable {
         dataDir = new File(RecFuncCacheImpl.getDataLoc());
         dataDir.mkdirs();
         eventFormatter = new EventFormatter(true);
-        getForStation.setFetchSize(10);
+        getForStation.setFetchSize(50);
         getForStation.setFetchDirection(ResultSet.FETCH_FORWARD);
     }
     

@@ -39,6 +39,8 @@ stationResultRef.getDbId=SELECT ref_id FROM $tablename \
     AND method = ? \
     AND url = ?
     
+stationResultRef.getAll=SELECT * FROM $tablename 
+    
 griddedResult.create=CREATE TABLE $tablename ( \
 	lat float, \
 	lon float, \

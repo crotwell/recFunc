@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import edu.sc.seis.fissuresUtil.database.JDBCSequence;
 import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
@@ -69,5 +70,14 @@ public class JDBCStationResultRef extends JDBCTable {
     
     JDBCSequence seq;
     
-    PreparedStatement put, getDbId;
+    PreparedStatement put, getDbId, getAll;
+
+    public StationResultRef[] getAll() throws SQLException {
+        ResultSet rs = getAll.executeQuery();
+        ArrayList out = new ArrayList();
+        while(rs.next()) {
+            out.add(extract(rs));
+        }
+        return (StationResultRef[])out.toArray(new StationResultRef[0]);
+    }
 }

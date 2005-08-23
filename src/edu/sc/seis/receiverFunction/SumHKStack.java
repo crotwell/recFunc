@@ -80,14 +80,15 @@ public class SumHKStack {
         CmplxArray2D analyticPpPs = new CmplxArray2D(analyticPs.getXLength(), analyticPs.getYLength());
         CmplxArray2D analyticPsPs = new CmplxArray2D(analyticPs.getXLength(), analyticPs.getYLength());
         for (int hIndex = 0; hIndex < analyticPs.getXLength(); hIndex++) {
+            int shiftHIndex = smallestHIndex+hIndex;
             for (int kIndex = 0; kIndex < analyticPs.getYLength(); kIndex++) {
                 Cmplx aPs = new Cmplx(0,0);
                 Cmplx aPpPs = new Cmplx(0,0);
                 Cmplx aPsPs = new Cmplx(0,0);
                 for (int s = 0; s < individuals.length; s++) {
-                    aPs = Cmplx.add(aPs, individuals[s].getAnalyticPs().get(hIndex, kIndex));
-                    aPpPs = Cmplx.add(aPpPs, individuals[s].getAnalyticPpPs().get(hIndex, kIndex));
-                    aPsPs = Cmplx.add(aPsPs, individuals[s].getAnalyticPsPs().get(hIndex, kIndex));
+                    aPs = Cmplx.add(aPs, individuals[s].getAnalyticPs().get(shiftHIndex, kIndex));
+                    aPpPs = Cmplx.add(aPpPs, individuals[s].getAnalyticPpPs().get(shiftHIndex, kIndex));
+                    aPsPs = Cmplx.add(aPsPs, individuals[s].getAnalyticPsPs().get(shiftHIndex, kIndex));
                 }
                 analyticPs.set(hIndex, kIndex, aPs);
                 analyticPpPs.set(hIndex, kIndex, aPpPs);

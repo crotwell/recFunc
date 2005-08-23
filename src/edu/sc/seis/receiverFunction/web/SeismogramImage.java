@@ -67,7 +67,8 @@ public class SeismogramImage extends HttpServlet {
         try {
             logger.debug("doGet called");
             if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
-
+            relTime = new PhaseAlignedTimeConfig("ttp");
+            
             CachedResult stack;
             if (req.getParameter("rf").equals("synth")) {
                 stack = SyntheticFactory.getCachedResult();
@@ -88,10 +89,10 @@ public class SeismogramImage extends HttpServlet {
             disp.add(getDSS(stack));
             
             MicroSecondTimeRange mstr = disp.getTimeConfig().getTime();
+            disp.getTimeConfig().shaleTime(prePhase.divideBy(mstr.getInterval()).getValue(SEC_PER_SEC),1);
             disp.getTimeConfig().shaleTime(0,
                                            window.divideBy(mstr.getInterval())
-                                                   .convertTo(SEC_PER_SEC)
-                                                   .get_value());
+                                                   .getValue(SEC_PER_SEC));
             System.out.println(window.divideBy(mstr.getInterval()));
             res.setContentType("image/png");
             disp.outputToPNG(out, dim);
@@ -180,7 +181,7 @@ public class SeismogramImage extends HttpServlet {
 
     JDBCRecFunc jdbcRecFunc;
 
-    PhaseAlignedTimeConfig relTime = new PhaseAlignedTimeConfig("ttp");
+    PhaseAlignedTimeConfig relTime;
 
     private SeismogramDisplayConfiguration sdc = new SeismogramDisplayConfiguration();
 

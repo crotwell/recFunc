@@ -441,6 +441,17 @@ public class HKStack implements Serializable {
             return new QuantityImpl(0, UnitImpl.METER);
         }
     }
+    
+    public QuantityImpl getMaxValueH(QuantityImpl smallestH) {
+        try {
+            int[] indicies = getMaxValueIndices(getHIndex(smallestH));
+            QuantityImpl peakH = getMinH().add(getStepH().multiplyBy(indicies[0]));
+            return peakH;
+        } catch(Throwable e) {
+            GlobalExceptionHandler.handle(e);
+            return new QuantityImpl(0, UnitImpl.METER);
+        }
+    }
 
     public QuantityImpl getHFromIndex(int index) {
         return getMinH().add(getStepH().multiplyBy(index));
@@ -452,6 +463,13 @@ public class HKStack implements Serializable {
 
     public float getMaxValueK() {
         int[] indicies = getMaxValueIndices();
+        float peakK = getMinK() + getStepK() * indicies[1];
+        return peakK;
+    }
+    
+
+    public float getMaxValueK(QuantityImpl smallestH) {
+        int[] indicies = getMaxValueIndices(getHIndex(smallestH));
         float peakK = getMinK() + getStepK() * indicies[1];
         return peakK;
     }

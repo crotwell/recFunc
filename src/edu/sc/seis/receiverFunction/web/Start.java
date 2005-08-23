@@ -73,13 +73,13 @@ public class Start {
                                               "edu.sc.seis.receiverFunction.web.SeismogramImage",
                                               servletStrings,
                                               sh);
-        edu.sc.seis.rev.RevUtil.populateJetty("/comparePriorResult",
-                                              "/comparePriorResult",
+        edu.sc.seis.rev.RevUtil.populateJetty("/comparePriorResult.html",
+                                              "/comparePriorResult.html",
                                               "edu.sc.seis.receiverFunction.web.ComparePriorResult",
                                               servletStrings,
                                               sh);
-        edu.sc.seis.rev.RevUtil.populateJetty("/comparePriorResultTxt",
-                                              "/comparePriorResultTxt",
+        edu.sc.seis.rev.RevUtil.populateJetty("/comparePriorResult.txt",
+                                              "/comparePriorResult.txt",
                                               "edu.sc.seis.receiverFunction.web.ComparePriorResultTxt",
                                               servletStrings,
                                               sh);
@@ -92,6 +92,11 @@ public class Start {
         edu.sc.seis.rev.RevUtil.populateJetty("/hklatlon.png",
                                               "/hklatlon.png",
                                               "edu.sc.seis.receiverFunction.web.HKLatLonPlot",
+                                              servletStrings,
+                                              sh);
+        edu.sc.seis.rev.RevUtil.populateJetty("/priorResultList.html",
+                                              "/priorResultList.html",
+                                              "edu.sc.seis.receiverFunction.web.PriorResultList",
                                               servletStrings,
                                               sh);
         edu.sc.seis.rev.Start.runREV(args, sh);

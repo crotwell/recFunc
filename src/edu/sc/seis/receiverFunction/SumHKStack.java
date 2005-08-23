@@ -7,15 +7,8 @@
 package edu.sc.seis.receiverFunction;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Random;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.model.QuantityImpl;
@@ -25,7 +18,6 @@ import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
-import edu.sc.seis.sod.status.FissuresFormatter;
 
 public class SumHKStack {
     

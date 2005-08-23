@@ -33,6 +33,7 @@ import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
+import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.ConfigurationException;
@@ -79,21 +80,11 @@ public class Station extends Revlet {
      */
     public RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
-        int netDbId = new Integer(req.getParameter("netdbid")).intValue();
-        VelocityNetwork net = new VelocityNetwork(jdbcChannel.getStationTable()
-                .getNetTable()
-                .get(netDbId), netDbId);
+        int netDbId = RevUtil.getInt("netdbid", req);
+        VelocityNetwork net = getNetwork(netDbId);
         // possible that there are multiple stations with the same code
         String staCode = req.getParameter("stacode");
-        int[] dbids = jdbcChannel.getSiteTable()
-                .getStationTable()
-                .getDBIds(netDbId, staCode);
-        ArrayList stationList = new ArrayList();
-        for(int i = 0; i < dbids.length; i++) {
-            stationList.add(new VelocityStation(jdbcChannel.getSiteTable()
-                    .getStationTable()
-                    .get(dbids[i]), dbids[i]));
-        }
+        ArrayList stationList = getStationList(netDbId, staCode);
         TimeOMatic.start();
         CacheEvent[] events = jdbcRecFunc.getSuccessfulEvents(netDbId, staCode);
         TimeOMatic.print("successful events");
@@ -163,6 +154,25 @@ public class Station extends Revlet {
         context.put("smallestH", smallestH);
         TimeOMatic.print("done");
         return context;
+    }
+    
+    public VelocityNetwork getNetwork(int netDbId) throws SQLException, NotFound {
+        return new VelocityNetwork(jdbcChannel.getStationTable()
+                                                  .getNetTable()
+                                                  .get(netDbId), netDbId);
+    }
+    
+    public ArrayList getStationList(int netDbId, String staCode) throws SQLException, NotFound {
+        int[] dbids = jdbcChannel.getSiteTable()
+                .getStationTable()
+                .getDBIds(netDbId, staCode);
+        ArrayList stationList = new ArrayList();
+        for(int i = 0; i < dbids.length; i++) {
+            stationList.add(new VelocityStation(jdbcChannel.getSiteTable()
+                    .getStationTable()
+                    .get(dbids[i]), dbids[i]));
+        }
+        return stationList;
     }
 
     static final QuantityImpl TEN_KM = new QuantityImpl(10, UnitImpl.KILOMETER);

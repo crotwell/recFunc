@@ -1,5 +1,23 @@
 
+Automated receiver function processing
+
 Introduction
+
+The aim of this is article is twofold, first to introduce an automated processing system based on SOD, and second to give results and pitfalls from our experience with using this system for automated receiver function calculations. EARS, the earthscope automated receiver survey, aims to calculate bulk crustal properties for all stations within the IRIS DMC using receiver functions. To do this we have employed SOD, the standing order for data, a FISSURES/DHI based software package we have developed to do automated data retrieval and processing.
+
+Because automated processing proceeds, by definition, without a large amount of human input and guidance, there are differences with traditional seismic processing. An automated system must rely on quantitative measures of quality as opposed to the seismologist's insight into what constitutes a bad earthquake or seismogram. However, the advantage of non-human driven processing is that the volume of data to be used can be substantially larger. Use of these larger data volumes can have quality implications as well, making use of stacking techniques and statistics instead of intuition and detailed analysis by a seismologist. If a seismic technique can be structured so it can be driven by SOD, then there is really no reason not to run it over as large a volume of data as possible.
+
+We have to date processed all earthquakes with magnitude 5.5 or above for all stations within the IRIS POND. Results of the EARS project are preliminary, and much work is ongoing into discerning stations with reliable results from stations where the automated system produces values of dubious quality. This includes producing meaningful error estimates. The EARS processing system has all data available at http://www.seis.sc.edu/ears.
+
+Automated Processing with SOD
+
+SOD, the standing order for data, is a freely available Java based software package for automated retrieval and processing of seismic data. It if built on top of DHI, the data handling infrastructure, which is a CORBA based system to access network/channel information, event data and seismograms. To use SOD, a user sets up an XML configuration file, a recipe in SOD parlance, that specifies the types of earthquakes, channels and seismograms that she is interested in. The level of specification is fine grained and flexible, allowing a high degree of customization. In addition to data selection and rejection, SOD can also apply processing to the data as it is retrieved, saving much time and effort. 
+
+Overview of SOD
+
+The basic structure of SOD is of three arms, the event arm for selecting earthquakes of interest, the network arm for selecting networks, stations and channels and the waveform arm that combines the results of the two previous arms, creating event-channel pairs and are used to retrieve and process seismograms. Downloading instructions and more information about SOD can be found at http://www.seis.sc.edu/SOD. 
+
+Once SOD has retrieved seismograms, it can apply a suite of processing steps including the built in processors such as filtering, mean removal, instrument correction, cutting and signal to noise. In addition, it has the ability for externally written processors to be incorporated into the system. This is what we have done with EARS, using the built in SOD functionality to preprocess the seismograms and then using a custom processor to create the receiver functions.
 
 Method
 
@@ -9,7 +27,7 @@ Data Selection
 
 The goals of the EARS project are to be as broad as possible with respect to usable data. Hence we have processed all broadband channels for all stations available from the IRIS DMC, including both temporary and permanent stations. This has given us at the present time about 1700 stations.
 
-All events above magnitude 5.5 in the WHDF catalog from the NEIC are processed. For each of these events, receiver functions are calculated for all stations with data between 30 and 100 degrees for which the P phase exists in the prem model. However, only only events-station pairs for which the iterative deconvolution has a greater than 80 percent match are used in the resulting stacks.
+All events above magnitude 5.5 in the WHDF catalog from the NEIC are processed. For each of these events, receiver functions are calculated for all stations with broadband data between 30 and 100 degrees for which the P phase exists in the prem model. However, only events-station pairs for which the iterative deconvolution has a greater than 80 percent match are used in the resulting stacks.
 
 Processing
 

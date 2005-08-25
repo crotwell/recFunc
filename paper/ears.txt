@@ -11,13 +11,21 @@ We have to date processed all earthquakes with magnitude 5.5 or above for all st
 
 Automated Processing with SOD
 
-SOD, the standing order for data, is a freely available Java based software package for automated retrieval and processing of seismic data. It if built on top of DHI, the data handling infrastructure, which is a CORBA based system to access network/channel information, event data and seismograms. To use SOD, a user sets up an XML configuration file, a recipe in SOD parlance, that specifies the types of earthquakes, channels and seismograms that she is interested in. The level of specification is fine grained and flexible, allowing a high degree of customization. In addition to data selection and rejection, SOD can also apply processing to the data as it is retrieved, saving much time and effort. 
+SOD, the standing order for data, is a freely available Java based software package for automated retrieval and processing of seismic data. It if built on top of DHI, the data handling infrastructure, which is a CORBA based system to access network/channel information, event data and seismograms. To use SOD, a user sets up an XML configuration file, a recipe in SOD parlance, that specifies the types of earthquakes, channels and seismograms that she is interested in. The level of specification is fine grained and flexible, allowing a high degree of customization. In addition to data selection and rejection, SOD can also apply processing to the data as it is retrieved, saving much time and effort. SOD is designed to be a long running background application, and can either mine historical data or wait for earthquakes to occur and process them as they occur. Downloading instructions and more information about SOD can be found at http://www.seis.sc.edu/SOD.
 
 Overview of SOD
 
-The basic structure of SOD is of three arms, the event arm for selecting earthquakes of interest, the network arm for selecting networks, stations and channels and the waveform arm that combines the results of the two previous arms, creating event-channel pairs and are used to retrieve and process seismograms. Downloading instructions and more information about SOD can be found at http://www.seis.sc.edu/SOD. 
+SOD's primary function is the automatic retrieval of seismograms. To retrieve a seismogram, it needs two basic pieces of information, a channel and a time window. The time window in SOD is based on an earthquake, or event, and so this naturally leads to a separation of the configuration into 3 sections, or arms, one for channels, one for events and a third for the combination of events and channels. 
+
+The first is the network arm, which controls which networks, stations and channels are acceptable. There is considerable flexibility in deciding which networks, stations and channels are acceptable, based on codes, location, active time and distance from a location. In addition, each of these can be combined within logical ANDs and ORs to allow the creation of very complex criteria built up from simple pieces. In addition, there are channel processors that can do such tasks as retrieve the instrument response to be saved as a resp or sac polezero file.
+
+The event arm for selects earthquakes of interest, based on location, magnitude, depth, catalog and time. Fine grained selection is possible, including logical operations, using each of these as well as distance, azimuth and back azimuth from a point and linear distance with magnitude from a point.
+
+The waveform arm combines the results of the two previous arms, creating event-channel pairs and are used to retrieve and process seismograms. These event-channel pairs can also be selected based on properties like distance, azimuth, back azimuth, existence of phases, location of midpoints. The time window is determined based on phases and the event and channel, with further select based on the actual seismic data.
 
 Once SOD has retrieved seismograms, it can apply a suite of processing steps including the built in processors such as filtering, mean removal, instrument correction, cutting and signal to noise. In addition, it has the ability for externally written processors to be incorporated into the system. This is what we have done with EARS, using the built in SOD functionality to preprocess the seismograms and then using a custom processor to create the receiver functions.
+
+EARS
 
 Method
 
@@ -48,7 +56,9 @@ In addition to this stacking idea based on predicted arrival times, we also make
 
 Once the stacks are calculated, the thickness and Vp/Vs corresponding to the maximum value of the stack is taken to be the estimate of the bulk crustal properties. 
 
+Error Estimation
 
+Error estimation is especially import in an automated system, and we have tried to provide realistic errors by making use of a bootstrap technique. First we create a new set of receiver functions by randomly sampling with replacement from the original set. For example the origin set might contain receiver functions one to 10, and the sampled set might contain {3, 2, 9, 4, 2, 7, 4, 1, 1, 5}. The sampled set has the same size as the original, but may contain duplicates of some receiver functions. A stack is calculated from this new set and the global maximum is noted. The resampling procedure is repeated for some number of tries, 100 in our case, to produce a set of thickness and Vp/Vs values on which a variance can be calculated. We also tried an error estimate based on the curvature of the maxima, but found that this estimate often produced errors that are too small to be realistic. The other advantage of the resmpling technique is that a local maxima different from the global maxima might be the global maxima in some of the resamplings, effecting the error estimate in ways that the simple curvature estimate cannot.
 
 Comparision with Prior Results
 
@@ -68,5 +78,11 @@ Comparison with Moma
 Comparison with Crust2.0
 
 Because Crust2.0 is a global crustal model, it is particuarly useful to compare with EARS as there is not a bias to a particular region. We compare our results with the closest data point within the Crust2.0 model as well as interpolating from the closest 4 data points.
+
+Problems and Pitfalls
+
+The most obvious problem to be encountered with dealing with this volume of data is the shear volume of data, along with the computer time to process it. In the EARS case, the most costly processing step in terms of CPU time is the calculation of the receiver functions. In order to insulate ourselves from having to repeat this, we store the calculated receiver functions in a database, and then perform the stacking and analysis separately. This also has the advantage of allowing the use of multiple machines to parallelize the computations. We made use of a central PostgreSQL database with separate instances of SOD running on four to six Macintosh computers. Each separate run of SOD worked on either a different time interval, or a different network, allowing a simply, yet effect, sharing of the workload. An advantage of SOD is that it is written in Java and so is platform indenpendent, and so we could have used a mixed network had it been available.
+
+Not as costly as the receiver function calculation, but still nontrivial is the bootstrap error estimation. We have addressed this in a similar way, buy spreading the resampling across multiple computers on our network.
 
 

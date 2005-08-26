@@ -71,13 +71,7 @@ public class EarthquakeHKPlot  extends HttpServlet {
             ArrayList stackList = jdbcHKStack.getForStation(net.getCode(), staCode, match);
             
 
-            QuantityImpl smallestH = new QuantityImpl(20, UnitImpl.KILOMETER);
-            if(station.crust2 != null) {
-                StationResult result = station.crust2.getStationResult((VelocityStation)stationList.get(0));
-                if(result.getH().lessThan(smallestH.add(station.TEN_KM))) {
-                    smallestH = result.getH().subtract(station.TEN_KM);
-                }
-            }
+            QuantityImpl smallestH = HKStack.getBestSmallestH((VelocityStation)stationList.get(0));
             HKXYDataset dataset = new HKXYDataset(stackList, smallestH);
             String title = "Earthquakes for "+net.getCode()+"."+staCode;
             JFreeChart chart = ChartFactory.createScatterPlot(RevUtil.get("title",

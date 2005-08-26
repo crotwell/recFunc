@@ -33,6 +33,7 @@ import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
+import edu.sc.seis.receiverFunction.server.StackSummary;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
@@ -107,12 +108,9 @@ public class Station extends Revlet {
         TimeOMatic.print("sort");
         VelocityStation sta = (VelocityStation)stationList.get(0);
         ArrayList markerList = new ArrayList();
-        QuantityImpl smallestH = new QuantityImpl(20, UnitImpl.KILOMETER);
+        QuantityImpl smallestH = HKStack.getBestSmallestH(sta);
         if(crust2 != null) {
             StationResult result = crust2.getStationResult(sta);
-            if(result.getH().lessThan(smallestH.add(TEN_KM))) {
-                smallestH = result.getH().subtract(TEN_KM);
-            }
             markerList.add(result);
         }
         TimeOMatic.print("crust2");
@@ -128,7 +126,7 @@ public class Station extends Revlet {
                                                                    staCode);
             SumHKStack summary = jdbcSummaryHKStack.get(summaryDbId);
             context.put("summary", summary);
-            int[][] localMaxima = summary.getSum().getLocalMaxima(20, 5);
+            int[][] localMaxima = summary.getSum().getLocalMaxima(smallestH, 5);
             for(int i = 0; i < localMaxima.length; i++) {
                 StationResultRef earsStaRef = new StationResultRef(i==0?"Global Maxima":"Local Maxima "+i,
                                                                    "ears",

@@ -3,6 +3,8 @@ package edu.sc.seis.receiverFunction.web;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +59,9 @@ public class ComparePriorResult extends StationList {
             for(int i = 0; i < allsta.length; i++) {
                 VelocityStation station = new VelocityStation(allsta[i], jdbcChannel.getStationTable().getDBId(allsta[i].get_id()));
                 stations.add(station);
-                prior.put(station, crust2.getStationResult(station));
+                ArrayList resultList = new ArrayList();
+                resultList.add(crust2.getStationResult(station));
+                prior.put(station, resultList);
             }
         } else {
             results = jdbcStationResult.getAll(name);
@@ -68,8 +72,25 @@ public class ComparePriorResult extends StationList {
                 try {
                     int[] dbids = jdbcChannel.getStationTable().getDBIds(results[i].getNetworkId(), results[i].getStationCode());
                     VelocityStation station = new VelocityStation(jdbcChannel.getStationTable().get(dbids[0]));
-                    stations.add(station);
-                    prior.put(station, results[i]);
+                    boolean found = false;
+                    for(Iterator iter = stations.iterator(); iter.hasNext();) {
+                        VelocityStation sta = (VelocityStation)iter.next();
+                        if (sta.getNetCode().equals(station.getNetCode()) && sta.get_code().equals(station.get_code())) {
+                            // station already in list, use prior station
+                            found = true;
+                            station = sta;
+                            break;
+                        }
+                    }
+                    if (! found) {
+                        stations.add(station);
+                        Collections.sort(stations, new StationAlpha());
+                    }
+                    if ( ! prior.containsKey(station)) {
+                        prior.put(station, new ArrayList());
+                    }
+                    ArrayList resultList = (ArrayList)prior.get(station);
+                    resultList.add(results[i]);
                 } catch (NotFound e) {
                     // this station is in the prior result, but not in ears, skip...
                 }
@@ -126,4 +147,18 @@ public class ComparePriorResult extends StationList {
     JDBCStationResult jdbcStationResult;
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ComparePriorResult.class);
+}
+
+class StationAlpha implements Comparator {
+    
+    public int compare(Object o1, Object o2) {
+        VelocityStation s1 = (VelocityStation)o1;
+        VelocityStation s2 = (VelocityStation)o2;
+        int netCompare = s1.getNetCode().compareTo(s2.getNetCode());
+        if (netCompare  != 0) {
+            return s1.get_code().compareTo(s2.get_code());
+        } else {
+            return netCompare;
+        }
+    }
 }

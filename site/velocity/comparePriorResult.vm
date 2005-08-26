@@ -53,7 +53,7 @@ $header
 <p>Reference URL: <a href="$ref.getURL()">$ref.getURL()</a></p>
 <p>Study type: $ref.getMethod()</p>
 
-<p>View results as <a href="$req.getRequestURL()Txt?$req.getQueryString()">text</a></p>
+<p>View results as <a href="comparePriorResult.txt?$req.getQueryString()">text</a></p>
 
 <table>
 <tr><td colspan="4"/><td class="headodd" colspan="8">EARS</td><td class="headodd" colspan="5">$name</td></tr>
@@ -64,8 +64,10 @@ $header
 #foreach($sta in $stationList)
 #set( $staurl = "station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()" )
 #set( $stalink = "#link( $staurl $sta.getName() )" )
-#set( $items = [ "$sta.getNet().getCodeWithYear()", "$sta.getCode()", $stalink, "$sta.getLatitude()/$sta.getLongitude()", "$!summary.get($sta).getSum().formatMaxValueH()", "$fissures.formatQuantity($!summary.get($sta).getHStdDev())", "$!summary.get($sta).getSum().formatMaxValueK()", "$!summary.get($sta).formatKStdDev()", "$!summary.get($sta).getSum().formatAlpha()", "$!summary.get($sta).getSum().formatVs()", "$!summary.get($sta).getSum().formatPoissonsRatio()", "$!numEQ.get($sta)", "$!prior.get($sta).formatH()", "$!prior.get($sta).formatVpVs()", "$!prior.get($sta).formatVp()", "$!prior.get($sta).formatVs()", "$!prior.get($sta).formatPoissonsRatio()" ] )
+#foreach($priorR in $prior.get($sta))
+#set( $items = [ "$sta.getNet().getCodeWithYear()", "$sta.getCode()", $stalink, "$sta.getLatitude()/$sta.getLongitude()", "$!summary.get($sta).getSum().formatMaxValueH()", "$fissures.formatQuantity($!summary.get($sta).getHStdDev())", "$!summary.get($sta).getSum().formatMaxValueK()", "$!summary.get($sta).formatKStdDev()", "$!summary.get($sta).getSum().formatAlpha()", "$!summary.get($sta).getSum().formatVs()", "$!summary.get($sta).getSum().formatPoissonsRatio()", "$!numEQ.get($sta)", "$!priorR.formatH()", "$!priorR.formatVpVs()", "$!priorR.formatVp()", "$!priorR.formatVs()", "$!priorR.formatPoissonsRatio()" ] )
 #tablerow( $items )
+#end
 #end
 </table>
 

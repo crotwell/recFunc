@@ -33,6 +33,8 @@ ${tr}$row${trend}
 #set( $items = [ "Net", "Station", "Name", "Lat/Lon", "Est. Thick", "Est. Vp/Vs", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Thick", "Vp/Vs", "Vp", "Vs", "Poissons Ratio" ] )
 #tablehead( $items )
 #foreach($sta in $stationList)##
-#set( $items = [ "$sta.getNet().getCodeWithYear()", "$sta.getCode()", $name, "$sta.getLatitude()/$sta.getLongitude()", "$!summary.get($sta).getSum().formatMaxValueH()", "$!summary.get($sta).getSum().formatMaxValueK()", "$!summary.get($sta).getSum().formatAlpha()", "$!summary.get($sta).getSum().formatVs()", "$!summary.get($sta).getSum().formatPoissonsRatio()", "$!numEQ.get($sta)", "$!prior.get($sta).formatH()", "$!prior.get($sta).formatVpVs()", "$!prior.get($sta).formatVp()", "$!prior.get($sta).formatVs()", "$!prior.get($sta).formatPoissonsRatio()" ] )
+#foreach($priorR in $prior.get($sta))
+#set( $items = [ "$sta.getNet().getCodeWithYear()", "$sta.getCode()", $name, "$sta.getLatitude()/$sta.getLongitude()", "$!summary.get($sta).getSum().formatMaxValueH()", "$!summary.get($sta).getSum().formatMaxValueK()", "$!summary.get($sta).getSum().formatAlpha()", "$!summary.get($sta).getSum().formatVs()", "$!summary.get($sta).getSum().formatPoissonsRatio()", "$!numEQ.get($sta)", "$!priorR.formatH()", "$!priorR.formatVpVs()", "$!priorR.formatVp()", "$!priorR.formatVs()", "$!priorR.formatPoissonsRatio()" ] )
 #tablerow( $items )
+#end
 #end

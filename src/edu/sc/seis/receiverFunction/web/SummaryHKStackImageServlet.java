@@ -64,7 +64,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             float minPercentMatch = new Float(req.getParameter("minPercentMatch")).floatValue();
 
             if(req.getParameter("smallestH") == null) { throw new Exception("smallestH param not set"); }
-            QuantityImpl smallestH = new QuantityImpl(new Float(req.getParameter("smallestH")).floatValue(), UnitImpl.KILOMETER);
+            QuantityImpl smallestH = new QuantityImpl(RevUtil.getFloat("smallestH", req), UnitImpl.KILOMETER);
             
             SumHKStack sumStack;
             try {
@@ -73,15 +73,6 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                 System.out.println("Got summary plot from database "+dbid);
             }catch (NotFound e) {
                 sumStack = null;
-                /*
-                sumStack = stackSummary.sum(net.getCode(),
-                                           staCode,
-                                           minPercentMatch,
-                                           smallestH);
-                if (sumStack != null) {
-                    int dbid = jdbcSumHKStack.put(sumStack);
-                    logger.debug("finish calc stack summary: "+dbid+"  numH="+sumStack.getSum().getNumH());
-                }*/
             }
                 
             logger.info("before check for null");

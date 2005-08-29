@@ -109,8 +109,12 @@ public class Start {
     }
     
     public static VelocityContext getDefaultContext() {
+        String warning = "<h2>\n"+
+"<p><b>WARNING:</b>I have found an error in our stacking code, and am recalculating all of the stacks. \n"+
+"Until that finishes there will likely be many stations with missing or wrong stacks. Sorry. </p>\n"+
+"</h2>";
         VelocityContext context = new VelocityContext();
-        context.put("header", "<a href=\"/ears_tmp\"><img src=\"earslogo.png\"/></a><br/>");
+        context.put("header", "<a href=\"/ears_tmp\"><img src=\"earslogo.png\"/></a><br/>"+warning);
         return context;
     }
 }

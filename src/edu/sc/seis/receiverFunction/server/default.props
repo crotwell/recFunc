@@ -216,7 +216,7 @@ hksummary.create=CREATE TABLE $tablename ( \
                    weightPs float, \
                    weightPpPs float, \
                    weightPsPs float, \
-                   hkrealimag_id int, \
+                   stack bytea, \
                    insertTime timestamp, \
                    hVariance float, \
                    kVariance float, \
@@ -226,9 +226,7 @@ hksummary.create=CREATE TABLE $tablename ( \
                    FOREIGN KEY (chanB_id) \
                    REFERENCES channel (chan_id), \
                    FOREIGN KEY (chanZ_id) \
-                   REFERENCES channel (chan_id), \
-                   FOREIGN KEY (hkrealimag_id) \
-                   REFERENCES hkrealimag (hkrealimag_id) \
+                   REFERENCES channel (chan_id) \
                    )
 	
 hksummary.put=INSERT INTO hksummary ( \
@@ -250,7 +248,7 @@ hksummary.put=INSERT INTO hksummary ( \
                    weightPs , \
                    weightPpPs , \
                    weightPsPs , \
-                   hkrealimag_id , \
+                   stack , \
                    insertTime , \
                    hVariance , \
                    kVariance  \
@@ -258,7 +256,6 @@ hksummary.put=INSERT INTO hksummary ( \
                    VALUES ( ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,  ?, ?)
                    
 hksummary.get=SELECT * from $tablename \
-                   JOIN hkrealimag ON (hksummary.hkrealimag_id = hkrealimag.hkrealimag_id ) \
                    WHERE hksummary_id = ?
                    
 hksummary.update=UPDATE $tablename SET chanA_id = ? , \
@@ -278,7 +275,7 @@ hksummary.update=UPDATE $tablename SET chanA_id = ? , \
                    weightPs = ? , \
                    weightPpPs = ? , \
                    weightPsPs = ? , \
-                   hkrealimag_id = ? , \
+                   stack = ? , \
                    insertTime = ? , \
                    hVariance = ? , \
                    kVariance = ? \
@@ -311,7 +308,6 @@ hksummary.getForStation=SELECT * from network \
     JOIN site ON (station.sta_id = site.sta_id ) \
     JOIN channel ON (channel.site_id = site.site_id ) \
                    JOIN  $tablename  ON (chanz_id = chan_id ) \
-                   JOIN hkrealimag ON (hksummary.hkrealimag_id = hkrealimag.hkrealimag_id ) \
                    WHERE network.net_id = ? \
                    AND sta_code = ? 
 

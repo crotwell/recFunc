@@ -201,6 +201,13 @@ public class JDBCHKStack extends JDBCTable {
     public ArrayList getForStation(String netCode,
                                    String staCode,
                                    float percentMatch) throws FissuresException, NotFound, IOException, SQLException {
+        return getForStation(netCode, staCode, percentMatch, false);
+    }
+
+    public ArrayList getForStation(String netCode,
+                                   String staCode,
+                                   float percentMatch,
+                                   boolean compact) throws FissuresException, NotFound, IOException, SQLException {
         ArrayList individualHK = new ArrayList();
         int index = 1;
         getForStation.setString(index++, netCode);
@@ -213,7 +220,7 @@ public class JDBCHKStack extends JDBCTable {
         int num = 1;
         while(rs.next()) {
             System.out.println("extract "+num++);
-            individualHK.add(extract(rs));
+            individualHK.add(extract(rs, compact));
         }
         System.out.println("getForStation: "+rs.isAfterLast());
         rs.close();
@@ -222,6 +229,11 @@ public class JDBCHKStack extends JDBCTable {
     }
 
     public HKStack extract(ResultSet rs) throws  NotFound,
+            IOException, SQLException {
+        return extract(rs, false);
+    }
+
+    public HKStack extract(ResultSet rs, boolean compact) throws  NotFound,
             IOException, SQLException {
         Channel[] channels = jdbcRecFunc.extractChannels(rs);
         int numH = rs.getInt("numH");
@@ -243,6 +255,9 @@ public class JDBCHKStack extends JDBCTable {
                                   data[1],
                                   data[2],
                                   channels[0]);
+        if (compact) {
+            out.compact();
+        }
         return out;
     }
     

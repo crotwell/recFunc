@@ -82,7 +82,8 @@ public class BootstrapError extends StackSummary {
             SumHKStack sumStack = new SumHKStack((HKStack[])individualHK.toArray(new HKStack[0]),
                                                  temp.getChannel(),
                                                  percentMatch,
-                                                 smallestH);
+                                                 smallestH,
+                                                 true);
             HKError hkError = new HKError(individualHK, 100, percentMatch, smallestH);
             TimeOMatic.print("sum for " + netCode + "." + staCode);
             return sumStack;
@@ -126,7 +127,8 @@ public class BootstrapError extends StackSummary {
                 SumHKStack sumStack = new SumHKStack((HKStack[])sample.toArray(new HKStack[0]),
                                                      temp.getChannel(),
                                                      percentMatch,
-                                                     smallestH);
+                                                     smallestH,
+                                                     false);
                 hErrors[i] = sumStack.getSum()
                         .getMaxValueH()
                         .getValue(UnitImpl.KILOMETER);

@@ -37,7 +37,8 @@ public class SumHKStack {
     public SumHKStack(HKStack[] individuals,
                       Channel chan,
                       float minPercentMatch,
-                      QuantityImpl smallestH) {
+                      QuantityImpl smallestH,
+                      boolean doBootstrap) {
         this.individuals = individuals;
         this.minPercentMatch = minPercentMatch;
         this.channel = chan;
@@ -55,7 +56,12 @@ public class SumHKStack {
             // need to do more of this checking...
         }
         sum = calculate(chan, individuals, smallestH, minPercentMatch);
-        calcVarianceBootstrap();
+        if (doBootstrap) {
+            calcVarianceBootstrap();
+        } else {
+            hVariance = -1;
+            kVariance = -1;
+        }
     }
 
     public BufferedImage createStackImage() {
@@ -76,23 +82,17 @@ public class SumHKStack {
     
     static HKStack calculate(Channel chan, HKStack[] individuals, QuantityImpl smallestH, float minPercentMatch) {
         int smallestHIndex = individuals[0].getHIndex(smallestH);
-        CmplxArray2D analyticPs = new CmplxArray2D(individuals[0].getStack().length-smallestHIndex, individuals[0].getStack()[0].length);
-        CmplxArray2D analyticPpPs = new CmplxArray2D(analyticPs.getXLength(), analyticPs.getYLength());
-        CmplxArray2D analyticPsPs = new CmplxArray2D(analyticPs.getXLength(), analyticPs.getYLength());
-        for (int hIndex = 0; hIndex < analyticPs.getXLength(); hIndex++) {
+        float[][] sumStack = new float[individuals[0].getStack().length-smallestHIndex][individuals[0].getStack()[0].length];
+        for (int hIndex = 0; hIndex < sumStack.length; hIndex++) {
             int shiftHIndex = smallestHIndex+hIndex;
-            for (int kIndex = 0; kIndex < analyticPs.getYLength(); kIndex++) {
-                Cmplx aPs = new Cmplx(0,0);
-                Cmplx aPpPs = new Cmplx(0,0);
-                Cmplx aPsPs = new Cmplx(0,0);
+            for (int kIndex = 0; kIndex < sumStack[0].length; kIndex++) {
+                Cmplx phaseWeight = new Cmplx(0,0);
+                float realStack = 0;
                 for (int s = 0; s < individuals.length; s++) {
-                    aPs = Cmplx.add(aPs, individuals[s].getAnalyticPs().get(shiftHIndex, kIndex));
-                    aPpPs = Cmplx.add(aPpPs, individuals[s].getAnalyticPpPs().get(shiftHIndex, kIndex));
-                    aPsPs = Cmplx.add(aPsPs, individuals[s].getAnalyticPsPs().get(shiftHIndex, kIndex));
+                    phaseWeight = Cmplx.add(phaseWeight, individuals[s].getCompactAnalyticPhase().get(shiftHIndex, kIndex));
+                    realStack += individuals[s].getStack()[shiftHIndex][kIndex];
                 }
-                analyticPs.set(hIndex, kIndex, aPs);
-                analyticPpPs.set(hIndex, kIndex, aPpPs);
-                analyticPsPs.set(hIndex, kIndex, aPsPs);
+                sumStack[hIndex][ kIndex] = (float)(realStack*Math.pow(phaseWeight.mag()/individuals.length/3, 0.5f));
             }
         }
         return new HKStack(individuals[0].getAlpha(),
@@ -107,9 +107,7 @@ public class SumHKStack {
                           individuals[0].getWeightPs(),
                           individuals[0].getWeightPpPs(),
                           individuals[0].getWeightPsPs(),
-                          analyticPs,
-                          analyticPpPs,
-                          analyticPsPs,
+                          sumStack,
                           chan);  
     }
 

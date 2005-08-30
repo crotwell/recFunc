@@ -165,7 +165,7 @@ public class StackSummary {
             IOException, SQLException {
         logger.info("in sum for "+netCode+"."+staCode);
         TimeOMatic.start();
-        ArrayList individualHK = jdbcHKStack.getForStation(netCode, staCode, percentMatch, false);
+        ArrayList individualHK = jdbcHKStack.getForStation(netCode, staCode, percentMatch, true);
         // if there is only 1 eq that matches, then we can't really do a stack
         if(individualHK.size() > 1) {
             HKStack temp = (HKStack)individualHK.get(0);
@@ -273,8 +273,8 @@ public class StackSummary {
             }
         }
         if (staArg.equals("")) {
-        summary.createSummary(netArg, new File("stackImages" + HKStack.getDefaultMinH().getValue(UnitImpl.KILOMETER)
-                + "_" + minPercentMatch), minPercentMatch, HKStack.getDefaultMinH(), bootstrap);
+        summary.createSummary(netArg, new File("stackImages" + HKStack.getDefaultSmallestH().getValue(UnitImpl.KILOMETER)
+                + "_" + minPercentMatch), minPercentMatch, HKStack.getDefaultSmallestH(), bootstrap);
         } else {
             logger.info("calc for station");
             JDBCStation jdbcStation = summary.jdbcHKStack.getJDBCChannel().getStationTable();
@@ -285,10 +285,11 @@ public class StackSummary {
                     int[] tmp = jdbcStation.getDBIds(nets[i],staArg);
                     if (tmp.length > 0) {
                         sta_dbid = tmp[0];
-                        summary.createSummary(jdbcStation.get(sta_dbid).get_id(),
-                                              new File("stackImages" + HKStack.getDefaultMinH().getValue(UnitImpl.KILOMETER)+ "_" + minPercentMatch),
+                        Station station = jdbcStation.get(sta_dbid);
+                        summary.createSummary(station.get_id(),
+                                              new File("stackImages" + HKStack.getDefaultSmallestH().getValue(UnitImpl.KILOMETER)+ "_" + minPercentMatch),
                                               minPercentMatch,
-                                              HKStack.getDefaultMinH(), bootstrap);
+                                              HKStack.getBestSmallestH(station, HKStack.getDefaultSmallestH()), bootstrap);
                     }
                 } catch (NotFound e) {
                     System.out.println("NotFound for :"+NetworkIdUtil.toStringNoDates(nets[i]));

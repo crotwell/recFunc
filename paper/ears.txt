@@ -15,7 +15,7 @@ SOD, the standing order for data, is a freely available Java based software pack
 
 Overview of SOD
 
-SOD's primary function is the automatic retrieval of seismograms. To retrieve a seismogram, it needs two basic pieces of information, a channel and a time window. The time window in SOD is based on an earthquake, or event, and so this naturally leads to a separation of the configuration into 3 sections, or arms, one for channels, one for events and a third for the combination of events and channels. 
+In order for SOD to retrieve and processes seismograms, it needs two basic pieces of information, a channel and a time window. The time window in SOD is based on an earthquake, or event, and so this naturally leads to a separation of the configuration into 3 sections, or arms, one for channels, one for events and a third for the combination of events and channels. 
 
 The first is the network arm, which controls which networks, stations and channels are acceptable. There is considerable flexibility in deciding which networks, stations and channels are acceptable, based on codes, location, active time and distance from a location. In addition, each of these can be combined within logical ANDs and ORs to allow the creation of very complex criteria built up from simple pieces. In addition, there are channel processors that can do such tasks as retrieve the instrument response to be saved as a resp or sac polezero file.
 
@@ -29,13 +29,13 @@ EARS
 
 Method
 
-The receiver functions and crustal estimates within the EARS system are calculated in a completely automatic fashion using the iterative deconvolution technique of XYZ and Ammon and the H-K stacking technique of Zhu and Kanamori. In addition, the stacking is done with the phase-weighted stacking technique of Schimmel and Paulssen.
+The receiver functions and crustal estimates within the EARS system are calculated in a completely automatic fashion using the iterative deconvolution technique of Ligorria and Ammon (1999) and the H-K stacking technique of Zhu and Kanamori (2000). In addition, the stacking is done with the phase-weighted stacking technique of Schimmel and Paulssen (1997).
 
 Data Selection
 
-The goals of the EARS project are to be as broad as possible with respect to usable data. Hence we have processed all broadband channels for all stations available from the IRIS DMC, including both temporary and permanent stations. This has given us at the present time about 1700 stations.
+The goals of the EARS project are to be as broad as possible with respect to usable data. Hence we have processed all broadband channels for all stations available from the IRIS DMC, including both temporary and permanent stations. This has given us at the present time about 1400 stations, shown in figure XXX.
 
-All events above magnitude 5.5 in the WHDF catalog from the NEIC are processed. For each of these events, receiver functions are calculated for all stations with broadband data between 30 and 100 degrees for which the P phase exists in the prem model. However, only events-station pairs for which the iterative deconvolution has a greater than 80 percent match are used in the resulting stacks.
+All events above magnitude 5.5 in the WHDF catalog from the NEIC are processed. For each of these events, the seismograms are retrieved and preprocessed for all stations with broadband data between 30 and 100 degrees for which the P phase exists in the prem model. If the seismograms meet the quality constraints, such as no gaps and a signal to noise of at least 2, then receiver functions are calculated and store in a database. However, only events-station pairs for which the iterative deconvolution has a greater than 80 percent match are used in the resulting stacks.
 
 Processing
 
@@ -44,21 +44,18 @@ A standard set of processing steps are taken with all event-station pairs. First
 A cut operation is then performed to window the data to 30 seconds before the P to 120 seconds after the P in preparation for the deconvolution. The mean and trend are removed, a taper is applied and the overall gain from each channel's response is applied. We do not apply a full instrument deconvolution, instead assuming that the response is relatively flat in the passband of interest. The data is then filtered with a butterworth bandpass filter from 50 seconds
 to 5 hertz.
 
-The iterative deconvolution is then applied to the data. This is done with a gaussian width of 2.5. The iteration is limited to 400 steps or a percentage match of 99.99, which effectively means that all 400 steps are always applied. Both radial and transverse receiver functions are calculated and are then stored in the database regardless of the percentage match that they acheive.
+The iterative deconvolution is then applied to the data. This is done with a gaussian width of 2.5. The iteration is limited to 400 steps or a percentage match of 99.99, which effectively means that all 400 steps are almost always applied. Both radial and transverse receiver functions are calculated and are then stored in the database, along with the original seismograms, regardless of the percentage match that they acheive. All processing up to this point is done by SOD, the remaining stacking is done as a separate step.
 
 Stacking
 
-Because low percentage match receiver functions are often contaminated with noise or lack signal, we do not stack receiver functions for which the percentage match is below 80 percent. For some stations, especially within short-lived temporary deployments, this severly limits the number of receiver functions with the stacks, however, for an automated system this seems a
-reasonable threshold. The stacking technique of Zhu and Kanamori is based on the idea of transfering the amplitudes of the receiver function from a time based system into a system based on crustal thickness (H) and Vp/Vs ratio, (K) by using the predicted times of the 3 principal crustal revibirations, Ps, PpPs and PsPs/PpSs. Once this transformation has been done, the amplitudes no longer have a time dependency, which eliminates the ray parameter as a variable. Thus, earthquakes at different distances, with correspondingly different ray
+Because low percentage match receiver functions are often contaminated with noise or lack signal, we do not stack receiver functions for which the percentage match is below 80 percent. For some stations, especially within short-lived temporary deployments, this severly limits the number of receiver functions with the stacks; however, for an automated system this seems a reasonable threshold. The stacking technique of Zhu and Kanamori is based on the idea of transfering the amplitudes of the receiver function from a time based system into a system based on crustal thickness (H) and Vp/Vs ratio, (K) by using the predicted times of the 3 principal crustal revibirations, Ps, PpPs and PsPs/PpSs. Once this transformation has been done, the amplitudes no longer have a time dependency, which eliminates the ray parameter as a variable. Thus, earthquakes at different distances, with correspondingly different ray
 parameters can be stacked.
 
-In addition to this stacking idea based on predicted arrival times, we also make use of phase-weights for the stacks. This is a non-linear stacking technique that weights the straight amplitude stack by the square of a sum of unit magnitude complex values constructed from the instantaeous phase of the receiver function. This technique greatly sharpens the stacks for coherant signals at the little expense of calculating the hilbert transform of the receiver functions.
-
-Once the stacks are calculated, the thickness and Vp/Vs corresponding to the maximum value of the stack is taken to be the estimate of the bulk crustal properties. 
+In addition to this stacking idea based on predicted arrival times, we also make use of phase-weights for the stacks. This is a non-linear stacking technique that weights the straight amplitude stack by the square of a sum of unit magnitude complex values constructed from the instantaeous phase of the receiver function. This technique greatly sharpens the stacks for coherent signals at the little expense of calculating the hilbert transform of the receiver functions. Once the stacks are calculated, the thickness and Vp/Vs corresponding to the maximum value of the stack are taken to be the estimate of the bulk crustal properties.  
 
 Error Estimation
 
-Error estimation is especially import in an automated system, and we have tried to provide realistic errors by making use of a bootstrap technique. First we create a new set of receiver functions by randomly sampling with replacement from the original set. For example the origin set might contain receiver functions one to 10, and the sampled set might contain {3, 2, 9, 4, 2, 7, 4, 1, 1, 5}. The sampled set has the same size as the original, but may contain duplicates of some receiver functions. A stack is calculated from this new set and the global maximum is noted. The resampling procedure is repeated for some number of tries, 100 in our case, to produce a set of thickness and Vp/Vs values on which a variance can be calculated. We also tried an error estimate based on the curvature of the maxima, but found that this estimate often produced errors that are too small to be realistic. The other advantage of the resampling technique is that a local maxima different from the global maxima might be the global maxima in some of the resamplings, effecting the error estimate in ways that the simple curvature estimate cannot.
+Error estimation is especially import in an automated system, and we have tried to provide realistic errors by making use of a bootstrap technique. First we create a new set of receiver functions by randomly sampling with replacement from the original set. For example the origin set might contain receiver functions one to ten, and the sampled set might contain {3, 2, 9, 4, 2, 7, 4, 1, 1, 5}. The sampled set has the same size as the original, but may contain duplicates of some receiver functions. A stack is calculated from this new set and the global maximum is noted. The resampling procedure is repeated for some number of tries, 100 in our case, to produce a set of thickness and Vp/Vs values on which a variance can be calculated. We also tried an error estimate based on the curvature of the maxima, but found that this estimate often produced errors that are too small to be realistic. The other advantage of the resampling technique is that a local maxima different from the global maxima might be the global maxima in some of the resamplings, effecting the error estimate in ways that the simple curvature estimate cannot.
 
 Comparision with Prior Results
 
@@ -67,17 +64,25 @@ is of great interest. We make comparisons with 4 studies to understand how
 well the automated system can do without resorting to a seismologist's
 intuition for reasonable and unreasonable results.
 
-Comparison with Zhu and Kanamori
+Zhu and Kanamori
 
 This paper introduced the HK stacking method, and so a comparison with their results is appropriate.  
 
-Comparison with Ristra
+Moma
 
-Comparison with Moma
+Moma, the Missouri to Massachusetts Transect Passcal experiment provides a good opportunity for comparison with EARS. The Moma experiment deployed 18 stations forming a line between IU.CCM, Cathedral Cave, Missouri, to IU.HRV, Harvard, Massachusetts. Li et. al. estimated crust and upper mantle structure using receiver functions. They also used a suite of 3 assumed crustal P velocities and Vp/Vs ratios: 6.6 km/s with 1.84, 6.6 km/s with 1.80, and 6.5 km/s with 1.73, generating up to 3 crustal thickness estimates for each station.  Li et. al did not generate crustal thickness estimates for two stations, MM11 and MM15. Figure XXX shows a comparison of the results of their receiver function analysis with EARS for crustal thickness versus longitude. Overall there is good agreement, with stations in the western end showing the largest differences. 
 
-Moma, the Missouri to Massachusetts Transect Passcal experiment provides a good opportunity for comparison with EARS. Figure XXX shows a comparison with the results of a receiver function analysis by Li et. al. for crustal thickness. Overall there is very good agrement 
+The eastern stations, with the exception of MM01 generally fall within or near the estimates of Li et. al. MM04 through MM07 are in a region that has a significantly different Vp in the Crust2.0 model from those used in the MOMA study, almost .5 km/s slower. Because the crustal thickness varies close to linearly with Vp with a .1 km/s increase in Vp causing almost a .5 km increase in crustal thickness, it is easy to attribute up to 2.5 km of the difference for these stations just to the assumed Vp. EARS shows MM01 with a crust 10 km thinner than the closest Li et. al. estimate. Although multiple maxima within the thickness versus Vp/Vs plots are a reoccurring problem with the method used in EARS, there is little in the ears data to support a 45 km crust. Also, the EARS value of 34 is midway between the two adjoining stations of IU.HRV and MM02 that agree well in both studies.
 
-Comparison with Crust2.0
+The western stations are more of a problem, with MM13, MM16, MM17 and MM18 showing large error bars in EARS and significant differences with Li et. al. Of these MM16 has the smallest difference, 5 km deeper, and has the most compelling thickness versus Vp/Vs maxima. While the error bars are large at this station, due to local maxima influencing the bootstrap, it is consistent with neighboring stations MM14 and MM17 in Li et. al. MM13 and MM18 more problematic,  both much shallower in EARS, 6 and 9 kilometers respectively, and significantly different from neighboring stations. MM13 has a local maxima at 43 kilometer that would be more consistent with both Li et. al. as well as a more reasonable Vp/Vs ratio, and is hence likely a case of the correct maxima not being the global maxima in the stack. MM18 is more variable, but does not have any maxima that might correspond to a 44-47 km crust. As with all temporary seismic networks, the number of usable earthquakes is small relative to permanent stations. This may explain why the two permanent stations at the ends of the array have very good agreement in both studies, as well as very small error bars in EARS.  
+
+Ristra
+
+The Rio Grande Rift Seismic Transect deployed 54 seismometers across the Colorado Plateau and Rio Grande Rift for 18 months. Wilson and Aster (2003)preformed a receiver function analysis for crustal and upper mantle properties using a migration technique. A comparison between EARS and Ristra is shown in figure XXX. It is obvious that the EARS has significantly more problematic stations here than in the MOMA comparison. Partly this is likely due to more complex crustal structure associated with the more tectonically active western US. In addition there are significant sedimentary basins that can create reverberations that can interfere with the signals from the crust-mantle boundary or generate local maxima in the stacking technique that are larger. 
+
+There is some agreement between EARS and Wilson in the eastern half of the array from NM09 to NM32, corresponding to longitude -104 to -107, with a few outliers such as NM13, NM14, NM17, NM21, and NM29 that do not have a well defined maxima. NM19 does seem to have a well defined global maxima at 52 km depth, 6 km deeper than Wilson. The easternmost stations all seem to be shallower than Wilson. The western half of the array with results from EARS scattered widely from 25 to 55 km depth. Many of the shallower results could be improved with a choice of a local maxima.
+
+Crust2.0
 
 Because Crust2.0 is a global crustal model, it is particuarly useful to compare with EARS as there is not a bias to a particular region. We compare our results with the closest data point within the Crust2.0 model as well as interpolating from the closest 4 data points.
 

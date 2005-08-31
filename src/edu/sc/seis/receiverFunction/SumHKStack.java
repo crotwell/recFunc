@@ -92,7 +92,7 @@ public class SumHKStack {
                     phaseWeight = Cmplx.add(phaseWeight, individuals[s].getCompactAnalyticPhase().get(shiftHIndex, kIndex));
                     realStack += individuals[s].getStack()[shiftHIndex][kIndex];
                 }
-                sumStack[hIndex][ kIndex] = (float)(realStack*Math.pow(phaseWeight.mag()/individuals.length/3, 0.5f));
+                sumStack[hIndex][ kIndex] = (float)(realStack*Math.pow(phaseWeight.mag()/individuals.length/3, 2));
             }
         }
         return new HKStack(individuals[0].getAlpha(),

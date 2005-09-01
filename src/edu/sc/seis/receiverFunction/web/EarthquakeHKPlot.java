@@ -73,7 +73,7 @@ public class EarthquakeHKPlot  extends HttpServlet {
 
             QuantityImpl smallestH = HKStack.getBestSmallestH((VelocityStation)stationList.get(0));
             HKXYDataset dataset = new HKXYDataset(stackList, smallestH);
-            String title = "Earthquakes for "+net.getCode()+"."+staCode;
+            String title = "Maxima for Earthquakes at "+net.getCode()+"."+staCode;
             JFreeChart chart = ChartFactory.createScatterPlot(RevUtil.get("title",
                                                                           req,
                                                                           title),

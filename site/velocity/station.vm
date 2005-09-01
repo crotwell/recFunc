@@ -93,6 +93,7 @@ $header
 <td class="headodd">Magnitude</td>
 
 <p><b>Events processed for this station.</b></p>
+<p><a href="earthquakeHKPlot.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()">Plot maxima for each earthquake.</a></p>
 </tr>
 #foreach($eq in $eventList)
 <tr>

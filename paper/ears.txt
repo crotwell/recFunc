@@ -66,7 +66,7 @@ intuition for reasonable and unreasonable results.
 
 Zhu and Kanamori
 
-This paper introduced the HK stacking method, and so a comparison with their results is appropriate.  
+This paper introduced the HK stacking method, and so a comparison with their results is appropriate.  The agreement is overall very good, with 32 of the 46 stations having differences of less than 3 km and 39 of 48 differ by less than 6 km. The remaining 7 stations have much larger errors, but each has a local maxima that matches well, indicating that  constraining the window in thickness and Vp/Vs based on known local structure might be effective.
 
 Moma
 

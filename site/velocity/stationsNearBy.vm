@@ -28,7 +28,7 @@ $header
 <tr>
 <td class="odd">$sta.getNet().getCodeWithYear()</td>
 
-<td class="odd"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()">$sta.getCode()>/a></td>
+<td class="odd"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()">$sta.getCode()</a></td>
 <td class="even"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()">$sta.getName()</a></td>
 <td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
 <td class="even">$fissures.formatQuantity($!summary.get($sta).getSum().getMaxValueH())</td>

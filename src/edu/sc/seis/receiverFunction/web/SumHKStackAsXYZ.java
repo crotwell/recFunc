@@ -27,7 +27,7 @@ public class SumHKStackAsXYZ extends SummaryHKStackImageServlet {
         res.setContentType("text/plain");
         OutputStreamWriter writer = new OutputStreamWriter(out);
         float[][] stack = sumStack.getSum().getStack();
-        writer.write("# H  Vp/Vs  value");
+        writer.write("# H  Vp/Vs  value\n");
         for(int i = 0; i < stack.length; i++) {
             String h = ""+sumStack.getSum().getHFromIndex(i).getValue(UnitImpl.KILOMETER);
             for(int j = 0; j < stack[0].length; j++) {

@@ -46,6 +46,7 @@ $header
 
 <p>$numNinty with match > 90% and $numEighty with match > 80%.</p>
 
+<p>Download stack as <a href="sumHKStackAsXYZ.txt?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()">xyz text file.</a></p>
 #if( $numEighty > 0)
 <img class="dataimg" src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()"/>
 #end

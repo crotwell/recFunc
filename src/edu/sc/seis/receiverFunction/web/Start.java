@@ -99,10 +99,14 @@ public class Start {
                                               "edu.sc.seis.receiverFunction.web.PriorResultList",
                                               servletStrings,
                                               sh);
-        
         edu.sc.seis.rev.RevUtil.populateJetty("/earthquakeHKPlot.png",
                                               "/earthquakeHKPlot.png",
                                               "edu.sc.seis.receiverFunction.web.EarthquakeHKPlot",
+                                              servletStrings,
+                                              sh);
+        edu.sc.seis.rev.RevUtil.populateJetty("/sumHKStackAsXYZ.txt",
+                                              "/sumHKStackAsXYZ.txt",
+                                              "edu.sc.seis.receiverFunction.web.SumHKStackAsXYZ",
                                               servletStrings,
                                               sh);
         edu.sc.seis.rev.Start.runREV(args, sh);

@@ -84,11 +84,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             if (sumStack.getSum() == null || sumStack.getSum().getStack().length == 0) {
                 logger.warn("summary hkstack is null for "+net.getCode()+"."+staCode);
             }
-            BufferedImage image = sumStack.createStackImage();
-            logger.debug("finish create image");
-            res.setContentType("image/png");
-            ImageIO.write(image, "png", out);
-            out.close();
+            output(sumStack, out, req, res);
         } catch(NotFound e) {
             OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
             System.out.println("No HKStack found for "+req.getParameter("staCode"));
@@ -98,6 +94,14 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+    
+    void output(SumHKStack sumStack, OutputStream out, HttpServletRequest req, HttpServletResponse res) throws IOException {
+        BufferedImage image = sumStack.createStackImage();
+        logger.debug("finish create image");
+        res.setContentType("image/png");
+        ImageIO.write(image, "png", out);
+        out.close();
     }
     
 

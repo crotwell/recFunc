@@ -77,6 +77,7 @@ public class ReceiverFunctionZip extends HttpServlet {
                                                          result[i].prefOrigin);
                 sac.writeHeader(dos);
                 sac.writeData(dos);
+                dos.flush();
                 zip.closeEntry();
             }
             zip.close();

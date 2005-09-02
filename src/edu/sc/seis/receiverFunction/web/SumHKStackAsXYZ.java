@@ -27,14 +27,14 @@ public class SumHKStackAsXYZ extends SummaryHKStackImageServlet {
         res.setContentType("text/plain");
         OutputStreamWriter writer = new OutputStreamWriter(out);
         float[][] stack = sumStack.getSum().getStack();
-        writer.write("# H  Vp/Vs  value\n");
+        writer.write("# Vp/Vs  H  value\n");
         for(int i = 0; i < stack.length; i++) {
             String h = ""+sumStack.getSum().getHFromIndex(i).getValue(UnitImpl.KILOMETER);
             for(int j = 0; j < stack[0].length; j++) {
                 writer.write(sumStack.getSum().getKFromIndex(j)+" "+h+" "+stack[i][j]+"\n");
             }
         }
-        out.close();
+        writer.close();
     }
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumHKStackAsXYZ.class);

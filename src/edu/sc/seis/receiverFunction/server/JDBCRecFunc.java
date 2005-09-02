@@ -392,10 +392,10 @@ public class JDBCRecFunc extends JDBCTable {
     }
 
     public int countSeccessfulEvents(int netDbId, String stationCode, float minPercentMatch) throws SQLException, NotFound {
-        getOriginByStationByPercent.setInt(1, netDbId);
-        getOriginByStationByPercent.setString(2, stationCode);
-        getOriginByStationByPercent.setFloat(3, minPercentMatch);
-        ResultSet rs = getOriginByStationByPercent.executeQuery();
+        countOriginByStationByPercent.setInt(1, netDbId);
+        countOriginByStationByPercent.setString(2, stationCode);
+        countOriginByStationByPercent.setFloat(3, minPercentMatch);
+        ResultSet rs = countOriginByStationByPercent.executeQuery();
         rs.next();
         return rs.getInt(1);
     }
@@ -421,6 +421,18 @@ public class JDBCRecFunc extends JDBCTable {
             out.add(event);
         }
         return (CacheEvent[])out.toArray(new CacheEvent[0]);
+    }
+    
+    public CachedResult[] getByPercent(int netDbId, String stationCode, float percentMatch) throws FileNotFoundException, FissuresException, NotFound, IOException, SQLException {
+        getOriginByStationByPercent.setInt(1, netDbId);
+        getOriginByStationByPercent.setString(2, stationCode);
+        getOriginByStationByPercent.setFloat(3, percentMatch);
+        ArrayList out = new ArrayList();
+        ResultSet rs = getOriginByStationByPercent.executeQuery();
+        while(rs.next()) {
+            out.add(extract(rs));
+        }
+        return (CachedResult[])out.toArray(new CachedResult[0]);
     }
     
     protected int populateGetStmt(PreparedStatement stmt, 
@@ -509,7 +521,7 @@ public class JDBCRecFunc extends JDBCTable {
 
     private SeismogramFileTypes fileType = SeismogramFileTypes.SAC;
     
-    private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt, getByDbIdStmt, getOriginByStation, getOriginByStationByPercent;
+    private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt, getByDbIdStmt, getOriginByStation, getOriginByStationByPercent, countOriginByStationByPercent;
     
     private JDBCSequence receiverFunctionSeq;
     

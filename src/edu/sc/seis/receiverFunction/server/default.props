@@ -69,14 +69,14 @@ receiverFunction.countOriginByStationByPercent=SELECT count(*) FROM  \
     AND itr_match >= ?
     
 receiverFunction.getOriginByStationByPercent=SELECT * FROM netchan \
-    JOIN  receiverFunction ON (chanz_id = chan_id ) \
+    JOIN  receiverfunction ON (chanz_id = chan_id ) \
     JOIN origin ON (receiverfunction.origin_id = origin.origin_id) \
     JOIN eventattr ON (receiverfunction.eventattr_id = eventattr.eventattr_id) \
     JOIN location ON (origin.origin_location_id = location.loc_id) \
     JOIN catalog ON (origin.origin_catalog_id = catalog.catalog_id) \
     JOIN contributor ON (catalog_contributor_id =   contributor.contributor_id) \
-    WHERE network.net_id = ? \
-    AND station.sta_code = ? \
+    WHERE net_id = ? \
+    AND sta_code = ? \
     AND itr_match >= ?
     
 hkrealimag.create=CREATE TABLE $tablename ( \

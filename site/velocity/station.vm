@@ -93,7 +93,7 @@ $header
 <td class="headodd">Depth</td>
 <td class="headodd">Magnitude</td>
 
-<p><b>Events processed for this station.</b></p>
+<p><b>Events processed for this station.</b> <a href="/receiverFunction.zip?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80">Download zip of receiver functions as SAC</a></p>
 <p><a href="earthquakeHKPlot.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()">Plot maxima for each earthquake.</a></p>
 </tr>
 #foreach($eq in $eventList)

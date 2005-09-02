@@ -109,6 +109,11 @@ public class Start {
                                               "edu.sc.seis.receiverFunction.web.SumHKStackAsXYZ",
                                               servletStrings,
                                               sh);
+        edu.sc.seis.rev.RevUtil.populateJetty("/receiverFunction.zip",
+                                              "/receiverFunction.zip",
+                                              "edu.sc.seis.receiverFunction.web.ReceiverFunctionZip",
+                                              servletStrings,
+                                                                                    sh);
         edu.sc.seis.rev.Start.runREV(args, sh);
     }
     

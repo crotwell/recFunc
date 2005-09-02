@@ -58,14 +58,14 @@
       <version>1.0</version>
     </dependency>
         <dependency>
-            <groupId>jcommon</groupId>
+            <groupId>jfreechart</groupId>
             <artifactId>jcommon</artifactId>
-            <version>0.9.5</version>
+            <version>1.0.0-rc1</version>
         </dependency>
         <dependency>
             <groupId>jfreechart</groupId>
             <artifactId>jfreechart</artifactId>
-            <version>0.9.21</version>
+            <version>1.0.0-rc1</version>
         </dependency>
         <dependency>
             <groupId>rev</groupId>

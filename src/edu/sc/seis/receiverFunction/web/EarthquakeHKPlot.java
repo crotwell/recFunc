@@ -143,4 +143,8 @@ class HKXYDataset extends AbstractXYDataset {
     public String getSeriesName(int series) {
         return " eq stack max";
     }
+    
+    public Comparable getSeriesKey(int arg0) {
+        return null;
+    }
 }

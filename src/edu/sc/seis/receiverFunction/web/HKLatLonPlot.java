@@ -234,6 +234,9 @@ public class HKLatLonPlot extends HttpServlet {
             return getLabel(yAxis);
         }
 
+        public Comparable getSeriesKey(int arg0) {
+            return null;
+        }
         ArrayList stationList;
 
         HashMap summary;

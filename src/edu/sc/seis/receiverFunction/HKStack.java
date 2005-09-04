@@ -664,11 +664,10 @@ public class HKStack implements Serializable {
             g.drawString("    ", 0, 2 * fm.getHeight());
             g.translate(0, 2 * fm.getHeight());
             g.drawString("Max H="
-                                 + (getMinH().getValue() + xyMax[0]
-                                         * getStepH().getValue()),
+                                 + getMaxValueH(),
                          0,
                          fm.getHeight());
-            g.drawString("    K=" + (getMinK() + xyMax[1] * getStepK()),
+            g.drawString("    K=" + getMaxValueK(),
                          0,
                          2 * fm.getHeight());
             g.translate(0, 2 * fm.getHeight());

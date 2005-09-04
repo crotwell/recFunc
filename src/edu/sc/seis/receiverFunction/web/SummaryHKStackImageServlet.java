@@ -63,9 +63,6 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             if(req.getParameter("minPercentMatch") == null) { throw new Exception("minPercentMatch param not set"); }
             float minPercentMatch = new Float(req.getParameter("minPercentMatch")).floatValue();
 
-            if(req.getParameter("smallestH") == null) { throw new Exception("smallestH param not set"); }
-            QuantityImpl smallestH = new QuantityImpl(RevUtil.getFloat("smallestH", req), UnitImpl.KILOMETER);
-            
             SumHKStack sumStack;
             try {
                 int dbid = jdbcSumHKStack.getDbIdForStation(net.get_id(), staCode);

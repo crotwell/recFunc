@@ -69,7 +69,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
 
         
         <!-- Print out a line for each successful event -->
-        <printLineEventProcess/>
+        <printlineEventProcess/>
         
     </eventArm>
     
@@ -111,7 +111,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             </channelEffectiveTimeOverlap>
         </channelAND>
         
-        <printlineChannelProcessor/>
+        <printlineChannelProcess/>
     </networkArm>
     
     
@@ -135,7 +135,6 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
             </externalEventVectorSubsetter>
         </eventVectorNOT>
             
-            <requestGeneratorWrapper>
                 <phaseRequest>
                     <beginPhase>P</beginPhase>
                     <beginOffset>
@@ -148,7 +147,6 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                         <value>180</value>
                     </endOffset>
                 </phaseRequest>
-            </requestGeneratorWrapper>
             
             <fixedDataCenter>
                 <name>IRIS_PondDataCenter</name>

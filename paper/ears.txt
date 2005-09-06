@@ -49,7 +49,7 @@ A standard set of processing steps are taken with all event-station pairs. First
 
 A cut operation is then performed to window the data to 30 seconds before the P to 120 seconds after the P in preparation for the deconvolution. The mean and trend are removed, a taper is applied and the overall gain from each channel's response is applied. We do not apply a full instrument deconvolution, instead assuming that the response is relatively flat in the passband of interest. The data is then filtered with a butterworth bandpass filter from 50 seconds to 5 hertz.
 
-The iterative deconvolution is then applied to the data. This is done with a gaussian width of 2.5. The iteration is limited to 400 steps or a percentage match of 99.99, which effectively means that all 400 steps are almost always applied. Both radial and transverse receiver functions are calculated and are then stored in the database, along with the original seismograms, regardless of the percentage match that they acheive. All processing up to this point is done by SOD, the remaining stacking is done as a separate step. Figure 2 shows example receiver functions from station XA.MM12, which has relatively visible reverberations.
+The iterative deconvolution is then applied to the data. This is done with a gaussian width of 2.5. The iteration is limited to 400 steps or a percentage match of 99.99, which effectively means that all 400 steps are almost always applied. Both radial and transverse receiver functions are calculated and are then stored in the database, along with the original seismograms, regardless of the percentage match that they acheive. All processing up to this point is done by SOD, the remaining stacking is done as a separate step. Figure 2 shows example receiver functions from station XA.MM12, which has relatively visible reverberations. Figure 3 shows the resulting HK stack.
 
 Stacking
 
@@ -67,11 +67,11 @@ Because of the automated nature of this study, a comparison with prior results i
 
 Zhu and Kanamori
 
-Zhu and Kanamori introduced the HK stacking method, and so a comparison with their results is appropriate. They analyzed stations in southern California from the AZ, CI and XF94 networks, figure 3 shows the comparison. The agreement is overall very good, with 32 of the 46 stations having differences of less than 3 km and 39 of 46 differ by less than 6 km. The remaining 7 stations have much larger errors, but each has a local maxima that matches well, indicating that  constraining the window in thickness and Vp/Vs based on known local structure might be effective.
+Zhu and Kanamori introduced the HK stacking method, and so a comparison with their results is appropriate. They analyzed stations in southern California from the AZ, CI and XF94 networks, figure 4 shows the comparison. The agreement is overall very good, with 32 of the 46 stations having differences of less than 3 km and 39 of 46 differ by less than 6 km. The remaining 7 stations have much larger errors, but each has a local maxima that matches well, indicating that  constraining the window in thickness and Vp/Vs based on known local structure might be effective.
 
 Moma
 
-Moma, the Missouri to Massachusetts Transect Passcal experiment provides a good opportunity for comparison with EARS. The Moma experiment deployed 18 stations forming a line between IU.CCM, Cathedral Cave, Missouri, to IU.HRV, Harvard, Massachusetts. Li et. al. estimated crust and upper mantle structure using receiver functions. They used a suite of 3 assumed crustal P velocities and Vp/Vs ratios: 6.6 km/s with 1.84, 6.6 km/s with 1.80, and 6.5 km/s with 1.73, generating up to 3 crustal thickness estimates for each station.  Li et. al did not generate crustal thickness estimates for two stations, MM11 and MM15. Figure 4 shows a comparison of the results of their receiver function analysis with EARS for crustal thickness versus longitude. Overall there is good agreement, with stations in the western end showing the largest differences. 
+Moma, the Missouri to Massachusetts Transect Passcal experiment provides a good opportunity for comparison with EARS. The Moma experiment deployed 18 stations forming a line between IU.CCM, Cathedral Cave, Missouri, to IU.HRV, Harvard, Massachusetts. Li et. al. estimated crust and upper mantle structure using receiver functions. They used a suite of 3 assumed crustal P velocities and Vp/Vs ratios: 6.6 km/s with 1.84, 6.6 km/s with 1.80, and 6.5 km/s with 1.73, generating up to 3 crustal thickness estimates for each station.  Li et. al did not generate crustal thickness estimates for two stations, MM11 and MM15. Figure 5 shows a comparison of the results of their receiver function analysis with EARS for crustal thickness versus longitude. Overall there is good agreement, with stations in the western end showing the largest differences. 
 
 The eastern stations, with the exception of MM01 generally fall within or near the estimates of Li et. al. MM04 through MM07 are in a region that has a significantly different Vp in the Crust2.0 model from those used in the MOMA study, almost .5 km/s slower. Because the crustal thickness varies close to linearly with Vp with a .1 km/s increase in Vp causing almost a .5 km increase in crustal thickness, it is easy to attribute up to 2.5 km of the difference for these stations just to the assumed Vp. EARS shows MM01 with a crust 10 km thinner than the closest Li et. al. estimate. Although multiple maxima within the thickness versus Vp/Vs plots are a reoccurring problem with the method used in EARS, there is little in the ears data to support a 45 km crust. Also, the EARS value of 34 is midway between the two adjoining stations of IU.HRV and MM02 that agree well in both studies.
 
@@ -79,7 +79,7 @@ The western stations are more of a problem, with MM13, MM16, MM17 and MM18 showi
 
 Ristra
 
-The Rio Grande Rift Seismic Transect deployed 54 seismometers across the Colorado Plateau and Rio Grande Rift for 18 months. Wilson and Aster (2003)preformed a receiver function analysis for crustal and upper mantle properties using a migration technique. A comparison between EARS and Ristra is shown in figure XXX. It is obvious that the EARS has significantly more problematic stations here than in the MOMA comparison. Partly this is likely due to more complex crustal structure associated with the more tectonically active western US. In addition there are significant sedimentary basins that can create reverberations that can interfere with the signals from the crust-mantle boundary or generate local maxima in the stacking technique that are larger. 
+The Rio Grande Rift Seismic Transect deployed 54 seismometers across the Colorado Plateau and Rio Grande Rift for 18 months. Wilson and Aster (2003)preformed a receiver function analysis for crustal and upper mantle properties using a migration technique. A comparison between EARS and Ristra is shown in figure 6. It is obvious that the EARS has significantly more problematic stations here than in the MOMA comparison. Partly this is likely due to more complex crustal structure associated with the more tectonically active western US. In addition there are significant sedimentary basins that can create reverberations that can interfere with the signals from the crust-mantle boundary or generate local maxima in the stacking technique that are larger. 
 
 There is some agreement between EARS and Wilson in the eastern half of the array from NM09 to NM32, corresponding to longitude -104 to -107, with a few outliers such as NM13, NM14, NM17, NM21, and NM29 that do not have a well defined maxima. NM19 does seem to have a well defined global maxima at 52 km depth, 6 km deeper than Wilson. The easternmost stations all seem to be shallower than Wilson. The western half of the array with results from EARS scattered widely from 25 to 55 km depth. Many of the shallower results could be improved with a choice of a local maxima.
 
@@ -106,8 +106,10 @@ Figure 1: Locations of the approx. 1400 stations with results in the EARS databa
 
 Figure 2: Receiver functions from XA.MM12 showing the Ps, PpPs and PpSs/PsPs arrivals. 
 
-Figure 3: Comparison of EARS with Zhu and Kanamori. Because the stations in the study are not in a line, the plot is ordered by the difference between the study and EARS. 
+Figure 3: H-K stack for XA.MM12 using the receiver functions shown in figure 2.
 
-Figure 4: Comparison of Ears with Li et. al. for the Moma passcal experiment, including the end member GSN stations CCM and HRV. Stations are ordered with longitude.
+Figure 4: Comparison of EARS with Zhu and Kanamori. Because the stations in the study are not in a line, the plot is ordered by the difference between the study and EARS. 
 
-Figure 5: Comparison of Ears with Wilson and Aster for the Ristra passcal experiment. Stations are ordered with longitude.
+Figure 5: Comparison of Ears with Li et. al. for the Moma passcal experiment, including the end member GSN stations CCM and HRV. Stations are ordered with longitude.
+
+Figure 6: Comparison of Ears with Wilson and Aster for the Ristra passcal experiment. Stations are ordered with longitude.

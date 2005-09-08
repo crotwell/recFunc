@@ -38,7 +38,8 @@ public class SumHKStack {
                       Channel chan,
                       float minPercentMatch,
                       QuantityImpl smallestH,
-                      boolean doBootstrap) {
+                      boolean doBootstrap,
+                      boolean usePhaseWeight) {
         this.individuals = individuals;
         this.minPercentMatch = minPercentMatch;
         this.channel = chan;
@@ -55,9 +56,9 @@ public class SumHKStack {
             }
             // need to do more of this checking...
         }
-        sum = calculate(chan, individuals, smallestH, minPercentMatch);
+        sum = calculate(chan, individuals, smallestH, minPercentMatch, usePhaseWeight);
         if (doBootstrap) {
-            calcVarianceBootstrap();
+            calcVarianceBootstrap(usePhaseWeight);
         } else {
             hVariance = -1;
             kVariance = -1;
@@ -80,7 +81,7 @@ public class SumHKStack {
         return individuals;
     }
     
-    static HKStack calculate(Channel chan, HKStack[] individuals, QuantityImpl smallestH, float minPercentMatch) {
+    static HKStack calculate(Channel chan, HKStack[] individuals, QuantityImpl smallestH, float minPercentMatch, boolean usePhaseWeight) {
         int smallestHIndex = individuals[0].getHIndex(smallestH);
         float[][] sumStack = new float[individuals[0].getStack().length-smallestHIndex][individuals[0].getStack()[0].length];
         for (int hIndex = 0; hIndex < sumStack.length; hIndex++) {
@@ -89,10 +90,16 @@ public class SumHKStack {
                 Cmplx phaseWeight = new Cmplx(0,0);
                 float realStack = 0;
                 for (int s = 0; s < individuals.length; s++) {
-                    phaseWeight = Cmplx.add(phaseWeight, individuals[s].getCompactAnalyticPhase().get(shiftHIndex, kIndex));
+                    if (usePhaseWeight) {
+                        phaseWeight = Cmplx.add(phaseWeight, individuals[s].getCompactAnalyticPhase().get(shiftHIndex, kIndex));
+                    }
                     realStack += individuals[s].getStack()[shiftHIndex][kIndex];
                 }
-                sumStack[hIndex][ kIndex] = (float)(realStack*Math.pow(phaseWeight.mag()/individuals.length/3, 2));
+                if (usePhaseWeight) {
+                    sumStack[hIndex][ kIndex] = (float)(realStack*Math.pow(phaseWeight.mag()/individuals.length/3, 2));
+                } else {
+                    sumStack[hIndex][kIndex] = realStack;
+                }
             }
         }
         return new HKStack(individuals[0].getAlpha(),
@@ -147,7 +154,7 @@ public class SumHKStack {
         return smallestH;
     }
     
-    protected void calcVarianceBootstrap() {
+    protected void calcVarianceBootstrap(boolean usePhaseWeight) {
         HKStack temp = individuals[0];
         Random random = new Random();
         double[] hErrors = new double[bootstrapIterations];
@@ -158,7 +165,7 @@ public class SumHKStack {
             for(int j = 0; j < individuals.length; j++) {
                 sample.add(individuals[randomInt(individuals.length)]);
             }
-            HKStack sampleStack = calculate(temp.chan, (HKStack[])sample.toArray(new HKStack[0]), smallestH, minPercentMatch);
+            HKStack sampleStack = calculate(temp.chan, (HKStack[])sample.toArray(new HKStack[0]), smallestH, minPercentMatch, usePhaseWeight);
             hErrors[i] = sampleStack.getMaxValueH().getValue(UnitImpl.KILOMETER);
             kErrors[i] = sampleStack.getMaxValueK();
             System.out.println("calcVarianceBootstrap:  "+i+" "+hErrors[i]+"  "+kErrors[i]);

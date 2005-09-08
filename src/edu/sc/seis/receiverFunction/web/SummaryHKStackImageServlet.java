@@ -16,6 +16,7 @@ import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
@@ -62,14 +63,29 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             
             if(req.getParameter("minPercentMatch") == null) { throw new Exception("minPercentMatch param not set"); }
             float minPercentMatch = new Float(req.getParameter("minPercentMatch")).floatValue();
-
+            
+            boolean usePhaseWeight = RevUtil.getBoolean("usePhaseWeight", req, true);
+            boolean doBootstrap = false;
+            
             SumHKStack sumStack;
+            if (usePhaseWeight) {
             try {
                 int dbid = jdbcSumHKStack.getDbIdForStation(net.get_id(), staCode);
                 sumStack = jdbcSumHKStack.get(dbid);
                 System.out.println("Got summary plot from database "+dbid);
             }catch (NotFound e) {
                 sumStack = null;
+            }
+            } else {
+                JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel().getStationTable();
+                int[] dbids = jdbcStation.getDBIds(net.get_id(), staCode);
+                edu.iris.Fissures.IfNetwork.Station station = jdbcStation.get(dbids[0]);
+                sumStack = stackSummary.sum(station.get_id().network_id.network_code,
+                               staCode,
+                               minPercentMatch,
+                               HKStack.getBestSmallestH(station),
+                               doBootstrap,
+                               usePhaseWeight);
             }
                 
             logger.info("before check for null");

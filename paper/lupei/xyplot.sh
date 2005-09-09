@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+gmtset PLOT_DEGREE_FORMAT -D ANNOT_FONT_PRIMARY Times-Roman
+gmtset LABEL_FONT Times-Roman LABEL_FONT_SIZE 12
+
+
 NAME=lupei
 REGION=-121/-113.5/10/70
 
@@ -28,7 +33,7 @@ echo  $FILENAME
 /bin/rm -f $FILENAME
 touch $FILENAME
 perl -nae '$a=abs($F[5]-$F[13]);print "$a @F\n"'  ${NAME}.txt | sort -n | perl -nae '$F[0]=" ";print "@F\n"' | grep -v 'EARS' | grep -v 'Net' > errorSort.txt
-cat errorSort.txt | perl -nae 'print "$. $F[5] $F[6] $F[6]\n"'  | psxy -K   -JX7i/-4.5i -R${REGION} -B5/5:"Thickness":Wesn -Sc.1i -G155 -Ey >> $FILENAME
+cat errorSort.txt | perl -nae 'print "$. $F[5] $F[6] $F[6]\n"'  | psxy -K   -JX6i/-4.0i -R${REGION} -B5/5:"Thickness (km)":Wesn -Sc.1i -G155 -Ey >> $FILENAME
 
 cat errorSort.txt | perl -nae 'print "$. $F[13]\n"'  | psxy -O -K -JX -R -Ss.1i -G0 >> $FILENAME
 
@@ -44,4 +49,4 @@ END
 pstext -O -K -JX -R >> $FILENAME <<END
 5 63 9 0 1 ML EARS
 END
-cat errorSort.txt | perl -nae 'print "$. 20 9 90 1 ML $F[0].$F[1]\n"'  | pstext  -O -Y0.9i -JX -R >> $FILENAME
+cat errorSort.txt | perl -nae 'print "$. 20 9 90 1 ML $F[0].$F[1]\n"'  | pstext  -O -Y0.8i -JX -R >> $FILENAME

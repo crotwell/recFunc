@@ -95,6 +95,7 @@ public class SumHKStack {
                     }
                     realStack += individuals[s].getStack()[shiftHIndex][kIndex];
                 }
+                realStack /= individuals.length;
                 if (usePhaseWeight) {
                     sumStack[hIndex][ kIndex] = (float)(realStack*Math.pow(phaseWeight.mag()/individuals.length/3, 2));
                 } else {

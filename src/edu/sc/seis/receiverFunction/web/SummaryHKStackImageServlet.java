@@ -70,6 +70,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             SumHKStack sumStack;
             if (usePhaseWeight) {
             try {
+                // phase weight stacks are stored, so don't need to calculate
                 int dbid = jdbcSumHKStack.getDbIdForStation(net.get_id(), staCode);
                 sumStack = jdbcSumHKStack.get(dbid);
                 System.out.println("Got summary plot from database "+dbid);

@@ -1,0 +1,39 @@
+<html>
+<head>
+<title>Prior Results List</title>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+	
+<div id="content">
+
+$header
+
+<table>
+<tr>
+<td class="headodd">Code</td>
+<td class="headeven">Name</td>
+</tr>
+#foreach($ref in $priorResults)
+<tr>
+<td class="odd"><a href="comparePriorResult.html?name=${ref.name}">$ref.name</a></td>
+<td class="even">$ref.method</td>
+<td class="even">$ref.reference</td>
+<td class="even">$ref.URL</td>
+</td>
+</tr>
+#end
+</table>
+
+
+<div id="footer2" align="center">
+  <a href="http://seis.sc.edu">
+    <img src="seislogo.gif" alt="Seismology at USC" title="USC"/>
+  </a>
+  <a href="http://www.iris.edu">
+    <img src="irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
+  </a>
+</div>
+</div>
+</body>
+</html>

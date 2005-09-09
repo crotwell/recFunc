@@ -43,6 +43,16 @@ public class Start {
                                               "edu.sc.seis.receiverFunction.web.StationsNearBy",
                                               servletStrings,
                                               sh);
+        edu.sc.seis.rev.RevUtil.populateJetty("/stationLatLonBox.html",
+                                              "/stationLatLonBox.html",
+                                              "edu.sc.seis.receiverFunction.web.StationLatLonBox",
+                                              servletStrings,
+                                              sh);
+        edu.sc.seis.rev.RevUtil.populateJetty("/stationLatLonBox.txt",
+                                              "/stationLatLonBox.txt",
+                                              "edu.sc.seis.receiverFunction.web.StationLatLonBoxTxt",
+                                              servletStrings,
+                                              sh);
         edu.sc.seis.rev.RevUtil.populateJetty("/station.html",
                                             "/station.html",
                                             "edu.sc.seis.receiverFunction.web.Station",

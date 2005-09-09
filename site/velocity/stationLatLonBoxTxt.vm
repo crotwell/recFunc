@@ -1,0 +1,4 @@
+#Stations within latitude ($minLat, $maxLat) and longitude ($minLon, $maxLon)
+#foreach($sta in $stationList)
+$sta.getNet().getCodeWithYear(),$sta.getCode(),$sta.getLatitude(),$sta.getLongitude(),$fissures.formatQuantity($!summary.get($sta).getSum().getMaxValueH()),$!summary.get($sta).getSum().getMaxValueK(),$fissures.formatQuantity($!summary.get($sta).getSum().getAlpha()),$fissures.formatQuantity($!summary.get($sta).getSum().getVs()),$!summary.get($sta).getSum().getPoissonsRatio(),$!numEQ.get($sta)
+#end

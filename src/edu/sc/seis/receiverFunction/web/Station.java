@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.Time;
 import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
@@ -38,6 +39,7 @@ import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.ConfigurationException;
+import edu.sc.seis.sod.status.FissuresFormatter;
 import edu.sc.seis.sod.velocity.event.VelocityEvent;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
@@ -138,6 +140,15 @@ public class Station extends Revlet {
                                                  summary.getSum().getAlpha(),
                                                  earsStaRef));
             }
+            TimeInterval timePs = summary.getSum().getTimePs();
+            timePs.setFormat(FissuresFormatter.getDepthFormat());
+            context.put("timePs", timePs);
+            TimeInterval timePpPs = summary.getSum().getTimePpPs();
+            timePpPs.setFormat(FissuresFormatter.getDepthFormat());
+            context.put("timePpPs", timePpPs);
+            TimeInterval timePsPs = summary.getSum().getTimePsPs();
+            timePsPs.setFormat(FissuresFormatter.getDepthFormat());
+            context.put("timePsPs", timePsPs);
         } catch(NotFound e) {
             // no summary, oh well...
         }

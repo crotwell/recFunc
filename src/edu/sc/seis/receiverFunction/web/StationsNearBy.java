@@ -76,7 +76,7 @@ public class StationsNearBy extends StationList {
         return stationList;
     }
     
-    QuantityImpl ZERO_KM = new QuantityImpl(0, UnitImpl.KILOMETER);
+    public static final QuantityImpl ZERO_KM = new QuantityImpl(0, UnitImpl.KILOMETER);
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StationsNearBy.class);
 }

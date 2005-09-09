@@ -6,6 +6,11 @@
 <body>
 <img src="earslogo.png"/><br/>
 <br/>
+<h2>
+<p><b>WARNING:</b>I have found an error in our stacking code, and am recalculating all of the stacks. 
+Until that finishes there will likely be many stations with missing or wrong stacks. Sorry. </p>
+</h2></br>
+
 <p><a href="networkList.html">Networks</a></p>
 <p>Compare with <a href="priorResultList.html">prior results</a>
 </p>
@@ -35,6 +40,19 @@
 <input type="radio" name="zAxis" value="lon"> Longitude
 <input type="radio" name="zAxis" value="H" checked="true"> Thickness
 <input type="radio" name="zAxis" value="vpvs"> Vp/Vs<br/>
+
+<input type="submit" value="Send"/>
+    </p>
+ </form>
+ 
+<br/>
+<p>List results in a lat/lon box:</p>
+<form action="/ears_tmp/stationLatLonBox.html" method="get">
+<p>
+<label for="lat">Min Latitude: </label><input type="text" name="minLat" value="30"/><br/>
+<label for="lat">Max Latitude: </label><input type="text" name="maxLat" value="45"/><br/>
+<label for="lon">Min Longitude: </label><input type="text" name="minLon" value="-113"/><br/>
+<label for="lon">Max Longitude: </label><input type="text" name="maxLon" value="-119"/><br/>
 
 <input type="submit" value="Send"/>
     </p>

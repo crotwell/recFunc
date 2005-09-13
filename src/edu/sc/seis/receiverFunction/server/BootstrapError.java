@@ -83,6 +83,7 @@ public class BootstrapError extends StackSummary {
                                                  temp.getChannel(),
                                                  percentMatch,
                                                  smallestH,
+                                                 true,
                                                  true);
             HKError hkError = new HKError(individualHK, 100, percentMatch, smallestH);
             TimeOMatic.print("sum for " + netCode + "." + staCode);
@@ -128,7 +129,8 @@ public class BootstrapError extends StackSummary {
                                                      temp.getChannel(),
                                                      percentMatch,
                                                      smallestH,
-                                                     false);
+                                                     false,
+                                                     true);
                 hErrors[i] = sumStack.getSum()
                         .getMaxValueH()
                         .getValue(UnitImpl.KILOMETER);

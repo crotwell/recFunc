@@ -14,3 +14,7 @@ effective_time {display:table;}
 effective_time start {display:table-cell;}
 effective_time end {display.table-cell;}
 effective_time:before { content: "Effective Time: "; }
+
+station > channels {display:table;}
+channels > channel {display:table-row;}
+channel * {display:table-cell}

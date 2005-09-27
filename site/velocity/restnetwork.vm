@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="http://www.seis.sc.edu/ears_tmp/restnetwork.css"?>
+<network
+xmlns:xlink="http://www.w3.org/1999/xlink">
+    <code>$net.codeWithYear</code>
+    <name>$net.name</name>
+    <description>$net.description</description>
+    <owner>$net.owner</owner>
+    <effective_time>
+        <start>$net.startDate</start>
+        <end>$net.endDate</end>
+    </effective_time>
+    <stations>
+    #foreach( $sta in $net.stations)
+    <station xlink:type="simple" xlink:href="/network/${sta.net.codeWithYear}/${sta.code}"><code>${sta.code}</code></station>
+    #end
+    </stations>
+$res.contentType
+</network>

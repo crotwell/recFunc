@@ -1,0 +1,16 @@
+stations {display:table;}
+station {display:table-row;}
+station *{display:table-cell;}
+
+network > code, name, description, owner { display:block; }
+network > code:before { content: "Code: " }
+network > code { display:block; color: red }
+name:before { content: "Name: "}
+description:before { content: "Description: ";}
+owner:before { content: "Owner: ";}
+station > code { display:block; }
+
+effective_time {display:table;}
+effective_time start {display:table-cell;}
+effective_time end {display.table-cell;}
+effective_time:before { content: "Effective Time: "; }

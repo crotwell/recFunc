@@ -505,7 +505,20 @@ public class JDBCRecFunc extends JDBCTable {
         return stationDir;
     }
     
+    public JDBCOrigin getJDBCOrigin() {
+        return jdbcOrigin;
+    }
+
+    public JDBCChannel getJDBCChannel() {
+        return jdbcChannel;
+    }
+    
+    public JDBCEventAttr getJDBCEventAttr() {
+        return jdbcEventAttr;
+    }
+    
     private String dataDirectory;
+    
     private File dataDir = null;
     
     private EventFormatter eventFormatter;

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="http://www.seis.sc.edu/ears_tmp/restnetwork.css"?>
+<station
+xmlns:xlink="http://www.w3.org/1999/xlink">
+    <code>$sta.code</code>
+    <name>$sta.name</name>
+    <description>$sta.description</description>
+    <operator>$sta.operator</operator>
+    <effective_time>
+        <start>$sta.startDate</start>
+        <end>$sta.endDate</end>
+    </effective_time>
+	<location>
+		<latitute>$sta.latitude</latitute>
+		<longitude>$sta.longitude</longitude>
+	</location>
+    <channels>
+    #foreach( $chan in $channels)
+    <channel xlink:type="simple" xlink:href="/network/${chan.site.station.net.codeWithYear}/${chan.site.station.code}/${chan.site.get_code()}/${chan.code}"><siteCode>${chan.site.code}</siteCode><code>$chan.getCode()</code></channel>
+    #end
+    </channels>
+</station>

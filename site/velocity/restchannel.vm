@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="http://www.seis.sc.edu/ears_tmp/restnetwork.css"?>
+<channel
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+    <code>$chan.code</code>
+    <effective_time>
+        <start>$chan.startDate</start>
+        <end>$chan.endDate</end>
+    </effective_time>
+</channel>

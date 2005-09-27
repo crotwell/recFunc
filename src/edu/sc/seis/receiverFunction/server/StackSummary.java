@@ -221,7 +221,7 @@ public class StackSummary {
         String defaultsFilename = "edu/sc/seis/receiverFunction/server/"
                 + propFilename;
         for(int i = 0; i < args.length - 1; i++) {
-            if(args[i].equals("-props")) {
+            if(args[i].equals("-props") || args[i].equals("-p")) {
                 // override with values in local directory,
                 // but still load defaults with original name
                 propFilename = args[i + 1];

@@ -1,6 +1,8 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import org.apache.velocity.VelocityContext;
@@ -27,52 +29,52 @@ public class Start {
         ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(props.getProperty("fissuresUtil.database.url"));
         Set servletStrings = new HashSet();
-        ServletHandler sh = new ServletFromSet(servletStrings);
+        ServletHandler rootHandler = new ServletFromSet(servletStrings);
         edu.sc.seis.rev.RevUtil.populateJetty("/networkList.html",
                                             "/networkList.html",
                                             "edu.sc.seis.receiverFunction.web.NetworkList",
                                             servletStrings,
-                                            sh);
+                                            rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/stationList.html",
                                             "/stationList.html",
                                             "edu.sc.seis.receiverFunction.web.StationList",
                                             servletStrings,
-                                            sh);
+                                            rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/stationsNearBy.html",
                                               "/stationsNearBy.html",
                                               "edu.sc.seis.receiverFunction.web.StationsNearBy",
                                               servletStrings,
-                                              sh);
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/stationLatLonBox.html",
                                               "/stationLatLonBox.html",
                                               "edu.sc.seis.receiverFunction.web.StationLatLonBox",
                                               servletStrings,
-                                              sh);
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/stationLatLonBox.txt",
                                               "/stationLatLonBox.txt",
                                               "edu.sc.seis.receiverFunction.web.StationLatLonBoxTxt",
                                               servletStrings,
-                                              sh);
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/station.html",
                                             "/station.html",
                                             "edu.sc.seis.receiverFunction.web.Station",
                                             servletStrings,
-                                            sh);
+                                            rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/summaryHKStack.png",
                                             "/summaryHKStack.png",
                                             "edu.sc.seis.receiverFunction.web.SummaryHKStackImageServlet",
                                             servletStrings,
-                                            sh);
+                                            rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/stationEvent.html",
                                             "/stationEvent.html",
                                             "edu.sc.seis.receiverFunction.web.RFStationEvent",
                                             servletStrings,
-                                            sh);
+                                            rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/hkstackimage.png",
                                               "/hkstackimage.png",
                                               "edu.sc.seis.receiverFunction.web.HKStackImageServlet",
                                               servletStrings,
-                                              sh);
+                                              rootHandler);
        /* edu.sc.seis.rev.RevUtil.populateJetty("/hkphasestackimage.png",
                                               "/hkphasestackimage.png",
                                               "edu.sc.seis.receiverFunction.web.HKPhaseStackImage",
@@ -82,49 +84,63 @@ public class Start {
                                               "/waveforms.png",
                                               "edu.sc.seis.receiverFunction.web.SeismogramImage",
                                               servletStrings,
-                                              sh);
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/comparePriorResult.html",
                                               "/comparePriorResult.html",
                                               "edu.sc.seis.receiverFunction.web.ComparePriorResult",
                                               servletStrings,
-                                              sh);
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/comparePriorResult.txt",
                                               "/comparePriorResult.txt",
                                               "edu.sc.seis.receiverFunction.web.ComparePriorResultTxt",
                                               servletStrings,
-                                              sh);
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/analyticWaveforms.png",
                                               "/analyticWaveforms.png",
                                               "edu.sc.seis.receiverFunction.web.AnalyticPhaseSeismogramImage",
                                               servletStrings,
-                                              sh);
+                                              rootHandler);
         
         edu.sc.seis.rev.RevUtil.populateJetty("/hklatlon.png",
                                               "/hklatlon.png",
                                               "edu.sc.seis.receiverFunction.web.HKLatLonPlot",
                                               servletStrings,
-                                              sh);
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/priorResultList.html",
                                               "/priorResultList.html",
                                               "edu.sc.seis.receiverFunction.web.PriorResultList",
                                               servletStrings,
-                                              sh);
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/earthquakeHKPlot.png",
                                               "/earthquakeHKPlot.png",
                                               "edu.sc.seis.receiverFunction.web.EarthquakeHKPlot",
                                               servletStrings,
-                                              sh);
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/sumHKStackAsXYZ.txt",
                                               "/sumHKStackAsXYZ.txt",
                                               "edu.sc.seis.receiverFunction.web.SumHKStackAsXYZ",
                                               servletStrings,
-                                              sh);
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/receiverFunction.zip",
                                               "/receiverFunction.zip",
                                               "edu.sc.seis.receiverFunction.web.ReceiverFunctionZip",
                                               servletStrings,
-                                                                                    sh);
-        edu.sc.seis.rev.Start.runREV(args, sh);
+                                                                                    rootHandler);
+
+        ServletHandler axisHandler = new ServletHandler();
+        axisHandler.addServlet("Earthquakes",
+                               "/earthquakes/*",
+                               "edu.sc.seis.rev.servlets.EarthquakeServlet");
+        axisHandler.addServlet("Network",
+                               "/network/*",
+                               "edu.sc.seis.receiverFunction.rest.Network");
+        axisHandler.addServlet("EarthquakeStation",
+                               "/es/*",
+                               "edu.sc.seis.rev.servlets.EarthquakeStationServlet");
+        List handlers = new ArrayList();
+        handlers.add(rootHandler);
+        handlers.add(axisHandler);
+        edu.sc.seis.rev.Start.runREV(args, handlers);
     }
     
     public static VelocityContext getDefaultContext() {

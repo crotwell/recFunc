@@ -6,12 +6,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import edu.iris.Fissures.IfNetwork.Channel;
+import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
+import edu.sc.seis.sod.velocity.network.VelocityChannel;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
 
@@ -60,10 +63,23 @@ public class Network extends Revlet {
             }
             c.put("net", new VelocityNetwork(stationList));
         } else if(parts.length == 3) {
-            // assume network
+            // assume station
             c = new RevletContext("reststation.vm");
-            c.put("net", parts[1]);
-            c.put("sta", parts[2]);
+            NetworkId[] nets = jdbcChannel.getStationTable().getNetTable().getByCode(parts[1]);
+            Station[] stations = jdbcChannel.getStationTable().getAllStations(nets[0]);
+            Station sta = null;
+            for(int i = 0; i < stations.length; i++) {
+                if (stations[i].get_code().equals(parts[2])) {
+                    sta = stations[i];
+                }
+            }
+            Channel[] chans = jdbcChannel.getAllChannels(sta.get_id());
+            ArrayList chanList = new ArrayList();
+            for(int i = 0; i < chans.length; i++) {
+                chanList.add(new VelocityChannel(chans[i]));
+            }
+            c.put("sta", new VelocityStation(sta));
+            c.put("channels", chanList);
         } else if(parts.length == 4) {
             // assume network
             c = new RevletContext("restsite.vm");

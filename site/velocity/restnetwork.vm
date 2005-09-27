@@ -12,8 +12,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
     </effective_time>
     <stations>
     #foreach( $sta in $net.stations)
-    <station xlink:type="simple" xlink:href="/network/${sta.net.codeWithYear}/${sta.code}"><code>${sta.code}</code></station>
+    <station xlink:type="simple" xlink:href="${sta.net.codeWithYear}/${sta.code}"><code>${sta.code}</code></station>
     #end
     </stations>
-$res.contentType
 </network>

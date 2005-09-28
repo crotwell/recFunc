@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="http://www.seis.sc.edu/ears_tmp/restnetwork.css"?>
+<networkList xmlns:xlink="http://www.w3.org/1999/xlink">
+    #foreach( $net in $netList)
+	<networkRef xlink:type="simple" xlink:href="network/${net.codeWithYear}">
+		<code>${net.codeWithYear}</code>
+		<name>$net.entityRefName</name>
+	</networkRef>
+    #end
+</networkList>

@@ -3,8 +3,31 @@
 <channel
 	xmlns:xlink="http://www.w3.org/1999/xlink">
     <code>$chan.code</code>
+	<site>
+		<code>$chan.site.code</code>
+		<effective_time>
+            <start>$chan.site.startDate</start>
+            <end>$chan.site.endDate</end>
+        </effective_time>
+	    <location>
+		    <latitute>$chan.site.latitude</latitute>
+	        <longitude>$chan.site.longitude</longitude>
+		</location>
+		<comment>$chan.site.comment</comment>
+	</site>
     <effective_time>
-        <start>$chan.startDate</start>
-        <end>$chan.endDate</end>
+        <start>$chan.start</start>
+        <end>$chan.end</end>
     </effective_time>
+	<orientation>
+		<azimuth>$chan.azimuth</azimuth>
+		<dip>$chan.dip</dip>
+	</orientation>
+	<sampling>
+		<numPoints>$chan.sampling.numPoints</numPoints>
+		<interval>
+			<value>$chan.sampling.intervalValue</value>
+			<unit>$chan.sampling.intervalUnitName</unit>
+		</interval>
+	</sampling>
 </channel>

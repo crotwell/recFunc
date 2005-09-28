@@ -14,9 +14,11 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
 		<latitute>$sta.latitude</latitute>
 		<longitude>$sta.longitude</longitude>
 	</location>
+	<comment>$sta.comment</comment>
+	<network>$sta.netCode</network>
     <channels>
     #foreach( $chan in $channels)
-    <channel xlink:type="simple" xlink:href="/network/${chan.site.station.net.codeWithYear}/${chan.site.station.code}/${chan.site.get_code()}/${chan.code}"><siteCode>${chan.site.code}</siteCode><code>$chan.getCode()</code></channel>
+    <channel xlink:type="simple" xlink:href="${chan.site.station.code}/${chan.site.get_code()}/${chan.code}"><siteCode>${chan.site.code}</siteCode><code>$chan.getCode()</code></channel>
     #end
     </channels>
 </station>

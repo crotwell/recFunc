@@ -1,8 +1,9 @@
 stations {display:table;}
+stations:before {content: "Stations: ";}
 station {display:table-row;}
 station *{display:table-cell;}
 
-network > code, name, description, owner { display:block; }
+code, name, description, owner, comment, site { display:block; }
 network > code:before { content: "Code: " }
 network > code { display:block; color: red }
 name:before { content: "Name: "}
@@ -16,5 +17,20 @@ effective_time end {display.table-cell;}
 effective_time:before { content: "Effective Time: "; }
 
 station > channels {display:table;}
+station > channels:before { content: "Channels: "; }
 channels > channel {display:table-row;}
-channel * {display:table-cell}
+channels > channel * {display:table-cell}
+
+location { display:block; }
+location > latitude {display:block; }
+location > latitude:before { content: "Lat: "; }
+location > longitude {display:block; }
+location > longitude:before { content: "Lon: "; }
+
+site:before {content: "Site: "; }
+
+networkList {display:table; }
+networkList:before { content: "Networks: "; }
+networkRef {display:table-row;}
+networkRef > code {display:table-cell;}
+networkRef > name {display:table-cell;}

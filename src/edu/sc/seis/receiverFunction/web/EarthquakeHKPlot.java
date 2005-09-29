@@ -24,6 +24,7 @@ import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.server.HKStackIterator;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.sod.ConfigurationException;
@@ -68,11 +69,15 @@ public class EarthquakeHKPlot  extends HttpServlet {
             ArrayList stationList = station.getStationList(netDbId, staCode);
             
             float match = RevUtil.getFloat("percentMatch", req, 80);
-            ArrayList stackList = jdbcHKStack.getForStation(net.getCode(), staCode, match);
-            
-
             QuantityImpl smallestH = HKStack.getBestSmallestH((VelocityStation)stationList.get(0));
-            HKXYDataset dataset = new HKXYDataset(stackList, smallestH);
+            ArrayList stackList = new ArrayList();
+            HKStackIterator it = jdbcHKStack.getIteratorForStation(net.getCode(), staCode, match, true);
+            while (it.hasNext()) {
+                HKStack stack = (HKStack)it.next();
+                stackList.add(new HKMax(stack, smallestH));
+            }
+
+            HKXYDataset dataset = new HKXYDataset(stackList);
             String title = "Maxima for Earthquakes at "+net.getCode()+"."+staCode;
             JFreeChart chart = ChartFactory.createScatterPlot(RevUtil.get("title",
                                                                           req,
@@ -116,26 +121,46 @@ public class EarthquakeHKPlot  extends HttpServlet {
     
 }
 
+class HKMax {
+    HKMax(HKStack stack, QuantityImpl smallestH) {
+        this(stack.getMaxValueK(smallestH), (float)stack.getMaxValueH(smallestH).getValue(UnitImpl.KILOMETER));
+    }
+    HKMax(float maxValueK, float maxValueH) {
+        this.maxValueK = maxValueK;
+        this.maxValueH = maxValueH;
+    }
+    
+    float maxValueK;
+
+    float maxValueH;
+    
+    public float getMaxValueH() {
+        return maxValueH;
+    }
+
+    public float getMaxValueK() {
+        return maxValueK;
+    }
+}
+
 class HKXYDataset extends AbstractXYDataset {
     
     private ArrayList items;
-    private QuantityImpl smallestH;
     
-    public HKXYDataset(ArrayList items, QuantityImpl smallestH) {
+    public HKXYDataset(ArrayList items) {
         this.items = items;
-        this.smallestH = smallestH;
     }
     
     public int getItemCount(int series) {
         return items.size();
     }
     public Number getX(int series, int item) {
-        HKStack stack = (HKStack)items.get(item);
-        return new Float(stack.getMaxValueK(smallestH));
+        HKMax stack = (HKMax)items.get(item);
+        return new Float(stack.getMaxValueK());
     }
     public Number getY(int series, int item) {
-        HKStack stack = (HKStack)items.get(item);
-        return new Float(stack.getMaxValueH(smallestH).getValue(UnitImpl.KILOMETER));
+        HKMax stack = (HKMax)items.get(item);
+        return new Float(stack.getMaxValueH());
     }
     public int getSeriesCount() {
         return 1;

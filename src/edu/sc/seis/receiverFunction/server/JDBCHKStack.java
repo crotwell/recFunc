@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Properties;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.Channel;
@@ -60,7 +61,7 @@ public class JDBCHKStack extends JDBCTable {
         dataDir = new File(RecFuncCacheImpl.getDataLoc());
         dataDir.mkdirs();
         eventFormatter = new EventFormatter(true);
-        getForStation.setFetchSize(50);
+        getForStation.setFetchSize(25);
         getForStation.setFetchDirection(ResultSet.FETCH_FORWARD);
     }
     
@@ -112,6 +113,7 @@ public class JDBCHKStack extends JDBCTable {
             logger.error("SQL stmt: " + put.toString());
             throw e;
         }
+        getConnection().commit();
         return hkstack_id;
     }
 
@@ -209,23 +211,30 @@ public class JDBCHKStack extends JDBCTable {
                                    float percentMatch,
                                    boolean compact) throws FissuresException, NotFound, IOException, SQLException {
         ArrayList individualHK = new ArrayList();
+        HKStackIterator it = getIteratorForStation(netCode, staCode, percentMatch, compact);
+        while(it.hasNext()) {
+            HKStack stack = (HKStack)it.next();
+            if (compact) {stack.compact();}
+            individualHK.add(stack);
+        }
+        it.close();
+        return individualHK;
+    }
+    
+    public HKStackIterator getIteratorForStation(String netCode,
+                                          String staCode,
+                                          float percentMatch,
+                                          boolean compact) throws SQLException {
+
         int index = 1;
         getForStation.setString(index++, netCode);
         getForStation.setString(index++, staCode);
         getForStation.setFloat(index++, percentMatch);
         getConnection().setAutoCommit(false);
-        System.out.println("JDBCHKStack: before executeQuery");
+        System.out.println("getForStation:"+getForStation);
         ResultSet rs = getForStation.executeQuery();
-        System.out.println("JDBCHKStack: after executeQuery");
-        int num = 1;
-        while(rs.next()) {
-            System.out.println("extract "+num++);
-            individualHK.add(extract(rs, compact));
-        }
-        System.out.println("getForStation: "+rs.isAfterLast());
-        rs.close();
-        getConnection().setAutoCommit(true);
-        return individualHK;
+        HKStackIterator iter = new HKStackIterator(rs, this);
+        return iter;
     }
 
     public HKStack extract(ResultSet rs) throws  NotFound,

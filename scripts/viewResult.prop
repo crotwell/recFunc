@@ -7,7 +7,7 @@ rev.resources=site
 rev.host=roo.seis.sc.edu
 #rev.host=localhost
 rev.port=8084
-rev.visibleURL=http://roo.seis.sc.edu/ears_tmp/
+rev.visibleURL=http://roo.seis.sc.edu/ears/
 
 velocimacro.library.autoreload = false
 #

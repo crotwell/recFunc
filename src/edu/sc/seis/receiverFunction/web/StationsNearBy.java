@@ -46,7 +46,7 @@ public class StationsNearBy extends StationList {
         super(databaseURL, dataloc);
     }
 
-    public String getVelocityTemplate() {
+    public String getVelocityTemplate(HttpServletRequest req) {
         return "stationsNearBy.vm";
     }
     

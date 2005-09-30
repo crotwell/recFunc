@@ -266,7 +266,7 @@ hksummary.put=INSERT INTO hksummary ( \
                    ) \
                    VALUES ( ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,  ?, ?)
                    
-hksummary.get=SELECT * from $tablename \
+hksummary.get=SELECT * from $tablename JOIN netchan ON (chanz_id = chan_id ) \
                    WHERE hksummary_id = ?
                    
 hksummary.update=UPDATE $tablename SET chanA_id = ? , \
@@ -292,10 +292,7 @@ hksummary.update=UPDATE $tablename SET chanA_id = ? , \
                    kVariance = ? \
                    WHERE hksummary_id = ?
                    
-hksummary.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
-    JOIN station ON (network.net_id = station.net_id ) \
-    JOIN site ON (station.sta_id = site.sta_id ) \
-    JOIN channel ON (channel.site_id = site.site_id ) \
+hksummary.uncalculated=SELECT receiverFunction.recfunc_id FROM netchan \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
                    NATURAL JOIN hkstack \
                    WHERE network.network_dbid = ? \
@@ -314,12 +311,13 @@ hksummary.uncalculated=SELECT receiverFunction.recfunc_id FROM network \
                        AND receiverFunction.itr_match >= hksummary.minPercentMatch \
                        AND hksummary.minPercentMatch = ? \
                        
-hksummary.getForStation=SELECT * from network \
-    JOIN station ON (network.net_id = station.net_id ) \
-    JOIN site ON (station.sta_id = site.sta_id ) \
-    JOIN channel ON (channel.site_id = site.site_id ) \
+hksummary.getForStation=SELECT * from netchan \
                    JOIN  $tablename  ON (chanz_id = chan_id ) \
                    WHERE network.net_id = ? \
                    AND sta_code = ? 
 
-hksummary.index_chanz=create index hksummary_chanz_idx on hksummary ( chanZ_id )
+hksummary.getAllWithoutData=SELECT alpha, minpercentmatch, peakh, hvariance, peakk, kvariance, peakval, net_code, sta_code, chanz_id, \
+	minH, stepH, numH, minK, stepK, numK, weightPs, weightPpPs, weightPsPs  \
+	FROM hksummary JOIN netchan ON (chanz_id = chan_id)
+
+hksummary.index_chanz=create index hksummary_chanz_idx on hksummary ( chanz_id )

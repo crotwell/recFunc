@@ -1,6 +1,7 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.sql.SQLException;
+import javax.servlet.http.HttpServletRequest;
 import edu.sc.seis.sod.ConfigurationException;
 
 
@@ -29,7 +30,7 @@ public class StationLatLonBoxTxt extends StationLatLonBox {
     }
     
     
-    public String getVelocityTemplate() {
+    public String getVelocityTemplate(HttpServletRequest req) {
         return "stationLatLonBoxTxt.vm";
     }
 }

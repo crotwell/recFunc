@@ -20,7 +20,7 @@ import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 
 public class SumHKStack {
-    
+
     public SumHKStack(float minPercentMatch,
                       QuantityImpl smallestH,
                       HKStack sum,
@@ -103,7 +103,7 @@ public class SumHKStack {
                 }
             }
         }
-        return new HKStack(individuals[0].getAlpha(),
+        HKStack hkStack = new HKStack(individuals[0].getAlpha(),
                           0f,
                           minPercentMatch,
                           individuals[0].getMinH().add(  individuals[0].getStepH().multiplyBy(smallestHIndex)  ),
@@ -117,6 +117,7 @@ public class SumHKStack {
                           individuals[0].getWeightPsPs(),
                           sumStack,
                           chan);  
+        return hkStack;
     }
 
     public double getHVariance() {

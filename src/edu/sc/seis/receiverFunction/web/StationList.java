@@ -57,11 +57,11 @@ public class StationList extends Revlet {
      */
     public RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
-        RevletContext context = new RevletContext(getVelocityTemplate(), Start.getDefaultContext());
+        RevletContext context = new RevletContext(getVelocityTemplate(req), Start.getDefaultContext());
         ArrayList stationList = getStations(req, context);
-        logger.debug("getStations done");
+        logger.debug("getStations done: "+stationList.size());
         HashMap summary = getSummaries(stationList, context);
-        logger.debug("getSummaries done");
+        logger.debug("getSummaries done: "+summary.keySet().size());
         HashMap numEQ = new HashMap();
         Iterator it = stationList.iterator();
         while(it.hasNext()) {
@@ -75,7 +75,7 @@ public class StationList extends Revlet {
         return context;
     }
     
-    public String getVelocityTemplate() {
+    public String getVelocityTemplate(HttpServletRequest req) {
         return "stationList.vm";
     }
     
@@ -107,7 +107,7 @@ public class StationList extends Revlet {
             sta.setDbId(jdbcChannel.getStationTable().getDBId(sta.get_id()));
             int netDbId = jdbcChannel.getNetworkTable().getDbId(sta.getNet().get_id());
             sta.getNet().setDbId(netDbId);
-            SumHKStack sumStack = jdbcSumHKStack.getForStation(netDbId, sta.get_code());
+            SumHKStack sumStack = jdbcSumHKStack.getForStation(netDbId, sta.get_code(), false);
             summary.put(sta, sumStack);
             } catch (NotFound e) {
                 // oh well, skip this station

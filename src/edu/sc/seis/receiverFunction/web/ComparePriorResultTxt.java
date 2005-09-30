@@ -32,7 +32,7 @@ public class ComparePriorResultTxt extends ComparePriorResult {
         res.setContentType("text/plain");
         return rc; 
     }
-    public String getVelocityTemplate() {
+    public String getVelocityTemplate(HttpServletRequest req) {
         return "comparePriorResultTxt.vm";
     }
 }

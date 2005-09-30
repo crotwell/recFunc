@@ -91,6 +91,7 @@ public class ComparePriorResult extends StationList {
                     }
                     ArrayList resultList = (ArrayList)prior.get(station);
                     resultList.add(results[i]);
+                    System.out.println(" Compare: " +results[i].getStationCode()+"  vp="+results[i].formatVp());
                 } catch (NotFound e) {
                     // this station is in the prior result, but not in ears, skip...
                 }
@@ -138,7 +139,7 @@ public class ComparePriorResult extends StationList {
         return summary;
     }
 
-    public String getVelocityTemplate() {
+    public String getVelocityTemplate(HttpServletRequest req) {
         return "comparePriorResult.vm";
     }
     

@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.model.QuantityImpl;
@@ -61,7 +62,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
         get.setInt(1, id);
         ResultSet rs = get.executeQuery();
         if(rs.next()) {
-            return extract(rs);
+            return extract(rs, true);
         } else {
             throw new NotFound();
         }
@@ -144,38 +145,61 @@ public class JDBCSummaryHKStack extends JDBCTable {
         return index;
     }
 
-    public SumHKStack extract(ResultSet rs) throws NotFound, SQLException,
-            IOException {
-        Channel chan = jdbcHKStack.getJDBCChannel().get(rs.getInt("chanZ_id"));
+    public SumHKStack extract(ResultSet rs, boolean withData) throws NotFound,
+            SQLException, IOException {
+        Channel chan = jdbcHKStack.getJDBCChannel().get(rs.getInt("chanz_id"));
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
-        float[][] data = new float[numH][numK];
-
-        byte[] dataBytes = rs.getBytes("stack");
-        DataInputStream realdis = new DataInputStream(new ByteArrayInputStream(dataBytes));
-        for(int i = 0; i < data.length; i++) {
-            for(int j = 0; j < data[0].length; j++) {
-                data[i][ j] =  (float)realdis.readFloat();
+        HKStack stack;
+        if(withData) {
+            float[][] data = new float[numH][numK];
+            byte[] dataBytes = rs.getBytes("stack");
+            DataInputStream realdis = new DataInputStream(new ByteArrayInputStream(dataBytes));
+            for(int i = 0; i < data.length; i++) {
+                for(int j = 0; j < data[0].length; j++) {
+                    data[i][j] = (float)realdis.readFloat();
+                }
             }
+            realdis.close();
+            stack = new HKStack(new QuantityImpl(rs.getFloat("alpha"),
+                                                 UnitImpl.KILOMETER_PER_SECOND),
+                                0,
+                                rs.getFloat("minPercentMatch"),
+                                new QuantityImpl(rs.getFloat("minH"),
+                                                 UnitImpl.KILOMETER),
+                                new QuantityImpl(rs.getFloat("stepH"),
+                                                 UnitImpl.KILOMETER),
+                                numH,
+                                rs.getFloat("minK"),
+                                rs.getFloat("stepK"),
+                                numK,
+                                rs.getFloat("weightPs"),
+                                rs.getFloat("weightPpPs"),
+                                rs.getFloat("weightPsPs"),
+                                data,
+                                chan);
+        } else {
+            stack = new HKStack(new QuantityImpl(rs.getFloat("alpha"),
+                                                 UnitImpl.KILOMETER_PER_SECOND),
+                                0,
+                                rs.getFloat("minPercentMatch"),
+                                new QuantityImpl(rs.getFloat("minH"),
+                                                 UnitImpl.KILOMETER),
+                                new QuantityImpl(rs.getFloat("stepH"),
+                                                 UnitImpl.KILOMETER),
+                                numH,
+                                rs.getFloat("minK"),
+                                rs.getFloat("stepK"),
+                                numK,
+                                rs.getFloat("weightPs"),
+                                rs.getFloat("weightPpPs"),
+                                rs.getFloat("weightPsPs"),
+                                new QuantityImpl(rs.getFloat("peakH"),
+                                                 UnitImpl.KILOMETER),
+                                new Float(rs.getFloat("peakK")),
+                                new Float(rs.getFloat("peakVal")),
+                                chan);
         }
-        realdis.close();
-        HKStack stack = new HKStack(new QuantityImpl(rs.getFloat("alpha"),
-                                                     UnitImpl.KILOMETER_PER_SECOND),
-                                    0,
-                                    rs.getFloat("minPercentMatch"),
-                                    new QuantityImpl(rs.getFloat("minH"),
-                                                     UnitImpl.KILOMETER),
-                                    new QuantityImpl(rs.getFloat("stepH"),
-                                                     UnitImpl.KILOMETER),
-                                    numH,
-                                    rs.getFloat("minK"),
-                                    rs.getFloat("stepK"),
-                                    numK,
-                                    rs.getFloat("weightPs"),
-                                    rs.getFloat("weightPpPs"),
-                                    rs.getFloat("weightPsPs"),
-                                    data,
-                                    chan);
         SumHKStack sum = new SumHKStack(rs.getFloat("minPercentMatch"),
                                         new QuantityImpl(rs.getFloat("minH"),
                                                          UnitImpl.KILOMETER),
@@ -185,20 +209,27 @@ public class JDBCSummaryHKStack extends JDBCTable {
         return sum;
     }
 
-    public SumHKStack getForStation(NetworkId net, String station_code)
-            throws NotFound, SQLException, IOException {
-        return getForStation(jdbcHKStack.getJDBCChannel().getNetworkTable().getDbId(net), station_code);
+    public SumHKStack getForStation(NetworkId net,
+                                    String station_code,
+                                    boolean withData) throws NotFound,
+            SQLException, IOException {
+        return getForStation(jdbcHKStack.getJDBCChannel()
+                .getNetworkTable()
+                .getDbId(net), station_code, withData);
     }
 
-    public SumHKStack getForStation(int netId, String station_code)
-            throws NotFound, SQLException, IOException {
+    public SumHKStack getForStation(int netId,
+                                    String station_code,
+                                    boolean withData) throws NotFound,
+            SQLException, IOException {
         int index = 1;
         getForStation.setInt(index++, netId);
         getForStation.setString(index++, station_code);
         ResultSet rs = getForStation.executeQuery();
-        if(rs.next()) { return extract(rs); }
-        throw new NotFound("No Summary stack for "
-                + netId + " " + station_code);
+        if(rs.next()) {
+            return extract(rs, withData);
+        }
+        throw new NotFound("No Summary stack for " + netId + " " + station_code);
     }
 
     public int getDbIdForStation(NetworkId net, String station_code)
@@ -209,16 +240,36 @@ public class JDBCSummaryHKStack extends JDBCTable {
                 .getDbId(net));
         getForStation.setString(index++, station_code);
         ResultSet rs = getForStation.executeQuery();
-        if(rs.next()) { return rs.getInt("hksummary_id"); }
+        if(rs.next()) {
+            return rs.getInt("hksummary_id");
+        }
         throw new NotFound("No Summary stack for "
                 + NetworkIdUtil.toString(net) + " " + station_code);
+    }
+
+    /**
+     * Gets all summary HKStacks, but without the actual stack.
+     * 
+     * @throws SQLException
+     * @throws IOException
+     * @throws NotFound
+     */
+    public ArrayList getAllWithoutData() throws SQLException, NotFound,
+            IOException {
+        ArrayList out = new ArrayList();
+        ResultSet rs = getAllWithoutData.executeQuery();
+        while(rs.next()) {
+            out.add(extract(rs, false));
+        }
+        return out;
     }
 
     JDBCHKStack jdbcHKStack;
 
     JDBCSequence hksummarySeq;
 
-    PreparedStatement uncalculated, get, put, update, getForStation;
+    PreparedStatement uncalculated, get, put, update, getForStation,
+            getAllWithoutData;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCSummaryHKStack.class);
 }

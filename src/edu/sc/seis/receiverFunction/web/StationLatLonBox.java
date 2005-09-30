@@ -39,7 +39,7 @@ public class StationLatLonBox extends StationList {
     }
     
 
-    public String getVelocityTemplate() {
+    public String getVelocityTemplate(HttpServletRequest req) {
         return "stationLatLonBox.vm";
     }
     

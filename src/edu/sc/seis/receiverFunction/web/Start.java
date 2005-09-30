@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.VelocityContext;
 import org.mortbay.jetty.servlet.ServletHandler;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
@@ -26,20 +27,21 @@ public class Start {
 
     public static void main(String[] args) throws Exception {
         Properties props = Initializer.loadProperties(args);
+        PropertyConfigurator.configure(props);
         ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(props.getProperty("fissuresUtil.database.url"));
         Set servletStrings = new HashSet();
         ServletHandler rootHandler = new ServletFromSet(servletStrings);
         edu.sc.seis.rev.RevUtil.populateJetty("/networkList.html",
-                                            "/networkList.html",
-                                            "edu.sc.seis.receiverFunction.web.NetworkList",
-                                            servletStrings,
-                                            rootHandler);
+                                              "/networkList.html",
+                                              "edu.sc.seis.receiverFunction.web.NetworkList",
+                                              servletStrings,
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/stationList.html",
-                                            "/stationList.html",
-                                            "edu.sc.seis.receiverFunction.web.StationList",
-                                            servletStrings,
-                                            rootHandler);
+                                              "/stationList.html",
+                                              "edu.sc.seis.receiverFunction.web.StationList",
+                                              servletStrings,
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/stationsNearBy.html",
                                               "/stationsNearBy.html",
                                               "edu.sc.seis.receiverFunction.web.StationsNearBy",
@@ -56,30 +58,31 @@ public class Start {
                                               servletStrings,
                                               rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/station.html",
-                                            "/station.html",
-                                            "edu.sc.seis.receiverFunction.web.Station",
-                                            servletStrings,
-                                            rootHandler);
+                                              "/station.html",
+                                              "edu.sc.seis.receiverFunction.web.Station",
+                                              servletStrings,
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/summaryHKStack.png",
-                                            "/summaryHKStack.png",
-                                            "edu.sc.seis.receiverFunction.web.SummaryHKStackImageServlet",
-                                            servletStrings,
-                                            rootHandler);
+                                              "/summaryHKStack.png",
+                                              "edu.sc.seis.receiverFunction.web.SummaryHKStackImageServlet",
+                                              servletStrings,
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/stationEvent.html",
-                                            "/stationEvent.html",
-                                            "edu.sc.seis.receiverFunction.web.RFStationEvent",
-                                            servletStrings,
-                                            rootHandler);
+                                              "/stationEvent.html",
+                                              "edu.sc.seis.receiverFunction.web.RFStationEvent",
+                                              servletStrings,
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/hkstackimage.png",
                                               "/hkstackimage.png",
                                               "edu.sc.seis.receiverFunction.web.HKStackImageServlet",
                                               servletStrings,
                                               rootHandler);
-       /* edu.sc.seis.rev.RevUtil.populateJetty("/hkphasestackimage.png",
-                                              "/hkphasestackimage.png",
-                                              "edu.sc.seis.receiverFunction.web.HKPhaseStackImage",
-                                              servletStrings,
-                                              sh);*/
+        /*
+         * edu.sc.seis.rev.RevUtil.populateJetty("/hkphasestackimage.png",
+         * "/hkphasestackimage.png",
+         * "edu.sc.seis.receiverFunction.web.HKPhaseStackImage", servletStrings,
+         * sh);
+         */
         edu.sc.seis.rev.RevUtil.populateJetty("/waveforms.png",
                                               "/waveforms.png",
                                               "edu.sc.seis.receiverFunction.web.SeismogramImage",
@@ -100,7 +103,6 @@ public class Start {
                                               "edu.sc.seis.receiverFunction.web.AnalyticPhaseSeismogramImage",
                                               servletStrings,
                                               rootHandler);
-        
         edu.sc.seis.rev.RevUtil.populateJetty("/hklatlon.png",
                                               "/hklatlon.png",
                                               "edu.sc.seis.receiverFunction.web.HKLatLonPlot",
@@ -125,8 +127,15 @@ public class Start {
                                               "/receiverFunction.zip",
                                               "edu.sc.seis.receiverFunction.web.ReceiverFunctionZip",
                                               servletStrings,
-                                                                                    rootHandler);
-
+                                              rootHandler);
+        edu.sc.seis.rev.RevUtil.populateJetty("/overview.txt",
+                                              "edu.sc.seis.receiverFunction.web.Overview",
+                                              servletStrings,
+                                              rootHandler);
+        edu.sc.seis.rev.RevUtil.populateJetty("/overview.html",
+                                              "edu.sc.seis.receiverFunction.web.Overview",
+                                              servletStrings,
+                                              rootHandler);
         ServletHandler axisHandler = new ServletHandler();
         axisHandler.addServlet("Earthquakes",
                                "/earthquakes/*",
@@ -142,14 +151,16 @@ public class Start {
         handlers.add(axisHandler);
         edu.sc.seis.rev.Start.runREV(args, handlers);
     }
-    
+
     public static VelocityContext getDefaultContext() {
-        String warning = "<h2>\n"+
-"<p><b>WARNING:</b>I have found an error in our stacking code, and am recalculating all of the stacks. \n"+
-"Until that finishes there will likely be many stations with missing or wrong stacks. Sorry. </p>\n"+
-"</h2>";
+        String warning = "<h2>\n"
+                + "<p><b>WARNING:</b>I have found an error in our stacking code, and am recalculating all of the stacks. \n"
+                + "Until that finishes there will likely be many stations with missing or wrong stacks. Sorry. </p>\n"
+                + "</h2>";
         VelocityContext context = new VelocityContext();
-        context.put("header", "<a href=\"/ears_tmp\"><img src=\"earslogo.png\"/></a><br/>"+warning);
+        context.put("header",
+                    "<a href=\"/ears_tmp\"><img src=\"earslogo.png\"/></a><br/>"
+                            + warning);
         return context;
     }
 }

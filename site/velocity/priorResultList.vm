@@ -12,14 +12,16 @@ $header
 <table>
 <tr>
 <td class="headodd">Code</td>
-<td class="headeven">Name</td>
+<td class="headeven">Method</td>
+<td class="headodd">Reference</td>
+<td class="headeven">URL</td>
 </tr>
 #foreach($ref in $priorResults)
 <tr>
 <td class="odd"><a href="comparePriorResult.html?name=${ref.name}">$ref.name</a></td>
 <td class="even">$ref.method</td>
 <td class="even">$ref.reference</td>
-<td class="even">$ref.URL</td>
+<td class="even"><a href="$ref.URL">$ref.URL</a></td>
 </td>
 </tr>
 #end

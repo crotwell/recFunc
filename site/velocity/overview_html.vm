@@ -1,0 +1,54 @@
+<html>
+<head>
+<title>All Stations in EARS</title>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+	
+<div id="content">
+
+$header
+
+<table>
+<tr>
+<td class="headodd">Net</td>
+<td class="headodd">Station</td>
+<td class="headodd">Name</td>
+<td class="headodd">Lat</td>
+<td class="headodd">Lon</td>
+<td class="headodd">Est. Thick</td>
+<td class="headodd">Est. Vp/Vs</td>
+<td class="headodd">Assumed Vp</td>
+<td class="headodd">Vs</td>
+<td class="headodd">Poissons Ratio</td>
+<td class="headodd">Num EQ</td>
+</tr>
+#foreach($sta in $stationList)
+<tr>
+<td class="odd"><a href="network.html?netdbid=$sta.net.getDbId()">$sta.net.getCodeWithYear()</a></td>
+<td class="odd"><a href="station.html?netdbid=$net.getDbId()&stacode=$sta.getCode()">$sta.getCode()</a></td>
+<td class="even"><a href="station.html?netdbid=$net.getDbId()&stacode=$sta.getCode()">$sta.getName()</a></td>
+<td class="odd">$sta.getOrientedLatitude()</td>
+<td class="even">$sta.getOrientedLongitude()</td>
+<td class="odd">$fissures.formatQuantity($!summary.get($sta).getSum().getMaxValueH())</td>
+<td class="even">$!summary.get($sta).getSum().getMaxValueK()</td>
+<td class="odd">$fissures.formatQuantity($!summary.get($sta).getSum().getAlpha())</td>
+<td class="even">$fissures.formatQuantity($!summary.get($sta).getSum().getVs())</td>
+<td class="odd">$!summary.get($sta).getSum().getPoissonsRatio()</td>
+<td class="even">$!numEQ.get($sta)</td>
+</tr>
+#end
+</table>
+
+
+<div id="footer2" align="center">
+  <a href="http://seis.sc.edu">
+    <img src="seislogo.gif" alt="Seismology at USC" title="USC"/>
+  </a>
+  <a href="http://www.iris.edu">
+    <img src="irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
+  </a>
+</div>
+</div>
+</body>
+</html>

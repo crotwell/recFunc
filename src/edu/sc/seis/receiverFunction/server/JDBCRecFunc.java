@@ -348,7 +348,7 @@ public class JDBCRecFunc extends JDBCTable {
         return result;
     }
     
-    public CachedResult extractWithoutSeismograms(ResultSet rs) throws NotFound, FileNotFoundException, IOException, SQLException, FissuresException {
+    public CachedResult extractWithoutSeismograms(ResultSet rs) throws NotFound, FileNotFoundException, IOException, SQLException {
 
         Origin origin = jdbcOrigin.get(rs.getInt("origin_id"));
         EventAttr eventAttr = jdbcEventAttr.get(rs.getInt("eventAttr_id"));

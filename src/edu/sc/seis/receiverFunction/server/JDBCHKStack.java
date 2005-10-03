@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
+import edu.iris.Fissures.AuditInfo;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.NetworkId;
@@ -18,8 +19,10 @@ import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.NetworkIdUtil;
+import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.TauModelException;
+import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.JDBCSequence;
@@ -33,6 +36,10 @@ import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
+import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
+import edu.sc.seis.fissuresUtil.xml.MemoryDataSet;
+import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
+import edu.sc.seis.fissuresUtil.xml.StdDataSetParamNames;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.sod.ConfigurationException;
@@ -245,6 +252,7 @@ public class JDBCHKStack extends JDBCTable {
     public HKStack extract(ResultSet rs, boolean compact) throws  NotFound,
             IOException, SQLException {
         Channel[] channels = jdbcRecFunc.extractChannels(rs);
+        CachedResult recFunc = jdbcRecFunc.extractWithoutSeismograms(rs);
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
         CmplxArray2D[] data = jdbcHKRealImag.extractData(rs, numH, numK);
@@ -264,6 +272,7 @@ public class JDBCHKStack extends JDBCTable {
                                   data[1],
                                   data[2],
                                   channels[0]);
+        out.setOrigin(recFunc.prefOrigin);
         if (compact) {
             out.compact();
         }

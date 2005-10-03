@@ -203,7 +203,18 @@ public class StackSummary {
                                                         staCode,
                                                         minPercentMatch,
                                                         false);
-        HKStack temp = SumHKStack.calculateForPhase(it,
+        SumHKStack sumStack = sumForPhase(it, minPercentMatch, smallestH, phase, usePhaseWeight);
+        TimeOMatic.print("sum for " + netCode + "." + staCode);
+        return sumStack;
+    }
+
+    public SumHKStack sumForPhase(Iterator hkstackIterator,
+                                  float minPercentMatch,
+                                  QuantityImpl smallestH,
+                                  String phase,
+                                  boolean usePhaseWeight)
+            throws FissuresException, NotFound, IOException, SQLException {
+        HKStack temp = SumHKStack.calculateForPhase(hkstackIterator,
                                                     smallestH,
                                                     minPercentMatch,
                                                     usePhaseWeight,
@@ -213,7 +224,6 @@ public class StackSummary {
                                              temp,
                                              -1,
                                              -1);
-        TimeOMatic.print("sum for " + netCode + "." + staCode);
         return sumStack;
     }
 

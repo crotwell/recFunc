@@ -21,6 +21,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import org.w3c.dom.Element;
 import edu.iris.Fissures.FissuresException;
+import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfNetwork.Station;
@@ -978,7 +979,19 @@ public class HKStack implements Serializable {
     public DataSetSeismogram getRecFunc() {
         return recFunc;
     }
-
+    
+    public void setOrigin(Origin origin) {
+        this.origin = origin;
+    }
+    
+    public Origin getOrigin() {
+        return origin;
+    }
+    /** 
+     * Optional
+     */
+    Origin origin = null;
+    
     public float[][] getStack() {
         return stack;
     }

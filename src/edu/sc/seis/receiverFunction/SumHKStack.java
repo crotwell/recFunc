@@ -144,10 +144,10 @@ public class SumHKStack {
     }
 
     public static HKStack calculateForPhase(Iterator iterator,
-                                     QuantityImpl smallestH,
-                                     float minPercentMatch,
-                                     boolean usePhaseWeight,
-                                     String phase) {
+                                            QuantityImpl smallestH,
+                                            float minPercentMatch,
+                                            boolean usePhaseWeight,
+                                            String phase) {
         Channel chan = null;
         int numStacks = 0;
         float[][] sumStack = null;
@@ -161,30 +161,45 @@ public class SumHKStack {
                 first = individual;
                 chan = first.chan;
                 smallestHIndex = first.getHIndex(smallestH);
-                sumStack = new float[first.getStack().length
-                        - smallestHIndex][first.getStack()[0].length];
-                phaseWeight = new CmplxArray2D(sumStack.length, sumStack[0].length);
+                sumStack = new float[first.getStack().length - smallestHIndex][first.getStack()[0].length];
+                phaseWeight = new CmplxArray2D(sumStack.length,
+                                               sumStack[0].length);
             }
             for(int hIndex = 0; hIndex < sumStack.length; hIndex++) {
                 int shiftHIndex = smallestHIndex + hIndex;
                 for(int kIndex = 0; kIndex < sumStack[0].length; kIndex++) {
                     if(usePhaseWeight) {
-                        Cmplx val;
-                        if(phase.equals("Ps")) {
+                        Cmplx val = new Cmplx(0, 0);
+                        if(phase.equals("Ps") || phase.equals("all")) {
                             val = individual.getAnalyticPs().get(shiftHIndex,
                                                                  kIndex);
-                        } else if(phase.equals("PpPs")) {
+                            sumStack[hIndex][kIndex] += val.real();
+                            phaseWeight.set(hIndex,
+                                            kIndex,
+                                            Cmplx.add(phaseWeight.get(hIndex,
+                                                                      kIndex),
+                                                      val.unitVector()));
+                        }
+                        if(phase.equals("PpPs") || phase.equals("all")) {
                             val = individual.getAnalyticPpPs().get(shiftHIndex,
                                                                    kIndex);
-                        } else if(phase.equals("PsPs")) {
+                            sumStack[hIndex][kIndex] += val.real();
+                            phaseWeight.set(hIndex,
+                                            kIndex,
+                                            Cmplx.add(phaseWeight.get(hIndex,
+                                                                      kIndex),
+                                                      val.unitVector()));
+                        }
+                        if(phase.equals("PsPs") || phase.equals("all")) {
                             val = individual.getAnalyticPsPs().get(shiftHIndex,
                                                                    kIndex);
-                        } else {
-                            throw new IllegalArgumentException("Phase "+phase+" not recongnized");
+                            sumStack[hIndex][kIndex] -= val.real();
+                            phaseWeight.set(hIndex,
+                                            kIndex,
+                                            Cmplx.sub(phaseWeight.get(hIndex,
+                                                                      kIndex),
+                                                      val.unitVector()));
                         }
-                        sumStack[hIndex][kIndex] += val.real();
-                        phaseWeight.set(hIndex, kIndex, Cmplx.add(phaseWeight.get(hIndex, kIndex),
-                                                                     val.unitVector()));
                     }
                 }
             }
@@ -193,22 +208,35 @@ public class SumHKStack {
         for(int hIndex = 0; hIndex < sumStack.length; hIndex++) {
             for(int kIndex = 0; kIndex < sumStack[0].length; kIndex++) {
                 sumStack[hIndex][kIndex] /= numStacks;
+                if(phase.equals("all")) {
+                    sumStack[hIndex][kIndex] /= 3;
+                }
                 if(usePhaseWeight) {
-                    sumStack[hIndex][kIndex] = (float)(sumStack[hIndex][kIndex] * Math.pow(phaseWeight.get(hIndex, kIndex).mag()
-                                                                                    / numStacks,
-                                                                            2));
+                    if(phase.equals("all")) {
+                        sumStack[hIndex][kIndex] = (float)(sumStack[hIndex][kIndex] * Math.pow(phaseWeight.get(hIndex,
+                                                                                                               kIndex)
+                                                                                                       .mag()
+                                                                                                       / numStacks
+                                                                                                       / 3,
+                                                                                               2));
+                    } else {
+                        sumStack[hIndex][kIndex] = (float)(sumStack[hIndex][kIndex] * Math.pow(phaseWeight.get(hIndex,
+                                                                                                               kIndex)
+                                                                                                       .mag()
+                                                                                                       / numStacks,
+                                                                                               2));
+                    }
                 }
             }
         }
         HKStack hkStack = new HKStack(first.getAlpha(),
                                       0f,
                                       minPercentMatch,
-                                      first.getMinH()
-                                              .add(first.getStepH()
-                                                      .multiplyBy(smallestHIndex)),
-                                                      first.getStepH(),
-                                                      first.getNumH() - smallestHIndex,
-                                                      first.getMinK(),
+                                      first.getMinH().add(first.getStepH()
+                                              .multiplyBy(smallestHIndex)),
+                                      first.getStepH(),
+                                      first.getNumH() - smallestHIndex,
+                                      first.getMinK(),
                                       first.getStepK(),
                                       first.getNumK(),
                                       first.getWeightPs(),

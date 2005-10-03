@@ -1,36 +1,70 @@
 stations {display:table;}
-stations:before {content: "Stations: ";}
+stations:before {content: "Stations: ";
+                     font-weight: bold;}
 station {display:table-row;}
-station *{display:table-cell;}
+station *{display:table-cell;
+          padding: 10px 0 0 25px;}
 
-code, name, description, owner, comment, site { display:block; }
-network > code:before { content: "Code: " }
+code, name, description, owner, comment, site { display:block;}
+code {
+      font-size: 18px;
+      color: #070390}
+      
+operator:before {
+                 content:"Operator: ";
+                     font-weight: bold;}
+network > code:before { content: "Code: " ;
+                     font-weight: bold;}
 network > code { display:block; color: red }
-name:before { content: "Name: "}
-description:before { content: "Description: ";}
-owner:before { content: "Owner: ";}
+name:before { content: "Name: ";
+                     font-weight: bold;}
+description:before { content: "Description: ";
+                     font-weight: bold;}
+owner:before { content: "Owner: ";
+                     font-weight: bold;}
 station > code { display:block; }
+
+comment:before {
+                 content:"Comment: ";
+                     font-weight: bold;}
 
 effective_time {display:table;}
 effective_time start {display:table-cell;}
 effective_time end {display.table-cell;}
-effective_time:before { content: "Effective Time: "; }
+effective_time:before { content: "Effective Time: ";
+                        font-weight: bold;
+                    }
 
 station > channels {display:table;}
-station > channels:before { content: "Channels: "; }
+station > channels:before { content: "Channels: ";
+                     font-weight: bold; }
 channels > channel {display:table-row;}
 channels > channel * {display:table-cell}
+channel {padding: 10px 0 10px 25px;}
 
 location { display:block; }
-location > latitude {display:block; }
-location > latitude:before { content: "Lat: "; }
+location > latitude {display:block;}
+location > latitude:before { content: "Lat: ";
+                     font-weight: bold; }
 location > longitude {display:block; }
-location > longitude:before { content: "Lon: "; }
+location > longitude:before { content: "Lon: ";
+                     font-weight: bold; }
 
-site:before {content: "Site: "; }
+site:before {content: "Site: ";
+                     font-weight: bold; }
 
 networkList {display:table; }
-networkList:before { content: "Networks: "; }
+network{
+        padding: 10px 0 10px 25px;}
+network:before {
+                content:"Network: ";
+                     font-weight: bold;}
+networkList:before { content: "Networks: "; 
+                     font-weight: bold;
+                     font-size: 18px;
+                     padding-bottom: 15px;}
+networkList {
+             padding: 10px 0 10px 25px;}
 networkRef {display:table-row;}
 networkRef > code {display:table-cell;}
 networkRef > name {display:table-cell;}

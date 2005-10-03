@@ -11,9 +11,11 @@ import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Properties;
 import org.apache.log4j.PropertyConfigurator;
 import edu.iris.Fissures.FissuresException;
+import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.Network;
 import edu.iris.Fissures.IfNetwork.NetworkAttr;
 import edu.iris.Fissures.IfNetwork.NetworkId;
@@ -185,6 +187,30 @@ public class StackSummary {
         } else {
             return null;
         }
+    }
+    
+
+
+    public SumHKStack sumForPhase(String netCode,
+                          String staCode,
+                          float minPercentMatch,
+                          QuantityImpl smallestH,
+                          String phase,
+                          boolean usePhaseWeight) throws FissuresException, NotFound,
+            IOException, SQLException {
+        logger.info("in sum for "+netCode+"."+staCode);
+        TimeOMatic.start();
+        Iterator it = jdbcHKStack.getIteratorForStation(netCode, staCode, minPercentMatch, false);
+            HKStack temp = SumHKStack.calculateForPhase(it,
+                                              smallestH,
+                                              minPercentMatch,
+                                             usePhaseWeight,
+                                             phase);
+            SumHKStack sumStack = new SumHKStack(minPercentMatch,
+                                                 smallestH,
+                                                 temp, -1, -1);
+            TimeOMatic.print("sum for "+netCode+"."+staCode);
+            return sumStack;
     }
     
     public static void saveImage(SumHKStack sumStack,

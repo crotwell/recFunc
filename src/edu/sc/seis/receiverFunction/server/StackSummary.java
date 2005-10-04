@@ -203,7 +203,11 @@ public class StackSummary {
                                                         staCode,
                                                         minPercentMatch,
                                                         false);
-        SumHKStack sumStack = sumForPhase(it, minPercentMatch, smallestH, phase, usePhaseWeight);
+        SumHKStack sumStack = sumForPhase(it,
+                                          minPercentMatch,
+                                          smallestH,
+                                          phase,
+                                          usePhaseWeight);
         TimeOMatic.print("sum for " + netCode + "." + staCode);
         return sumStack;
     }
@@ -385,5 +389,9 @@ public class StackSummary {
 
     public JDBCSummaryHKStack getJdbcSummary() {
         return jdbcSummary;
+    }
+
+    public Connection getConnection() {
+        return jdbcHKStack.getConnection();
     }
 }

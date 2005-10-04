@@ -65,20 +65,22 @@ public class EarthquakeHKPlot extends HttpServlet {
             float match = RevUtil.getFloat("percentMatch", req, 80);
             QuantityImpl smallestH = HKStack.getBestSmallestH((VelocityStation)stationList.get(0));
             ArrayList stackList = new ArrayList();
-            HKStackIterator it = jdbcHKStack.getIteratorForStation(net.getCode(),
-                                                                   staCode,
-                                                                   match,
-                                                                   true);
-            while(it.hasNext()) {
-                HKStack stack = (HKStack)it.next();
-                stackList.add(new HKMax(stack, smallestH));
+            synchronized(jdbcHKStack.getConnection()) {
+                HKStackIterator it = jdbcHKStack.getIteratorForStation(net.getCode(),
+                                                                       staCode,
+                                                                       match,
+                                                                       true);
+                while(it.hasNext()) {
+                    HKStack stack = (HKStack)it.next();
+                    stackList.add(new HKMax(stack, smallestH));
+                }
             }
             HKXYDataset dataset = new HKXYDataset(stackList);
             String title = "Maxima for Earthquakes at " + net.getCode() + "."
                     + staCode;
-            /* the following code is copied from the impl of this method, with only
-             * the yAxis.setInverted(true); line added.
-             * JFreeChart chart =
+            /*
+             * the following code is copied from the impl of this method, with
+             * only the yAxis.setInverted(true); line added. JFreeChart chart =
              * ChartFactory.createScatterPlot(RevUtil.get("title", req, title),
              * RevUtil.get("xAxisLabel", req, "Vp/Vs"),
              * RevUtil.get("yAxisLabel", req, "H"), dataset,

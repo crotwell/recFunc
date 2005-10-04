@@ -75,56 +75,64 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             String phase = RevUtil.get("phase", req, "all");
             float minBaz = RevUtil.getFloat("minBaz", req, 0);
             float maxBaz = RevUtil.getFloat("maxBaz", req, 360);
-            
-
             JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel()
                     .getStationTable();
             int[] dbids = jdbcStation.getDBIds(net.get_id(), staCode);
             edu.iris.Fissures.IfNetwork.Station station = jdbcStation.get(dbids[0]);
-            QuantityImpl smallestH = new QuantityImpl(RevUtil.getFloat("smallestH", req, (float)HKStack.getBestSmallestH(station).getValue(UnitImpl.KILOMETER)), UnitImpl.KILOMETER);
-            
+            QuantityImpl smallestH = new QuantityImpl(RevUtil.getFloat("smallestH",
+                                                                       req,
+                                                                       (float)HKStack.getBestSmallestH(station)
+                                                                               .getValue(UnitImpl.KILOMETER)),
+                                                      UnitImpl.KILOMETER);
             if(phase.equals("all") && minBaz == 0 && maxBaz == 360) {
                 if(usePhaseWeight) {
                     try {
                         // phase weight stacks are stored, so don't need to
                         // calculate
-                        int dbid = jdbcSumHKStack.getDbIdForStation(net.get_id(),
-                                                                    staCode);
-                        sumStack = jdbcSumHKStack.get(dbid);
-                        System.out.println("Got summary plot from database "
-                                + dbid);
+                        synchronized(jdbcSumHKStack.getConnection()) {
+                            int dbid = jdbcSumHKStack.getDbIdForStation(net.get_id(),
+                                                                        staCode);
+                            sumStack = jdbcSumHKStack.get(dbid);
+                            System.out.println("Got summary plot from database "
+                                    + dbid);
+                        }
                     } catch(NotFound e) {
                         sumStack = null;
                     }
                 } else {
-                    sumStack = stackSummary.sum(station.get_id().network_id.network_code,
-                                                staCode,
-                                                minPercentMatch,
-                                                smallestH,
-                                                doBootstrap,
-                                                usePhaseWeight);
-                }
-            } else {
-                if(minBaz == 0 && maxBaz == 360) {
-                sumStack = stackSummary.sumForPhase(station.get_id().network_id.network_code,
+                    synchronized(stackSummary.getConnection()) {
+                        sumStack = stackSummary.sum(station.get_id().network_id.network_code,
                                                     staCode,
                                                     minPercentMatch,
                                                     smallestH,
-                                                    phase,
+                                                    doBootstrap,
                                                     usePhaseWeight);
+                    }
+                }
+            } else {
+                if(minBaz == 0 && maxBaz == 360) {
+                    synchronized(stackSummary.getConnection()) {
+                        sumStack = stackSummary.sumForPhase(station.get_id().network_id.network_code,
+                                                            staCode,
+                                                            minPercentMatch,
+                                                            smallestH,
+                                                            phase,
+                                                            usePhaseWeight);
+                    }
                 } else {
                     // subset based on Baz
-
-                    Iterator it = jdbcHKStack.getIteratorForStation(station.get_id().network_id.network_code,
-                                                                    staCode,
-                                                                    minPercentMatch,
-                                                                    false);
-                    BazIterator bazIt = new BazIterator(it, minBaz, maxBaz);
-                    sumStack = stackSummary.sumForPhase(bazIt,
-                                                        minPercentMatch,
-                                                        smallestH,
-                                                        phase,
-                                                        usePhaseWeight);
+                    synchronized(jdbcHKStack.getConnection()) {
+                        Iterator it = jdbcHKStack.getIteratorForStation(station.get_id().network_id.network_code,
+                                                                        staCode,
+                                                                        minPercentMatch,
+                                                                        false);
+                        BazIterator bazIt = new BazIterator(it, minBaz, maxBaz);
+                        sumStack = stackSummary.sumForPhase(bazIt,
+                                                            minPercentMatch,
+                                                            smallestH,
+                                                            phase,
+                                                            usePhaseWeight);
+                    }
                 }
             }
             logger.info("before check for null");

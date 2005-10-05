@@ -23,6 +23,7 @@ import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.fissuresUtil.display.BackAzimuthDisplay;
 import edu.sc.seis.fissuresUtil.display.RecordSectionDisplay;
 import edu.sc.seis.fissuresUtil.display.registrar.PhaseAlignedTimeConfig;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
@@ -102,7 +103,17 @@ public class RecordSectionImage extends HttpServlet {
             Dimension dim = new Dimension(xdim, ydim);
             res.setContentType("image/png");
             OutputStream out = res.getOutputStream();
-            RecordSectionDisplay disp = new RecordSectionDisplay();
+            RecordSectionDisplay disp;
+            String recordSectionType = RevUtil.get("type", req, "dist");
+            System.out.println("Record Section TYpe = "+recordSectionType);
+            if (recordSectionType.equals("dist")) {
+                disp = new RecordSectionDisplay();
+            } else if (recordSectionType.equals("baz")) {
+                disp = new BackAzimuthDisplay();
+            } else {
+                throw new RuntimeException("Unknown type: "+recordSectionType);
+            }
+            disp.setMinSeisPixelHeight(RevUtil.getInt("minSeisHeight",req, 80));
             disp.setTimeConfig(new PhaseAlignedTimeConfig("ttp"));
             disp.add(itrDSS);
             disp.outputToPNG(out, dim);

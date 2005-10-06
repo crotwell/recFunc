@@ -199,7 +199,7 @@ public class StackSummary {
             throws FissuresException, NotFound, IOException, SQLException {
         logger.info("in sum for " + netCode + "." + staCode);
         TimeOMatic.start();
-        Iterator it = jdbcHKStack.getIteratorForStation(netCode,
+        HKStackIterator it = jdbcHKStack.getIteratorForStation(netCode,
                                                         staCode,
                                                         minPercentMatch,
                                                         false);
@@ -208,6 +208,7 @@ public class StackSummary {
                                           smallestH,
                                           phase,
                                           usePhaseWeight);
+        it.close();
         TimeOMatic.print("sum for " + netCode + "." + staCode);
         return sumStack;
     }

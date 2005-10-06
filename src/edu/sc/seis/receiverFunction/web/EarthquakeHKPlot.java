@@ -74,6 +74,7 @@ public class EarthquakeHKPlot extends HttpServlet {
                     HKStack stack = (HKStack)it.next();
                     stackList.add(new HKMax(stack, smallestH));
                 }
+                it.close();
             }
             HKXYDataset dataset = new HKXYDataset(stackList);
             String title = "Maxima for Earthquakes at " + net.getCode() + "."

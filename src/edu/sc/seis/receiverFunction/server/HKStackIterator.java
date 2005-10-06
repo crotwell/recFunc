@@ -1,14 +1,16 @@
 package edu.sc.seis.receiverFunction.server;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
 public class HKStackIterator implements Iterator {
 
-    public HKStackIterator(ResultSet rs, JDBCHKStack jdbcHKStack) {
+    public HKStackIterator(ResultSet rs, JDBCHKStack jdbcHKStack, boolean autoCommit) {
         this.rs = rs;
         this.jdbcHKStack = jdbcHKStack;
+        this.autoCommit = autoCommit;
     }
 
     public boolean hasNext() {
@@ -34,6 +36,7 @@ public class HKStackIterator implements Iterator {
     
     public void close() throws SQLException {
         rs.close();
+        jdbcHKStack.getConnection().setAutoCommit(autoCommit);
     }
     
     private void checkNext() {
@@ -45,6 +48,8 @@ public class HKStackIterator implements Iterator {
             throw new RuntimeException(e);
         }
     }
+    
+    boolean autoCommit;
 
     int num = 1;
     
@@ -53,4 +58,5 @@ public class HKStackIterator implements Iterator {
     ResultSet rs;
 
     JDBCHKStack jdbcHKStack;
+
 }

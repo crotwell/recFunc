@@ -30,6 +30,7 @@ public class Start {
         PropertyConfigurator.configure(props);
         ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(props.getProperty("fissuresUtil.database.url"));
+        logger.info("connecting to database: "+ConnMgr.getURL());
         Set servletStrings = new HashSet();
         ServletHandler rootHandler = new ServletFromSet(servletStrings);
         edu.sc.seis.rev.RevUtil.populateJetty("/networkList.html",
@@ -167,4 +168,10 @@ public class Start {
                             + warning);
         return context;
     }
+    
+    public static String getDataLoc() {
+        return "../Ears";
+    }
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Start.class);
 }

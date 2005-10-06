@@ -50,15 +50,7 @@ import edu.sc.seis.sod.velocity.network.VelocityStation;
 public class Station extends Revlet {
 
     public Station() throws SQLException, ConfigurationException, Exception {
-        this("jdbc:postgresql:ears", System.getProperty("user.home")
-                + "/CacheServer/Ears/Data");
-    }
-
-    public Station(String databaseURL, String dataloc) throws SQLException,
-            ConfigurationException, Exception {
-        ConnMgr.setDB(ConnMgr.POSTGRES);
-        ConnMgr.setURL(databaseURL);
-        DATA_LOC = dataloc;
+        DATA_LOC = Start.getDataLoc();
         Connection conn = ConnMgr.createConnection();
         jdbcEventAccess = new JDBCEventAccess(conn);
         jdbcChannel = new JDBCChannel(conn);

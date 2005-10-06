@@ -47,14 +47,7 @@ public class RecordSectionImage extends HttpServlet {
 
     public RecordSectionImage() throws SQLException, ConfigurationException,
             Exception {
-        this("jdbc:postgresql:ears", RecFuncCacheImpl.getDataLoc());
-    }
-
-    public RecordSectionImage(String databaseURL, String dataloc)
-            throws SQLException, ConfigurationException, Exception {
-        ConnMgr.setDB(ConnMgr.POSTGRES);
-        ConnMgr.setURL(databaseURL);
-        DATA_LOC = dataloc;
+        DATA_LOC = Start.getDataLoc();
         Connection conn = ConnMgr.createConnection();
         jdbcEventAccess = new JDBCEventAccess(conn);
         jdbcChannel = new JDBCChannel(conn);

@@ -760,14 +760,12 @@ public class HKStack implements Serializable {
                                                 analyticPs.getYLength());
         for(int i = 0; i < getNumH(); i++) {
             for(int k = 0; k < getNumK(); k++) {
-                Cmplx ps = Cmplx.mul(analyticPs.get(i, k), getWeightPs()
-                        / analyticPs.get(i, k).mag());
-                Cmplx ppps = Cmplx.mul(analyticPpPs.get(i, k), getWeightPpPs()
-                        / analyticPpPs.get(i, k).mag());
-                Cmplx psps = Cmplx.mul(analyticPsPs.get(i, k), getWeightPsPs()
-                        / analyticPsPs.get(i, k).mag());
-                compactAnalyticPhase.set(i, k, Cmplx.sub(Cmplx.add(ps, ppps),
-                                                         psps));
+                Cmplx ps = Cmplx.mul(analyticPs.get(i, k).zeroOrUnitVector(), getWeightPs());
+                Cmplx ppps = Cmplx.mul(analyticPpPs.get(i, k).zeroOrUnitVector(), getWeightPpPs());
+                Cmplx psps = Cmplx.mul(analyticPsPs.get(i, k).zeroOrUnitVector(), getWeightPsPs());
+                Cmplx val = Cmplx.sub(Cmplx.add(ps, ppps),
+                                      psps);
+                compactAnalyticPhase.set(i, k, val);
             }
         }
         analyticPs = null;

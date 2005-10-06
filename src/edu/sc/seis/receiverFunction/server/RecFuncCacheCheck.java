@@ -14,6 +14,7 @@ import edu.sc.seis.sod.ChannelGroup;
 import edu.sc.seis.sod.CommonAccess;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
+import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.status.StringTree;
 import edu.sc.seis.sod.status.StringTreeLeaf;
 import edu.sc.seis.sod.subsetter.eventChannel.vector.EventVectorSubsetter;
@@ -27,9 +28,19 @@ public class RecFuncCacheCheck implements EventVectorSubsetter {
 
     public RecFuncCacheCheck(Element config) throws ConfigurationException {
         deconConfig = RecFuncProcessor.parseIterDeconConfig(config);
+        String dns = "edu/sc/seis";
+        String serverName = "Ears";
+        Element dnsElement = SodUtil.getElement(config, "serverDNS");
+        if (dnsElement != null) {
+             dns = SodUtil.getNestedText(dnsElement);
+        }
+        Element serverElement = SodUtil.getElement(config, "serverName");
+        if (serverElement != null) {
+             serverName = SodUtil.getNestedText(serverElement);
+        }
         try {
             FissuresNamingService fisName = CommonAccess.getCommonAccess().getFissuresNamingService();
-            cache = new NSRecFuncCache("edu/sc/seis", "Ears", fisName);
+            cache = new NSRecFuncCache(dns, serverName, fisName);
         } catch (SystemException e) {
             throw new ConfigurationException("Problem getting cache server", e);
         }

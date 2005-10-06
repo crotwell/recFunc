@@ -38,6 +38,7 @@ import edu.sc.seis.sod.ChannelGroup;
 import edu.sc.seis.sod.CommonAccess;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
+import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.Start;
 import edu.sc.seis.sod.database.JDBCConfig;
 import edu.sc.seis.sod.process.waveform.vector.WaveformVectorProcess;
@@ -53,6 +54,14 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
     public RecFuncCacheProcessor(Element config) throws ConfigurationException,
             TauModelException {
         super(config);
+        Element dnsElement = SodUtil.getElement(config, "serverDNS");
+        if (dnsElement != null) {
+             dns = SodUtil.getNestedText(dnsElement);
+        }
+        Element serverElement = SodUtil.getElement(config, "serverName");
+        if (serverElement != null) {
+             serverName = SodUtil.getNestedText(serverElement);
+        }
         String modelName = "prem";
         taup = TauPUtil.getTauPUtil(modelName);
         recFunc = new RecFunc(taup, new IterDecon(maxBumps, true, tol, gwidth));

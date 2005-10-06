@@ -237,10 +237,10 @@ public class JDBCHKStack extends JDBCTable {
         getForStation.setString(index++, netCode);
         getForStation.setString(index++, staCode);
         getForStation.setFloat(index++, percentMatch);
+        boolean autoCommit = conn.getAutoCommit();
         getConnection().setAutoCommit(false);
-        System.out.println("getForStation:"+getForStation);
         ResultSet rs = getForStation.executeQuery();
-        HKStackIterator iter = new HKStackIterator(rs, this);
+        HKStackIterator iter = new HKStackIterator(rs, this, autoCommit);
         return iter;
     }
 

@@ -26,13 +26,6 @@ import edu.sc.seis.sod.velocity.network.VelocityStation;
 public class Network extends Revlet {
 
     public Network() throws SQLException, IOException {
-        this("jdbc:postgresql:ears", System.getProperty("user.home")
-                + "/CacheServer/Ears/Data");
-    }
-
-    public Network(String databaseURL, String dataloc) throws SQLException, IOException {
-        ConnMgr.setDB(ConnMgr.POSTGRES);
-        ConnMgr.setURL(databaseURL);
         Connection conn = ConnMgr.createConnection();
         jdbcChannel = new JDBCChannel(conn);
     }

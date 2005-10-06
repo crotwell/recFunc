@@ -96,6 +96,7 @@ public class SumHKStack {
                              QuantityImpl smallestH,
                              float minPercentMatch,
                              boolean usePhaseWeight) {
+        if (individuals.length == 0) {throw new IllegalArgumentException("individual HKStack cannot be length 0");}
         int smallestHIndex = individuals[0].getHIndex(smallestH);
         float[][] sumStack = new float[individuals[0].getStack().length
                 - smallestHIndex][individuals[0].getStack()[0].length];

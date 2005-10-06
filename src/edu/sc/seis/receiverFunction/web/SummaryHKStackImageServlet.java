@@ -21,6 +21,7 @@ import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.receiverFunction.BazIterator;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
+import edu.sc.seis.receiverFunction.server.HKStackIterator;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
@@ -90,13 +91,14 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                         // phase weight stacks are stored, so don't need to
                         // calculate
                         synchronized(jdbcSumHKStack.getConnection()) {
-                            int dbid = jdbcSumHKStack.getDbIdForStation(net.get_id(),
-                                                                        staCode);
-                            sumStack = jdbcSumHKStack.get(dbid);
+                            sumStack = jdbcSumHKStack.getForStation(net.get_id(),
+                                                                        staCode,
+                                                                        true);
                             System.out.println("Got summary plot from database "
-                                    + dbid);
+                                    + net.getCode()+"."+staCode);
                         }
                     } catch(NotFound e) {
+                        logger.debug(e);
                         sumStack = null;
                     }
                 } else {
@@ -122,7 +124,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                 } else {
                     // subset based on Baz
                     synchronized(jdbcHKStack.getConnection()) {
-                        Iterator it = jdbcHKStack.getIteratorForStation(station.get_id().network_id.network_code,
+                        HKStackIterator it = jdbcHKStack.getIteratorForStation(station.get_id().network_id.network_code,
                                                                         staCode,
                                                                         minPercentMatch,
                                                                         false);
@@ -132,6 +134,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                                                             smallestH,
                                                             phase,
                                                             usePhaseWeight);
+                        it.close();
                     }
                 }
             }

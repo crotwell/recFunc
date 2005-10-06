@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.servlet.ServletException;
@@ -18,6 +19,7 @@ import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.sac.FissuresToSac;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
@@ -65,12 +67,22 @@ public class ReceiverFunctionZip extends HttpServlet {
             res.setContentType("application/zip");
             ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(res.getOutputStream()));
             DataOutputStream dos = new DataOutputStream(zip);
+            ArrayList knownEntries = new ArrayList();
             for(int i = 0; i < result.length; i++) {
                 VelocityEvent event = new VelocityEvent(new CacheEvent(result[i].event_attr,
                                                                        result[i].prefOrigin));
                 VelocityStation sta = new VelocityStation(result[i].channels[2].my_site.my_station);
-                ZipEntry entry = new ZipEntry("Ears/" + sta.getNetCode() + "."
-                        + sta.getCode() + "/" + event.getFilizedTime() + ".itr");
+                String entryName = "Ears/" + sta.getNetCode() + "."
+                + sta.getCode() + "/" + event.getFilizedTime() + ".itr";
+                String origEntryName = entryName;
+                int j=2;
+                while(knownEntries.contains(entryName)) {
+                    entryName = origEntryName+"."+j;
+                    j++;
+                }
+                knownEntries.add(entryName);
+                ZipEntry entry = new ZipEntry(entryName);
+                System.out.println("Start new ZipEntry: "+entry);
                 zip.putNextEntry(entry);
                 SacTimeSeries sac = FissuresToSac.getSAC((LocalSeismogramImpl)result[i].radial,
                                                          result[i].channels[2],
@@ -82,6 +94,7 @@ public class ReceiverFunctionZip extends HttpServlet {
             }
             zip.close();
         } catch(Exception e) {
+            GlobalExceptionHandler.handle(e);
             throw new ServletException(e);
         }
     }

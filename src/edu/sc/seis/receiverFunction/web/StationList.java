@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.velocity.VelocityContext;
-import edu.iris.Fissures.Time;
-import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
@@ -28,39 +25,34 @@ import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
 
-
 /**
- * @author crotwell
- * Created on Feb 10, 2005
+ * @author crotwell Created on Feb 10, 2005
  */
 public class StationList extends Revlet {
-    
+
     public StationList() throws SQLException, ConfigurationException, Exception {
         DATA_LOC = Start.getDataLoc();
         Connection conn = ConnMgr.createConnection();
         jdbcEventAccess = new JDBCEventAccess(conn);
-        jdbcChannel  = new JDBCChannel(conn);
+        jdbcChannel = new JDBCChannel(conn);
         jdbcSodConfig = new JDBCSodConfig(conn);
         jdbcRecFunc = new JDBCRecFunc(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, DATA_LOC);
         jdbcHKStack = new JDBCHKStack(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
         jdbcSumHKStack = new JDBCSummaryHKStack(jdbcHKStack);
     }
 
-    /**
-     *
-     */
-    public RevletContext getContext(HttpServletRequest req,
-                                    HttpServletResponse res) throws Exception {
+    public RevletContext getContext(HttpServletRequest req, HttpServletResponse res) throws Exception {
         RevletContext context = new RevletContext(getVelocityTemplate(req), Start.getDefaultContext());
         ArrayList stationList = getStations(req, context);
-        logger.debug("getStations done: "+stationList.size());
+        logger.debug("getStations done: " + stationList.size());
         HashMap summary = getSummaries(stationList, context);
-        logger.debug("getSummaries done: "+summary.keySet().size());
+        logger.debug("getSummaries done: " + summary.keySet().size());
         HashMap numEQ = new HashMap();
         Iterator it = stationList.iterator();
         while(it.hasNext()) {
             VelocityStation sta = (VelocityStation)it.next();
-            numEQ.put(sta, new Integer(jdbcRecFunc.countSeccessfulEvents(sta.getNet().getDbId(), sta.get_code(), 80.0f)));
+            numEQ.put(sta,
+                      new Integer(jdbcRecFunc.countSeccessfulEvents(sta.getNet().getDbId(), sta.get_code(), 80.0f)));
         }
         logger.debug("count successful events done");
         context.put("stationList", stationList);
@@ -68,9 +60,31 @@ public class StationList extends Revlet {
         context.put("numEQ", numEQ);
         return context;
     }
-    
+
     public String getVelocityTemplate(HttpServletRequest req) {
-        return "stationList.vm";
+        String path = req.getServletPath();
+        System.out.println("path: " + path+"  "+req.getContextPath()+"  "+req.getPathInfo()+"  "+req.getPathTranslated()+"  "+req.getServletPath());
+        if(path == null) {
+            path = "";
+        }
+        if(path.endsWith(".html")) {
+            return "stationList.vm";
+        } else {
+            return "stationListTxt.vm";
+        }
+    }
+
+    protected void setContentType(HttpServletRequest req, HttpServletResponse response) {
+        String path = req.getServletPath();
+        if(path.endsWith(".txt")) {
+            response.setContentType("text/plain");
+        } else if(path.endsWith(".xml")) {
+            response.setContentType("text/xml");
+        } else if(path.endsWith(".html")) {
+            response.setContentType("text/html");
+        } else {
+            throw new RuntimeException("Unknown URL: " + req.getRequestURI());
+        }
     }
     
     public ArrayList getStations(HttpServletRequest req, RevletContext context) throws SQLException, NotFound {
@@ -84,11 +98,14 @@ public class StationList extends Revlet {
         }
         return stationList;
     }
-    
-    /** 
-     * Populates a hashmap with keys (objects of type Station) from the list
-     * and values of SumHKStack. Also populates the dbid for the stations and network.
-     * @param context TODO
+
+    /**
+     * Populates a hashmap with keys (objects of type Station) from the list and
+     * values of SumHKStack. Also populates the dbid for the stations and
+     * network.
+     * 
+     * @param context
+     *            TODO
      * @throws SQLException
      * @throws IOException
      */
@@ -98,48 +115,49 @@ public class StationList extends Revlet {
         while(it.hasNext()) {
             VelocityStation sta = (VelocityStation)it.next();
             try {
-            sta.setDbId(jdbcChannel.getStationTable().getDBId(sta.get_id()));
-            int netDbId = jdbcChannel.getNetworkTable().getDbId(sta.getNet().get_id());
-            sta.getNet().setDbId(netDbId);
-            SumHKStack sumStack = jdbcSumHKStack.getForStation(netDbId, sta.get_code(), false);
-            summary.put(sta, sumStack);
-            } catch (NotFound e) {
+                sta.setDbId(jdbcChannel.getStationTable().getDBId(sta.get_id()));
+                int netDbId = jdbcChannel.getNetworkTable().getDbId(sta.getNet().get_id());
+                sta.getNet().setDbId(netDbId);
+                SumHKStack sumStack = jdbcSumHKStack.getForStation(netDbId, sta.get_code(), false);
+                summary.put(sta, sumStack);
+            } catch(NotFound e) {
                 // oh well, skip this station
-                logger.warn("not found for "+sta.getNetCode()+"."+sta.get_code());
+                logger.warn("not found for " + sta.getNetCode() + "." + sta.get_code());
             }
         }
-        logger.debug("found "+summary.size()+" summaries");
+        logger.debug("found " + summary.size() + " summaries");
         return summary;
     }
-    
+
     public HashMap cleanSummaries(ArrayList stationList, HashMap summary) {
-        logger.debug("before cleanSummaries stationList.size()="+stationList.size()+"  summary.size()="+summary.size());
+        logger.debug("before cleanSummaries stationList.size()=" + stationList.size() + "  summary.size()="
+                + summary.size());
         Iterator it = stationList.iterator();
         while(it.hasNext()) {
             Object next = it.next();
-            if (summary.get(next) == null) {
+            if(summary.get(next) == null) {
                 summary.remove(next);
                 it.remove();
             }
         }
-        logger.debug("after cleanSummaries stationList.size()="+stationList.size()+"  summary.size()="+summary.size());
+        logger.debug("after cleanSummaries stationList.size()=" + stationList.size() + "  summary.size()="
+                + summary.size());
         return summary;
     }
-    
+
     String DATA_LOC;
-    
+
     JDBCEventAccess jdbcEventAccess;
-    
+
     JDBCChannel jdbcChannel;
-    
+
     JDBCHKStack jdbcHKStack;
-    
+
     JDBCRecFunc jdbcRecFunc;
-    
+
     JDBCSodConfig jdbcSodConfig;
-    
+
     JDBCSummaryHKStack jdbcSumHKStack;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StationList.class);
-    
 }

@@ -39,7 +39,10 @@ public class Start {
                                               servletStrings,
                                               rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/stationList.html",
-                                              "/stationList.html",
+                                              "edu.sc.seis.receiverFunction.web.StationList",
+                                              servletStrings,
+                                              rootHandler);
+        edu.sc.seis.rev.RevUtil.populateJetty("/stationList.txt",
                                               "edu.sc.seis.receiverFunction.web.StationList",
                                               servletStrings,
                                               rootHandler);
@@ -55,7 +58,7 @@ public class Start {
                                               rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/stationLatLonBox.txt",
                                               "/stationLatLonBox.txt",
-                                              "edu.sc.seis.receiverFunction.web.StationLatLonBoxTxt",
+                                              "edu.sc.seis.receiverFunction.web.StationLatLonBox",
                                               servletStrings,
                                               rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/station.html",

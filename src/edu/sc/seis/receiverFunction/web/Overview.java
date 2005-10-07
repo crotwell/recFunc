@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.rev.RevletContext;
@@ -30,21 +29,6 @@ public class Overview extends StationList {
             throws SQLException, IOException {
         checkDataLoaded();
         return data;
-    }
-
-
-    protected void setContentType(HttpServletRequest req,
-                                  HttpServletResponse response)
-    {
-        if(req.getServletPath().endsWith(".txt")) {
-            response.setContentType("text/plain");
-        } else if(req.getServletPath().endsWith(".html")) {
-            response.setContentType("text/html");
-        } else if(req.getServletPath().endsWith(".xml")) {
-            response.setContentType("text/xml");
-        } else {
-            throw new RuntimeException("Unknown URL: " + req.getRequestURI());
-        }
     }
     
     public String getVelocityTemplate(HttpServletRequest req) {

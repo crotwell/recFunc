@@ -32,13 +32,6 @@ public class ComparePriorResult extends StationList {
         jdbcStationResult = new JDBCStationResult(jdbcChannel.getNetworkTable());
         crust2 = new Crust2();
     }
-    
-    public ComparePriorResult(String databaseURL, String dataloc)
-            throws SQLException, ConfigurationException, Exception {
-        super(databaseURL, dataloc);
-        jdbcStationResult = new JDBCStationResult(jdbcChannel.getNetworkTable());
-        crust2 = new Crust2();
-    }
 
     public ArrayList getStations(HttpServletRequest req, RevletContext context)
             throws SQLException, NotFound {

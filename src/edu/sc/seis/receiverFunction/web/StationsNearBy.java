@@ -1,32 +1,16 @@
 package edu.sc.seis.receiverFunction.web;
 
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.velocity.VelocityContext;
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.LocationType;
-import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
-import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
-import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
-import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
-import edu.sc.seis.receiverFunction.SumHKStack;
-import edu.sc.seis.receiverFunction.server.JDBCHKStack;
-import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
-import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
-import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
 import edu.sc.seis.rev.RevUtil;
-import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
@@ -40,12 +24,7 @@ public class StationsNearBy extends StationList {
             Exception {
         super();
     }
-
-    public StationsNearBy(String databaseURL, String dataloc)
-            throws SQLException, ConfigurationException, Exception {
-        super(databaseURL, dataloc);
-    }
-
+    
     public String getVelocityTemplate(HttpServletRequest req) {
         return "stationsNearBy.vm";
     }

@@ -26,21 +26,16 @@ public class StationLatLonBox extends StationList {
     public StationLatLonBox() throws SQLException, ConfigurationException,
             Exception {
         super();
-        // TODO Auto-generated constructor stub
     }
-
-    /**
-     *
-     */
-    public StationLatLonBox(String databaseURL, String dataloc)
-            throws SQLException, ConfigurationException, Exception {
-        super(databaseURL, dataloc);
-        // TODO Auto-generated constructor stub
-    }
-    
 
     public String getVelocityTemplate(HttpServletRequest req) {
-        return "stationLatLonBox.vm";
+        if (req.getServletPath().endsWith(".html")) {
+            return "stationLatLonBox.vm";
+        } else if (req.getServletPath().endsWith(".txt")) {
+            return "stationLatLonBoxTxt.vm";
+        } else {
+            return "stationLatLonBox.vm";
+        }
     }
     
     public ArrayList getStations(HttpServletRequest req, RevletContext context) throws SQLException,

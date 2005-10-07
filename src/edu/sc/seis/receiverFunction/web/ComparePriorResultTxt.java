@@ -12,20 +12,12 @@ import edu.sc.seis.sod.ConfigurationException;
  * Created on Mar 31, 2005
  */
 public class ComparePriorResultTxt extends ComparePriorResult {
-
-    public ComparePriorResultTxt() throws SQLException, ConfigurationException,
-            Exception {
+    
+    
+    public ComparePriorResultTxt() throws SQLException, ConfigurationException, Exception {
         super();
         // TODO Auto-generated constructor stub
     }
-
-    public ComparePriorResultTxt(String databaseURL, String dataloc)
-            throws SQLException, ConfigurationException, Exception {
-        super(databaseURL, dataloc);
-        // TODO Auto-generated constructor stub
-    }
-    
-    
     public RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
         RevletContext rc = super.getContext(req, res);

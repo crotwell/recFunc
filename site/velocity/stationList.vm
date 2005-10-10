@@ -13,6 +13,7 @@ $header
 <p><b>Description: </b>$net.getDescription()</p>
 <p><b>Owner: </b>$net.getOwner()</p>
 <p><b>Dates: </b>$fissures.formatYMD($net.getStartDate()) / $fissures.formatYMD($net.getEndDate())</p>
+<p>View as <a href="stationList.txt?netdbid=${net.getDbId()}">text</a></p>
 <table>
 <tr>
 <td class="headodd">Station</td>

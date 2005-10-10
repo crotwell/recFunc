@@ -321,3 +321,108 @@ hksummary.getAllWithoutData=SELECT alpha, minpercentmatch, peakh, hvariance, pea
 	FROM hksummary JOIN netchan ON (chanz_id = chan_id)
 
 hksummary.index_chanz=create index hksummary_chanz_idx on hksummary ( chanz_id )
+
+
+azimuthhksummary.create=CREATE TABLE $tablename ( \
+                   azimuthhksummary_id int, \
+                   chanA_id int, \
+                   chanB_id int, \
+                   chanZ_id int, \
+                   alpha float, \
+                   minPercentMatch float, \
+                   minH float, \
+                   stepH float, \
+                   numH int, \
+                   minK float, \
+                   stepK float, \
+                   numK int, \
+                   peakH float, \
+                   peakK float, \
+                   peakVal float, \
+                   weightPs float, \
+                   weightPpPs float, \
+                   weightPsPs float, \
+                   stack bytea, \
+                   insertTime timestamp, \
+                   hVariance float, \
+                   kVariance float, \
+                   azimuth float, \
+                   azwidth float, \
+                   PRIMARY KEY (azimuthhksummary_id), \
+                   FOREIGN KEY (chanA_id) \
+                   REFERENCES channel (chan_id), \
+                   FOREIGN KEY (chanB_id) \
+                   REFERENCES channel (chan_id), \
+                   FOREIGN KEY (chanZ_id) \
+                   REFERENCES channel (chan_id) \
+                   )
+	
+azimuthhksummary.put=INSERT INTO $tablename ( \
+                   azimuthhksummary_id , \
+                   chanA_id , \
+                   chanB_id , \
+                   chanZ_id , \
+                   alpha , \
+                   minPercentMatch , \
+                   minH , \
+                   stepH , \
+                   numH , \
+                   minK , \
+                   stepK , \
+                   numK , \
+                   peakH , \
+                   peakK , \
+                   peakVal , \
+                   weightPs , \
+                   weightPpPs , \
+                   weightPsPs , \
+                   stack , \
+                   insertTime , \
+                   hVariance , \
+                   kVariance, \
+                   azimuth, \
+                   azwidth  \
+                   ) \
+                   VALUES ( ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,  ?, ?, ?, ?)
+                   
+azimuthhksummary.get=SELECT * from $tablename JOIN netchan ON (chanz_id = chan_id ) \
+                   WHERE azimuthhksummary_id = ?
+                   
+azimuthhksummary.update=UPDATE $tablename SET chanA_id = ? , \
+                   chanB_id = ? , \
+                   chanZ_id = ? , \
+                   alpha = ? , \
+                   minPercentMatch = ? , \
+                   minH = ? , \
+                   stepH = ? , \
+                   numH = ? , \
+                   minK = ? , \
+                   stepK = ? , \
+                   numK = ? , \
+                   peakH = ? , \
+                   peakK = ? , \
+                   peakVal = ? , \
+                   weightPs = ? , \
+                   weightPpPs = ? , \
+                   weightPsPs = ? , \
+                   stack = ? , \
+                   insertTime = ? , \
+                   hVariance = ? , \
+                   kVariance = ? , \
+                   azimuth = ? , \
+                   azwidth = ?  \
+                   WHERE azimuthhksummary_id = ?
+                       
+azimuthhksummary.getForStation=SELECT * from netchan \
+                   JOIN  $tablename  ON (chanz_id = chan_id ) \
+                   WHERE network.net_id = ? \
+                   AND sta_code = ? 
+
+azimuthhksummary.getAllWithoutData=SELECT alpha, minpercentmatch, peakh, hvariance, peakk, kvariance, peakval, net_code, sta_code, chanz_id, \
+	minH, stepH, numH, minK, stepK, numK, weightPs, weightPpPs, weightPsPs, azimuth, azwidth  \
+	FROM $tablename JOIN netchan ON (chanz_id = chan_id)
+
+azimuthhksummary.index_chanz=create index azimuthhksummary_chanz_idx on $tablename ( chanz_id )
+
+
+

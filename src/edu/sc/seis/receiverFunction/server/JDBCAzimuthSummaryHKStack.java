@@ -4,11 +4,15 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.fissuresUtil.database.JDBCSequence;
 import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 import edu.sc.seis.receiverFunction.AzimuthSumHKStack;
+import edu.sc.seis.receiverFunction.SumHKStack;
 
 public class JDBCAzimuthSummaryHKStack extends JDBCTable {
 
@@ -58,10 +62,69 @@ public class JDBCAzimuthSummaryHKStack extends JDBCTable {
             throw e;
         }
     }
+
+    public AzimuthSumHKStack getForStation(NetworkId net,
+                                    String station_code,
+                                    boolean withData, float az, float width) throws NotFound,
+            SQLException, IOException {
+        return getForStation(jdbcSummaryHKStack.jdbcHKStack.getJDBCChannel()
+                .getNetworkTable()
+                .getDbId(net), station_code, withData, az, width);
+    }
+
+    public AzimuthSumHKStack getForStation(int netId,
+                                    String station_code,
+                                    boolean withData, float az, float width) throws NotFound,
+            SQLException, IOException {
+        int index = 1;
+        getForStation.setInt(index++, netId);
+        getForStation.setString(index++, station_code);
+        getForStation.setFloat(index++, az);
+        getForStation.setFloat(index++, width);
+        ResultSet rs = getForStation.executeQuery();
+        if(rs.next()) {
+            return extract(rs, withData);
+        }
+        throw new NotFound("No Summary stack for " + netId + " " + station_code);
+    }
+
+    public int getDbIdForStation(NetworkId net, String station_code, float az, float width)
+            throws SQLException, NotFound {
+        int index = 1;
+        getForStation.setInt(index++, jdbcSummaryHKStack.jdbcHKStack.getJDBCChannel()
+                .getNetworkTable()
+                .getDbId(net));
+        getForStation.setString(index++, station_code);
+        getForStation.setFloat(index++, az);
+        getForStation.setFloat(index++, width);
+        ResultSet rs = getForStation.executeQuery();
+        if(rs.next()) {
+            return rs.getInt("hksummary_id");
+        }
+        throw new NotFound("No Summary stack for "
+                + NetworkIdUtil.toString(net) + " " + station_code);
+    }
+
+    /**
+     * Gets all summary HKStacks, but without the actual stack.
+     * 
+     * @throws SQLException
+     * @throws IOException
+     * @throws NotFound
+     */
+    public ArrayList getAllWithoutData() throws SQLException, NotFound,
+            IOException {
+        ArrayList out = new ArrayList();
+        ResultSet rs = getAllWithoutData.executeQuery();
+        while(rs.next()) {
+            out.add(extract(rs, false));
+        }
+        return out;
+    }
     
     int populateStmt(PreparedStatement stmt, int index, AzimuthSumHKStack summary) throws SQLException, NotFound,
             IOException {
-        jdbcSummaryHKStack.populateStmt(stmt, index, summary.getStack());
+        index = jdbcSummaryHKStack.populateStmt(stmt, index, summary.getStack());
         stmt.setFloat(index++, summary.getAzimuth());
         stmt.setFloat(index++, summary.getAzWidth());
         return index;

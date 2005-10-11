@@ -76,6 +76,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
             put.setInt(index++, hksummary_id);
             index = populateStmt(put, index, summary);
             put.executeUpdate();
+            logger.debug("put done");
             return hksummary_id;
         } catch(SQLException e) {
             logger.warn("stmt = " + put, e);
@@ -142,6 +143,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
         stmt.setTimestamp(index++, ClockUtil.now().getTimestamp());
         stmt.setFloat(index++, (float)summary.getHVariance());
         stmt.setFloat(index++, (float)summary.getKVariance());
+        stmt.setInt(index++, summary.getNumEQ());
         return index;
     }
 
@@ -205,7 +207,8 @@ public class JDBCSummaryHKStack extends JDBCTable {
                                                          UnitImpl.KILOMETER),
                                         stack,
                                         rs.getFloat("hVariance"),
-                                        rs.getFloat("kVariance"));
+                                        rs.getFloat("kVariance"),
+                                        rs.getInt("numEQ"));
         return sum;
     }
 

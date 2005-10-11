@@ -25,13 +25,15 @@ public class SumHKStack {
                       QuantityImpl smallestH,
                       HKStack sum,
                       float hVariance,
-                      float kVariance) {
+                      float kVariance,
+                      int numEQ) {
         this.sum = sum;
         this.minPercentMatch = minPercentMatch;
         this.smallestH = smallestH;
         this.hVariance = hVariance;
         this.kVariance = kVariance;
         this.channel = sum.chan;
+        this.numEQ = numEQ;
     }
 
     public SumHKStack(HKStack[] individuals,
@@ -44,6 +46,7 @@ public class SumHKStack {
         this.minPercentMatch = minPercentMatch;
         this.channel = chan;
         this.smallestH = smallestH;
+        this.numEQ = individuals.length;
         if(individuals.length == 0) {
             throw new IllegalArgumentException("Cannot create SumStack with empty array");
         }
@@ -91,6 +94,10 @@ public class SumHKStack {
         return individuals;
     }
 
+    public int getNumEQ() {
+return numEQ;
+    }
+    
     static HKStack calculate(Channel chan,
                              HKStack[] individuals,
                              QuantityImpl smallestH,
@@ -144,7 +151,7 @@ public class SumHKStack {
         return hkStack;
     }
 
-    public static HKStack calculateForPhase(Iterator iterator,
+    public static SumHKStack calculateForPhase(Iterator iterator,
                                             QuantityImpl smallestH,
                                             float minPercentMatch,
                                             boolean usePhaseWeight,
@@ -245,7 +252,7 @@ public class SumHKStack {
                                       first.getWeightPsPs(),
                                       sumStack,
                                       chan);
-        return hkStack;
+        return new SumHKStack(minPercentMatch, smallestH, hkStack, -1, -1, numStacks);
     }
 
     public double getHVariance() {
@@ -468,6 +475,8 @@ public class SumHKStack {
 
     protected HKStack[] individuals;
 
+    protected int numEQ;
+    
     protected HKStack sum;
 
     protected float minPercentMatch;
@@ -485,4 +494,5 @@ public class SumHKStack {
     private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumHKStack.class);
+
 }

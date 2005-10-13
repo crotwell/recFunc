@@ -13,6 +13,7 @@ import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
@@ -76,6 +77,21 @@ public class Station extends Revlet {
     public RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
         int netDbId = RevUtil.getInt("netdbid", req);
+        if(netDbId == -1) {
+            String netCode = RevUtil.get("netCode", req);
+            if(netCode != null
+                    && (netCode.length() == 2 || netCode.length() == 4)) {
+                NetworkId[] netIds = jdbcChannel.getNetworkTable()
+                        .getByCode(netCode);
+                for(int i = 0; i < netIds.length; i++) {
+                    if(NetworkIdUtil.toStringNoDates(netIds[i]).equals(netCode)) {
+                        netDbId = jdbcChannel.getNetworkTable()
+                                .getDbId(netIds[0]);
+                        break;
+                    }
+                }
+            }
+        }
         VelocityNetwork net = getNetwork(netDbId);
         // possible that there are multiple stations with the same code
         String staCode = req.getParameter("stacode");
@@ -114,7 +130,8 @@ public class Station extends Revlet {
             markerList.add(results[i]);
         }
         TimeOMatic.print("other results");
-        RevletContext context = new RevletContext("station.vm", Start.getDefaultContext());
+        RevletContext context = new RevletContext("station.vm",
+                                                  Start.getDefaultContext());
         try {
             int summaryDbId = jdbcSummaryHKStack.getDbIdForStation(net.get_id(),
                                                                    staCode);
@@ -122,13 +139,17 @@ public class Station extends Revlet {
             context.put("summary", summary);
             int[][] localMaxima = summary.getSum().getLocalMaxima(smallestH, 5);
             for(int i = 0; i < localMaxima.length; i++) {
-                StationResultRef earsStaRef = new StationResultRef(i==0?"Global Maxima":"Local Maxima "+i,
+                StationResultRef earsStaRef = new StationResultRef(i == 0 ? "Global Maxima"
+                                                                           : "Local Maxima "
+                                                                                   + i,
                                                                    "ears",
                                                                    "ears");
                 markerList.add(new StationResult(net.get_id(),
                                                  staCode,
-                                                 summary.getSum().getHFromIndex(localMaxima[i][0]),
-                                                 summary.getSum().getKFromIndex(localMaxima[i][1]),
+                                                 summary.getSum()
+                                                         .getHFromIndex(localMaxima[i][0]),
+                                                 summary.getSum()
+                                                         .getKFromIndex(localMaxima[i][1]),
                                                  summary.getSum().getAlpha(),
                                                  earsStaRef));
             }
@@ -156,14 +177,16 @@ public class Station extends Revlet {
         TimeOMatic.print("done");
         return context;
     }
-    
-    public VelocityNetwork getNetwork(int netDbId) throws SQLException, NotFound {
+
+    public VelocityNetwork getNetwork(int netDbId) throws SQLException,
+            NotFound {
         return new VelocityNetwork(jdbcChannel.getStationTable()
-                                                  .getNetTable()
-                                                  .get(netDbId), netDbId);
+                .getNetTable()
+                .get(netDbId), netDbId);
     }
-    
-    public ArrayList getStationList(int netDbId, String staCode) throws SQLException, NotFound {
+
+    public ArrayList getStationList(int netDbId, String staCode)
+            throws SQLException, NotFound {
         int[] dbids = jdbcChannel.getSiteTable()
                 .getStationTable()
                 .getDBIds(netDbId, staCode);

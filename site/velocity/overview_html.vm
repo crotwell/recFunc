@@ -35,7 +35,7 @@ $header
 <td class="odd">$fissures.formatQuantity($!summary.get($sta).getSum().getAlpha())</td>
 <td class="even">$fissures.formatQuantity($!summary.get($sta).getSum().getVs())</td>
 <td class="odd">$!summary.get($sta).getSum().getPoissonsRatio()</td>
-<td class="even">$!numEQ.get($sta)</td>
+<td class="even">$!summary.get($sta).getNumEQ()</td>
 </tr>
 #end
 </table>

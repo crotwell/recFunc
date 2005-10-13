@@ -26,8 +26,8 @@ $header
 #foreach($sta in $stationList)
 <tr>
 <td class="odd"><a href="network.html?netdbid=$sta.net.getDbId()">$sta.net.getCodeWithYear()</a></td>
-<td class="odd"><a href="station.html?netdbid=$net.getDbId()&stacode=$sta.getCode()">$sta.getCode()</a></td>
-<td class="even"><a href="station.html?netdbid=$net.getDbId()&stacode=$sta.getCode()">$sta.getName()</a></td>
+<td class="odd"><a href="station.html?netdbid=$sta.net.getDbId()&stacode=$sta.getCode()">$sta.getCode()</a></td>
+<td class="even"><a href="station.html?netdbid=$sta.net.getDbId()&stacode=$sta.getCode()">$sta.getName()</a></td>
 <td class="odd">$sta.getOrientedLatitude()</td>
 <td class="even">$sta.getOrientedLongitude()</td>
 <td class="odd">$fissures.formatQuantity($!summary.get($sta).getSum().getMaxValueH())</td>

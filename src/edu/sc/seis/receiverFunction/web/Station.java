@@ -76,7 +76,7 @@ public class Station extends Revlet {
      */
     public RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
-        int netDbId = RevUtil.getInt("netdbid", req);
+        int netDbId = RevUtil.getInt("netdbid", req, -1);
         if(netDbId == -1) {
             String netCode = RevUtil.get("netCode", req);
             if(netCode != null

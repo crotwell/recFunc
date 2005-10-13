@@ -20,15 +20,32 @@ public class Overview extends StationList {
         // TODO Auto-generated constructor stub
     }
 
-    public ArrayList getStations(HttpServletRequest req, RevletContext context) throws SQLException, NotFound {
+    public ArrayList getStations(HttpServletRequest req, RevletContext context)
+            throws SQLException, NotFound {
         checkDataLoaded(req);
-        return new ArrayList(data.keySet());
+        int minEQ = RevUtil.getInt("minEQ", req, 2);
+        HashMap out = new HashMap();
+        for(Iterator iter = data.keySet().iterator(); iter.hasNext();) {
+            VelocityStation key = (VelocityStation)iter.next();
+            SumHKStack stack = (SumHKStack)data.get(key);
+            if(stack.getNumEQ() >= minEQ) {
+                out.put(key, stack);
+            }
+        }
+        return new ArrayList(out.keySet());
     }
 
-    public HashMap getSummaries(HttpServletRequest req, ArrayList stationList, RevletContext context)
-            throws SQLException, IOException {
+    public HashMap getSummaries(HttpServletRequest req,
+                                ArrayList stationList,
+                                RevletContext context) throws SQLException,
+            IOException {
         checkDataLoaded(req);
-        return data;
+        HashMap out = new HashMap();
+        for(Iterator iter = stationList.iterator(); iter.hasNext();) {
+            Object key = iter.next();
+            out.put(key, data.get(key));
+        }
+        return out;
     }
 
     public String getVelocityTemplate(HttpServletRequest req) {
@@ -46,12 +63,10 @@ public class Overview extends StationList {
             data = new HashMap();
             try {
                 ArrayList summaryList = jdbcSumHKStack.getAllWithoutData();
-                int minEQ = RevUtil.getInt("minEQ", req, 2);
                 for(Iterator iter = summaryList.iterator(); iter.hasNext();) {
                     SumHKStack stack = (SumHKStack)iter.next();
-                    if(stack.getNumEQ() >= minEQ) {
-                        data.put(new VelocityStation(stack.getChannel().my_site.my_station), stack);
-                    }
+                    data.put(new VelocityStation(stack.getChannel().my_site.my_station),
+                             stack);
                 }
             } catch(NotFound e) {
                 // I don't think this should ever happen

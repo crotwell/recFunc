@@ -1,4 +1,4 @@
-package edu.sc.seis.receiverFunction.ray3d;
+package edu.sc.seis.receiverFunction.synth;
 
 
 public class SimpleSynthReceiverFunction {

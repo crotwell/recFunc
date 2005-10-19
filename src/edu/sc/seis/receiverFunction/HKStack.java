@@ -826,9 +826,9 @@ public class HKStack implements Serializable {
             for(int hIndex = 0; hIndex < numH; hIndex++) {
                 float h = (float)(minH.getValue(UnitImpl.KILOMETER) + hIndex
                         * stepH.getValue(UnitImpl.KILOMETER));
-                double timePs = h * (etaS - etaP) + shift.value;
-                double timePpPs = h * (etaS + etaP) + shift.value;
-                double timePsPs = h * (2 * etaS) + shift.value;
+                TimeInterval timePs = new TimeInterval(h * (etaS - etaP) + shift.value, UnitImpl.SECOND);
+                TimeInterval timePpPs = new TimeInterval(h * (etaS + etaP) + shift.value, UnitImpl.SECOND);
+                TimeInterval timePsPs = new TimeInterval(h * (2 * etaS) + shift.value, UnitImpl.SECOND);
                 calcForStack(seis,
                              imag,
                              timePs,
@@ -843,9 +843,9 @@ public class HKStack implements Serializable {
 
     private void calcForStack(LocalSeismogramImpl seis,
                               LocalSeismogramImpl imag,
-                              double timePs,
-                              double timePpPs,
-                              double timePsPs,
+                              TimeInterval timePs,
+                              TimeInterval timePpPs,
+                              TimeInterval timePsPs,
                               int hIndex,
                               int kIndex) throws FissuresException {
         analyticPs.setReal(hIndex, kIndex, getAmp(seis, timePs));
@@ -901,40 +901,58 @@ public class HKStack implements Serializable {
     }
 
     public TimeInterval getTimePs() {
+        return getTimePs(p, alpha, getMaxValueK(), getMaxValueH());
+    }
+
+    public static TimeInterval getTimePs(float p, QuantityImpl alpha, float k, QuantityImpl h) {
         float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND)
                 .getValue();
         float etaP = (float)Math.sqrt(1 / (a * a) - p * p);
-        float beta = a / getMaxValueK();
+        float beta = a / k ;
         float etaS = (float)Math.sqrt(1 / (beta * beta) - p * p);
-        double h = getMaxValueH().getValue();
-        return new TimeInterval(h * (etaS - etaP), UnitImpl.SECOND);
+        
+        return new TimeInterval(h.getValue(UnitImpl.KILOMETER) * (etaS - etaP), UnitImpl.SECOND);
     }
 
     public TimeInterval getTimePpPs() {
+        return getTimePpPs(p, alpha, getMaxValueK(), getMaxValueH());
+    }
+    
+    public static TimeInterval getTimePpPs(float p, QuantityImpl alpha, float k, QuantityImpl h) {
         float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND)
                 .getValue();
         float etaP = (float)Math.sqrt(1 / (a * a) - p * p);
-        float beta = a / getMaxValueK();
+        float beta = a / k;
         float etaS = (float)Math.sqrt(1 / (beta * beta) - p * p);
-        double h = getMaxValueH().getValue();
-        return new TimeInterval(h * (etaS + etaP), UnitImpl.SECOND);
+        return new TimeInterval(h.getValue(UnitImpl.KILOMETER) * (etaS + etaP), UnitImpl.SECOND);
     }
 
     public TimeInterval getTimePsPs() {
+        return getTimePsPs(p, alpha, getMaxValueK(), getMaxValueH());
+    }
+    
+    public static TimeInterval getTimePsPs(float p, QuantityImpl alpha, float k, QuantityImpl h) {
         float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND)
                 .getValue();
         float etaP = (float)Math.sqrt(1 / (a * a) - p * p);
-        float beta = a / getMaxValueK();
+        float beta = a / k;
         float etaS = (float)Math.sqrt(1 / (beta * beta) - p * p);
-        double h = getMaxValueH().getValue();
-        return new TimeInterval(h * (2 * etaS), UnitImpl.SECOND);
+        return new TimeInterval(h.getValue(UnitImpl.KILOMETER) * (2 * etaS), UnitImpl.SECOND);
+    }
+    
+    /**
+     * Gets the sample corresponding to the time. Return is a float so the relative 
+     * position between the nearest samples can be determined.
+     */
+    public static float getDataIndex(LocalSeismogramImpl seis, TimeInterval time)  {
+        double sampOffset = time.divideBy(seis.getSampling().getPeriod()).getValue(UnitImpl.DIMENSONLESS);
+        return (float)sampOffset;
     }
 
     /** gets the amp at the given time offset from the start of the seismogram. */
-    float getAmp(LocalSeismogramImpl seis, double time)
+    float getAmp(LocalSeismogramImpl seis, TimeInterval time)
             throws FissuresException {
-        double sampOffset = time
-                / seis.getSampling().getPeriod().convertTo(UnitImpl.SECOND).value;
+        float sampOffset = getDataIndex(seis, time);
         int offset = (int)Math.floor(sampOffset);
         if(sampOffset < 0 || offset > seis.getNumPoints() - 2) {
             logger.warn("time " + time

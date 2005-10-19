@@ -532,6 +532,10 @@ c
       if(amps) close(unit=8)
       stop
       end
+      
+      */
+    
+    /*
       subroutine anom(q,v,az,p,sini)
 c
 c   calculates the azimuth and ray parameter of a ray defined by q
@@ -556,6 +560,11 @@ c
   101 format(1x,5e15.7)
       return
       end
+      */
+    public static void anom() {
+        
+    }
+      /*
       function timcor(x1,x2,q0,v)
 c
 c  finds the time diference between a ray which enters the
@@ -570,6 +579,11 @@ c
       timcor=corr/v
       return
       end
+      */
+    public static void timecor() {
+        
+    }
+    /*
       subroutine norvec(strike,dip,eta)
 c
 c  calculates the interface unit normal vector, given the layer
@@ -585,6 +599,11 @@ c
       eta(3)=cosd
       return
       end
+      */
+    public static void norvec() {
+        
+    }
+    /*
       subroutine timdis(dist,q,ii,jj,vel,n,time,
      *                  iface,eta,kk,ll,z,lnumbr,dislyr,deplyr)
 c
@@ -618,6 +637,11 @@ c
       endif
       return
       end
+      */
+    public static void timedis() {
+        
+    }
+    /*
       subroutine snell(qb,vb,qa,va,itype,sinib,sinia)
 c
 c   calculates the ray unit normal vector, qa resulting from an
@@ -679,6 +703,11 @@ c
   102 format('    ===>  An internal s-to-p reflection is critical ')
   103 format('    ===>  A head wave has been generated')
       end
+      */
+    public static void snell() {
+        
+    }
+    /*
       subroutine wrtray(lyr,az,p,time,baz,p0,pors,init,i4,i10,i11
      *                  ,oldlyr,sini,tdirec)
 c
@@ -748,6 +777,11 @@ c
      *       63x,' type    time        az.          p         angle')
   107 format(64x,a3,3x,f7.3,4x,f7.2,6x,f7.4,6x,f5.2)
       end
+      */
+    public static void wrtray() {
+        
+    }
+    /*
       subroutine ampcal(amagb,hmagb,amaga,hmaga,strike,dip,ihilb)
 c
 c subroutine to calculate amplitudes for rays from ray3d
@@ -963,6 +997,11 @@ c
   102 format(' ncode = 0 for ',6f6.2)
       return
       end
+      */
+    public static void ampcal() {
+        
+    }
+    /*
       subroutine rtoi(r,cosp,sinp,qb,dirtcn)
 c
 c   transforms a vector r from the ray coordinate system
@@ -990,6 +1029,11 @@ c
       r(2)=yl
       return
       end
+      */
+    public static void rtoi() {
+        
+    }
+    /*
       subroutine rcomp(r3,ncode,nd,sini,incdnt)
 c
 c   resolves a reflection coeficient r from s/r coef8 into
@@ -1036,6 +1080,11 @@ c
       go to (3,4) ncode
    11 go to (8,9) ncode
       end
+      */
+    public static void rcomp() {
+        
+    }
+    /*
       subroutine mkseis(x,y,instrm,qcorr,tq,nft,dt,kst,ihilb)
       complex x(1),wave,fsorce,y(1)
       dimension trap(4)
@@ -1074,6 +1123,11 @@ c
       call dfftr(x,nft,'inverse',delf)
       return
       end
+      */
+    public static void mkseis() {
+        
+    }
+    /*
       subroutine rayfin(iq,i4,i10,i11,lnumbr,dflag,mflag)
       dimension strike(100),dip(100),z(100),alpha(100),beta(100),
      *          eta(3,100),q(3,5000),q0(3),v(2,100),qv(5000),raydis(3),
@@ -1132,6 +1186,11 @@ c
      *            init,i4,i10,i11,oldlyr,angle,tdirec)
       return
       end
+      */
+    public static void rayfin() {
+        
+    }
+    /*
       subroutine trnsmt(loopst,looped,iq,iv,up)
 c
 c *******************
@@ -1191,6 +1250,11 @@ c
     7 continue
       return
       end
+      */
+    public static void trnsmt() {
+        
+    }
+    /*
       subroutine raydwn(iqref,i10,lyref,iq)
 c
 c **************
@@ -1254,6 +1318,11 @@ c
       call trnsmt(2,lyref,iq,i10,.false.)
       return
       end
+      */
+    public static void raydown() {
+        
+    }
+    /*
       subroutine rayup(iqref,i11,lyref,iq)
 c
 c **************
@@ -1321,6 +1390,8 @@ c
       return
       end
 
-
-     */
+      */
+    public static void rayup() {
+        
+    }
 }

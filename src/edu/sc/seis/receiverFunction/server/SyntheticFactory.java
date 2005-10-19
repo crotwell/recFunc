@@ -59,6 +59,23 @@ public class SyntheticFactory {
         return SacToFissures.getEvent(getSac(filebase + suffix[0]));
     }
 
+    public static TauPUtil getTauP() throws TauModelException {
+        String modelName = "prem";
+        TauPUtil taup = TauPUtil.getTauPUtil(modelName);
+        return taup;
+    }
+    
+    public static Arrival getFirstP() throws TauModelException, IOException {
+        Arrival[] pPhases = getTauP().calcTravelTimes(getChannels()[0].my_site.my_station,
+                                                      getEvent().getOrigin(),
+                                                 new String[] {"ttp"});
+        return pPhases[0];
+    }
+    
+    public static TimeInterval getShift() {
+        return shift;
+    }
+    
     public static CachedResult getCachedResult() throws NoPreferredOrigin,
             FissuresException, IncompatibleSeismograms, TauModelException,
             RecFuncException, IOException {
@@ -68,8 +85,7 @@ public class SyntheticFactory {
         Channel[] channels = getChannels();
         Channel chan = channels[0];
         Location staLoc = chan.my_site.my_station.my_location;
-        String modelName = "prem";
-        TauPUtil taup = TauPUtil.getTauPUtil(modelName);
+        TauPUtil taup = getTauP();
         IterDecon decon = new IterDecon(RecFuncProcessor.DEFAULT_MAXBUMPS,
                                         true,
                                         RecFuncProcessor.DEFAULT_TOL,
@@ -95,13 +111,11 @@ public class SyntheticFactory {
         IterDeconResult[] ans = new IterDeconResult[2];
         ans[0] = ansRadial;
         ans[1] = ansTangential;
-        Arrival[] pPhases = taup.calcTravelTimes(channels[0].my_site.my_station,
-                                                 event.getOrigin(),
-                                                 new String[] {"ttp"});
+        Arrival pPhase = getFirstP();
         MicroSecondDate firstP = new MicroSecondDate(event.getOrigin().origin_time);
-        firstP = firstP.add(new TimeInterval(pPhases[0].getTime(),
+        firstP = firstP.add(new TimeInterval(pPhase.getTime(),
                                              UnitImpl.SECOND));
-        TimeInterval shift = recFunc.getShift();
+        shift = recFunc.getShift();
         MemoryDataSetSeismogram[] predictedDSS = new MemoryDataSetSeismogram[2];
         for(int i = 0; i < ans.length; i++) {
             float[] predicted = ans[i].getPredicted();
@@ -167,7 +181,9 @@ public class SyntheticFactory {
             throw e;
         }
     }
-
+    
+    static TimeInterval shift = RecFunc.getDefaultShift();
+    
     static String sacFilePrefix = "edu/sc/seis/receiverFunction/server/synthetic/";
 
     static String filebase = "test_sp.";

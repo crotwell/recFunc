@@ -30,11 +30,11 @@ $header
 <td class="even"><a href="station.html?netCode=$sta.net.getCodeWithYear()&stacode=$sta.getCode()">$sta.getName()</a></td>
 <td class="odd">$sta.getOrientedLatitude()</td>
 <td class="even">$sta.getOrientedLongitude()</td>
-<td class="odd">$fissures.formatQuantity($!summary.get($sta).getSum().getMaxValueH())</td>
-<td class="even">$!summary.get($sta).getSum().getMaxValueK()</td>
-<td class="odd">$fissures.formatQuantity($!summary.get($sta).getSum().getAlpha())</td>
-<td class="even">$fissures.formatQuantity($!summary.get($sta).getSum().getVs())</td>
-<td class="odd">$!summary.get($sta).getSum().getPoissonsRatio()</td>
+<td class="even">$!summary.get($sta).getSum().formatMaxValueH()</td>
+<td class="odd">$!summary.get($sta).getSum().formatMaxValueK()</td>
+<td class="even">$!summary.get($sta).getSum().formatAlpha()</td>
+<td class="odd">$!summary.get($sta).getSum().formatVs()</td>
+<td class="even">$!summary.get($sta).getSum().formatPoissonsRatio()</td>
 <td class="even">$!summary.get($sta).getNumEQ()</td>
 </tr>
 #end

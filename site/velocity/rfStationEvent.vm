@@ -67,23 +67,23 @@ $header
 #if($stack)
 <tr>
 <td class="odd">Estimated Moho Depth</td>
-<td class="even">$fissures.formatQuantity($stack.getMaxValueH())</td>
+<td class="even">$stack.formatMaxValueH()</td>
 </tr>
 <tr>
 <td class="odd">Estimated Crust Vp/Vs</td>
-<td class="even">$stack.getMaxValueK()</td>
+<td class="even">$stack.formatMaxValueK()</td>
 </tr>
 <tr>
 <td class="odd">Assumed Crust Vp</td>
-<td class="even">$fissures.formatQuantity($stack.getAlpha())</td>
+<td class="even">$stack.formatAlpha()</td>
 </tr>
 <tr>
 <td class="odd">Estimated Crust Vs</td>
-<td class="even">$fissures.formatQuantity($stack.getVs())</td>
+<td class="even">$stack.formatVs()</td>
 </tr>
 <tr>
 <td class="odd">Estimated Crust Poisson's Ratio</td>
-<td class="even">$stack.getPoissonsRatio()</td>
+<td class="even">$stack.formatPoissonsRatio()</td>
 </tr>
 </table>
 

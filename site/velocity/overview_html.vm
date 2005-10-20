@@ -17,7 +17,9 @@ $header
 <td class="headodd">Lat</td>
 <td class="headodd">Lon</td>
 <td class="headodd">Est. Thick</td>
+	<td class="headodd">StdDev</td>
 <td class="headodd">Est. Vp/Vs</td>
+	<td class="headodd">StdDev</td>
 <td class="headodd">Assumed Vp</td>
 <td class="headodd">Vs</td>
 <td class="headodd">Poissons Ratio</td>
@@ -30,11 +32,14 @@ $header
 <td class="even"><a href="station.html?netCode=$sta.net.getCodeWithYear()&stacode=$sta.getCode()">$sta.getName()</a></td>
 <td class="odd">$sta.getOrientedLatitude()</td>
 <td class="even">$sta.getOrientedLongitude()</td>
-<td class="even">$!summary.get($sta).getSum().formatMaxValueH()</td>
-<td class="odd">$!summary.get($sta).getSum().formatMaxValueK()</td>
-<td class="even">$!summary.get($sta).getSum().formatAlpha()</td>
-<td class="odd">$!summary.get($sta).getSum().formatVs()</td>
-<td class="even">$!summary.get($sta).getSum().formatPoissonsRatio()</td>
+    <td class="even">$!summary.get($sta).getSum().formatMaxValueH()</td>
+    <td class="odd">$fissures.formatQuantity($!summary.get($sta).getHStdDev())</td>
+    <td class="even">$!summary.get($sta).getSum().formatMaxValueK()</td>
+    <td class="odd">$!summary.get($sta).formatKStdDev()</td>
+    <td class="even">$!summary.get($sta).getSum().formatAlpha()</td>
+    <td class="odd">$!summary.get($sta).getSum().formatVs()</td>
+    <td class="even">$!summary.get($sta).getSum().formatPoissonsRatio()</td>
+    <td class="odd">$!numEQ.get($sta)</td>
 <td class="even">$!summary.get($sta).getNumEQ()</td>
 </tr>
 #end

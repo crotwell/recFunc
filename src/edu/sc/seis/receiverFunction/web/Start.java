@@ -10,6 +10,7 @@ import org.apache.velocity.VelocityContext;
 import org.mortbay.jetty.servlet.ServletHandler;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
+import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.rev.ServletFromSet;
 
 /**
@@ -167,7 +168,7 @@ public class Start {
                 + "</h2>";
         VelocityContext context = new VelocityContext();
         context.put("header",
-                    "<a href=\"/ears_tmp\"><img src=\"earslogo.png\"/></a><br/>"
+                    "<a href=\""+edu.sc.seis.rev.Start.getVisibleURL()+"\"><img src=\"earslogo.png\"/></a><br/>"
                             + warning);
         return context;
     }

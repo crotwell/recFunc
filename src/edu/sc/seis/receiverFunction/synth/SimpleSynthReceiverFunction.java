@@ -27,12 +27,7 @@ public class SimpleSynthReceiverFunction {
                                                     8.0,
                                                     4.5,
                                                     3.2);
-        upgoingRFCoeff = new ReflTransCoefficient(8.05,
-                                                  4.47,
-                                                  3.38,
-                                                  model.getVp().getValue(kmps),
-                                                  model.getVs().getValue(kmps),
-                                                  2.9);
+        upgoingRFCoeff = downgoingRFCoeff.flip();
     }
 
     public LocalSeismogramImpl calculate(float sphericalRayParam,

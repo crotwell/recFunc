@@ -812,7 +812,7 @@ public class HKStack implements Serializable {
                 .getValue();
         float etaP = (float)Math.sqrt(1 / (a * a) - p * p);
         if(Float.isNaN(etaP)) {
-            System.out.println("Warning: Eta P is NaN alpha=" + alpha + "  p="
+            throw new RuntimeException("Warning: Eta P is NaN alpha=" + alpha + "  p="
                     + p);
         } else if(etaP <= 0) {
             throw new RuntimeException("EtaP should never be negative: " + etaP
@@ -822,7 +822,7 @@ public class HKStack implements Serializable {
             float beta = a / (minK + kIndex * stepK);
             float etaS = (float)Math.sqrt(1 / (beta * beta) - p * p);
             if(Float.isNaN(etaS)) {
-                System.out.println("Warning: Eta S is NaN " + kIndex
+                throw new RuntimeException("Warning: Eta S is NaN " + kIndex
                         + "  beta=" + beta + "  p=" + p);
             } else if(etaS <= 0) {
                 throw new RuntimeException("EtaS should never be negative: "

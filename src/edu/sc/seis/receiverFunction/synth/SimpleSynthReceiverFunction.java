@@ -31,11 +31,11 @@ public class SimpleSynthReceiverFunction {
         upgoingRFCoeff = downgoingRFCoeff.flip();
     }
 
-    public LocalSeismogramImpl calculate(float sphericalRayParam,
+    public LocalSeismogramImpl calculate(float flatRP,
                                          Time begin_time,
                                          TimeInterval lagZeroOffset,
                                          ChannelId chan) {
-        float flatRP = sphericalRayParam / 6371;
+        
         float[] data = new float[num_points];
         
         LocalSeismogramImpl seis = new LocalSeismogramImpl("SimpleSynthReceiverFunction",

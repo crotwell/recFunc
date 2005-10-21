@@ -71,6 +71,10 @@ public class StationResult {
     public String getStationCode() {
         return stationCode;
     }
+    
+    public String toString() {
+        return "H="+formatH()+" Vp="+formatVp()+" Vs="+formatVs()+" Vp/Vs="+formatVpVs()+" pr="+formatPoissonsRatio();
+    }
 
     private String stationCode;
     

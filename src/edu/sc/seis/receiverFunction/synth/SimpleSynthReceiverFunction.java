@@ -19,6 +19,7 @@ public class SimpleSynthReceiverFunction {
         this.model = model;
         this.samp = samp;
         this.num_points = num_points;
+        logger.info("calc for model: "+model);
         downgoingRFCoeff = new ReflTransCoefficient(model.getVp()
                                                             .getValue(kmps),
                                                     model.getVs()
@@ -106,4 +107,6 @@ public class SimpleSynthReceiverFunction {
     int num_points;
 
     static UnitImpl kmps = UnitImpl.KILOMETER_PER_SECOND;
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SimpleSynthReceiverFunction.class);
 }

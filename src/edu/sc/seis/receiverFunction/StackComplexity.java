@@ -20,7 +20,7 @@ public class StackComplexity {
         this.num_points = num_points;
     }
 
-    public HKStack getResidual(StationResult staResult)
+    public HKStack getSynthetic(StationResult staResult)
             throws FissuresException {
         SimpleSynthReceiverFunction synth = new SimpleSynthReceiverFunction(staResult,
                                                                             samp,
@@ -46,6 +46,12 @@ public class StackComplexity {
                                          synthRF,
                                          stack.getChannel(),
                                          RecFunc.getDefaultShift());
+        return synthStack;
+    }
+
+    public HKStack getResidual(StationResult staResult)
+            throws FissuresException {
+        HKStack synthStack = getSynthetic(staResult);
         float[][] data = stack.getSum().getStack();
         float[][] synthData = synthStack.getStack();
         // scale synth data by max of data so best HK -> 0

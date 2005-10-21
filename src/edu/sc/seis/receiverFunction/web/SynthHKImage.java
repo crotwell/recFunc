@@ -35,7 +35,7 @@ public class SynthHKImage extends SummaryHKStackImageServlet  {
                                   VelocityNetwork net,
                                   String staCode) throws Exception {
         SumHKStack stack = super.getSumStack(req, net, staCode);
-        StackComplexity complexity = new StackComplexity(stack, 2048);
+        StackComplexity complexity = new StackComplexity(stack, 4096);
         StationResult model = new StationResult(net.get_id(), staCode, stack.getSum().getMaxValueH(stack.getSmallestH()), stack.getSum().getMaxValueK(stack.getSmallestH()), stack.getSum().getAlpha(), null);
         return new SumHKStack(stack.getMinPercentMatch(), stack.getSmallestH(), complexity.getSynthetic(model), -1, -1, stack.getNumEQ());
     }

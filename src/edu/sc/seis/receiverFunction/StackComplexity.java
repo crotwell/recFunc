@@ -75,11 +75,11 @@ public class StackComplexity {
                            stack.getChannel());
     }
 
-    static final float sphRayParam = 6.877f * (float)Math.PI / 180; // s/deg for
+    /**
+     * s/deg for P for 60 deg distance
+     */
+    static final float sphRayParam = 6.877f * (float)Math.PI / 180;
 
-    // P for 60
-    // deg
-    // distancce
     SumHKStack stack;
 
     Sampling samp;

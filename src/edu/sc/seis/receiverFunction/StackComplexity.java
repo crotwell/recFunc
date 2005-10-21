@@ -25,14 +25,14 @@ public class StackComplexity {
         SimpleSynthReceiverFunction synth = new SimpleSynthReceiverFunction(staResult,
                                                                             samp,
                                                                             num_points);
-        LocalSeismogramImpl synthRF = synth.calculate(sphRayParam,
+        LocalSeismogramImpl synthRF = synth.calculate(sphRayParamRad,
                                                       ClockUtil.now()
                                                               .getFissuresTime(),
                                                       RecFunc.getDefaultShift(),
                                                       stack.getChannel()
                                                               .get_id());
         HKStack synthStack = new HKStack(stack.getSum().getAlpha(),
-                                         sphRayParam,
+                                         sphRayParamRad,
                                          100,
                                          stack.getSum().minH,
                                          stack.getSum().stepH,
@@ -66,7 +66,7 @@ public class StackComplexity {
             }
         }
         return new HKStack(stack.getSum().getAlpha(),
-                           sphRayParam,
+                           sphRayParamRad,
                            -1,
                            stack.getSum().minH,
                            stack.getSum().stepH,
@@ -84,7 +84,7 @@ public class StackComplexity {
     /**
      * s/deg for P for 60 deg distance
      */
-    static final float sphRayParam = 6.877f * (float)Math.PI / 180;
+    static final float sphRayParamRad = 6.877f;
 
     SumHKStack stack;
 

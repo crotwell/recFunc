@@ -64,13 +64,7 @@ public class HKStackImageServlet  extends HttpServlet {
             logger.debug("doGet called");
             if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
 
-            HKStack stack;
-            if (req.getParameter("rf").equals("synth")) {
-                 stack = SyntheticFactory.getHKStack();
-            } else {
-                int rf_id = RevUtil.getInt("rf", req);
-                stack = hkStack.get(rf_id);
-            }
+            HKStack stack = getStack(req);
             
             String phase = RevUtil.get("phase", req, "all");
             OutputStream out = res.getOutputStream();
@@ -96,6 +90,20 @@ public class HKStackImageServlet  extends HttpServlet {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+    
+    public HKStack getStack(HttpServletRequest req) throws Exception {
+
+        if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
+
+        HKStack stack;
+        if (req.getParameter("rf").equals("synth")) {
+             stack = SyntheticFactory.getHKStack();
+        } else {
+            int rf_id = RevUtil.getInt("rf", req);
+            stack = hkStack.get(rf_id);
+        }
+        return stack;
     }
 
     CachedResult getCachedResult(HttpServletRequest req)

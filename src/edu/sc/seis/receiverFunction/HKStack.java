@@ -580,6 +580,11 @@ public class HKStack implements Serializable {
         float peakVal = getStack()[indicies[0]][indicies[1]];
         return peakVal;
     }
+    
+    public float getMaxValue(QuantityImpl smallestH) {
+        int[] indicies = getMaxValueIndices(getHIndex(smallestH));
+        return getStack()[indicies[0]][indicies[1]];
+    }
 
     public String formatMaxValue() {
         return maxValueFormat.format(getMaxValue());

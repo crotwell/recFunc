@@ -55,89 +55,14 @@ public class SummaryHKStackImageServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException {
         try {
-            logger.debug("doGet called");
-            int netDbId = RevUtil.getInt("netdbid", req);
+            logger.debug("doGet called");int netDbId = RevUtil.getInt("netdbid", req);
             VelocityNetwork net = new VelocityNetwork(jdbcHKStack.getJDBCChannel()
-                                                              .getStationTable()
-                                                              .getNetTable()
-                                                              .get(netDbId),
-                                                      netDbId);
-            // possible that there are multiple stations with the same code
+                                                      .getStationTable()
+                                                      .getNetTable()
+                                                      .get(netDbId),
+                                              netDbId);
             String staCode = req.getParameter("stacode");
-            if(req.getParameter("minPercentMatch") == null) {
-                throw new Exception("minPercentMatch param not set");
-            }
-            float minPercentMatch = new Float(req.getParameter("minPercentMatch")).floatValue();
-            boolean usePhaseWeight = RevUtil.getBoolean("usePhaseWeight",
-                                                        req,
-                                                        true);
-            boolean doBootstrap = false;
-            SumHKStack sumStack;
-            String phase = RevUtil.get("phase", req, "all");
-            float minBaz = RevUtil.getFloat("minBaz", req, 0);
-            float maxBaz = RevUtil.getFloat("maxBaz", req, 360);
-            JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel()
-                    .getStationTable();
-            int[] dbids = jdbcStation.getDBIds(net.get_id(), staCode);
-            edu.iris.Fissures.IfNetwork.Station station = jdbcStation.get(dbids[0]);
-            QuantityImpl smallestH = new QuantityImpl(RevUtil.getFloat("smallestH",
-                                                                       req,
-                                                                       (float)HKStack.getBestSmallestH(station)
-                                                                               .getValue(UnitImpl.KILOMETER)),
-                                                      UnitImpl.KILOMETER);
-            if(phase.equals("all") && minBaz == 0 && maxBaz == 360) {
-                if(usePhaseWeight) {
-                    try {
-                        // phase weight stacks are stored, so don't need to
-                        // calculate
-                        synchronized(jdbcSumHKStack.getConnection()) {
-                            sumStack = jdbcSumHKStack.getForStation(net.get_id(),
-                                                                        staCode,
-                                                                        true);
-                            System.out.println("Got summary plot from database "
-                                    + net.getCode()+"."+staCode);
-                        }
-                    } catch(NotFound e) {
-                        logger.debug(e);
-                        sumStack = null;
-                    }
-                } else {
-                    synchronized(stackSummary.getConnection()) {
-                        sumStack = stackSummary.sum(station.get_id().network_id.network_code,
-                                                    staCode,
-                                                    minPercentMatch,
-                                                    smallestH,
-                                                    doBootstrap,
-                                                    usePhaseWeight);
-                    }
-                }
-            } else {
-                if(minBaz == 0 && maxBaz == 360) {
-                    synchronized(stackSummary.getConnection()) {
-                        sumStack = stackSummary.sumForPhase(station.get_id().network_id.network_code,
-                                                            staCode,
-                                                            minPercentMatch,
-                                                            smallestH,
-                                                            phase,
-                                                            usePhaseWeight);
-                    }
-                } else {
-                    // subset based on Baz
-                    synchronized(jdbcHKStack.getConnection()) {
-                        HKStackIterator it = jdbcHKStack.getIteratorForStation(station.get_id().network_id.network_code,
-                                                                        staCode,
-                                                                        minPercentMatch,
-                                                                        false);
-                        BazIterator bazIt = new BazIterator(it, minBaz, maxBaz);
-                        sumStack = stackSummary.sumForPhase(bazIt,
-                                                            minPercentMatch,
-                                                            smallestH,
-                                                            phase,
-                                                            usePhaseWeight);
-                        it.close();
-                    }
-                }
-            }
+            SumHKStack sumStack = getSumStack(req, net, staCode);
             logger.info("before check for null");
             OutputStream out = res.getOutputStream();
             if(sumStack == null) {
@@ -162,6 +87,86 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+    
+    public SumHKStack getSumStack(HttpServletRequest req, VelocityNetwork net, String staCode) throws Exception {
+//      possible that there are multiple stations with the same code
+        
+        if(req.getParameter("minPercentMatch") == null) {
+            throw new Exception("minPercentMatch param not set");
+        }
+        float minPercentMatch = new Float(req.getParameter("minPercentMatch")).floatValue();
+        boolean usePhaseWeight = RevUtil.getBoolean("usePhaseWeight",
+                                                    req,
+                                                    true);
+        boolean doBootstrap = false;
+        SumHKStack sumStack;
+        String phase = RevUtil.get("phase", req, "all");
+        float minBaz = RevUtil.getFloat("minBaz", req, 0);
+        float maxBaz = RevUtil.getFloat("maxBaz", req, 360);
+        JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel()
+                .getStationTable();
+        int[] dbids = jdbcStation.getDBIds(net.get_id(), staCode);
+        edu.iris.Fissures.IfNetwork.Station station = jdbcStation.get(dbids[0]);
+        QuantityImpl smallestH = new QuantityImpl(RevUtil.getFloat("smallestH",
+                                                                   req,
+                                                                   (float)HKStack.getBestSmallestH(station)
+                                                                           .getValue(UnitImpl.KILOMETER)),
+                                                  UnitImpl.KILOMETER);
+        if(phase.equals("all") && minBaz == 0 && maxBaz == 360) {
+            if(usePhaseWeight) {
+                try {
+                    // phase weight stacks are stored, so don't need to
+                    // calculate
+                    synchronized(jdbcSumHKStack.getConnection()) {
+                        sumStack = jdbcSumHKStack.getForStation(net.get_id(),
+                                                                    staCode,
+                                                                    true);
+                        System.out.println("Got summary plot from database "
+                                + net.getCode()+"."+staCode);
+                    }
+                } catch(NotFound e) {
+                    logger.debug(e);
+                    sumStack = null;
+                }
+            } else {
+                synchronized(stackSummary.getConnection()) {
+                    sumStack = stackSummary.sum(station.get_id().network_id.network_code,
+                                                staCode,
+                                                minPercentMatch,
+                                                smallestH,
+                                                doBootstrap,
+                                                usePhaseWeight);
+                }
+            }
+        } else {
+            if(minBaz == 0 && maxBaz == 360) {
+                synchronized(stackSummary.getConnection()) {
+                    sumStack = stackSummary.sumForPhase(station.get_id().network_id.network_code,
+                                                        staCode,
+                                                        minPercentMatch,
+                                                        smallestH,
+                                                        phase,
+                                                        usePhaseWeight);
+                }
+            } else {
+                // subset based on Baz
+                synchronized(jdbcHKStack.getConnection()) {
+                    HKStackIterator it = jdbcHKStack.getIteratorForStation(station.get_id().network_id.network_code,
+                                                                    staCode,
+                                                                    minPercentMatch,
+                                                                    false);
+                    BazIterator bazIt = new BazIterator(it, minBaz, maxBaz);
+                    sumStack = stackSummary.sumForPhase(bazIt,
+                                                        minPercentMatch,
+                                                        smallestH,
+                                                        phase,
+                                                        usePhaseWeight);
+                    it.close();
+                }
+            }
+        }
+        return sumStack;
     }
 
     void output(SumHKStack sumStack,

@@ -49,12 +49,18 @@ public class SimpleSynthReceiverFunction {
                                                            UnitImpl.COUNT,
                                                            chan,
                                                            data);
+        double freeSurfaceEffect = 1+upgoingRFCoeff.getFreeSVtoPRefl(flatRP)+upgoingRFCoeff.getFreeSVtoSVRefl(flatRP);
+        double etas1 = Math.sqrt(model.getVs().getValue(UnitImpl.KILOMETER_PER_SECOND)*model.getVs().getValue(UnitImpl.KILOMETER_PER_SECOND) -1/(flatRP*flatRP));
+        double etap1 = Math.sqrt(model.getVp().getValue(UnitImpl.KILOMETER_PER_SECOND)*model.getVp().getValue(UnitImpl.KILOMETER_PER_SECOND) -1/(flatRP*flatRP));
+        double jordiFreeSurfaceEffect = model.getVs().getValue(UnitImpl.KILOMETER_PER_SECOND)*etas1/model.getVp().getValue(UnitImpl.KILOMETER_PER_SECOND)/etap1;
+        freeSurfaceEffect = 1;
         // Ps
         TimeInterval timePs = HKStack.getTimePs(flatRP,
                                                 model.getVp(),
                                                 model.getVpVs(),
                                                 model.getH());
         double refTransPs = upgoingRFCoeff.getPtoSVTrans(flatRP);
+        refTransPs *= freeSurfaceEffect;
         float index = HKStack.getDataIndex(seis, timePs.add(lagZeroOffset));
         data[Math.round(index)] = (float)refTransPs;
         System.out.println("Ps: "+timePs+"  "+index+"  "+refTransPs);
@@ -63,9 +69,12 @@ public class SimpleSynthReceiverFunction {
                                                   model.getVp(),
                                                   model.getVpVs(),
                                                   model.getH());
-        double refTransPpPs = upgoingRFCoeff.getPtoPTrans(flatRP)
-                * upgoingRFCoeff.getFreePtoPRefl(flatRP)
-                * downgoingRFCoeff.getPtoSVRefl(flatRP);
+//        double refTransPpPs = upgoingRFCoeff.getPtoPTrans(flatRP)
+//                * upgoingRFCoeff.getFreePtoPRefl(flatRP)
+//                * downgoingRFCoeff.getPtoSVRefl(flatRP);
+        double refTransPpPs = upgoingRFCoeff.getFreePtoPRefl(flatRP)
+        * downgoingRFCoeff.getPtoSVRefl(flatRP);
+        refTransPpPs *=  freeSurfaceEffect;
         index = HKStack.getDataIndex(seis, timePpPs.add(lagZeroOffset));
         data[Math.round(index)] = (float)refTransPpPs;
          System.out.println("PpPs: "+timePpPs+"  "+index+" "+refTransPpPs);
@@ -74,12 +83,16 @@ public class SimpleSynthReceiverFunction {
                                                 model.getVp(),
                                                 model.getVpVs(),
                                                 model.getH());
-        double refTransPsPs = upgoingRFCoeff.getPtoSVTrans(flatRP) *
-        upgoingRFCoeff.getFreeSVtoPRefl(flatRP) *
-        downgoingRFCoeff.getPtoSVRefl(flatRP) +
-        upgoingRFCoeff.getPtoPTrans(flatRP) *
+//        double refTransPsPs = upgoingRFCoeff.getPtoSVTrans(flatRP) *
+//        upgoingRFCoeff.getFreeSVtoPRefl(flatRP) *
+//        downgoingRFCoeff.getPtoSVRefl(flatRP) +
+//        upgoingRFCoeff.getPtoPTrans(flatRP) *
+//        upgoingRFCoeff.getFreePtoSVRefl(flatRP) *
+//        downgoingRFCoeff.getSVtoSVRefl(flatRP);
+        double refTransPsPs = 
         upgoingRFCoeff.getFreePtoSVRefl(flatRP) *
         downgoingRFCoeff.getSVtoSVRefl(flatRP);
+        refTransPsPs *= freeSurfaceEffect;
         index = HKStack.getDataIndex(seis, timePsPs.add(lagZeroOffset));
         data[Math.round(index)] = (float)refTransPsPs;
         System.out.println("PsPs: "+timePsPs+"  "+index+"  "+refTransPsPs);

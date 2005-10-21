@@ -145,6 +145,10 @@ public class Start {
                                               "edu.sc.seis.receiverFunction.web.RecordSectionImage",
                                               servletStrings,
                                               rootHandler);
+        edu.sc.seis.rev.RevUtil.populateJetty("complexityResidualImage.png",
+                                              "edu.sc.seis.receiverFunction.web.ComplexityResidualImage",
+                                              servletStrings,
+                                              rootHandler);
         ServletHandler axisHandler = new ServletHandler();
         axisHandler.addServlet("Earthquakes",
                                "/earthquakes/*",

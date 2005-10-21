@@ -6,6 +6,7 @@ import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.StackComplexity;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
@@ -25,9 +26,10 @@ public class ComplexityResidualImage extends SummaryHKStackImageServlet {
     public SumHKStack getSumStack(HttpServletRequest req,
                                   VelocityNetwork net,
                                   String staCode) throws Exception {
+        float dist = RevUtil.getFloat("dist", req, 60);
         SumHKStack stack = super.getSumStack(req, net, staCode);
         StackComplexity complexity = new StackComplexity(stack, 4096);
         StationResult model = new StationResult(net.get_id(), staCode, stack.getSum().getMaxValueH(stack.getSmallestH()), stack.getSum().getMaxValueK(stack.getSmallestH()), stack.getSum().getAlpha(), null);
-        return new SumHKStack(stack.getMinPercentMatch(), stack.getSmallestH(), complexity.getResidual(model), -1, -1, stack.getNumEQ());
+        return new SumHKStack(stack.getMinPercentMatch(), stack.getSmallestH(), complexity.getResidual(model, dist), -1, -1, stack.getNumEQ());
     }
 }

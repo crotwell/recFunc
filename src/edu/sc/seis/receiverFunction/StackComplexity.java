@@ -4,6 +4,8 @@ import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.Sampling;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
+import edu.sc.seis.TauP.Arrival;
+import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.receiverFunction.compare.StationResult;
@@ -22,10 +24,23 @@ public class StackComplexity {
 
     public HKStack getSynthetic(StationResult staResult)
             throws FissuresException {
+        float flatRP = sphRayParamRad / 6371;
+        return getSyntheticForRayParam(staResult, flatRP);
+    }
+
+    public HKStack getSyntheticForDist(StationResult staResult, float distDeg)
+            throws FissuresException, TauModelException {
+        Arrival[] arrivals = TauPUtil.getTauPUtil()
+                .calcTravelTimes(distDeg, 0, new String[] {"P"});
+        return getSyntheticForRayParam(staResult,
+                                       (float)arrivals[0].getRayParam() / 6371);
+    }
+
+    public HKStack getSyntheticForRayParam(StationResult staResult, float flatRP)
+            throws FissuresException {
         SimpleSynthReceiverFunction synth = new SimpleSynthReceiverFunction(staResult,
                                                                             samp,
                                                                             num_points);
-        float flatRP = sphRayParamRad / 6371;
         LocalSeismogramImpl synthRF = synth.calculate(flatRP,
                                                       ClockUtil.now()
                                                               .getFissuresTime(),
@@ -50,9 +65,9 @@ public class StackComplexity {
         return synthStack;
     }
 
-    public HKStack getResidual(StationResult staResult)
-            throws FissuresException {
-        HKStack synthStack = getSynthetic(staResult);
+    public HKStack getResidual(StationResult staResult, float distDeg)
+            throws FissuresException, TauModelException {
+        HKStack synthStack = getSyntheticForDist(staResult, distDeg);
         float[][] data = stack.getSum().getStack();
         float[][] synthData = synthStack.getStack();
         // scale synth data by max of data so best HK -> 0

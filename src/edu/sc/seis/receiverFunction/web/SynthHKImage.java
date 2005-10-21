@@ -34,10 +34,11 @@ public class SynthHKImage extends SummaryHKStackImageServlet  {
     public SumHKStack getSumStack(HttpServletRequest req,
                                   VelocityNetwork net,
                                   String staCode) throws Exception {
+        float dist = RevUtil.getFloat("dist", req, 60);
         SumHKStack stack = super.getSumStack(req, net, staCode);
         StackComplexity complexity = new StackComplexity(stack, 4096);
         StationResult model = new StationResult(net.get_id(), staCode, stack.getSum().getMaxValueH(stack.getSmallestH()), stack.getSum().getMaxValueK(stack.getSmallestH()), stack.getSum().getAlpha(), null);
-        return new SumHKStack(stack.getMinPercentMatch(), stack.getSmallestH(), complexity.getSynthetic(model), -1, -1, stack.getNumEQ());
+        return new SumHKStack(stack.getMinPercentMatch(), stack.getSmallestH(), complexity.getSyntheticForDist(model, dist), -1, -1, stack.getNumEQ());
     }
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SynthHKImage.class);

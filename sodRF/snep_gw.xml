@@ -199,10 +199,12 @@
         <waveformVectorAlwaysSuccess>
             <waveformVectorFork>
                 <embeddedEventVector>
+                    <eventVectorNOT>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                             <gaussianWidth>5</gaussianWidth>
                         </externalEventVectorSubsetter>
+                    </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
@@ -218,10 +220,12 @@
         <waveformVectorAlwaysSuccess>
             <waveformVectorFork>
                 <embeddedEventVector>
+                    <eventVectorNOT>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                             <gaussianWidth>2.5</gaussianWidth>
                         </externalEventVectorSubsetter>
+                    </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
@@ -237,10 +241,12 @@
         <waveformVectorAlwaysSuccess>
             <waveformVectorFork>
                 <embeddedEventVector>
+                    <eventVectorNOT>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                             <gaussianWidth>1</gaussianWidth>
                         </externalEventVectorSubsetter>
+                    </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
@@ -256,10 +262,12 @@
         <waveformVectorAlwaysSuccess>
             <waveformVectorFork>
                 <embeddedEventVector>
+                    <eventVectorNOT>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                             <gaussianWidth>0.7</gaussianWidth>
                         </externalEventVectorSubsetter>
+                    </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
@@ -275,10 +283,12 @@
         <waveformVectorAlwaysSuccess>
             <waveformVectorFork>
                 <embeddedEventVector>
+                    <eventVectorNOT>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                             <gaussianWidth>0.4</gaussianWidth>
                         </externalEventVectorSubsetter>
+                    </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>

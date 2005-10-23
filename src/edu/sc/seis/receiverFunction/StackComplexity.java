@@ -78,7 +78,11 @@ public class StackComplexity {
         float[][] diff = new float[stack.getSum().numH][stack.getSum().numK];
         for(int i = 0; i < diff.length; i++) {
             for(int jj = 0; jj < diff[0].length; jj++) {
-                diff[i][jj] = data[i][jj] - synthData[i][jj] * scale;
+                if (synthData[i][jj] > 0) {
+                    diff[i][jj] = data[i][jj] - synthData[i][jj] * scale;
+                } else {
+                    diff[i][jj] = data[i][jj];
+                }
             }
         }
         return new HKStack(stack.getSum().getAlpha(),

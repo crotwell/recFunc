@@ -1,8 +1,5 @@
 <?xml version="1.0" ?>
-
-<sod
-xmlns:xlink="http://www.w3.org/1999/xlink/"
->
+<sod xmlns:xlink="http://www.w3.org/1999/xlink/">
     <properties>
         <runName>RealTime RecFunc</runName>
         <statusBase>status</statusBase>
@@ -25,9 +22,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         </maxRetryDelay>
         <statusPages>FALSE</statusPages>
     </properties>
-    
     <eventArm>
-        
         <eventFinder>
             <name>IRIS_EventDC</name>
             <dns>edu/iris/dmc</dns>
@@ -41,38 +36,27 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                     <max>180</max>
                 </longitudeRange>
             </boxArea>
-            
             <!-- Depths from 0 to 1000 kilometers are ok, -->
             <originDepthRange>
-                    <unit>KILOMETER</unit>
-                    <min>0</min>
-                    <max>1000</max>
+                <unit>KILOMETER</unit>
+                <min>0</min>
+                <max>1000</max>
             </originDepthRange>
-            
             <originTimeRange>
                 <startTime>20000101T00:00:00.001Z</startTime>
                 <endTime>20031231T23:59:59.999Z</endTime>
             </originTimeRange>
-            
-            
             <magnitudeRange>
                 <min>6.0</min>
                 <max>10.0</max>
             </magnitudeRange>
-            
             <catalog>WHDF</catalog>
             <contributor>NEIC</contributor>
-            
         </eventFinder>
-        
         <removeEventDuplicate/>
-
-        
         <!-- Print out a line for each successful event -->
         <printlineEventProcess/>
-        
     </eventArm>
-    
     <networkArm>
         <networkFinder>
             <name>IRIS_NetworkDC</name>
@@ -83,17 +67,14 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <value>3</value>
             </refreshInterval>
         </networkFinder>
-        
         <networkEffectiveTimeOverlap>
             <startTime>20000101T00:00:00.001Z</startTime>
             <endTime>20031231T23:59:59.999Z</endTime>
         </networkEffectiveTimeOverlap>
-        
         <stationEffectiveTimeOverlap>
             <startTime>20000101T00:00:00.001Z</startTime>
             <endTime>20031231T23:59:59.999Z</endTime>
         </stationEffectiveTimeOverlap>
-        
         <channelAND>
             <!-- Accept any channel with B band code -->
             <channelOR>
@@ -110,11 +91,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <endTime>20031231T23:59:59.999Z</endTime>
             </channelEffectiveTimeOverlap>
         </channelAND>
-        
         <printlineChannelProcess/>
     </networkArm>
-    
-    
     <waveformVectorArm>
         <eventStationAND>
             <distanceRange>
@@ -127,110 +105,212 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
                 <phaseName>P</phaseName>
             </phaseExists>
         </eventStationAND>
-        
         <eventVectorNOT>
-            <externalEventVectorSubsetter>
-                <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                <gaussianWidth>2.5</gaussianWidth>
-            </externalEventVectorSubsetter>
+            <eventVectorAND>
+                <externalEventVectorSubsetter>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                    <gaussianWidth>5</gaussianWidth>
+                </externalEventVectorSubsetter>
+                <externalEventVectorSubsetter>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                    <gaussianWidth>2.5</gaussianWidth>
+                </externalEventVectorSubsetter>
+                <externalEventVectorSubsetter>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                    <gaussianWidth>1.0</gaussianWidth>
+                </externalEventVectorSubsetter>
+                <externalEventVectorSubsetter>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                    <gaussianWidth>0.7</gaussianWidth>
+                </externalEventVectorSubsetter>
+                <externalEventVectorSubsetter>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                    <gaussianWidth>0.4</gaussianWidth>
+                </externalEventVectorSubsetter>
+            </eventVectorAND>
         </eventVectorNOT>
-            
-                <phaseRequest>
-                    <beginPhase>P</beginPhase>
-                    <beginOffset>
-                        <unit>SECOND</unit>
-                        <value>-120</value>
-                    </beginOffset>
-                    <endPhase>ttp</endPhase>
-                    <endOffset>
-                        <unit>SECOND</unit>
-                        <value>180</value>
-                    </endOffset>
-                </phaseRequest>
-            
-            <fixedDataCenter>
-                <name>IRIS_PondDataCenter</name>
-                <dns>edu/iris/dmc</dns>
-            </fixedDataCenter>
-            
-            <ORAvailableDataWrapper>
-                <someCoverage/>
-            </ORAvailableDataWrapper>
-            
-            <noDataGaps/>
-            <fullDataCoverage/>
-            <threeComponentData/>
-
-            <ORWaveformProcessWrapper>
-                <phaseSignalToNoise>
-                    <modelName>prem</modelName>
-                    <phaseName>P</phaseName>
-                    <shortOffsetBegin>
-                        <unit>SECOND</unit>
-                        <value>-1</value>
-                    </shortOffsetBegin>
-                    <shortOffsetEnd>
-                        <unit>SECOND</unit>
-                        <value>5</value>
-                    </shortOffsetEnd>
-                    <longOffsetBegin>
-                        <unit>SECOND</unit>
-                        <value>-105</value>
-                    </longOffsetBegin>
-                    <longOffsetEnd>
-                        <unit>SECOND</unit>
-                        <value>-5</value>
-                    </longOffsetEnd>
-                    <ratio>2.0</ratio>
-                </phaseSignalToNoise>
-            </ORWaveformProcessWrapper>
-            
-            <printlineSeismogramProcess/>
-            
-            <phaseCut>
-                <beginPhase>P</beginPhase>
-                <beginOffset>
+        <phaseRequest>
+            <beginPhase>P</beginPhase>
+            <beginOffset>
+                <unit>SECOND</unit>
+                <value>-120</value>
+            </beginOffset>
+            <endPhase>ttp</endPhase>
+            <endOffset>
+                <unit>SECOND</unit>
+                <value>180</value>
+            </endOffset>
+        </phaseRequest>
+        <fixedDataCenter>
+            <name>IRIS_PondDataCenter</name>
+            <dns>edu/iris/dmc</dns>
+        </fixedDataCenter>
+        <ORAvailableDataWrapper>
+            <someCoverage/>
+        </ORAvailableDataWrapper>
+        <noDataGaps/>
+        <fullDataCoverage/>
+        <threeComponentData/>
+        <ORWaveformProcessWrapper>
+            <phaseSignalToNoise>
+                <modelName>prem</modelName>
+                <phaseName>P</phaseName>
+                <shortOffsetBegin>
                     <unit>SECOND</unit>
-                    <value>-30</value>
-                </beginOffset>
-                <endPhase>P</endPhase>
-                <endOffset>
+                    <value>-1</value>
+                </shortOffsetBegin>
+                <shortOffsetEnd>
                     <unit>SECOND</unit>
-                    <value>120</value>
-                </endOffset>
-            </phaseCut>
-
-            <threeComponentData/>
-
-            <rMean/>
-            <rTrend/>
-            <taper/>
-            <responseGain/>
-            
-            <filter>
-                <lowFreqCorner>
-                    <value>50</value><unit>SECOND</unit>
-                </lowFreqCorner>
-                <highFreqCorner>
-                    <value>5</value><unit>HERTZ</unit>
-                </highFreqCorner>
-                <numPoles>2</numPoles>
-                <filterType>NONCAUSAL</filterType>
-            </filter>
-            
-            <externalWaveformVectorProcess>
-                <classname>edu.sc.seis.receiverFunction.crust2.Crust2Process</classname>
-            </externalWaveformVectorProcess>
-
-            <externalWaveformVectorProcess>
-                <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
-                <fileType>sac</fileType>
-                <dataDirectory>RT_recfunc</dataDirectory>
-                <eventDirLabel>
-                    <originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/>
-                </eventDirLabel>
-                <gaussianWidth>2.5</gaussianWidth>
-            </externalWaveformVectorProcess>
-            
+                    <value>5</value>
+                </shortOffsetEnd>
+                <longOffsetBegin>
+                    <unit>SECOND</unit>
+                    <value>-105</value>
+                </longOffsetBegin>
+                <longOffsetEnd>
+                    <unit>SECOND</unit>
+                    <value>-5</value>
+                </longOffsetEnd>
+                <ratio>2.0</ratio>
+            </phaseSignalToNoise>
+        </ORWaveformProcessWrapper>
+        <printlineSeismogramProcess/>
+        <phaseCut>
+            <beginPhase>P</beginPhase>
+            <beginOffset>
+                <unit>SECOND</unit>
+                <value>-30</value>
+            </beginOffset>
+            <endPhase>P</endPhase>
+            <endOffset>
+                <unit>SECOND</unit>
+                <value>120</value>
+            </endOffset>
+        </phaseCut>
+        <threeComponentData/>
+        <rMean/>
+        <rTrend/>
+        <taper/>
+        <responseGain/>
+        <filter>
+            <lowFreqCorner>
+                <value>50</value>
+                <unit>SECOND</unit>
+            </lowFreqCorner>
+            <highFreqCorner>
+                <value>5</value>
+                <unit>HERTZ</unit>
+            </highFreqCorner>
+            <numPoles>2</numPoles>
+            <filterType>NONCAUSAL</filterType>
+        </filter>
+        <externalWaveformVectorProcess>
+            <classname>edu.sc.seis.receiverFunction.crust2.Crust2Process</classname>
+        </externalWaveformVectorProcess>
+        <waveformVectorAlwaysSuccess>
+            <waveformVectorFork>
+                <embeddedEventChannelProcessor>
+                    <embeddedEventStation>
+                        <externalEventVectorSubsetter>
+                            <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                            <gaussianWidth>5</gaussianWidth>
+                        </externalEventVectorSubsetter>
+                    </embeddedEventStation>
+                </embeddedEventChannelProcessor>
+                <externalWaveformVectorProcess>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
+                    <fileType>sac</fileType>
+                    <dataDirectory>RT_recfunc</dataDirectory>
+                    <eventDirLabel>
+                        <originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/>
+                    </eventDirLabel>
+                    <gaussianWidth>5</gaussianWidth>
+                </externalWaveformVectorProcess>
+            </waveformVectorFork>
+        </waveformVectorAlwaysSuccess>
+        <waveformVectorAlwaysSuccess>
+            <waveformVectorFork>
+                <embeddedEventChannelProcessor>
+                    <embeddedEventStation>
+                        <externalEventVectorSubsetter>
+                            <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                            <gaussianWidth>2.5</gaussianWidth>
+                        </externalEventVectorSubsetter>
+                    </embeddedEventStation>
+                </embeddedEventChannelProcessor>
+                <externalWaveformVectorProcess>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
+                    <fileType>sac</fileType>
+                    <dataDirectory>RT_recfunc</dataDirectory>
+                    <eventDirLabel>
+                        <originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/>
+                    </eventDirLabel>
+                    <gaussianWidth>5</gaussianWidth>
+                </externalWaveformVectorProcess>
+            </waveformVectorFork>
+        </waveformVectorAlwaysSuccess>
+        <waveformVectorAlwaysSuccess>
+            <waveformVectorFork>
+                <embeddedEventChannelProcessor>
+                    <embeddedEventStation>
+                        <externalEventVectorSubsetter>
+                            <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                            <gaussianWidth>5</gaussianWidth>
+                        </externalEventVectorSubsetter>
+                    </embeddedEventStation>
+                </embeddedEventChannelProcessor>
+                <externalWaveformVectorProcess>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
+                    <fileType>sac</fileType>
+                    <dataDirectory>RT_recfunc</dataDirectory>
+                    <eventDirLabel>
+                        <originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/>
+                    </eventDirLabel>
+                    <gaussianWidth>1</gaussianWidth>
+                </externalWaveformVectorProcess>
+            </waveformVectorFork>
+        </waveformVectorAlwaysSuccess>
+        <waveformVectorAlwaysSuccess>
+            <waveformVectorFork>
+                <embeddedEventChannelProcessor>
+                    <embeddedEventStation>
+                        <externalEventVectorSubsetter>
+                            <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                            <gaussianWidth>5</gaussianWidth>
+                        </externalEventVectorSubsetter>
+                    </embeddedEventStation>
+                </embeddedEventChannelProcessor>
+                <externalWaveformVectorProcess>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
+                    <fileType>sac</fileType>
+                    <dataDirectory>RT_recfunc</dataDirectory>
+                    <eventDirLabel>
+                        <originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/>
+                    </eventDirLabel>
+                    <gaussianWidth>0.7</gaussianWidth>
+                </externalWaveformVectorProcess>
+            </waveformVectorFork>
+        </waveformVectorAlwaysSuccess>
+        <waveformVectorAlwaysSuccess>
+            <waveformVectorFork>
+                <embeddedEventChannelProcessor>
+                    <embeddedEventStation>
+                        <externalEventVectorSubsetter>
+                            <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                            <gaussianWidth>5</gaussianWidth>
+                        </externalEventVectorSubsetter>
+                    </embeddedEventStation>
+                </embeddedEventChannelProcessor>
+                <externalWaveformVectorProcess>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
+                    <fileType>sac</fileType>
+                    <dataDirectory>RT_recfunc</dataDirectory>
+                    <eventDirLabel>
+                        <originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/>
+                    </eventDirLabel>
+                    <gaussianWidth>0.4</gaussianWidth>
+                </externalWaveformVectorProcess>
+            </waveformVectorFork>
+        </waveformVectorAlwaysSuccess>
     </waveformVectorArm>
 </sod>

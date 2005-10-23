@@ -55,13 +55,14 @@ public class SummaryHKStackImageServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException {
         try {
-            logger.debug("doGet called");int netDbId = RevUtil.getInt("netdbid", req);
+            logger.debug("doGet called");
+            int netDbId = RevUtil.getInt("netdbid", req);
             VelocityNetwork net = new VelocityNetwork(jdbcHKStack.getJDBCChannel()
                                                       .getStationTable()
                                                       .getNetTable()
                                                       .get(netDbId),
                                               netDbId);
-            String staCode = req.getParameter("stacode");
+            String staCode = RevUtil.get("stacode", req);
             SumHKStack sumStack = getSumStack(req, net, staCode);
             logger.info("before check for null");
             OutputStream out = res.getOutputStream();

@@ -150,7 +150,7 @@ public class JDBCRecFunc extends JDBCTable {
             channelDbId[i] = jdbcChannel.put(channels[i]);
         }
 
-        File stationDir = getDir(cacheEvent, channels[0]);
+        File stationDir = getDir(cacheEvent, channels[0], config.gwidth);
         stationDir.mkdirs();
         File[] seisFile = new File[original.length];
         
@@ -316,7 +316,7 @@ public class JDBCRecFunc extends JDBCTable {
         CachedResult result = extractWithoutSeismograms(rs);
         
         CacheEvent cacheEvent = new CacheEvent(result.event_attr, result.prefOrigin);
-        File stationDir = getDir(cacheEvent, result.channels[0]);
+        File stationDir = getDir(cacheEvent, result.channels[0], result.config.gwidth);
         System.out.println("StationDir: "+stationDir);
         
         SacTimeSeries itrSAC = new SacTimeSeries();
@@ -493,13 +493,13 @@ public class JDBCRecFunc extends JDBCTable {
         return index;
     }
     
-    protected File getDir(CacheEvent cacheEvent, Channel chan) {
+    protected File getDir(CacheEvent cacheEvent, Channel chan, float gaussianWidth) {
         if(dataDir == null) {
             dataDir = new File(dataDirectory);
             dataDir.mkdirs();
         }
-        
-        File eventDir = new File(dataDir, eventFormatter.getResult(cacheEvent));
+        File gaussDir = new File(dataDir, "gauss_"+gaussianWidth);
+        File eventDir = new File(gaussDir, eventFormatter.getResult(cacheEvent));
         File netDir = new File(eventDir, chan.get_id().network_id.network_code);
         File stationDir = new File(netDir, chan.get_id().station_code);
         return stationDir;

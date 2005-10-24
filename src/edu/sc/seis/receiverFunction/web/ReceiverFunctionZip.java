@@ -72,7 +72,7 @@ public class ReceiverFunctionZip extends HttpServlet {
                 VelocityEvent event = new VelocityEvent(new CacheEvent(result[i].event_attr,
                                                                        result[i].prefOrigin));
                 VelocityStation sta = new VelocityStation(result[i].channels[2].my_site.my_station);
-                String entryName = "Ears/" + sta.getNetCode() + "."
+                String entryName = TOP_ZIP_DIR + sta.getNetCode() + "."
                 + sta.getCode() + "/" + event.getFilizedTime() + ".itr";
                 String origEntryName = entryName;
                 int j=2;
@@ -92,12 +92,22 @@ public class ReceiverFunctionZip extends HttpServlet {
                 dos.flush();
                 zip.closeEntry();
             }
+            if (result.length == 0) {
+                // add at least one file so zip doesn't complain
+                ZipEntry entry = new ZipEntry(TOP_ZIP_DIR+"no_data.txt");
+                zip.putNextEntry(entry);
+                dos.writeChars("Sorry, there was no data for network "+netDbId+" station: "+staCode+"\n");
+                dos.flush();
+                zip.closeEntry();
+            }
             zip.close();
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);
             throw new ServletException(e);
         }
     }
+    
+    private static final String TOP_ZIP_DIR = "Ears/";
     
     JDBCRecFunc jdbcRecFunc;
 }

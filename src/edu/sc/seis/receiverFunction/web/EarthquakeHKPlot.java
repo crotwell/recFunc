@@ -28,6 +28,7 @@ import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.server.HKStackIterator;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.rev.RevUtil;
+import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
@@ -129,7 +130,7 @@ public class EarthquakeHKPlot extends HttpServlet {
                     + req.getParameter("rf") + "</p></body></html>");
             writer.flush();
         } catch(Exception e) {
-            e.printStackTrace();
+            Revlet.sendToGlobalExceptionHandler(req, e);
             throw new RuntimeException(e);
         }
     }

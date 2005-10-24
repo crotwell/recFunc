@@ -40,6 +40,7 @@ import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.rev.RevUtil;
+import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
@@ -112,7 +113,7 @@ public class RecordSectionImage extends HttpServlet {
             disp.outputToPNG(out, dim);
             out.close();
         } catch(Exception e) {
-            GlobalExceptionHandler.handle(e);
+            Revlet.sendToGlobalExceptionHandler(req, e);
             throw new ServletException(e);
         }
     }

@@ -29,6 +29,7 @@ import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.receiverFunction.server.SyntheticFactory;
 import edu.sc.seis.rev.RevUtil;
+import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.locator.StationLocator;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.database.waveform.JDBCEventChannelCookieJar;
@@ -87,7 +88,7 @@ public class HKStackImageServlet  extends HttpServlet {
             writer.write("<html><body><p>No HK stack foundfor id "+req.getParameter("rf")+"</p></body></html>");
             writer.flush();
         } catch(Exception e) {
-            e.printStackTrace();
+            Revlet.sendToGlobalExceptionHandler(req, e);
             throw new RuntimeException(e);
         }
     }

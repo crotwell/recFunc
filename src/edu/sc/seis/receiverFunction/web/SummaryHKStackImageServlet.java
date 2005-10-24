@@ -29,6 +29,7 @@ import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.receiverFunction.server.StackSummary;
 import edu.sc.seis.rev.RevUtil;
+import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.locator.StationLocator;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.database.waveform.JDBCEventChannelStatus;
@@ -85,7 +86,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                     + req.getParameter("staCode") + "</p></body></html>");
             writer.flush();
         } catch(Exception e) {
-            e.printStackTrace();
+            Revlet.sendToGlobalExceptionHandler(req, e);
             throw new RuntimeException(e);
         }
     }

@@ -37,6 +37,7 @@ import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.receiverFunction.server.SyntheticFactory;
 import edu.sc.seis.rev.RevUtil;
+import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.sod.ConfigurationException;
 
 /**
@@ -105,7 +106,7 @@ public class SeismogramImage extends HttpServlet {
                     + req.getParameter("rf") + "</p></body></html>");
             writer.flush();
         } catch(Exception e) {
-            e.printStackTrace();
+            Revlet.sendToGlobalExceptionHandler(req, e);
             throw new RuntimeException(e);
         }
     }

@@ -60,6 +60,7 @@ public class StackSummary {
     }
 
     public void createSummary(String net,
+                              float gaussianWidth,
                               float minPercentMatch,
                               QuantityImpl smallestH,
                               boolean doBootstrap,
@@ -73,6 +74,7 @@ public class StackSummary {
                 for(int j = 0; j < station.length; j++) {
                     QuantityImpl modSmallestH = HKStack.getBestSmallestH(station[j], smallestH);
                     createSummary(station[j].get_id(),
+                                  gaussianWidth,
                                                         minPercentMatch,
                                                         modSmallestH,
                                                         doBootstrap,
@@ -83,6 +85,7 @@ public class StackSummary {
     }
 
     public void createSummary(StationId station,
+                              float gaussianWidth,
                                     float minPercentMatch,
                                     QuantityImpl smallestH,
                                     boolean doBootstrap,
@@ -91,6 +94,7 @@ public class StackSummary {
         System.out.println("createSummary for " + StationIdUtil.toStringNoDates(station));
         SumHKStack sumStack = sum(station.network_id.network_code,
                                   station.station_code,
+                                  gaussianWidth,
                                   minPercentMatch,
                                   smallestH,
                                   doBootstrap,
@@ -99,7 +103,7 @@ public class StackSummary {
             System.out.println("stack is null for " + StationIdUtil.toStringNoDates(station));
         } else {
             try {
-                int dbid = jdbcSummary.getDbIdForStation(station.network_id, station.station_code);
+                int dbid = jdbcSummary.getDbIdForStation(station.network_id, station.station_code, gaussianWidth, minPercentMatch);
                 jdbcSummary.update(dbid, sumStack);
             } catch(NotFound e) {
                 jdbcSummary.put(sumStack);
@@ -109,13 +113,14 @@ public class StackSummary {
 
     public SumHKStack sum(String netCode,
                           String staCode,
+                          float gaussianWidth,
                           float percentMatch,
                           QuantityImpl smallestH,
                           boolean doBootstrap,
                           boolean usePhaseWeight) throws FissuresException, NotFound, IOException, SQLException {
         logger.info("in sum for " + netCode + "." + staCode);
         TimeOMatic.start();
-        ArrayList individualHK = jdbcHKStack.getForStation(netCode, staCode, percentMatch, true);
+        ArrayList individualHK = jdbcHKStack.getForStation(netCode, staCode, gaussianWidth, percentMatch, true);
         // if there is only 1 eq that matches, then we can't really do a stack
         if(individualHK.size() > 1) {
             HKStack temp = (HKStack)individualHK.get(0);
@@ -134,13 +139,14 @@ public class StackSummary {
 
     public SumHKStack sumForPhase(String netCode,
                                   String staCode,
+                                  float gaussianWidth,
                                   float minPercentMatch,
                                   QuantityImpl smallestH,
                                   String phase,
                                   boolean usePhaseWeight) throws FissuresException, NotFound, IOException, SQLException {
         logger.info("in sum for " + netCode + "." + staCode);
         TimeOMatic.start();
-        HKStackIterator it = jdbcHKStack.getIteratorForStation(netCode, staCode, minPercentMatch, false);
+        HKStackIterator it = jdbcHKStack.getIteratorForStation(netCode, staCode, gaussianWidth, minPercentMatch, false);
         SumHKStack sumStack = sumForPhase(it, minPercentMatch, smallestH, phase, usePhaseWeight);
         it.close();
         TimeOMatic.print("sum for " + netCode + "." + staCode);
@@ -225,6 +231,7 @@ public class StackSummary {
 
     public static void parseArgsAndRun(String[] args, StackSummary summary) throws FissuresException, NotFound,
             IOException, SQLException {
+        float gaussianWidth = 2.5f;
         float minPercentMatch = 80f;
         boolean bootstrap = true;
         boolean usePhaseWeight = true;
@@ -237,12 +244,15 @@ public class StackSummary {
                 staArg = args[i + 1];
             } else if(args[i].equals("-all")) {
                 netArg = args[i];
+            } else if(args[i].equals("-g")) {
+                gaussianWidth = Float.parseFloat(args[i + 1]);
             } else if(args[i].equals("--nobootstrap")) {
                 bootstrap = false;
             }
         }
         if(staArg.equals("")) {
             summary.createSummary(netArg,
+                                  gaussianWidth,
                                   minPercentMatch,
                                   HKStack.getDefaultSmallestH(),
                                   bootstrap,
@@ -259,6 +269,7 @@ public class StackSummary {
                         sta_dbid = tmp[0];
                         Station station = jdbcStation.get(sta_dbid);
                         summary.createSummary(station.get_id(),
+                                              gaussianWidth,
                                               minPercentMatch,
                                               HKStack.getBestSmallestH(station, HKStack.getDefaultSmallestH()),
                                               bootstrap,

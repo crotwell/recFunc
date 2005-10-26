@@ -63,13 +63,15 @@ public class EarthquakeHKPlot extends HttpServlet {
             VelocityNetwork net = station.getNetwork(netDbId);
             String staCode = req.getParameter("stacode");
             ArrayList stationList = station.getStationList(netDbId, staCode);
-            float match = RevUtil.getFloat("percentMatch", req, 80);
-            QuantityImpl smallestH = HKStack.getBestSmallestH((VelocityStation)stationList.get(0));
+
+            float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
+            float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());QuantityImpl smallestH = HKStack.getBestSmallestH((VelocityStation)stationList.get(0));
             ArrayList stackList = new ArrayList();
             synchronized(jdbcHKStack.getConnection()) {
                 HKStackIterator it = jdbcHKStack.getIteratorForStation(net.getCode(),
                                                                        staCode,
-                                                                       match,
+                                                                       gaussianWidth,
+                                                                       minPercentMatch,
                                                                        true);
                 while(it.hasNext()) {
                     HKStack stack = (HKStack)it.next();

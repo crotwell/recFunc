@@ -72,11 +72,14 @@ public class RecordSectionImage extends HttpServlet {
             throws ServletException, IOException {
         try {
             int netDbId = RevUtil.getInt("netdbid", req);
-            String staCode = req.getParameter("stacode");
-            float match = RevUtil.getFloat("percentMatch", req, 80);
+            String staCode = RevUtil.get("stacode", req);
+
+            float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
+            float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
             CachedResult[] results = jdbcRecFunc.getByPercent(netDbId,
                                                               staCode,
-                                                              match);
+                                                              gaussianWidth,
+                                                              minPercentMatch);
             DataSetEventOrganizer organizer = new DataSetEventOrganizer();
             DataSetSeismogram[] itrDSS = new DataSetSeismogram[results.length];
             for(int i = 0; i < itrDSS.length; i++) {

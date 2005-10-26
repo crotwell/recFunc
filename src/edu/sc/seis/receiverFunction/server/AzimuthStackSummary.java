@@ -29,6 +29,7 @@ public class AzimuthStackSummary extends StackSummary {
     }
 
     public void createSummary(StationId station,
+                              float gaussianWidth,
                               float minPercentMatch,
                               QuantityImpl smallestH,
                               boolean doBootstrap,
@@ -36,6 +37,7 @@ public class AzimuthStackSummary extends StackSummary {
         System.out.println("createSummary for " + StationIdUtil.toStringNoDates(station));
         AzimuthSumHKStack[] azimuthSum = azimuthSum(station.network_id.network_code,
                                                     station.station_code,
+                                                    gaussianWidth,
                                                     minPercentMatch,
                                                     smallestH,
                                                     doBootstrap,
@@ -52,6 +54,7 @@ public class AzimuthStackSummary extends StackSummary {
 
     public AzimuthSumHKStack[] azimuthSum(String netCode,
                                           String staCode,
+                                          float gaussianWidth,
                                           float percentMatch,
                                           QuantityImpl smallestH,
                                           boolean doBootstrap,
@@ -60,7 +63,7 @@ public class AzimuthStackSummary extends StackSummary {
         logger.info("in sum for " + netCode + "." + staCode);
         TimeOMatic.start();
         List out = new ArrayList();
-        ArrayList individualHK = jdbcHKStack.getForStation(netCode, staCode, percentMatch, true);
+        ArrayList individualHK = jdbcHKStack.getForStation(netCode, staCode, gaussianWidth, percentMatch, true);
         for(float center = 0; center < 360; center += step) {
             ArrayList sectorHK = new ArrayList();
             BazIterator bazIt = new BazIterator(individualHK.iterator(), center - width / 2, center + width / 2);

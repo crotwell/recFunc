@@ -57,7 +57,8 @@ receiverFunction.getOriginByStation=SELECT * FROM network \
     JOIN catalog ON (origin.origin_catalog_id = catalog.catalog_id) \
     JOIN contributor ON (catalog_contributor_id =   contributor.contributor_id) \
     WHERE network.net_id = ? \
-    AND station.sta_code = ?
+    AND station.sta_code = ? \
+    AND gwidth = ?
                    
 receiverFunction.countOriginByStationByPercent=SELECT count(*) FROM  \
     station \
@@ -66,6 +67,7 @@ receiverFunction.countOriginByStationByPercent=SELECT count(*) FROM  \
     JOIN  receiverFunction ON (chanz_id = chan_id ) \
     WHERE net_id = ? \
     AND sta_code = ? \
+    AND gwidth = ? \
     AND itr_match >= ?
     
 receiverFunction.getOriginByStationByPercent=SELECT * FROM netchan \
@@ -77,6 +79,7 @@ receiverFunction.getOriginByStationByPercent=SELECT * FROM netchan \
     JOIN contributor ON (catalog_contributor_id =   contributor.contributor_id) \
     WHERE net_id = ? \
     AND sta_code = ? \
+    AND gwidth = ? \
     AND itr_match >= ?
     
 hkrealimag.create=CREATE TABLE $tablename ( \
@@ -196,6 +199,7 @@ hkstack.getForStation=SELECT * FROM network \
                    JOIN hkrealimag ON (hkstack.hkrealimag_id = hkrealimag.hkrealimag_id ) \
                    WHERE net_code = ? \
                    AND sta_code = ? \
+                   AND gwidth = ? \
                    AND percentMatch > ?
 
 hkstackToSummary.create=CREATE TABLE $tablename ( \
@@ -214,6 +218,7 @@ hksummary.create=CREATE TABLE $tablename ( \
                    chanB_id int, \
                    chanZ_id int, \
                    alpha float, \
+                   gwidth float, \
                    minPercentMatch float, \
                    minH float, \
                    stepH float, \
@@ -247,6 +252,7 @@ hksummary.put=INSERT INTO hksummary ( \
                    chanB_id , \
                    chanZ_id , \
                    alpha , \
+                   gwidth, \
                    minPercentMatch , \
                    minH , \
                    stepH , \
@@ -266,7 +272,7 @@ hksummary.put=INSERT INTO hksummary ( \
                    kVariance,  \
                    numeq \
                    ) \
-                   VALUES ( ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,  ?, ?, ?)
+                   VALUES ( ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,  ?, ?, ?, ?)
                    
 hksummary.get=SELECT * from $tablename JOIN netchan ON (chanz_id = chan_id ) \
                    WHERE hksummary_id = ?
@@ -275,6 +281,7 @@ hksummary.update=UPDATE $tablename SET chanA_id = ? , \
                    chanB_id = ? , \
                    chanZ_id = ? , \
                    alpha = ? , \
+                   gwidth = ?, \
                    minPercentMatch = ? , \
                    minH = ? , \
                    stepH = ? , \
@@ -301,6 +308,7 @@ hksummary.uncalculated=SELECT receiverFunction.recfunc_id FROM netchan \
                    WHERE network.network_dbid = ? \
                    AND sta_code = ? \
                    AND receiverFunction.itr_match >= ? \
+                   AND gwidth = ? \
                    EXCEPT SELECT receiverFunction.recfunc_id from network \
                        JOIN station ON (network.net_id = station.net_id ) \
                        JOIN site ON (station.sta_id = site.sta_id ) \
@@ -311,13 +319,16 @@ hksummary.uncalculated=SELECT receiverFunction.recfunc_id FROM netchan \
                        JOIN hksummary ON ( hkstackToSummary.hksummary_id = hksummary.hksummary_id ) \
                        WHERE  net_code = ? \
                        AND sta_code = ? \
+                       AND gwidth = ? \
                        AND receiverFunction.itr_match >= hksummary.minPercentMatch \
                        AND hksummary.minPercentMatch = ? \
                        
 hksummary.getForStation=SELECT * from netchan \
                    JOIN  $tablename  ON (chanz_id = chan_id ) \
                    WHERE network.net_id = ? \
-                   AND sta_code = ? 
+                   AND sta_code = ? \
+                   AND gwidth = ? \
+                   AND minPercentMatch = ?
 
 hksummary.getAllWithoutData=SELECT alpha, minpercentmatch, peakh, hvariance, peakk, kvariance, peakval, net_code, sta_code, chanz_id, \
 	minH, stepH, numH, minK, stepK, numK, weightPs, weightPpPs, weightPsPs, numeq  \

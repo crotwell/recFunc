@@ -42,22 +42,16 @@ public class StationList extends Revlet {
     }
 
     public RevletContext getContext(HttpServletRequest req, HttpServletResponse res) throws Exception {
+        float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
+        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         RevletContext context = new RevletContext(getVelocityTemplate(req), Start.getDefaultContext());
         ArrayList stationList = getStations(req, context);
         logger.debug("getStations done: " + stationList.size());
-        HashMap summary = getSummaries(stationList, context);
+        HashMap summary = getSummaries(stationList, context, req);
         logger.debug("getSummaries done: " + summary.keySet().size());
-        HashMap numEQ = new HashMap();
-        Iterator it = stationList.iterator();
-        while(it.hasNext()) {
-            VelocityStation sta = (VelocityStation)it.next();
-            numEQ.put(sta,
-                      new Integer(jdbcRecFunc.countSeccessfulEvents(sta.getNet().getDbId(), sta.get_code(), 80.0f)));
-        }
         logger.debug("count successful events done");
         context.put("stationList", stationList);
         context.put("summary", summary);
-        context.put("numEQ", numEQ);
         return context;
     }
 
@@ -103,13 +97,16 @@ public class StationList extends Revlet {
      * Populates a hashmap with keys (objects of type Station) from the list and
      * values of SumHKStack. Also populates the dbid for the stations and
      * network.
-     * 
      * @param context
      *            TODO
+     * @param req TODO
+     * 
      * @throws SQLException
      * @throws IOException
      */
-    public HashMap getSummaries(ArrayList stationList, RevletContext context) throws SQLException, IOException {
+    public HashMap getSummaries(ArrayList stationList, RevletContext context, HttpServletRequest req) throws SQLException, IOException {
+        float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
+        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         Iterator it = stationList.iterator();
         HashMap summary = new HashMap();
         while(it.hasNext()) {
@@ -118,7 +115,7 @@ public class StationList extends Revlet {
                 sta.setDbId(jdbcChannel.getStationTable().getDBId(sta.get_id()));
                 int netDbId = jdbcChannel.getNetworkTable().getDbId(sta.getNet().get_id());
                 sta.getNet().setDbId(netDbId);
-                SumHKStack sumStack = jdbcSumHKStack.getForStation(netDbId, sta.get_code(), false);
+                SumHKStack sumStack = jdbcSumHKStack.getForStation(netDbId, sta.get_code(), gaussianWidth, minPercentMatch, false);
                 summary.put(sta, sumStack);
             } catch(NotFound e) {
                 // oh well, skip this station

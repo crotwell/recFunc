@@ -64,6 +64,7 @@ public class HKStack implements Serializable {
 
     protected HKStack(QuantityImpl alpha,
                       float p,
+                      float gwidth, 
                       float percentMatch,
                       QuantityImpl minH,
                       QuantityImpl stepH,
@@ -86,6 +87,7 @@ public class HKStack implements Serializable {
         }
         this.alpha = alpha;
         this.p = p;
+        this.gwidth = gwidth;
         this.percentMatch = percentMatch;
         this.minH = minH.convertTo(UnitImpl.KILOMETER);
         this.stepH = stepH;
@@ -100,6 +102,7 @@ public class HKStack implements Serializable {
 
     public HKStack(QuantityImpl alpha,
                    float p,
+                   float gwidth, 
                    float percentMatch,
                    QuantityImpl minH,
                    QuantityImpl stepH,
@@ -113,6 +116,7 @@ public class HKStack implements Serializable {
                    DataSetSeismogram recFunc) throws FissuresException {
         this(alpha,
              p,
+             gwidth,
              percentMatch,
              minH,
              stepH,
@@ -131,6 +135,7 @@ public class HKStack implements Serializable {
 
     public HKStack(QuantityImpl alpha,
                    float p,
+                   float gwidth, 
                    float percentMatch,
                    QuantityImpl minH,
                    QuantityImpl stepH,
@@ -146,6 +151,7 @@ public class HKStack implements Serializable {
                    TimeInterval shift) throws FissuresException {
         this(alpha,
              p,
+             gwidth,
              percentMatch,
              minH,
              stepH,
@@ -166,6 +172,7 @@ public class HKStack implements Serializable {
 
     public HKStack(QuantityImpl alpha,
                    float p,
+                   float gwidth, 
                    float percentMatch,
                    QuantityImpl minH,
                    QuantityImpl stepH,
@@ -181,6 +188,7 @@ public class HKStack implements Serializable {
                    CmplxArray2D analyticPsPs) {
         this(alpha,
              p,
+             gwidth,
              percentMatch,
              minH,
              stepH,
@@ -200,6 +208,7 @@ public class HKStack implements Serializable {
 
     public HKStack(QuantityImpl alpha,
                    float p,
+                   float gwidth, 
                    float percentMatch,
                    QuantityImpl minH,
                    QuantityImpl stepH,
@@ -216,6 +225,7 @@ public class HKStack implements Serializable {
                    DataSetSeismogram recFunc) {
         this(alpha,
              p,
+             gwidth,
              percentMatch,
              minH,
              stepH,
@@ -236,6 +246,7 @@ public class HKStack implements Serializable {
 
     public HKStack(QuantityImpl alpha,
                    float p,
+                   float gwidth, 
                    float percentMatch,
                    QuantityImpl minH,
                    QuantityImpl stepH,
@@ -252,6 +263,7 @@ public class HKStack implements Serializable {
                    Channel chan) {
         this(alpha,
              p,
+             gwidth,
              percentMatch,
              minH,
              stepH,
@@ -270,6 +282,7 @@ public class HKStack implements Serializable {
 
     public HKStack(QuantityImpl alpha,
                    float p,
+                   float gwidth, 
                    float percentMatch,
                    QuantityImpl minH,
                    QuantityImpl stepH,
@@ -284,6 +297,7 @@ public class HKStack implements Serializable {
                    Channel chan) {
         this(alpha,
              p,
+             gwidth,
              percentMatch,
              minH,
              stepH,
@@ -305,6 +319,7 @@ public class HKStack implements Serializable {
 
     public HKStack(QuantityImpl alpha,
                    float p,
+                   float gwidth, 
                    float percentMatch,
                    QuantityImpl minH,
                    QuantityImpl stepH,
@@ -321,6 +336,7 @@ public class HKStack implements Serializable {
                    Channel chan) {
         this(alpha,
              p,
+             gwidth,
              percentMatch,
              minH,
              stepH,
@@ -889,6 +905,7 @@ public class HKStack implements Serializable {
                 .getRadiusOfEarth());
         HKStack stack = new HKStack(staResult.getVp(),
                                     kmRayParam,
+                                    cachedResult.config.gwidth,
                                     cachedResult.radialMatch,
                                     getDefaultMinH(),
                                     new QuantityImpl(.25f, UnitImpl.KILOMETER),
@@ -1033,6 +1050,10 @@ public class HKStack implements Serializable {
         return FissuresFormatter.formatQuantity(getAlpha());
     }
 
+    public float getGaussianWidth() {
+        return gwidth;
+    }
+    
     public float getPercentMatch() {
         return percentMatch;
     }
@@ -1198,6 +1219,8 @@ public class HKStack implements Serializable {
 
     QuantityImpl alpha;
 
+    float gwidth;
+    
     float percentMatch;
 
     QuantityImpl minH;

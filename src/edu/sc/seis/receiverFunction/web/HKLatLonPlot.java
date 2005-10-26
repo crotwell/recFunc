@@ -58,7 +58,7 @@ public class HKLatLonPlot extends HttpServlet {
             logger.debug(stationList.size()+" stations nearby");
             HashMap summary = stationsNearBy.cleanSummaries(stationList,
                                                             stationsNearBy.getSummaries(stationList,
-                                                                                        context));
+                                                                                        context, req));
             XYZDataset dataset = new StationSummaryDataset(stationList,
                                                            summary,
                                                            RevUtil.get("xAxis",

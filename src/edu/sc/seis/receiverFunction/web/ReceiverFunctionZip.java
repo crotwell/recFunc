@@ -60,10 +60,12 @@ public class ReceiverFunctionZip extends HttpServlet {
             throws ServletException, FileNotFoundException, IOException {
         int netDbId = RevUtil.getInt("netdbid", req);
         String staCode = req.getParameter("stacode");
-        float minPercentMatch = new Float(req.getParameter("minPercentMatch")).floatValue();
-        try {
+
+        float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
+        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());try {
             CachedResult[] result = jdbcRecFunc.getByPercent(netDbId,
                                                              staCode,
+                                                             gaussianWidth,
                                                              minPercentMatch);
             res.setContentType("application/zip");
             ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(res.getOutputStream()));

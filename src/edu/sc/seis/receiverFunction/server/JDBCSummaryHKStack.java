@@ -44,13 +44,16 @@ public class JDBCSummaryHKStack extends JDBCTable {
                          "edu/sc/seis/receiverFunction/server/default.props");
     }
 
-    public int calc(int netDbId, String stationCode, float percentMatch)
+    public int calc(int netDbId, String stationCode,
+                    float gaussianWidth, float percentMatch)
             throws SQLException {
         int index = 1;
         uncalculated.setInt(index++, netDbId);
         uncalculated.setString(index++, stationCode);
+        uncalculated.setFloat(index++, gaussianWidth);
         uncalculated.setInt(index++, netDbId);
         uncalculated.setString(index++, stationCode);
+        uncalculated.setFloat(index++, gaussianWidth);
         ResultSet rs = uncalculated.executeQuery();
         while(rs.next()) {
             System.out.println("uncalc receiver function id=" + rs.getInt(1));
@@ -109,6 +112,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
         stmt.setFloat(index++, (float)summary.getSum()
                 .getAlpha()
                 .getValue(UnitImpl.KILOMETER_PER_SECOND));
+        stmt.setFloat(index++, summary.getSum().getGaussianWidth());
         stmt.setFloat(index++, summary.getMinPercentMatch());
         stmt.setFloat(index++, (float)summary.getSmallestH()
                 .convertTo(UnitImpl.KILOMETER)
@@ -166,6 +170,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
             stack = new HKStack(new QuantityImpl(rs.getFloat("alpha"),
                                                  UnitImpl.KILOMETER_PER_SECOND),
                                 0,
+                                rs.getFloat("gwidth"),
                                 rs.getFloat("minPercentMatch"),
                                 new QuantityImpl(rs.getFloat("minH"),
                                                  UnitImpl.KILOMETER),
@@ -184,6 +189,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
             stack = new HKStack(new QuantityImpl(rs.getFloat("alpha"),
                                                  UnitImpl.KILOMETER_PER_SECOND),
                                 0,
+                                rs.getFloat("gwidth"),
                                 rs.getFloat("minPercentMatch"),
                                 new QuantityImpl(rs.getFloat("minH"),
                                                  UnitImpl.KILOMETER),
@@ -214,20 +220,26 @@ public class JDBCSummaryHKStack extends JDBCTable {
 
     public SumHKStack getForStation(NetworkId net,
                                     String station_code,
+                                    float gaussianWidth,
+                                    float percentMatch,
                                     boolean withData) throws NotFound,
             SQLException, IOException {
         return getForStation(jdbcHKStack.getJDBCChannel()
                 .getNetworkTable()
-                .getDbId(net), station_code, withData);
+                .getDbId(net), station_code, gaussianWidth, percentMatch, withData);
     }
 
     public SumHKStack getForStation(int netId,
                                     String station_code,
+                                    float gaussianWidth,
+                                    float percentMatch,
                                     boolean withData) throws NotFound,
             SQLException, IOException {
         int index = 1;
         getForStation.setInt(index++, netId);
         getForStation.setString(index++, station_code);
+        getForStation.setFloat(index++, gaussianWidth);
+        getForStation.setFloat(index++, percentMatch);
         ResultSet rs = getForStation.executeQuery();
         if(rs.next()) {
             return extract(rs, withData);
@@ -235,13 +247,17 @@ public class JDBCSummaryHKStack extends JDBCTable {
         throw new NotFound("No Summary stack for " + netId + " " + station_code);
     }
 
-    public int getDbIdForStation(NetworkId net, String station_code)
+    public int getDbIdForStation(NetworkId net, String station_code, 
+                                 float gaussianWidth,
+                                 float percentMatch)
             throws SQLException, NotFound {
         int index = 1;
         getForStation.setInt(index++, jdbcHKStack.getJDBCChannel()
                 .getNetworkTable()
                 .getDbId(net));
         getForStation.setString(index++, station_code);
+        getForStation.setFloat(index++, gaussianWidth);
+        getForStation.setFloat(index++, percentMatch);
         ResultSet rs = getForStation.executeQuery();
         if(rs.next()) {
             return rs.getInt("hksummary_id");

@@ -94,10 +94,10 @@ public class ComparePriorResult extends StationList {
         return stations;
     }
     
-    public HashMap getSummaries(ArrayList stationList, RevletContext context) throws SQLException, IOException {
+    public HashMap getSummaries(ArrayList stationList, RevletContext context, HttpServletRequest req) throws SQLException, IOException {
         TimeOMatic.start();
         // clean station/prior results if they agree within hDiff km
-        HashMap summary = super.getSummaries(stationList, context);
+        HashMap summary = super.getSummaries(stationList, context, req);
         HashMap prior = (HashMap)context.get("prior");
         
         float hDiff;

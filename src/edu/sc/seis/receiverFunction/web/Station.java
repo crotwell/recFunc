@@ -76,6 +76,8 @@ public class Station extends Revlet {
      */
     public RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
+        float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
+        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         int netDbId = RevUtil.getInt("netdbid", req, -1);
         if(netDbId == -1) {
             String netCode = RevUtil.get("netCode", req);
@@ -97,7 +99,7 @@ public class Station extends Revlet {
         String staCode = req.getParameter("stacode");
         ArrayList stationList = getStationList(netDbId, staCode);
         TimeOMatic.start();
-        CacheEvent[] events = jdbcRecFunc.getSuccessfulEvents(netDbId, staCode);
+        CacheEvent[] events = jdbcRecFunc.getSuccessfulEvents(netDbId, staCode, gaussianWidth);
         TimeOMatic.print("successful events");
         ArrayList eventList = new ArrayList();
         int numNinty = 0;
@@ -134,7 +136,9 @@ public class Station extends Revlet {
                                                   Start.getDefaultContext());
         try {
             int summaryDbId = jdbcSummaryHKStack.getDbIdForStation(net.get_id(),
-                                                                   staCode);
+                                                                   staCode,
+                                                                   gaussianWidth,
+                                                                   minPercentMatch);
             SumHKStack summary = jdbcSummaryHKStack.get(summaryDbId);
             context.put("summary", summary);
             int[][] localMaxima = summary.getSum().getLocalMaxima(smallestH, 5);

@@ -134,6 +134,7 @@ return numEQ;
         }
         HKStack hkStack = new HKStack(individuals[0].getAlpha(),
                                       0f,
+                                      individuals[0].getGaussianWidth(),
                                       minPercentMatch,
                                       individuals[0].getMinH()
                                               .add(individuals[0].getStepH()
@@ -239,6 +240,7 @@ return numEQ;
         }
         HKStack hkStack = new HKStack(first.getAlpha(),
                                       0f,
+                                      first.getGaussianWidth(),
                                       minPercentMatch,
                                       first.getMinH().add(first.getStepH()
                                               .multiplyBy(smallestHIndex)),

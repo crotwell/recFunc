@@ -16,10 +16,13 @@ import edu.sc.seis.receiverFunction.synth.SimpleSynthReceiverFunction;
  */
 public class StackComplexity {
 
-    public StackComplexity(SumHKStack stack, int num_points) {
+    private float gaussianWidth;
+
+    public StackComplexity(SumHKStack stack, int num_points, float gaussianWidth) {
         this.stack = stack;
         this.samp = stack.getChannel().sampling_info;
         this.num_points = num_points;
+        this.gaussianWidth = gaussianWidth;
     }
 
     public HKStack getSynthetic(StationResult staResult)
@@ -46,9 +49,10 @@ public class StackComplexity {
                                                               .getFissuresTime(),
                                                       RecFunc.getDefaultShift(),
                                                       stack.getChannel()
-                                                              .get_id());
+                                                              .get_id(), gaussianWidth);
         HKStack synthStack = new HKStack(stack.getSum().getAlpha(),
                                          flatRP,
+                                         gaussianWidth,
                                          100,
                                          stack.getSum().minH,
                                          stack.getSum().stepH,
@@ -87,6 +91,7 @@ public class StackComplexity {
         }
         return new HKStack(stack.getSum().getAlpha(),
                            sphRayParamRad,
+                           gaussianWidth,
                            -1,
                            stack.getSum().minH,
                            stack.getSum().stepH,

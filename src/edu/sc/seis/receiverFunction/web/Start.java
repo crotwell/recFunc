@@ -186,4 +186,12 @@ public class Start {
     }
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Start.class);
+
+    public static float getDefaultGaussian() {
+        return 2.5f;
+    }
+
+    public static float getDefaultMinPercentMatch() {
+        return 80;
+    }
 }

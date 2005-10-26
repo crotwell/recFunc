@@ -37,6 +37,7 @@ public class BootstrapError extends StackSummary {
 
     public SumHKStack createSummary(StationId station,
                                     File parentDir,
+                                    float gaussianWidth,
                                     float minPercentMatch,
                                     QuantityImpl smallestH)
             throws FissuresException, NotFound, IOException, SQLException {
@@ -44,6 +45,7 @@ public class BootstrapError extends StackSummary {
                 + StationIdUtil.toStringNoDates(station));
         SumHKStack sumStack = sum(station.network_id.network_code,
                                   station.station_code,
+                                  gaussianWidth,
                                   minPercentMatch,
                                   smallestH);
         if(sumStack == null) {
@@ -52,7 +54,9 @@ public class BootstrapError extends StackSummary {
         } else {
             try {
                 int dbid = jdbcSummary.getDbIdForStation(station.network_id,
-                                                         station.station_code);
+                                                         station.station_code,
+                                                         gaussianWidth,
+                                                         minPercentMatch);
                 //jdbcSummary.update(dbid, sumStack);
             } catch(NotFound e) {
                 //jdbcSummary.put(sumStack);
@@ -68,6 +72,7 @@ public class BootstrapError extends StackSummary {
 
     public SumHKStack sum(String netCode,
                           String staCode,
+                          float gaussianWidth,
                           float percentMatch,
                           QuantityImpl smallestH) throws FissuresException,
             NotFound, IOException, SQLException {
@@ -75,6 +80,7 @@ public class BootstrapError extends StackSummary {
         TimeOMatic.start();
         ArrayList individualHK = jdbcHKStack.getForStation(netCode,
                                                            staCode,
+                                                           gaussianWidth,
                                                            percentMatch);
         // if there is only 1 eq that matches, then we can't really do a stack
         if(individualHK.size() > 1) {

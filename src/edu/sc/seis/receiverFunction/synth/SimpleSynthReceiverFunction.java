@@ -34,7 +34,7 @@ public class SimpleSynthReceiverFunction {
     public LocalSeismogramImpl calculate(float flatRP,
                                          Time begin_time,
                                          TimeInterval lagZeroOffset,
-                                         ChannelId chan) {
+                                         ChannelId chan, float gaussianWidth) {
         
         float[] data = new float[num_points];
         

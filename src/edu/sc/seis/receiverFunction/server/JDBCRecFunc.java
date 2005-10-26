@@ -391,18 +391,22 @@ public class JDBCRecFunc extends JDBCTable {
         return (IterDeconConfig[])out.toArray(new IterDeconConfig[0]);
     }
 
-    public int countSeccessfulEvents(int netDbId, String stationCode, float minPercentMatch) throws SQLException, NotFound {
-        countOriginByStationByPercent.setInt(1, netDbId);
-        countOriginByStationByPercent.setString(2, stationCode);
-        countOriginByStationByPercent.setFloat(3, minPercentMatch);
+    public int countSeccessfulEvents(int netDbId, String stationCode, float gaussianWidth, float minPercentMatch) throws SQLException, NotFound {
+        int index = 1;
+        countOriginByStationByPercent.setInt(index++, netDbId);
+        countOriginByStationByPercent.setString(index++, stationCode);
+        countOriginByStationByPercent.setFloat(index++, gaussianWidth);
+        countOriginByStationByPercent.setFloat(index++, minPercentMatch);
         ResultSet rs = countOriginByStationByPercent.executeQuery();
         rs.next();
         return rs.getInt(1);
     }
     
-    public CacheEvent[] getSuccessfulEvents(int netDbId, String stationCode) throws SQLException, NotFound {
-        getOriginByStation.setInt(1, netDbId);
-        getOriginByStation.setString(2, stationCode);
+    public CacheEvent[] getSuccessfulEvents(int netDbId, String stationCode, float gaussianWidth) throws SQLException, NotFound {
+        int index = 1;
+        getOriginByStation.setInt(index++, netDbId);
+        getOriginByStation.setString(index++, stationCode);
+        getOriginByStation.setFloat(index++, gaussianWidth);
         ResultSet rs = getOriginByStation.executeQuery();
         TimeOMatic.print("result set");
         ArrayList out = new ArrayList();
@@ -423,10 +427,12 @@ public class JDBCRecFunc extends JDBCTable {
         return (CacheEvent[])out.toArray(new CacheEvent[0]);
     }
     
-    public CachedResult[] getByPercent(int netDbId, String stationCode, float percentMatch) throws FileNotFoundException, FissuresException, NotFound, IOException, SQLException {
-        getOriginByStationByPercent.setInt(1, netDbId);
-        getOriginByStationByPercent.setString(2, stationCode);
-        getOriginByStationByPercent.setFloat(3, percentMatch);
+    public CachedResult[] getByPercent(int netDbId, String stationCode, float gaussianWidth, float percentMatch) throws FileNotFoundException, FissuresException, NotFound, IOException, SQLException {
+        int index=1;
+        getOriginByStationByPercent.setInt(index++, netDbId);
+        getOriginByStationByPercent.setString(index++, stationCode);
+        getOriginByStationByPercent.setFloat(index++, gaussianWidth);
+        getOriginByStationByPercent.setFloat(index++, percentMatch);
         System.out.println("RecFunc.getByPercent:"+getOriginByStationByPercent);
         ArrayList out = new ArrayList();
         ResultSet rs = getOriginByStationByPercent.executeQuery();

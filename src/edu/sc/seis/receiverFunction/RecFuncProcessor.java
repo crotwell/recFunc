@@ -243,7 +243,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
 
                     if (ITR_ITT.equals("ITR")) {
                         HKStack stack = new HKStack(new QuantityImpl(6.5, UnitImpl.KILOMETER_PER_SECOND),
-                                                    kmRayParam,
+                                                    kmRayParam, gwidth,
                                                     HKStack.getPercentMatch(saved),
                                                     new QuantityImpl(10, UnitImpl.KILOMETER), new QuantityImpl(.25f, UnitImpl.KILOMETER), 240,
                                                     1.6f, .0025f, 200,

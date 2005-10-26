@@ -94,10 +94,9 @@ public class SummaryHKStackImageServlet extends HttpServlet {
     public SumHKStack getSumStack(HttpServletRequest req, VelocityNetwork net, String staCode) throws Exception {
 //      possible that there are multiple stations with the same code
         
-        if(req.getParameter("minPercentMatch") == null) {
-            throw new Exception("minPercentMatch param not set");
-        }
-        float minPercentMatch = new Float(req.getParameter("minPercentMatch")).floatValue();
+
+        float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
+        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         boolean usePhaseWeight = RevUtil.getBoolean("usePhaseWeight",
                                                     req,
                                                     true);
@@ -123,6 +122,8 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                     synchronized(jdbcSumHKStack.getConnection()) {
                         sumStack = jdbcSumHKStack.getForStation(net.get_id(),
                                                                     staCode,
+                                                                    gaussianWidth,
+                                                                    minPercentMatch,
                                                                     true);
                         System.out.println("Got summary plot from database "
                                 + net.getCode()+"."+staCode);
@@ -135,6 +136,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                 synchronized(stackSummary.getConnection()) {
                     sumStack = stackSummary.sum(station.get_id().network_id.network_code,
                                                 staCode,
+                                                gaussianWidth,
                                                 minPercentMatch,
                                                 smallestH,
                                                 doBootstrap,
@@ -146,6 +148,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                 synchronized(stackSummary.getConnection()) {
                     sumStack = stackSummary.sumForPhase(station.get_id().network_id.network_code,
                                                         staCode,
+                                                        gaussianWidth,
                                                         minPercentMatch,
                                                         smallestH,
                                                         phase,
@@ -156,6 +159,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                 synchronized(jdbcHKStack.getConnection()) {
                     HKStackIterator it = jdbcHKStack.getIteratorForStation(station.get_id().network_id.network_code,
                                                                     staCode,
+                                                                    gaussianWidth,
                                                                     minPercentMatch,
                                                                     false);
                     BazIterator bazIt = new BazIterator(it, minBaz, maxBaz);

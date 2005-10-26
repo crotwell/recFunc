@@ -27,8 +27,10 @@ public class ComplexityResidualImage extends SummaryHKStackImageServlet {
                                   VelocityNetwork net,
                                   String staCode) throws Exception {
         float dist = RevUtil.getFloat("dist", req, 60);
+        float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
+        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         SumHKStack stack = super.getSumStack(req, net, staCode);
-        StackComplexity complexity = new StackComplexity(stack, 4096);
+        StackComplexity complexity = new StackComplexity(stack, 4096, gaussianWidth);
         StationResult model = new StationResult(net.get_id(), staCode, stack.getSum().getMaxValueH(stack.getSmallestH()), stack.getSum().getMaxValueK(stack.getSmallestH()), stack.getSum().getAlpha(), null);
         return new SumHKStack(stack.getMinPercentMatch(), stack.getSmallestH(), complexity.getResidual(model, dist), -1, -1, stack.getNumEQ());
     }

@@ -209,16 +209,18 @@ public class JDBCHKStack extends JDBCTable {
     
     public ArrayList getForStation(String netCode,
                                    String staCode,
+                                   float gaussianWidth,
                                    float percentMatch) throws FissuresException, NotFound, IOException, SQLException {
-        return getForStation(netCode, staCode, percentMatch, false);
+        return getForStation(netCode, staCode, gaussianWidth, percentMatch, false);
     }
 
     public ArrayList getForStation(String netCode,
                                    String staCode,
+                                   float gaussianWidth,
                                    float percentMatch,
                                    boolean compact) throws FissuresException, NotFound, IOException, SQLException {
         ArrayList individualHK = new ArrayList();
-        HKStackIterator it = getIteratorForStation(netCode, staCode, percentMatch, compact);
+        HKStackIterator it = getIteratorForStation(netCode, staCode, gaussianWidth, percentMatch, compact);
         while(it.hasNext()) {
             HKStack stack = (HKStack)it.next();
             if (compact) {stack.compact();}
@@ -230,13 +232,14 @@ public class JDBCHKStack extends JDBCTable {
     
     public HKStackIterator getIteratorForStation(String netCode,
                                           String staCode,
-                                          float percentMatch,
-                                          boolean compact) throws SQLException {
+                                          float gaussinWidth,
+                                          float minPercentMatch, boolean compact) throws SQLException {
 
         int index = 1;
         getForStation.setString(index++, netCode);
         getForStation.setString(index++, staCode);
-        getForStation.setFloat(index++, percentMatch);
+        getForStation.setFloat(index++, gaussinWidth);
+        getForStation.setFloat(index++, minPercentMatch);
         boolean autoCommit = conn.getAutoCommit();
         getConnection().setAutoCommit(false);
         ResultSet rs = getForStation.executeQuery();
@@ -258,6 +261,7 @@ public class JDBCHKStack extends JDBCTable {
         CmplxArray2D[] data = jdbcHKRealImag.extractData(rs, numH, numK);
         HKStack out = new HKStack(new QuantityImpl(rs.getFloat("alpha"), UnitImpl.KILOMETER_PER_SECOND),
                                   rs.getFloat("p"),
+                                  rs.getFloat("gwidth"),
                                   rs.getFloat("percentMatch"),
                                   new QuantityImpl(rs.getFloat("minH"), UnitImpl.KILOMETER),
                                   new QuantityImpl(rs.getFloat("stepH"), UnitImpl.KILOMETER),

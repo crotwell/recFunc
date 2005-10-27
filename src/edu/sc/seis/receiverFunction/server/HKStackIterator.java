@@ -15,11 +15,14 @@ public class HKStackIterator implements Iterator {
 
     public boolean hasNext() {
         checkNext();
+        if (next == null) {
+            System.out.println("extracted "+num);
+        }
         return next != null;
     }
 
     public Object next() {
-        System.out.println("extract "+num++);
+        num++;
         checkNext();
         Object tmp = next;
         next = null;

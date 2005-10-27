@@ -917,7 +917,7 @@ public class HKStack implements Serializable {
                                     weightPpPs,
                                     weightPsPs,
                                     (LocalSeismogramImpl)cachedResult.radial,
-                                    cachedResult.channels[0],
+                                    cachedResult.channels[2], // chan arraay is a, b, z
                                     RecFunc.getDefaultShift());
         return stack;
     }

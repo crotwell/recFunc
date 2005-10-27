@@ -62,7 +62,7 @@ $header
 #tablehead( $items )
 
 #foreach($sta in $stationList)
-#set( $staurl = "station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()" )
+#set( $staurl = "station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}" )
 #set( $stalink = "#link( $staurl $sta.getName() )" )
 #foreach($priorR in $prior.get($sta))
 #set( $items = [ "$sta.getNet().getCodeWithYear()", "$sta.getCode()", $stalink, "$sta.getLatitude()/$sta.getLongitude()", "$!summary.get($sta).getSum().formatMaxValueH()", "$fissures.formatQuantity($!summary.get($sta).getHStdDev())", "$!summary.get($sta).getSum().formatMaxValueK()", "$!summary.get($sta).formatKStdDev()", "$!summary.get($sta).getSum().formatAlpha()", "$!summary.get($sta).getSum().formatVs()", "$!summary.get($sta).getSum().formatPoissonsRatio()", "$!numEQ.get($sta)", "$!priorR.formatH()", "$!priorR.formatVpVs()", "$!priorR.formatVp()", "$!priorR.formatVs()", "$!priorR.formatPoissonsRatio()" ] )

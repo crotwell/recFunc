@@ -30,8 +30,8 @@ $header
 <tr>
 <td class="odd">$sta.getNet().getCodeWithYear()</td>
 
-<td class="odd"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()">$sta.getCode()</a></td>
-<td class="even"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()">$sta.getName()</a></td>
+<td class="odd"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getCode()</a></td>
+<td class="even"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getName()</a></td>
 <td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
     <td class="even">$!summary.get($sta).getSum().formatMaxValueH()</td>
     <td class="odd">$fissures.formatQuantity($!summary.get($sta).getHStdDev())</td>
@@ -40,7 +40,7 @@ $header
     <td class="even">$!summary.get($sta).getSum().formatAlpha()</td>
     <td class="odd">$!summary.get($sta).getSum().formatVs()</td>
     <td class="even">$!summary.get($sta).getSum().formatPoissonsRatio()</td>
-    <td class="odd">$!numEQ.get($sta)</td>
+    <td class="odd">$!summary.get($sta).numEQ</td>
 </tr>
 #end
 </table>

@@ -18,7 +18,7 @@ $header
 </tr>
 #foreach($ref in $priorResults)
 <tr>
-<td class="odd"><a href="comparePriorResult.html?name=${ref.name}">$ref.name</a></td>
+<td class="odd"><a href="comparePriorResult.html?name=${ref.name}&gaussian=${gaussian}">$ref.name</a></td>
 <td class="even">$ref.method</td>
 <td class="even">$ref.reference</td>
 <td class="even"><a href="$ref.URL">$ref.URL</a></td>

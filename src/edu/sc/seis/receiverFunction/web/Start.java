@@ -5,11 +5,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.VelocityContext;
 import org.mortbay.jetty.servlet.ServletHandler;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
+import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.rev.ServletFromSet;
 
@@ -26,6 +28,13 @@ public class Start {
         // TODO Auto-generated constructor stub
     }
 
+    public static void loadStandardQueryParams(HttpServletRequest req, RevletContext context) {
+        float gaussianWidth = RevUtil.getFloat("gaussian", req, getDefaultGaussian());
+        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, getDefaultMinPercentMatch());
+        context.put("gaussian", ""+gaussianWidth);
+        context.put("minPercentMatch", ""+minPercentMatch);
+    }
+
     public static void main(String[] args) throws Exception {
         Properties props = Initializer.loadProperties(args);
         PropertyConfigurator.configure(props);
@@ -34,6 +43,10 @@ public class Start {
         logger.info("connecting to database: "+ConnMgr.getURL());
         Set servletStrings = new HashSet();
         ServletHandler rootHandler = new ServletFromSet(servletStrings);
+        edu.sc.seis.rev.RevUtil.populateJetty("/index.html",
+                                              "edu.sc.seis.receiverFunction.web.IndexPage",
+                                              servletStrings,
+                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty("/networkList.html",
                                               "/networkList.html",
                                               "edu.sc.seis.receiverFunction.web.NetworkList",

@@ -312,8 +312,10 @@ return numEQ;
             hErrors[i] = sampleStack.getMaxValueH()
                     .getValue(UnitImpl.KILOMETER);
             kErrors[i] = sampleStack.getMaxValueK();
-            System.out.println("calcVarianceBootstrap:  " + i + " "
+            if (i % 10 == 0) {
+                System.out.println("calcVarianceBootstrap:  " + i + " "
                     + hErrors[i] + "  " + kErrors[i]);
+            }
         }
         Statistics hStat = new Statistics(hErrors);
         hVariance = (float)hStat.var();

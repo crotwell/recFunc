@@ -62,7 +62,8 @@ public class ReceiverFunctionZip extends HttpServlet {
         String staCode = req.getParameter("stacode");
 
         float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
-        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());try {
+        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
+        try {
             CachedResult[] result = jdbcRecFunc.getByPercent(netDbId,
                                                              staCode,
                                                              gaussianWidth,
@@ -77,7 +78,7 @@ public class ReceiverFunctionZip extends HttpServlet {
                 VelocityStation sta = new VelocityStation(result[i].channels[2].my_site.my_station);
                 // 0 for radial, 1 for transverse
                 for(int rfType = 0; rfType < 2; rfType++) {
-                    String entryName = TOP_ZIP_DIR + sta.getNetCode() + "."
+                    String entryName = TOP_ZIP_DIR + "gauss_"+gaussianWidth+"/"+sta.getNetCode() + "."
                             + sta.getCode() + "/"
                             + event.getTime("yyyy_DDD_HH_mm_ss") + (rfType == 0 ? ".itr" : "itt");
                     String origEntryName = entryName;

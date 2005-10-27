@@ -99,7 +99,7 @@ public class JDBCAzimuthSummaryHKStack extends JDBCTable {
         getForStation.setFloat(index++, width);
         ResultSet rs = getForStation.executeQuery();
         if(rs.next()) {
-            return rs.getInt("hksummary_id");
+            return rs.getInt("azimuthhksummary_id");
         }
         throw new NotFound("No Summary stack for "
                 + NetworkIdUtil.toString(net) + " " + station_code);

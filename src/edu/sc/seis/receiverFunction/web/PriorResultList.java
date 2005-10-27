@@ -31,6 +31,7 @@ public class PriorResultList extends Revlet {
                                     HttpServletResponse res) throws Exception {
         VelocityContext velContext = new VelocityContext(Start.getDefaultContext());
         RevletContext context = new RevletContext("priorResultList.vm", velContext);
+        Start.loadStandardQueryParams(req, context);
         ArrayList results = new ArrayList();
         StationResultRef[] refs = jdbcStationResultRef.getAll();
         for(int i = 0; i < refs.length; i++) {

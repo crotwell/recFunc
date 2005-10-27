@@ -134,6 +134,7 @@ public class Station extends Revlet {
         TimeOMatic.print("other results");
         RevletContext context = new RevletContext("station.vm",
                                                   Start.getDefaultContext());
+        Start.loadStandardQueryParams(req, context);
         try {
             int summaryDbId = jdbcSummaryHKStack.getDbIdForStation(net.get_id(),
                                                                    staCode,

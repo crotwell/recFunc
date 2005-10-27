@@ -45,6 +45,7 @@ public class StationList extends Revlet {
         float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
         float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         RevletContext context = new RevletContext(getVelocityTemplate(req), Start.getDefaultContext());
+        Start.loadStandardQueryParams(req, context);
         ArrayList stationList = getStations(req, context);
         logger.debug("getStations done: " + stationList.size());
         HashMap summary = getSummaries(stationList, context, req);
@@ -97,10 +98,6 @@ public class StationList extends Revlet {
      * Populates a hashmap with keys (objects of type Station) from the list and
      * values of SumHKStack. Also populates the dbid for the stations and
      * network.
-     * @param context
-     *            TODO
-     * @param req TODO
-     * 
      * @throws SQLException
      * @throws IOException
      */

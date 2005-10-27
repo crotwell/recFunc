@@ -26,6 +26,7 @@ public class NetworkList extends Revlet {
     public RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
         RevletContext context = new RevletContext("networkList.vm", Start.getDefaultContext());
+        Start.loadStandardQueryParams(req, context);
         ArrayList netList = new ArrayList();
         int[] netdbids = jdbcNetwork.getAllNetworkDBIds();
         NetworkAttr[] nets = new NetworkAttr[netdbids.length];

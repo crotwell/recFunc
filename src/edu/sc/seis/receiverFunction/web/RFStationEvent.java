@@ -115,6 +115,7 @@ public class RFStationEvent extends Revlet {
             vContext.put("ston", triggers);
             
             RevletContext context = new RevletContext("rfStationEvent.vm", vContext);
+            Start.loadStandardQueryParams(req, context);
             return context;
         } catch(Exception e) {
             e.printStackTrace();

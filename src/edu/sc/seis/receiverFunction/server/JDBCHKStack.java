@@ -203,7 +203,7 @@ public class JDBCHKStack extends JDBCTable {
         CachedResult cachedResult = jdbcRecFunc.get(recFuncDbId);
         HKStack stack = HKStack.create(cachedResult, weightPs, weightPpPs, weightPsPs);
         System.out.println("Stack calc for "
-                + ChannelIdUtil.toStringNoDates(cachedResult.channels[0]));
+                + ChannelIdUtil.toStringNoDates(cachedResult.channels[2]));
         return stack;
     }
     

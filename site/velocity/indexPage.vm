@@ -8,6 +8,11 @@
 
 $header
 
+<p>Choose Gaussian: 
+#foreach ( $g in $knowngaussians )
+<a href="index.html?gaussian=${g}">${g}</a>
+#end
+</p>
 <p><a href="networkList.html?gaussian=${gaussian}">Networks</a></p>
 <p>Compare with <a href="priorResultList.html?gaussian=${gaussian}">prior results</a>
 </p>

@@ -191,6 +191,13 @@ public class Start {
         context.put("header",
                     "<a href=\""+edu.sc.seis.rev.Start.getVisibleURL()+"\"><img src=\"earslogo.png\"/></a><br/>"
                             + warning);
+        ArrayList knownGaussians = new ArrayList();
+        knownGaussians.add(new Float(5));
+        knownGaussians.add(new Float(2.5f));
+        knownGaussians.add(new Float(1));
+        knownGaussians.add(new Float(0.7f));
+        knownGaussians.add(new Float(0.4f));
+        context.put("knownGaussians", knownGaussians);
         return context;
     }
     

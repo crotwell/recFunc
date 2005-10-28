@@ -33,7 +33,7 @@ public class RecFuncTemplateTest extends TestCase {
         context.put("recFunc_hkstack_image", "hkstack.png");
         context.put("ChannelIdUtil", new ChannelIdUtil());
 
-        HKStack stack = new HKStack(new QuantityImpl(1, UnitImpl.KILOMETER_PER_SECOND), 2, 90, new QuantityImpl(10, UnitImpl.KILOMETER), new QuantityImpl(1, UnitImpl.KILOMETER), 50, 1.6f, .025f, 50, 1, 1, 1);
+        HKStack stack = new HKStack(new QuantityImpl(1, UnitImpl.KILOMETER_PER_SECOND), 2, 2.5f, 90, new QuantityImpl(10, UnitImpl.KILOMETER), new QuantityImpl(1, UnitImpl.KILOMETER), 50, 1.6f, .025f, 50, 1, 1, 1);
         context.put("stack", stack);
         HashMap aux = new HashMap();
         aux.put("testA", "A");

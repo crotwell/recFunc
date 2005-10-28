@@ -20,18 +20,10 @@ import edu.sc.seis.rev.ServletFromSet;
  */
 public class Start {
 
-    /**
-     *
-     */
-    public Start() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
     public static void loadStandardQueryParams(HttpServletRequest req, RevletContext context) {
         float gaussianWidth = RevUtil.getFloat("gaussian", req, getDefaultGaussian());
         float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, getDefaultMinPercentMatch());
-        context.put("gaussian", ""+gaussianWidth);
+        context.put("gaussian", new Float(gaussianWidth));
         context.put("minPercentMatch", ""+minPercentMatch);
     }
 

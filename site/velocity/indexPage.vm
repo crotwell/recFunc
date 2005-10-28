@@ -9,8 +9,12 @@
 $header
 
 <p>Choose Gaussian: 
-#foreach ( $g in $knowngaussians )
+#foreach ( $g in $knownGaussians )
+	#if ( $g == $gaussian) 
+		$g
+		#else
 <a href="index.html?gaussian=${g}">${g}</a>
+#end
 #end
 </p>
 <p><a href="networkList.html?gaussian=${gaussian}">Networks</a></p>

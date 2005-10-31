@@ -5,27 +5,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.VelocityContext;
 import org.mortbay.jetty.servlet.ServletHandler;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
+import edu.sc.seis.rev.FloatQueryParamParser;
 import edu.sc.seis.rev.RevUtil;
-import edu.sc.seis.rev.RevletContext;
+import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.ServletFromSet;
 
 /**
  * @author crotwell Created on Feb 10, 2005
  */
 public class Start {
-
-    public static void loadStandardQueryParams(HttpServletRequest req, RevletContext context) {
-        float gaussianWidth = RevUtil.getFloat("gaussian", req, getDefaultGaussian());
-        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, getDefaultMinPercentMatch());
-        context.put("gaussian", new Float(gaussianWidth));
-        context.put("minPercentMatch", ""+minPercentMatch);
-    }
 
     public static void main(String[] args) throws Exception {
         Properties props = Initializer.loadProperties(args);
@@ -171,6 +164,8 @@ public class Start {
         List handlers = new ArrayList();
         handlers.add(rootHandler);
         handlers.add(axisHandler);
+        Revlet.addStandardQueryParam(new FloatQueryParamParser("gaussian", Start.getDefaultGaussian()));
+        Revlet.addStandardQueryParam(new FloatQueryParamParser("minPercentMatch", Start.getDefaultMinPercentMatch()));
         edu.sc.seis.rev.Start.runREV(args, handlers);
     }
 

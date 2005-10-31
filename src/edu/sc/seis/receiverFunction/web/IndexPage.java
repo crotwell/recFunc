@@ -16,7 +16,7 @@ public class IndexPage extends Revlet {
     public RevletContext getContext(HttpServletRequest req, HttpServletResponse res) throws Exception {
             RevletContext context = new RevletContext("indexPage.vm",
                                                       Start.getDefaultContext());
-            Start.loadStandardQueryParams(req, context);
+            Revlet.loadStandardQueryParams(req, context);
             return context;
     }
 }

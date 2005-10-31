@@ -45,7 +45,7 @@ public class StationList extends Revlet {
         float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
         float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         RevletContext context = new RevletContext(getVelocityTemplate(req), Start.getDefaultContext());
-        Start.loadStandardQueryParams(req, context);
+        Revlet.loadStandardQueryParams(req, context);
         ArrayList stationList = getStations(req, context);
         logger.debug("getStations done: " + stationList.size());
         HashMap summary = getSummaries(stationList, context, req);

@@ -1041,6 +1041,23 @@ public class HKStack implements Serializable {
     public String formatP() {
         return vpvsFormat.format(getP());
     }
+    
+    /**
+     * calculates the power (sqrt of sum of squares) over the stack for only positive entries, ie 
+     * negative values are set = 0.
+     */
+    public float getPower() {
+        float power = 0;
+        float[][] s = getStack();
+        for(int i = 0; i < s.length; i++) {
+            for(int j = 0; j < s[0].length; j++) {
+                if (s[i][j]>0) {
+                    power += s[i][j]*s[i][j];
+                }
+            }
+        }
+        return (float)Math.sqrt(power);
+    }
 
     public QuantityImpl getAlpha() {
         return alpha;

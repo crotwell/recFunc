@@ -10,14 +10,18 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
+import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
+import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.compare.StationResultRef;
 
 public class SumHKStack {
 
@@ -95,7 +99,20 @@ public class SumHKStack {
     }
 
     public int getNumEQ() {
-return numEQ;
+        return numEQ;
+    }
+    
+    public float getResidualPower() throws FissuresException, TauModelException {
+        StationResultRef earsStaRef = new StationResultRef( "Global Maxima", "ears", "ears");
+        StationResult result = new StationResult(getChannel().get_id().network_id,
+                                                 getChannel().get_id().station_code,
+                                                 getSum().getMaxValueH(getSmallestH()),
+                                                 getSum().getMaxValueK(getSmallestH()),
+                                                 getSum().getAlpha(),
+                                                 earsStaRef);
+        StackComplexity complexity = new StackComplexity(this, 4096, getSum().getGaussianWidth());
+        float residualPower = complexity.getResidual(result, 60).getPower() / getSum().getPower();
+        return residualPower;
     }
     
     static HKStack calculate(Channel chan,

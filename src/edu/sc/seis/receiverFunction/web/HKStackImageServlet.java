@@ -102,7 +102,9 @@ public class HKStackImageServlet  extends HttpServlet {
              stack = SyntheticFactory.getHKStack();
         } else {
             int rf_id = RevUtil.getInt("rf", req);
-            stack = hkStack.get(rf_id);
+            synchronized(hkStack.getConnection()) {
+                stack = hkStack.get(rf_id);
+            }
         }
         return stack;
     }
@@ -114,7 +116,9 @@ public class HKStackImageServlet  extends HttpServlet {
             return SyntheticFactory.getCachedResult();
         } else {
             int rf_id = RevUtil.getInt("rf", req);
-            return hkStack.getJDBCRecFunc().get(rf_id);
+            synchronized(hkStack.getConnection()) {
+                return hkStack.getJDBCRecFunc().get(rf_id);
+            }
         }
     }
     

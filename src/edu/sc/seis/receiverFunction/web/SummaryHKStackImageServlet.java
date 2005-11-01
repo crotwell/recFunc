@@ -107,8 +107,13 @@ public class SummaryHKStackImageServlet extends HttpServlet {
         float maxBaz = RevUtil.getFloat("maxBaz", req, 360);
         JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel()
                 .getStationTable();
-        int[] dbids = jdbcStation.getDBIds(net.get_id(), staCode);
-        edu.iris.Fissures.IfNetwork.Station station = jdbcStation.get(dbids[0]);
+        
+        int[] dbids;
+        edu.iris.Fissures.IfNetwork.Station station;
+        synchronized(jdbcStation.getConnection()) {
+            dbids = jdbcStation.getDBIds(net.get_id(), staCode);
+            station = jdbcStation.get(dbids[0]);
+        }
         QuantityImpl smallestH = new QuantityImpl(RevUtil.getFloat("smallestH",
                                                                    req,
                                                                    (float)HKStack.getBestSmallestH(station)

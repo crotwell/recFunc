@@ -76,10 +76,13 @@ public class RecordSectionImage extends HttpServlet {
 
             float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
             float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
-            CachedResult[] results = jdbcRecFunc.getByPercent(netDbId,
+            CachedResult[] results;
+            synchronized(jdbcRecFunc.getConnection()) {
+                results = jdbcRecFunc.getByPercent(netDbId,
                                                               staCode,
                                                               gaussianWidth,
                                                               minPercentMatch);
+            }
             DataSetEventOrganizer organizer = new DataSetEventOrganizer();
             DataSetSeismogram[] itrDSS = new DataSetSeismogram[results.length];
             for(int i = 0; i < itrDSS.length; i++) {
@@ -91,12 +94,10 @@ public class RecordSectionImage extends HttpServlet {
                                        chan.name, chan.an_orientation, chan.sampling_info, chan.effective_time, chan.my_site);
                 organizer.addChannel(chan, event, emptyAudit);
                 Channel outchan = itrDSS[i].getChannel();
-                System.out.println("outchan: "+outchan);
             }
             
             int xdim = RevUtil.getInt("xdim", req, xdimDefault);
             int ydim = RevUtil.getInt("ydim", req, ydimDefault);
-            System.out.println("record section dim: "+xdim+", "+ydim);
             Dimension dim = new Dimension(xdim, ydim);
             res.setContentType("image/png");
             OutputStream out = res.getOutputStream();

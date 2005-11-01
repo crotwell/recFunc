@@ -43,7 +43,10 @@ public class StationsNearBy extends StationList {
                                     ZERO_KM,
                                     LocationType.GEOGRAPHIC);
         ArrayList stationList =new ArrayList();
-        Station[] stations = jdbcChannel.getStationTable().getAllStations();
+        Station[] stations;
+        synchronized(jdbcChannel.getConnection()) {
+            stations = jdbcChannel.getStationTable().getAllStations();
+        }
         logger.info("getAllStations finished");
         for(int j = 0; j < stations.length; j++) {
             DistAz distAz = new DistAz(stations[j].my_location, loc);

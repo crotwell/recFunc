@@ -75,7 +75,9 @@ public class SeismogramImage extends HttpServlet {
                 stack = SyntheticFactory.getCachedResult();
             } else {
                 int rf_id = new Integer(req.getParameter("rf")).intValue();
-                stack = jdbcRecFunc.get(rf_id);
+                synchronized(jdbcRecFunc.getConnection()) {
+                    stack = jdbcRecFunc.get(rf_id);
+                }
             }
             int xdim = RevUtil.getInt("xdim", req, xdimDefault);
             int ydim = RevUtil.getInt("ydim", req, ydimDefault);
@@ -94,7 +96,6 @@ public class SeismogramImage extends HttpServlet {
             disp.getTimeConfig().shaleTime(0,
                                            window.divideBy(mstr.getInterval())
                                                    .getValue(SEC_PER_SEC));
-            System.out.println(window.divideBy(mstr.getInterval()));
             res.setContentType("image/png");
             disp.outputToPNG(out, dim);
             out.close();

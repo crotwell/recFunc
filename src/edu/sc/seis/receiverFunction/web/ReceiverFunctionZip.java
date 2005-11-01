@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
+import edu.sc.seis.fissuresUtil.bag.DistAz;
+import edu.sc.seis.fissuresUtil.bag.Rotate;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
@@ -98,6 +100,14 @@ public class ReceiverFunctionZip extends HttpServlet {
                     SacTimeSeries sac = FissuresToSac.getSAC(rfSeis,
                                                              result[i].channels[2],
                                                              result[i].prefOrigin);
+                    // fix orientation to radial and transverse
+                    sac.cmpaz = (float)(rfType == 0 ? Rotate.getRadialAzimuth(sta.my_location, result[i].prefOrigin.my_location) : Rotate.getTransverseAzimuth(sta.my_location, result[i].prefOrigin.my_location));
+                    sac.cmpinc = 90;
+                    // put percent match in user0 and gaussian width in user1
+                    sac.user0 = (rfType == 0 ? result[i].radialMatch : result[i].transverseMatch);
+                    sac.kuser0 = "% match ";
+                    sac.user1 = result[i].config.gwidth;
+                    sac.kuser1 = "gwidth";
                     sac.writeHeader(dos);
                     sac.writeData(dos);
                     dos.flush();

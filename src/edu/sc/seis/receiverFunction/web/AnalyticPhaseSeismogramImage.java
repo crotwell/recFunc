@@ -30,7 +30,7 @@ public class AnalyticPhaseSeismogramImage extends SeismogramImage {
     public DataSetSeismogram[] getDSS(CachedResult stack) {
         DataSetSeismogram[] tmp = super.getDSS(stack);
         try {
-            DataSetSeismogram[] out = new DataSetSeismogram[tmp.length+4];
+            DataSetSeismogram[] out = new DataSetSeismogram[tmp.length+6];
             System.arraycopy(tmp, 0, out, 1, tmp.length);
             LocalSeismogramImpl radial = ((MemoryDataSetSeismogram)tmp[0]).getCache()[0];
             
@@ -58,6 +58,24 @@ public class AnalyticPhaseSeismogramImage extends SeismogramImage {
             MemoryDataSetSeismogram radialFreq = new MemoryDataSetSeismogram(hilbertFreq, "analytic freq");
             tmp[0].getDataSet().addDataSetSeismogram(radialFreq, emptyAudit);
             out[0] = radialFreq;
+
+            double[] imag = new double[analytic.length];
+            for(int i = 0; i < imag.length; i++) {
+                imag[i] = analytic[i].imag();
+            }
+            LocalSeismogramImpl imagSeis = new LocalSeismogramImpl(hilbertSeis, imag);
+            MemoryDataSetSeismogram imagMSeis = new MemoryDataSetSeismogram(imagSeis, "imagXYZ");
+            tmp[0].getDataSet().addDataSetSeismogram(imagMSeis, emptyAudit);
+            out[tmp.length+4] = imagMSeis;
+            
+            double[] real = new double[analytic.length];
+            for(int i = 0; i < real.length; i++) {
+                real[i] = analytic[i].real();
+            }
+            LocalSeismogramImpl realSeis = new LocalSeismogramImpl(hilbertSeis, real);
+            MemoryDataSetSeismogram realMSeis = new MemoryDataSetSeismogram(realSeis, "realASD");
+            tmp[0].getDataSet().addDataSetSeismogram(realMSeis, emptyAudit);
+            out[tmp.length+5] = realMSeis;
             
             return out;
         } catch (Exception e) {

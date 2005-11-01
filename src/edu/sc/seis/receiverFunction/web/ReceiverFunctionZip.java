@@ -64,10 +64,13 @@ public class ReceiverFunctionZip extends HttpServlet {
         float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
         float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         try {
-            CachedResult[] result = jdbcRecFunc.getByPercent(netDbId,
-                                                             staCode,
-                                                             gaussianWidth,
-                                                             minPercentMatch);
+            CachedResult[] result;
+            synchronized(jdbcRecFunc.getConnection()) {
+                result = jdbcRecFunc.getByPercent(netDbId,
+                                                  staCode,
+                                                  gaussianWidth,
+                                                  minPercentMatch);
+            }
             res.setContentType("application/zip");
             ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(res.getOutputStream()));
             DataOutputStream dos = new DataOutputStream(zip);
@@ -115,10 +118,6 @@ public class ReceiverFunctionZip extends HttpServlet {
             Revlet.sendToGlobalExceptionHandler(req, e);
             throw new ServletException(e);
         }
-    }
-    
-    protected void writeEntry() {
-        
     }
     
     private static final String TOP_ZIP_DIR = "Ears/";

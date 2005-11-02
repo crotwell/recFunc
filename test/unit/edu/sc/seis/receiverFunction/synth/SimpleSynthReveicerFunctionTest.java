@@ -1,6 +1,6 @@
 package edu.sc.seis.receiverFunction.synth;
 
-import edu.iris.Fissures.Sampling;
+import junit.framework.TestCase;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.SamplingImpl;
 import edu.iris.Fissures.model.TimeInterval;
@@ -9,7 +9,6 @@ import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.mockFissures.IfNetwork.MockChannel;
 import edu.sc.seis.fissuresUtil.mockFissures.IfNetwork.MockNetworkId;
 import edu.sc.seis.receiverFunction.compare.StationResult;
-import junit.framework.TestCase;
 
 public class SimpleSynthReveicerFunctionTest extends TestCase {
 
@@ -38,6 +37,38 @@ public class SimpleSynthReveicerFunctionTest extends TestCase {
                          MockChannel.createChannel().get_id(),
                          5);
     }
+    
+    public void testJordiBasicTerms() {
+        assertEquals("rsr0", rsr0, simple.rsr0, 0.00001);
+        assertEquals("zsz0", zsz0, simple.zsz0, 0.00001);
+        assertEquals("rpz0", rpz0, simple.rpz0, 0.00001);
+    }
+    
+    public void testJordiRefTransPP0() {
+        assertEquals("PP0", -0.94872421, simple.downgoingRFCoeff.getFreePtoPRefl(flatRP), 0.00001);
+    }
+    public void testJordiRefTransPS0() {
+        assertEquals("PS0", 0.411624223, simple.downgoingRFCoeff.getFreePtoSVRefl(flatRP), 0.00001);
+    }
+    public void testJordiRefTransSP0() {
+        assertEquals("SP0", 0.242751762, simple.downgoingRFCoeff.getFreeSVtoPRefl(flatRP), 0.00001);
+    }
+    
+    public void testJordiRefTransPS2() {
+        assertEquals("PS2", -0.0896627381, simple.downgoingRFCoeff.getPtoSVRefl(flatRP), 0.00001);
+    }
+    
+    public void testJordiRefTransPP2() {
+        assertEquals("PP2", 0.205925092, simple.downgoingRFCoeff.getPtoPRefl(flatRP), 0.00001);
+    }
+    
+    public void testJordiRefTransSP2() {
+        assertEquals("PS2", -0.0528778173, simple.downgoingRFCoeff.getSVtoPRefl(flatRP), 0.00001);
+    }
+    
+    public void testJordiRefTransSS2() {
+        assertEquals("PP2", -0.217589691, simple.downgoingRFCoeff.getSVtoSVRefl(flatRP), 0.00001);
+    }
 
     public void testVersusJordi_P() {
         assertEquals("P", a[0], simple.getAmpP(flatRP), 0.00001);
@@ -57,19 +88,23 @@ public class SimpleSynthReveicerFunctionTest extends TestCase {
 
     SimpleSynthReceiverFunction simple;
 
-    double vpCrust = 6.5;
+    double vpCrust = 6.0;
 
-    double vsCrust = 3.75300002;
+    double vsCrust = 3.5;
 
-    double rhoCrust = 2.8499999;
+    double rhoCrust = 3.0;
 
-    double vpMantle = 8.10000038;
+    double vpMantle = 7;
 
-    double vsMantle = 4.67600012;
+    double vsMantle = 4.2;
 
-    double rhoMantle = 3.36199999;
+    double rhoMantle = 4.0;
 
     float flatRP = 0.03f;
 
-    double[] a = new double[] {0.229568452, 0.0611278005, 0.0885273293, -0.0796554536};
+    double[] a = new double[] {0.213547871,  0.0486433432,  0.0977657735, -0.0919868574};
+    
+    double rsr0 = 4.734231;
+    double zsz0 = -0.124569595; 
+    double rpz0 = 0.213547871;
 }

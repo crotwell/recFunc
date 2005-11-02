@@ -98,7 +98,7 @@ public class SimpleSynthReceiverFunction {
 
     public double getAmpPpPs(double flatRP) {
         calcBasicTerms(flatRP);
-        double refTransPpPs = upgoingRFCoeff.getFreePtoPRefl(flatRP)
+        double refTransPpPs = downgoingRFCoeff.getFreePtoPRefl(flatRP)
                 * (downgoingRFCoeff.getPtoSVRefl(flatRP) - 
                         getRawAmpPs(flatRP) * downgoingRFCoeff.getPtoPRefl(flatRP));
         refTransPpPs *= rpz0 * (rsr0 - zsz0);
@@ -107,21 +107,22 @@ public class SimpleSynthReceiverFunction {
 
     public double getAmpPsPs(double flatRP) {
         calcBasicTerms(flatRP);
-        double refTransPsPs = upgoingRFCoeff.getFreePtoSVRefl(flatRP)
+        double refTransPsPs = downgoingRFCoeff.getFreePtoSVRefl(flatRP)
                 * downgoingRFCoeff.getSVtoSVRefl(flatRP)
                 - getRawAmpPs(flatRP)
-                * (upgoingRFCoeff.getFreePtoSVRefl(flatRP) * downgoingRFCoeff.getPtoSVRefl(flatRP)
-                        + upgoingRFCoeff.getFreePtoSVRefl(flatRP) * downgoingRFCoeff.getSVtoPRefl(flatRP) + upgoingRFCoeff.getPtoSVTrans(flatRP)
-                        * upgoingRFCoeff.getFreeSVtoPRefl(flatRP)
+                * (downgoingRFCoeff.getFreePtoPRefl(flatRP) * downgoingRFCoeff.getPtoSVRefl(flatRP)
+                        + downgoingRFCoeff.getFreePtoSVRefl(flatRP) * downgoingRFCoeff.getSVtoPRefl(flatRP) +
+                        upgoingRFCoeff.getPtoSVTrans(flatRP)* downgoingRFCoeff.getFreeSVtoPRefl(flatRP)
                         * downgoingRFCoeff.getPtoPRefl(flatRP)
-                        / upgoingRFCoeff.getPtoPTrans(flatRP)) + upgoingRFCoeff.getFreePtoPRefl(flatRP)
+                        / upgoingRFCoeff.getPtoPTrans(flatRP)) 
+                        + downgoingRFCoeff.getFreePtoPRefl(flatRP)
                 * downgoingRFCoeff.getPtoSVRefl(flatRP) * upgoingRFCoeff.getPtoSVTrans(flatRP)
                 / upgoingRFCoeff.getPtoPTrans(flatRP);
         refTransPsPs *= rpz0 * (rsr0 - zsz0);
         return refTransPsPs;
     }
 
-    private void calcBasicTerms(double flatRP) {
+    void calcBasicTerms(double flatRP) {
         double Vs = model.getVs().getValue(UnitImpl.KILOMETER_PER_SECOND);
         double Vp = model.getVp().getValue(UnitImpl.KILOMETER_PER_SECOND);
         double etas0 = Math.sqrt(1 / (Vs * Vs) - flatRP * flatRP);

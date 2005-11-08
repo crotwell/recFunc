@@ -24,6 +24,7 @@ $header
 <td class="headodd">Vs</td>
 <td class="headodd">Poissons Ratio</td>
 <td class="headodd">Num EQ</td>
+<td class="headodd">Complexity</td>
 </tr>
 #foreach($sta in $stationList)
 <tr>
@@ -39,8 +40,8 @@ $header
     <td class="even">$!summary.get($sta).getSum().formatAlpha()</td>
     <td class="odd">$!summary.get($sta).getSum().formatVs()</td>
     <td class="even">$!summary.get($sta).getSum().formatPoissonsRatio()</td>
-    <td class="odd">$!numEQ.get($sta)</td>
-<td class="even">$!summary.get($sta).getNumEQ()</td>
+    <td class="even">$!summary.get($sta).getNumEQ()</td>
+    <td class="odd">$!summary.get($sta).formatComplexityResidual()</td>
 </tr>
 #end
 </table>

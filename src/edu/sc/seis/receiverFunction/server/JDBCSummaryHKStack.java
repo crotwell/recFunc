@@ -20,6 +20,7 @@ import edu.sc.seis.fissuresUtil.database.JDBCSequence;
 import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.util.TableSetup;
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.receiverFunction.HKStack;
@@ -215,6 +216,8 @@ public class JDBCSummaryHKStack extends JDBCTable {
                                         rs.getFloat("hVariance"),
                                         rs.getFloat("kVariance"),
                                         rs.getInt("numEQ"));
+        sum.setDbid(rs.getInt("hksummary_id"));
+        sum.setComplexityResidual(rs.getFloat("complexity"));
         return sum;
     }
 
@@ -276,11 +279,23 @@ public class JDBCSummaryHKStack extends JDBCTable {
     public ArrayList getAllWithoutData() throws SQLException, NotFound,
             IOException {
         ArrayList out = new ArrayList();
+        try {
         ResultSet rs = getAllWithoutData.executeQuery();
         while(rs.next()) {
             out.add(extract(rs, false));
         }
+        } catch (SQLException e) {
+            GlobalExceptionHandler.handle(""+getAllWithoutData, e);
+        }
         return out;
+    }
+    
+    public HKSummaryIterator getAllIterator() throws SQLException {
+        boolean autoCommit = conn.getAutoCommit();
+        getConnection().setAutoCommit(false);
+        ResultSet rs = getAll.executeQuery();
+        HKSummaryIterator iter = new HKSummaryIterator(rs, this, autoCommit);
+        return iter;
     }
 
     JDBCHKStack jdbcHKStack;
@@ -288,7 +303,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
     JDBCSequence hksummarySeq;
 
     PreparedStatement uncalculated, get, put, update, getForStation,
-            getAllWithoutData;
+            getAllWithoutData, getAll;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCSummaryHKStack.class);
 }

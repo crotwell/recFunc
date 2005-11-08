@@ -17,6 +17,7 @@ import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
@@ -490,6 +491,42 @@ public class SumHKStack {
                 + mixedVariance);
     }
 
+    public int getDbid() {
+        return dbid;
+    }
+
+    
+    public void setDbid(int dbid) {
+        this.dbid = dbid;
+    }
+
+    
+    public float getComplexityResidual() {
+        if (complexityResidual == -1) {
+            try {
+            complexityResidual = getResidualPower();
+            } catch (TauModelException e) {
+                // oh well...
+                GlobalExceptionHandler.handle(e);
+                complexityResidual = -2;
+            } catch(FissuresException e) {
+                // oh well...
+                GlobalExceptionHandler.handle(e);
+                complexityResidual = -3;
+            }
+        }
+        return complexityResidual;
+    }
+
+    
+    public void setComplexityResidual(float complexityResidual) {
+        this.complexityResidual = complexityResidual;
+    }
+
+    public String formatComplexityResidual() {
+        return vpvsFormat.format(getComplexityResidual());
+    }
+    
     protected int bootstrapIterations = 100;
 
     protected Channel channel;
@@ -511,6 +548,10 @@ public class SumHKStack {
     protected double kVariance;
 
     protected double mixedVariance;
+    
+    protected int dbid = -1;
+    
+    protected float complexityResidual = -1;
 
     private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
 

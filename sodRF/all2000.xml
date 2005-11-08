@@ -43,8 +43,8 @@
                 <max>1000</max>
             </originDepthRange>
             <originTimeRange>
-                <startTime>20000101T00:00:00.001Z</startTime>
-                <endTime>20031231T23:59:59.999Z</endTime>
+                <startTime>20050101T00:00:00.001Z</startTime>
+                <endTime>20201231T23:59:59.999Z</endTime>
             </originTimeRange>
             <magnitudeRange>
                 <min>6.0</min>
@@ -68,12 +68,12 @@
             </refreshInterval>
         </networkFinder>
         <networkEffectiveTimeOverlap>
-            <startTime>20000101T00:00:00.001Z</startTime>
-            <endTime>20031231T23:59:59.999Z</endTime>
+            <startTime>20050101T00:00:00.001Z</startTime>
+            <endTime>20201231T23:59:59.999Z</endTime>
         </networkEffectiveTimeOverlap>
         <stationEffectiveTimeOverlap>
-            <startTime>20000101T00:00:00.001Z</startTime>
-            <endTime>20031231T23:59:59.999Z</endTime>
+            <startTime>20050101T00:00:00.001Z</startTime>
+            <endTime>20201231T23:59:59.999Z</endTime>
         </stationEffectiveTimeOverlap>
         <channelAND>
             <!-- Accept any channel with B band code -->
@@ -87,8 +87,8 @@
                 <orientationCode>E</orientationCode>
             </channelOR>
             <channelEffectiveTimeOverlap>
-                <startTime>20000101T00:00:00.001Z</startTime>
-                <endTime>20031231T23:59:59.999Z</endTime>
+                <startTime>20050101T00:00:00.001Z</startTime>
+                <endTime>20201231T23:59:59.999Z</endTime>
             </channelEffectiveTimeOverlap>
         </channelAND>
         <printlineChannelProcess/>
@@ -210,12 +210,12 @@
         <waveformVectorAlwaysSuccess>
             <waveformVectorFork>
                 <embeddedEventChannelProcessor>
-                    <embeddedEventStation>
+                    <embeddedEventVector>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                             <gaussianWidth>5</gaussianWidth>
                         </externalEventVectorSubsetter>
-                    </embeddedEventStation>
+                    </embeddedEventVector>
                 </embeddedEventChannelProcessor>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
@@ -231,12 +231,12 @@
         <waveformVectorAlwaysSuccess>
             <waveformVectorFork>
                 <embeddedEventChannelProcessor>
-                    <embeddedEventStation>
+                    <embeddedEventVector>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                             <gaussianWidth>2.5</gaussianWidth>
                         </externalEventVectorSubsetter>
-                    </embeddedEventStation>
+                    </embeddedEventVector>
                 </embeddedEventChannelProcessor>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
@@ -252,12 +252,12 @@
         <waveformVectorAlwaysSuccess>
             <waveformVectorFork>
                 <embeddedEventChannelProcessor>
-                    <embeddedEventStation>
+                    <embeddedEventVector>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                             <gaussianWidth>5</gaussianWidth>
                         </externalEventVectorSubsetter>
-                    </embeddedEventStation>
+                    </embeddedEventVector>
                 </embeddedEventChannelProcessor>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
@@ -273,12 +273,12 @@
         <waveformVectorAlwaysSuccess>
             <waveformVectorFork>
                 <embeddedEventChannelProcessor>
-                    <embeddedEventStation>
+                    <embeddedEventVector>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                             <gaussianWidth>5</gaussianWidth>
                         </externalEventVectorSubsetter>
-                    </embeddedEventStation>
+                    </embeddedEventVector>
                 </embeddedEventChannelProcessor>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
@@ -294,12 +294,12 @@
         <waveformVectorAlwaysSuccess>
             <waveformVectorFork>
                 <embeddedEventChannelProcessor>
-                    <embeddedEventStation>
+                    <embeddedEventVector>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                             <gaussianWidth>5</gaussianWidth>
                         </externalEventVectorSubsetter>
-                    </embeddedEventStation>
+                    </embeddedEventVector>
                 </embeddedEventChannelProcessor>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>

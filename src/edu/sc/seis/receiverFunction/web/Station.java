@@ -84,11 +84,11 @@ public class Station extends Revlet {
             if(netCode != null
                     && (netCode.length() == 2 || netCode.length() == 4)) {
                 NetworkId[] netIds = jdbcChannel.getNetworkTable()
-                        .getByCode(netCode);
+                        .getByCode(netCode.substring(0,2));
                 for(int i = 0; i < netIds.length; i++) {
                     if(NetworkIdUtil.toStringNoDates(netIds[i]).equals(netCode)) {
                         netDbId = jdbcChannel.getNetworkTable()
-                                .getDbId(netIds[0]);
+                                .getDbId(netIds[i]);
                         break;
                     }
                 }

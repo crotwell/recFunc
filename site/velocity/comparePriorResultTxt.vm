@@ -28,13 +28,13 @@ ${tr}$row${trend}
 #set( $trend = "" )
 #set( $tdend = ',' )
 ##
-#set($items = [ "", "", "", "", "EARS", "", "", "", "", "", $name, "", "", "", "" ] )
+#set($items = [ "", "", "", "", "EARS", "", "", "", "", "", "", $name, "", "", "", "" ] )
 #tablehead( $items )
-#set( $items = [ "Net", "Station", "Name", "Lat", "Lon", "Est. Thick", "StdDev", "Est. Vp/Vs", "StdDev", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Thick", "Vp/Vs", "Vp", "Vs", "Poissons Ratio" ] )
+#set( $items = [ "Net", "Station", "Name", "Lat", "Lon", "Est. Thick", "StdDev", "Est. Vp/Vs", "StdDev", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Complexity", "Thick", "Vp/Vs", "Vp", "Vs", "Poissons Ratio" ] )
 #tablehead( $items )
 #foreach($sta in $stationList)##
 #foreach($priorR in $prior.get($sta))
-#set( $items = [ "$sta.getNet().getCodeWithYear()", "$sta.getCode()", $name, "$sta.getLatitude(), $sta.getLongitude()", "$!summary.get($sta).getSum().formatMaxValueH()", "$fissures.formatQuantity($!summary.get($sta).getHStdDev())", "$!summary.get($sta).getSum().formatMaxValueK()", "$!summary.get($sta).formatKStdDev()", "$!summary.get($sta).getSum().formatAlpha()", "$!summary.get($sta).getSum().formatVs()", "$!summary.get($sta).getSum().formatPoissonsRatio()", "$!numEQ.get($sta)", "$!priorR.formatH()", "$!priorR.formatVpVs()", "$!priorR.formatVp()", "$!priorR.formatVs()", "$!priorR.formatPoissonsRatio()" ] )
+#set( $items = [ "$sta.getNet().getCodeWithYear()", "$sta.getCode()", $name, "$sta.getLatitude(), $sta.getLongitude()", "$!summary.get($sta).getSum().formatMaxValueH()", "$fissures.formatQuantity($!summary.get($sta).getHStdDev())", "$!summary.get($sta).getSum().formatMaxValueK()", "$!summary.get($sta).formatKStdDev()", "$!summary.get($sta).getSum().formatAlpha()", "$!summary.get($sta).getSum().formatVs()", "$!summary.get($sta).getSum().formatPoissonsRatio()", "$!summary.get($sta).numEQ", "$!summary.get($sta).formatComplexityResidual()", "$!priorR.formatH()", "$!priorR.formatVpVs()", "$!priorR.formatVp()", "$!priorR.formatVs()", "$!priorR.formatPoissonsRatio()" ] )
 #tablerow( $items )
 #end
 #end

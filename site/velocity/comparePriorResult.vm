@@ -56,7 +56,7 @@ $header
 <p>View results as <a href="comparePriorResult.txt?$req.getQueryString()">text</a></p>
 
 <table>
-<tr><td colspan="4"/><td class="headodd" colspan="8">EARS</td><td class="headodd" colspan="5">$name</td></tr>
+<tr><td colspan="4"/><td class="headodd" colspan="9">EARS</td><td class="headodd" colspan="5">$name</td></tr>
 
 #set( $items = [ "Net", "Station", "Name", "Lat/Lon", "Est. Thick", "StdDev", "Est. Vp/Vs", "StdDev", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Complexity", "Thick", "Vp/Vs", "Vp", "Vs", "Poissons Ratio" ] )
 #tablehead( $items )

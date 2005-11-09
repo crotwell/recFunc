@@ -1,4 +1,4 @@
-# "Net", "Station", "Lat", "Lon", "Est. Thick", "StdDev", "Est. Vp/Vs", "StdDev", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ"
+# "Net", "Station", "Lat", "Lon", "Est. Thick", "StdDev", "Est. Vp/Vs", "StdDev", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Complexity"
 #foreach($sta in $stationList)
-$sta.getNet().getCodeWithYear(),$sta.getCode(),$sta.getLatitude(),$sta.getLongitude(),$fissures.formatQuantity($!summary.get($sta).getSum().getMaxValueH()),$fissures.formatQuantity($!summary.get($sta).getHStdDev()),$!summary.get($sta).getSum().getMaxValueK(),$!summary.get($sta).formatKStdDev(),$fissures.formatQuantity($!summary.get($sta).getSum().getAlpha()),$fissures.formatQuantity($!summary.get($sta).getSum().getVs()),$!summary.get($sta).getSum().getPoissonsRatio(),$!numEQ.get($sta)
+$sta.getNet().getCodeWithYear(),$sta.getCode(),$sta.getLatitude(),$sta.getLongitude(),$fissures.formatQuantity($!summary.get($sta).getSum().getMaxValueH()),$fissures.formatQuantity($!summary.get($sta).getHStdDev()),$!summary.get($sta).getSum().getMaxValueK(),$!summary.get($sta).formatKStdDev(),$fissures.formatQuantity($!summary.get($sta).getSum().getAlpha()),$fissures.formatQuantity($!summary.get($sta).getSum().getVs()),$!summary.get($sta).getSum().getPoissonsRatio(),$!summary.get($sta).numEQ,$!summary.get($sta).formatComplexityResidual()
 #end

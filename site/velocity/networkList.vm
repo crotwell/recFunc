@@ -2,6 +2,14 @@
 <head>
 <title>Network List</title>
 <link rel="stylesheet" type="text/css" href="style.css"/>
+<script src="sorttable.js" type="text/javascript"> </script>
+<script src="tableRuler.js" type="text/javascript"> </script>
+<script type="text/javascript">
+window.onload=function(){
+        tableruler();
+        set_img_dir('images/')
+}
+</script>
 </head>
 <body>
 	
@@ -9,7 +17,7 @@
 
 $header
 
-<table>
+<table class="ruler sortable" id="dumb">
 <tr>
 <td class="headodd">Code</td>
 <td class="headeven">Name</td>

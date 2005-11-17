@@ -66,20 +66,25 @@ public class StackComplexity {
                                          synthRF,
                                          stack.getChannel(),
                                          RecFunc.getDefaultShift());
+        synthStack.compact();
         return synthStack;
     }
 
     public HKStack getResidual(StationResult staResult, float distDeg)
             throws FissuresException, TauModelException {
         HKStack synthStack = getSyntheticForDist(staResult, distDeg);
-        float[][] data = stack.getSum().getStack();
-        float[][] synthData = synthStack.getStack();
+        return getResidual(stack.getSum(), synthStack);
+    }
+    
+    public static HKStack getResidual(HKStack real, HKStack synth) {
+        float[][] data = real.getStack();
+        float[][] synthData = synth.getStack();
         // scale synth data by max of data so best HK -> 0
         // hopefully this subtracts the bulk of the "mountain" around the max
-        QuantityImpl smallestH = HKStack.getBestSmallestH(stack.getChannel().my_site.my_station);
-        float scale = stack.getSum().getMaxValue(smallestH)
-                / synthStack.getMaxValue(smallestH);
-        float[][] diff = new float[stack.getSum().numH][stack.getSum().numK];
+        QuantityImpl smallestH = HKStack.getBestSmallestH(real.getChannel().my_site.my_station);
+        float scale = real.getMaxValue(smallestH)
+                / synth.getMaxValue(smallestH);
+        float[][] diff = new float[real.numH][real.numK];
         for(int i = 0; i < diff.length; i++) {
             for(int jj = 0; jj < diff[0].length; jj++) {
                 if (synthData[i][jj] > 0) {
@@ -89,21 +94,21 @@ public class StackComplexity {
                 }
             }
         }
-        return new HKStack(stack.getSum().getAlpha(),
+        return new HKStack(real.getAlpha(),
                            sphRayParamRad,
-                           gaussianWidth,
+                           real.gwidth,
                            -1,
-                           stack.getSum().minH,
-                           stack.getSum().stepH,
-                           stack.getSum().numH,
-                           stack.getSum().minK,
-                           stack.getSum().stepK,
-                           stack.getSum().numK,
+                           real.minH,
+                           real.stepH,
+                           real.numH,
+                           real.minK,
+                           real.stepK,
+                           real.numK,
                            1 / 3f,
                            1 / 3f,
                            1 / 3f,
                            diff,
-                           stack.getChannel());
+                           real.getChannel());
     }
 
     /**

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
+import edu.iris.Fissures.model.MicroSecondDate;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.rev.RevUtil;
@@ -79,4 +80,6 @@ public class Overview extends StationList {
     }
 
     HashMap data = null;
+    
+    MicroSecondDate loadtime;
 }

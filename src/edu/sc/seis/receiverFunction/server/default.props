@@ -246,7 +246,7 @@ hksummary.create=CREATE TABLE $tablename ( \
                    REFERENCES channel (chan_id) \
                    )
 	
-hksummary.put=INSERT INTO hksummary ( \
+hksummary.put=INSERT INTO $tablename ( \
                    hksummary_id , \
                    chanA_id , \
                    chanB_id , \
@@ -325,15 +325,15 @@ hksummary.uncalculated=SELECT receiverFunction.recfunc_id FROM netchan \
                        AND hksummary.minPercentMatch = ? \
                        
 hksummary.getForStation=SELECT * from netchan \
-                   JOIN  hksummary  ON (chanz_id = chan_id ) \
+                   JOIN  $tablename  ON (chanz_id = chan_id ) \
                    JOIN stackComplexity ON (${tablename}.hksummary_id = stackComplexity.hksummary_id) \
                    WHERE network.net_id = ? \
                    AND sta_code = ? \
                    AND gwidth = ? \
                    AND minPercentMatch = ?
 
-hksummary.getAllWithoutData=SELECT hksummary.hksummary_id AS hksummary_id, alpha, minpercentmatch, peakh, hvariance, peakk, kvariance, peakval, net_code, sta_code, chanz_id, \
-	minH, stepH, numH, minK, stepK, numK, weightPs, weightPpPs, weightPsPs, numeq, gwidth, complexity  \
+hksummary.getAllWithoutData=SELECT ${tablename}.hksummary_id AS hksummary_id, alpha, minpercentmatch, peakh, hvariance, peakk, kvariance, peakval, net_code, sta_code, chanz_id, \
+	minH, stepH, numH, minK, stepK, numK, weightPs, weightPpPs, weightPsPs, numeq, gwidth, complexity, complexity25, complexity50  \
 	FROM $tablename \
 	JOIN netchan ON (chanz_id = chan_id) \
      JOIN stackComplexity ON (${tablename}.hksummary_id = stackComplexity.hksummary_id) \
@@ -342,8 +342,143 @@ hksummary.getAll=SELECT *  \
 	FROM $tablename JOIN netchan ON (chanz_id = chan_id) \
      JOIN stackComplexity ON (${tablename}.hksummary_id = stackComplexity.hksummary_id) \
 
-hksummary.index_chanz=create index hksummary_chanz_idx on hksummary ( chanz_id )
+hksummary.index_chanz=create index hksummary_chanz_idx on $tablename ( chanz_id )
 
+#  tmp hksummary...
+
+hksummaryTMP.create=CREATE TABLE $tablename ( \
+                   hksummary_id int, \
+                   chanA_id int, \
+                   chanB_id int, \
+                   chanZ_id int, \
+                   alpha float, \
+                   gwidth float, \
+                   minPercentMatch float, \
+                   minH float, \
+                   stepH float, \
+                   numH int, \
+                   minK float, \
+                   stepK float, \
+                   numK int, \
+                   peakH float, \
+                   peakK float, \
+                   peakVal float, \
+                   weightPs float, \
+                   weightPpPs float, \
+                   weightPsPs float, \
+                   stack bytea, \
+                   insertTime timestamp, \
+                   hVariance float, \
+                   kVariance float, \
+                   numeq int, \
+                   PRIMARY KEY (hksummary_id), \
+                   FOREIGN KEY (chanA_id) \
+                   REFERENCES channel (chan_id), \
+                   FOREIGN KEY (chanB_id) \
+                   REFERENCES channel (chan_id), \
+                   FOREIGN KEY (chanZ_id) \
+                   REFERENCES channel (chan_id) \
+                   )
+	
+hksummaryTMP.put=INSERT INTO $tablename ( \
+                   hksummary_id , \
+                   chanA_id , \
+                   chanB_id , \
+                   chanZ_id , \
+                   alpha , \
+                   gwidth, \
+                   minPercentMatch , \
+                   minH , \
+                   stepH , \
+                   numH , \
+                   minK , \
+                   stepK , \
+                   numK , \
+                   peakH , \
+                   peakK , \
+                   peakVal , \
+                   weightPs , \
+                   weightPpPs , \
+                   weightPsPs , \
+                   stack , \
+                   insertTime , \
+                   hVariance , \
+                   kVariance,  \
+                   numeq \
+                   ) \
+                   VALUES ( ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,   ?, ?, ?, ?, ?,  ?, ?, ?, ?)
+                   
+hksummaryTMP.get=SELECT * from $tablename JOIN netchan ON (chanz_id = chan_id ) \
+                   JOIN stackComplexity ON (${tablename}.hksummary_id = stackComplexity.hksummary_id) \
+                   WHERE ${tablename}.hksummary_id = ?
+                   
+hksummaryTMP.update=UPDATE $tablename SET chanA_id = ? , \
+                   chanB_id = ? , \
+                   chanZ_id = ? , \
+                   alpha = ? , \
+                   gwidth = ?, \
+                   minPercentMatch = ? , \
+                   minH = ? , \
+                   stepH = ? , \
+                   numH = ? , \
+                   minK = ? , \
+                   stepK = ? , \
+                   numK = ? , \
+                   peakH = ? , \
+                   peakK = ? , \
+                   peakVal = ? , \
+                   weightPs = ? , \
+                   weightPpPs = ? , \
+                   weightPsPs = ? , \
+                   stack = ? , \
+                   insertTime = ? , \
+                   hVariance = ? , \
+                   kVariance = ?, \
+                   numeq = ? \
+                   WHERE hksummary_id = ?
+                   
+hksummaryTMP.uncalculated=SELECT receiverFunction.recfunc_id FROM netchan \
+                   JOIN  receiverFunction ON (chanz_id = chan_id ) \
+                   NATURAL JOIN hkstack \
+                   WHERE network.network_dbid = ? \
+                   AND sta_code = ? \
+                   AND receiverFunction.itr_match >= ? \
+                   AND gwidth = ? \
+                   EXCEPT SELECT receiverFunction.recfunc_id from network \
+                       JOIN station ON (network.net_id = station.net_id ) \
+                       JOIN site ON (station.sta_id = site.sta_id ) \
+                       JOIN channel ON (channel.site_id = site.site_id ) \
+                       JOIN receiverFunction ON (chanz_id = chan_id ) \
+                       JOIN hkStack ON ( receiverFunction.recfunc_id = hkstack.recfunc_id ) \
+                       JOIN hkstackToSummary ON ( hkStack.hkstack_id = hkstackToSummary.hkstack_id ) \
+                       JOIN hksummary ON ( hkstackToSummary.hksummary_id = hksummary.hksummary_id ) \
+                       WHERE  net_code = ? \
+                       AND sta_code = ? \
+                       AND gwidth = ? \
+                       AND receiverFunction.itr_match >= hksummary.minPercentMatch \
+                       AND hksummary.minPercentMatch = ? \
+                       
+hksummaryTMP.getForStation=SELECT * from netchan \
+                   JOIN  $tablename  ON (chanz_id = chan_id ) \
+                   JOIN stackComplexity ON (${tablename}.hksummary_id = stackComplexity.hksummary_id) \
+                   WHERE network.net_id = ? \
+                   AND sta_code = ? \
+                   AND gwidth = ? \
+                   AND minPercentMatch = ?
+
+hksummaryTMP.getAllWithoutData=SELECT ${tablename}.hksummary_id AS hksummary_id, alpha, minpercentmatch, peakh, hvariance, peakk, kvariance, peakval, net_code, sta_code, chanz_id, \
+	minH, stepH, numH, minK, stepK, numK, weightPs, weightPpPs, weightPsPs, numeq, gwidth, complexity, complexity25, complexity50  \
+	FROM $tablename \
+	JOIN netchan ON (chanz_id = chan_id) \
+     JOIN stackComplexity ON (${tablename}.hksummary_id = stackComplexity.hksummary_id) \
+
+hksummaryTMP.getAll=SELECT *  \
+	FROM $tablename JOIN netchan ON (chanz_id = chan_id) \
+     JOIN stackComplexity ON (${tablename}.hksummary_id = stackComplexity.hksummary_id) \
+
+hksummaryTMP.index_chanz=create index ${tablename}_chanz_idx on $tablename ( chanz_id )
+
+# end tmp hksummary
 
 azimuthhksummary.create=CREATE TABLE $tablename ( \
                    azimuthhksummary_id int, \
@@ -455,17 +590,24 @@ azimuthhksummary.index_chanz=create index azimuthhksummary_chanz_idx on $tablena
 stackComplexity.create=CREATE TABLE $tablename ( \
                    hksummary_id int, \
                    complexity float, \
+                   complexity25 float, \
+                   complexity50 float, \
                    FOREIGN KEY (hksummary_id) \
-                   REFERENCES hksummary (hksummary_id) \
+                   REFERENCES hksummaryTMP (hksummary_id) \
                    )
 
 stackComplexity.get=SELECT * from $tablename WHERE hksummary_id = ?
 
 stackComplexity.put=INSERT INTO $tablename ( \
 				hksummary_id, \
-				complexity \
-				) VALUES ( ?, ? )
+				complexity, \
+				complexity25, \
+				complexity50 \
+				) VALUES ( ?, ?, ?, ? )
 				
 stackComplexity.update=UPDATE $tablename \
-				SET complexity = ? \
+				SET complexity = ?, \
+				complexity25 = ?, \
+				complexity50 = ? \
 				WHERE hksummary_id = ? \
+				

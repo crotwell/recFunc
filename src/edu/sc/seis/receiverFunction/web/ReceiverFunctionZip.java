@@ -58,7 +58,7 @@ public class ReceiverFunctionZip extends HttpServlet {
                                                   RecFuncCacheImpl.getDataLoc());
     }
     
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
+    protected synchronized void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, FileNotFoundException, IOException {
         int netDbId = RevUtil.getInt("netdbid", req);
         String staCode = req.getParameter("stacode");

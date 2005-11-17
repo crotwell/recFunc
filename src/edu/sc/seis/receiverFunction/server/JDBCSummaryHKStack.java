@@ -32,6 +32,7 @@ import edu.sc.seis.receiverFunction.SumHKStack;
 public class JDBCSummaryHKStack extends JDBCTable {
 
     public JDBCSummaryHKStack(JDBCHKStack jdbcHKStack) throws Exception {
+        //super("hksummaryTMP", jdbcHKStack.getConnection());
         super("hksummary", jdbcHKStack.getConnection());
         this.jdbcHKStack = jdbcHKStack;
         hksummarySeq = new JDBCSequence(conn, getTableName() + "Seq");

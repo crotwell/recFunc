@@ -32,12 +32,22 @@ $name
 #set( $tdodd = '<td class="odd">' )
 #set( $tdend = '</td>' )
 #set( $tr = '<tr>' )
+#set( $th = '<th>' )
 #set( $trend = "</tr>" )
+#set( $thend = "</th>" )
 
 <html>
 <head>
 <title>Comparison with Prior Result $name</title>
 <link rel="stylesheet" type="text/css" href="style.css"/>
+<script src="sorttable.js" type="text/javascript"> </script>
+<script src="tableRuler.js" type="text/javascript"> </script>
+<script type="text/javascript">
+window.onload=function(){
+        tableruler();
+        set_img_dir('images/')
+}
+</script>
 </head>
 <body>
 	
@@ -55,8 +65,8 @@ $header
 
 <p>View results as <a href="comparePriorResult.txt?$req.getQueryString()">text</a></p>
 
-<table>
-<tr><td colspan="4"/><td class="headodd" colspan="9">EARS</td><td class="headodd" colspan="5">$name</td></tr>
+<table class="ruler sortable" id="dumb">
+<th><td colspan="4"/><td class="headodd" colspan="9">EARS</td><td class="headodd" colspan="5">$name</td></th>
 
 #set( $items = [ "Net", "Station", "Name", "Lat/Lon", "Est. Thick", "StdDev", "Est. Vp/Vs", "StdDev", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Complexity", "Thick", "Vp/Vs", "Vp", "Vs", "Poissons Ratio" ] )
 #tablehead( $items )

@@ -1,8 +1,15 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.SQLException;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import edu.sc.seis.fissuresUtil.display.BorderedDisplay;
 import edu.sc.seis.receiverFunction.HKStack;
+import edu.sc.seis.receiverFunction.HKStackImage;
 import edu.sc.seis.receiverFunction.StackComplexity;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
@@ -26,12 +33,26 @@ public class ComplexityResidualImage extends SummaryHKStackImageServlet {
     public SumHKStack getSumStack(HttpServletRequest req,
                                   VelocityNetwork net,
                                   String staCode) throws Exception {
-        float dist = RevUtil.getFloat("dist", req, 60);
-        float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
-        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         SumHKStack stack = super.getSumStack(req, net, staCode);
-        StackComplexity complexity = new StackComplexity(stack, 4096, gaussianWidth);
-        StationResult model = new StationResult(net.get_id(), staCode, stack.getSum().getMaxValueH(stack.getSmallestH()), stack.getSum().getMaxValueK(stack.getSmallestH()), stack.getSum().getAlpha(), null);
-        return new SumHKStack(stack.getMinPercentMatch(), stack.getSmallestH(), complexity.getResidual(model, dist), -1, -1, stack.getNumEQ());
+        lastStackMax = stack.getSum().getMaxValue();
+        SumHKStack synth = SynthHKImage.getSynthStack(stack, req, net, staCode);
+        return new SumHKStack(stack.getMinPercentMatch(), stack.getSmallestH(), StackComplexity.getResidual(stack.getSum(), synth.getSum()), -1, -1, stack.getNumEQ());
     }
+    
+    void output(SumHKStack sumStack,
+                OutputStream out,
+                HttpServletRequest req,
+                HttpServletResponse res) throws IOException {
+        BorderedDisplay comp = sumStack.getSum().getStackComponent(HKStack.ALL);
+        ((HKStackImage)comp.get(BorderedDisplay.CENTER)).setColorMapMax(lastStackMax);
+        BufferedImage image = sumStack.getSum().toImage(comp);
+        logger.debug("finish create image");
+        res.setContentType("image/png");
+        ImageIO.write(image, "png", out);
+        out.close();
+    }
+    
+    private float lastStackMax;
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ComplexityResidualImage.class);
 }

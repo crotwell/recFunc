@@ -57,7 +57,15 @@ public class HKStackImage extends JComponent {
         Dimension imageSize = new Dimension(2*stackOut[0].length, 2*(stackOut.length-smallestHindex));
         setMinimumSize(imageSize);
         setPreferredSize(imageSize);
+        // color map max and min
+        int[] xyMin = stack.getMinValueIndices();
+        int[] xyMax = stack.getMaxValueIndices();
+
+        //colorMapMin = stack.stack[xyMin[0]][xyMin[1]];
+        colorMapMin = 0;
+        colorMapMax = stack.stack[xyMax[0]][xyMax[1]];
     }
+    
 
     public void addMarker(StationResult result, Color color) {
         markers.add(new Marker(result, color));
@@ -76,12 +84,12 @@ public class HKStackImage extends JComponent {
         
         try {
             BufferedReader buf = new BufferedReader(new FileReader("/seis/local/src/GMT/GMT4.0/share/cpt/GMT_wysiwyg.cpt"));
-            colorPallete = GMTColorPalette.load(buf).renormalize(0, max, Color.BLACK, Color.MAGENTA, Color.CYAN);
+            colorPallete = GMTColorPalette.load(buf).renormalize(colorMapMin, colorMapMax, Color.BLACK, Color.MAGENTA, Color.CYAN);
             
             buf.close();
         } catch (IOException e) {
             logger.warn(e);
-            colorPallete = GMTColorPalette.getDefault(0, max);
+            colorPallete = GMTColorPalette.getDefault(colorMapMin, colorMapMax);
         }
         for (int j = smallestHindex; j < stackOut.length; j++) {
             //System.out.print(j+" : ");
@@ -131,17 +139,40 @@ public class HKStackImage extends JComponent {
     public GMTColorPalette getColorPallete() {
         return colorPallete;
     }
+
+    public float getColorMapMax() {
+        return colorMapMax;
+    }
+
+    
+    public void setColorMapMax(float colorMapMax) {
+        this.colorMapMax = colorMapMax;
+    }
+
+    
+    public float getColorMapMin() {
+        return colorMapMin;
+    }
+
+    
+    public void setColorMapMin(float colorMapMin) {
+        this.colorMapMin = colorMapMin;
+    }
     
     GMTColorPalette colorPallete;
     
     protected HKStack stack;
     
     float[][] stackOut;
+    
+    float colorMapMax, colorMapMin;
 
     protected ArrayList markers = new ArrayList();
 
     protected int smallestHindex = 0;
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(HKStackImage.class);
+
+    
 }
 

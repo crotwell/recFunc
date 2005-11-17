@@ -18,7 +18,7 @@ public class ComparePriorResultTxt extends ComparePriorResult {
         super();
         // TODO Auto-generated constructor stub
     }
-    public RevletContext getContext(HttpServletRequest req,
+    public synchronized RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
         RevletContext rc = super.getContext(req, res);
         res.setContentType("text/plain");

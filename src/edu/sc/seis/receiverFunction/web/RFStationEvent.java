@@ -62,7 +62,7 @@ public class RFStationEvent extends Revlet {
     /**
      *
      */
-    public RevletContext getContext(HttpServletRequest req,
+    public synchronized RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
 
         try {

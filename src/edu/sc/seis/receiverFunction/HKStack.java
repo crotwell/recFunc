@@ -62,6 +62,8 @@ import edu.sc.seis.sod.status.FissuresFormatter;
 
 public class HKStack implements Serializable {
 
+    public static final String ALL = "all";
+
     protected HKStack(QuantityImpl alpha,
                       float p,
                       float gwidth, 
@@ -628,7 +630,6 @@ public class HKStack implements Serializable {
 
     public BorderedDisplay getStackComponent(String phase,
                                              QuantityImpl smallestH) {
-        System.out.println("getStackComponent  smallestH=" + smallestH);
         int startHIndex = getHIndex(smallestH);
         HKStackImage stackImage = new HKStackImage(this, phase, startHIndex);
         if(crust2 != null) {
@@ -645,7 +646,6 @@ public class HKStack implements Serializable {
         UnitRangeImpl depthRange = new UnitRangeImpl(getMinH().getValue()
                 + startHIndex * getStepH().getValue(), getMinH().getValue()
                 + getNumH() * getStepH().getValue(), UnitImpl.KILOMETER);
-        System.out.println("getStackComponent  depthRange=" + depthRange);
         UnitRangeBorder depthLeftBorder = new UnitRangeBorder(Border.LEFT,
                                                               Border.DESCENDING,
                                                               "Depth",
@@ -691,11 +691,15 @@ public class HKStack implements Serializable {
     }
 
     public BufferedImage createStackImage() {
-        return createStackImage("all");
+        return createStackImage(ALL);
     }
 
     public BufferedImage createStackImage(String phase) {
         BorderedDisplay comp = getStackComponent(phase);
+        return toImage(comp);
+    }
+    
+    public BufferedImage toImage(BorderedDisplay comp) {
         JFrame frame = null;
         Graphics2D g = null;
         BufferedImage bufImage = null;
@@ -1047,11 +1051,19 @@ public class HKStack implements Serializable {
      * negative values are set = 0.
      */
     public float getPower() {
+        return getPower(0);
+    }
+    
+    /**
+     * calculates the power (sqrt of sum of squares) over the stack for only entries > floor, ie 
+     * values < floor are set = 0.
+     */
+    public float getPower(float floor) {
         float power = 0;
         float[][] s = getStack();
         for(int i = 0; i < s.length; i++) {
             for(int j = 0; j < s[0].length; j++) {
-                if (s[i][j]>0) {
+                if (s[i][j]>floor) {
                     power += s[i][j]*s[i][j];
                 }
             }

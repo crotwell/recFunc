@@ -15,25 +15,38 @@ public class JDBCStackComplexity extends JDBCTable {
         TableSetup.setup(getTableName(), conn, this, "edu/sc/seis/receiverFunction/server/default.props");
     }
 
-    public void put(int hksummary_id, float complexity) throws SQLException {
+    public void put(int hksummary_id, float complexity, float complexity25, float complexity50) throws SQLException {
         try {
             get(hksummary_id);
             // already an entry so update
-            update.setFloat(1, complexity);
-            update.setInt(2, hksummary_id);
+            int index = 1;
+            update.setFloat(index++, complexity);
+            update.setFloat(index++, complexity25);
+            update.setFloat(index++, complexity50);
+            update.setInt(index++, hksummary_id);
             update.executeUpdate();
         } catch(NotFound e) {
-            put.setInt(1, hksummary_id);
-            put.setFloat(2, complexity);
+            int index=1;
+            put.setInt(index++, hksummary_id);
+            put.setFloat(index++, complexity);
+            put.setFloat(index++, complexity25);
+            put.setFloat(index++, complexity50);
             put.executeUpdate();
         }
     }
 
-    public float get(int hksummary_id) throws NotFound, SQLException {
+    /**
+     * @returns complexity for floor of 0, .25 and .50 respectively
+     */
+    public float[] get(int hksummary_id) throws NotFound, SQLException {
         get.setInt(1, hksummary_id);
         ResultSet rs = get.executeQuery();
         if(rs.next()) {
-            return rs.getFloat(1);
+            float[] out = new float[3];
+            out[0] = rs.getFloat("complexity");
+            out[1] = rs.getFloat("complexity25");
+            out[2] = rs.getFloat("complexity50");
+            return out;
         }
         throw new NotFound();
     }

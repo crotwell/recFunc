@@ -59,7 +59,7 @@ public class HKStackImageServlet  extends HttpServlet {
         hkStack = new JDBCHKStack(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
+    public synchronized void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException {
         try {
             logger.debug("doGet called");

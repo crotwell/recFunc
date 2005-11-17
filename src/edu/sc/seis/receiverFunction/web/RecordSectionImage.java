@@ -68,7 +68,7 @@ public class RecordSectionImage extends HttpServlet {
                                                   new JDBCStationResultRef(conn));
     }
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
+    protected synchronized void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         try {
             int netDbId = RevUtil.getInt("netdbid", req);

@@ -53,7 +53,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
         jdbcSumHKStack = stackSummary.getJdbcSummary();
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
+    public synchronized void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException {
         try {
             logger.debug("doGet called");
@@ -85,7 +85,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             writer.write("<html><body><p>No HK stack foundfor  "
                     + req.getParameter("staCode") + "</p></body></html>");
             writer.flush();
-        } catch(Exception e) {
+        } catch(Throwable e) {
             Revlet.sendToGlobalExceptionHandler(req, e);
             throw new RuntimeException(e);
         }

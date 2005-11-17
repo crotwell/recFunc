@@ -2,6 +2,14 @@
 <head>
 <title>Station $net.getCode() $stacode</title>
 <link rel="stylesheet" type="text/css" href="style.css"/>
+<script src="sorttable.js" type="text/javascript"> </script>
+<script src="tableRuler.js" type="text/javascript"> </script>
+<script type="text/javascript">
+window.onload=function(){
+        tableruler();
+        set_img_dir('images/')
+}
+</script>
 </head>
 <body>
 	
@@ -94,16 +102,16 @@ $header
 <p><a href="earthquakeHKPlot.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}">Plot maxima for each earthquake.</a></p>
 
 #set( $sta = $stationList.get(0) )
-<table>
+<table class="ruler sortable" id="dumb">
 <tr>
-<td class="headodd">Radial Match</td>
-<td class="headodd">Distance</td>
-<td class="headodd">Baz</td>
+<td class="headodd num initiallySorted descending">Radial Match</td>
+<td class="headodd num">Distance</td>
+<td class="headodd num">Baz</td>
 <td class="headodd">FERegion</td>
-<td class="headodd">Time</td>
-<td class="headodd">Lat/Lon</td>
-<td class="headodd">Depth</td>
-<td class="headodd">Magnitude</td>
+<td class="headodd num">Time</td>
+<td class="headodd num">Lat/Lon</td>
+<td class="headodd num">Depth</td>
+<td class="headodd num">Magnitude</td>
 </tr>
 #foreach($eq in $eventList)
 <tr>

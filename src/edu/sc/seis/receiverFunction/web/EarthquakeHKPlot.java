@@ -53,7 +53,7 @@ public class EarthquakeHKPlot extends HttpServlet {
         doGet(arg0, arg1);
     }
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
+    protected synchronized void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         try {
             boolean legend = false;

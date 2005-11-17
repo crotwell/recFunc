@@ -13,7 +13,7 @@ public class IndexPage extends Revlet {
         // TODO Auto-generated constructor stub
     }
 
-    public RevletContext getContext(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    public synchronized RevletContext getContext(HttpServletRequest req, HttpServletResponse res) throws Exception {
             RevletContext context = new RevletContext("indexPage.vm",
                                                       Start.getDefaultContext());
             Revlet.loadStandardQueryParams(req, context);

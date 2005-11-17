@@ -63,7 +63,7 @@ public class SeismogramImage extends HttpServlet {
                                       RecFuncCacheImpl.getDataLoc());
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
+    public synchronized void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException {
         try {
             logger.debug("doGet called");

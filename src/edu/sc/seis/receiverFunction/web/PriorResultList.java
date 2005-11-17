@@ -27,7 +27,7 @@ public class PriorResultList extends Revlet {
     /**
      *
      */
-    public RevletContext getContext(HttpServletRequest req,
+    public synchronized RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
         VelocityContext velContext = new VelocityContext(Start.getDefaultContext());
         RevletContext context = new RevletContext("priorResultList.vm", velContext);

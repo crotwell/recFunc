@@ -74,17 +74,19 @@ public class Station extends Revlet {
     /**
      *
      */
-    public RevletContext getContext(HttpServletRequest req,
+    public synchronized RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
         float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
         float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         int netDbId = RevUtil.getInt("netdbid", req, -1);
         if(netDbId == -1) {
             String netCode = RevUtil.get("netCode", req);
-            if(netCode != null
-                    && (netCode.length() == 2 || netCode.length() == 4)) {
+            String netCodeNoYear = netCode; 
+            if(netCodeNoYear != null) {
+                // check for XE05 case, but allow G and II to not change
+                if (netCodeNoYear.length() > 2) {netCodeNoYear = netCodeNoYear.substring(0,2);}
                 NetworkId[] netIds = jdbcChannel.getNetworkTable()
-                        .getByCode(netCode.substring(0,2));
+                        .getByCode(netCodeNoYear);
                 for(int i = 0; i < netIds.length; i++) {
                     if(NetworkIdUtil.toStringNoDates(netIds[i]).equals(netCode)) {
                         netDbId = jdbcChannel.getNetworkTable()

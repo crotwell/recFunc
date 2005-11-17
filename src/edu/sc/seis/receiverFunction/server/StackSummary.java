@@ -115,6 +115,7 @@ public class StackSummary {
             } catch(NotFound e) {
                 dbid = jdbcSummary.put(sumStack);
             }
+            sumStack.setDbid(dbid);
             calcComplexity(sumStack);
         }
     }
@@ -138,7 +139,9 @@ public class StackSummary {
                                                 sumStack.getSum().getAlpha(),
                                                 null);
         float complex = sumStack.getResidualPower();
-        jdbcStackComplexity.put(sumStack.getDbid(), complex);
+        float complex25 = sumStack.getResidualPower(.25f);
+        float complex50 = sumStack.getResidualPower(.50f);
+        jdbcStackComplexity.put(sumStack.getDbid(), complex, complex25, complex50);
         System.out.println(NetworkIdUtil.toStringNoDates(sumStack.getChannel().get_id().network_id)+"."+sumStack.getChannel().get_id().station_code+" Complexity: "+complex);
         return complex;
     }

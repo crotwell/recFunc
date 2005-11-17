@@ -41,7 +41,7 @@ public class StationList extends Revlet {
         jdbcSumHKStack = new JDBCSummaryHKStack(jdbcHKStack);
     }
 
-    public RevletContext getContext(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    public synchronized RevletContext getContext(HttpServletRequest req, HttpServletResponse res) throws Exception {
         float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
         float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         RevletContext context = new RevletContext(getVelocityTemplate(req), Start.getDefaultContext());

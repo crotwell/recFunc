@@ -10,6 +10,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.model.QuantityImpl;
@@ -104,6 +105,11 @@ public class SumHKStack {
     }
     
     public float getResidualPower() throws FissuresException, TauModelException {
+        return getResidualPower(0);
+    }
+    
+    public float getResidualPower(float percentFloor) throws FissuresException, TauModelException {
+        float floor = percentFloor*getSum().getMaxValue(getSmallestH());
         StationResultRef earsStaRef = new StationResultRef( "Global Maxima", "ears", "ears");
         StationResult result = new StationResult(getChannel().get_id().network_id,
                                                  getChannel().get_id().station_code,
@@ -112,7 +118,7 @@ public class SumHKStack {
                                                  getSum().getAlpha(),
                                                  earsStaRef);
         StackComplexity complexity = new StackComplexity(this, 4096, getSum().getGaussianWidth());
-        float residualPower = complexity.getResidual(result, 60).getPower() / getSum().getPower();
+        float residualPower = complexity.getResidual(result, 60).getPower(floor) / getSum().getPower(floor);
         return residualPower;
     }
     
@@ -553,7 +559,7 @@ public class SumHKStack {
     
     protected float complexityResidual = -1;
 
-    private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
+    private static DecimalFormat vpvsFormat = new DecimalFormat("0.000");
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumHKStack.class);
 

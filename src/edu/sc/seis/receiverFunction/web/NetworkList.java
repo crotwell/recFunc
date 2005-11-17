@@ -23,7 +23,7 @@ public class NetworkList extends Revlet {
         jdbcNetwork = new JDBCNetwork();
     }
     
-    public RevletContext getContext(HttpServletRequest req,
+    public synchronized RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
         RevletContext context = new RevletContext("networkList.vm", Start.getDefaultContext());
         Revlet.loadStandardQueryParams(req, context);

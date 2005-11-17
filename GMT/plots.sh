@@ -1,46 +1,144 @@
-#!/bin/sh
+#!/bin/bash
 
-rm -f ears_crust2_H.ps ears_histo.ps
+# Net Station Name Lat Lon Est.Thick StdDev Est.Vp/Vs StdDev AssumedVp Vs PoissonsRatio NumEQ Complexity Thick Vp/Vs Vp Vs PoissonsRatio
+# 0       1     2   3   4       5        6      7        8       9     10      11         12       13      14    15  16 17    18
 
-#
-echo histogram of number of stacks used
-#
-perl -nae 'print "$F[6]\n"' depth_vpvs.txt | pshistogram -JXh -W20 -L1g -V > ears_histo.ps
-pstopdf ears_histo.ps 
-rm ears_histo.ps 
 
 #
+echo histogram of number of eq used
+#
+OUT=eq_histo
+perl -nae 'print "$F[12]\n"' depth_vpvs.txt | pshistogram -JXh -W20 -L1g -V > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
+
+#
+echo histogram of complexity
+#
+OUT=complexity_histo
+perl -nae 'print "$F[13]\n"'  depth_vpvs.txt | pshistogram -JXh -W0.1 -L1g -V > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
+
+echo num eq vs complexity
+OUT=numeqVsComplexity
+psbasemap -JX6i/6il -R0/1/1/1000 -K  -B.1:"Complexity":/100:"Num EQ"::."NumEQ vs. Complexity": > ${OUT}.ps
+perl -nae 'print "$F[13] $F[12]\n"' depth_vpvs.txt | psxy -O -JX -R -Sc.03 >> ${OUT}.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+
 echo EARS vs Crust2 for all
 #
-perl -nae 'print "$F[9] $F[3]\n"' depth_vpvs.txt | psxy -K -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/:"EARS Thickness"::."EARS vs Crust2.0":WeSn > ears_crust2_H.ps
-psxy -O -JX -R >> ears_crust2_H.ps <<END
+OUT=ears_crust2_H
+perl -nae 'print "$F[14] $F[5]\n"' depth_vpvs.txt | psxy -K -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/:"EARS Thickness"::."EARS vs Crust2.0":WeSn > ${OUT}.ps
+psxy -O -JX -R >> ${OUT}.ps <<END
 0 0
 100 100
 END
-pstopdf ears_crust2_H.ps
-rm ears_crust2_H.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+
+echo EARS VpVs vs complexity for all
+#
+OUT=earsVpVs_vs_complexity
+perl -nae 'print "$F[13] $F[7]\n"' depth_vpvs.txt | psxy -K -JX6i -R0/1/1.6/2.1 -Sc.1 -B.10:"Complexity":/.1:"Vp/Vs"::."EARS Vp/Vs vs Complexity":WeSn > ${OUT}.ps
+psxy -O -JX -R >> ${OUT}.ps <<END
+0 0
+100 100
+END
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+
+echo EARS - Crust2 vs complexity for all
+#
+OUT=ears-crust2_vs_complexity_H
+perl -nae '$a=$F[14]-$F[5]; print "$F[13] $a\n"' depth_vpvs.txt | psxy -K -JX6i -R0/1/-80/80 -Sc.1 -B.10:"Complexity":/10:"Crust2.0 Thickness - EARS Thickness"::."EARS - Crust2.0 vs Complexity":WeSn > ${OUT}.ps
+psxy -O -JX -R >> ${OUT}.ps <<END
+0 0
+100 100
+END
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+
+echo EARS - Crust2 vs vpvs for all
+#
+OUT=ears-crust2_vs_vpvs
+perl -nae '$a=$F[14]-$F[5]; print "$F[7] $a\n"' depth_vpvs.txt | psxy -K -JX6i -R1.6/2.2/-80/80 -Sc.1 -B.10:"Vp/Vs":/10:"Crust2.0 Thickness - EARS Thickness"::."EARS - Crust2.0 vs Vp/Vs":WeSn > ${OUT}.ps
+psxy -O -JX -R >> ${OUT}.ps <<END
+0 0
+100 100
+END
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+
+#
+echo Ears complexity map
+#
+OUT=world_complexity
+psbasemap -K  -X1i -Y1i -JQ0/10i -R-180/180/-90/90  -B20 -U  > ${OUT}.ps
+pscoast -K -O -A10000 -JQ -R   -W -Di    >> ${OUT}.ps
+cat depth_vpvs.txt | perl -nae '$d = $F[13];print "$F[4] $F[3] $d\n"' - | psxy -K -O -JQ -R -Ccomplexity.cpt -St0.15 >> ${OUT}.ps
+psscale -O -K -Y4.2i -D6.5i/2i/7.5c/1.25ch -B.1 -Ccomplexity.cpt  >> ${OUT}.ps
+
+pstext -O -JQ -R >> ${OUT}.ps <<END
+0 0 12 0 0 1 .
+END
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+
+open ${OUT}.pdf
+echo Exiting early
+exit 1
 
 #
 echo EARS vs Crust2 for IU/II/IC
 #
-grep 'I[ICU]' depth_vpvs.txt | perl -nae 'print "$F[9] $F[3]\n"' - | psxy -K -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/:"EARS Thickness"::."EARS vs Crust2.0 for GSN":WeSn > GSNears_crust2_H.ps
-psxy -O -JX -R >> GSNears_crust2_H.ps <<END
+OUT=GSNears_crust2_H
+grep 'I[ICU]' depth_vpvs.txt | perl -nae 'print "$F[14] $F[5]\n"' - | psxy -K -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/:"EARS Thickness"::."EARS vs Crust2.0 for GSN":WeSn > ${OUT}.ps
+psxy -O -JX -R >> ${OUT}.ps <<END
 0 0
 100 100
+>>
+0 2.5
+100 102.5
+>>
+0 -2.5
+100 97.5
+>>
+0 5
+100 105
+>>
+0 -5
+100 95
 END
-pstopdf GSNears_crust2_H.ps
-rm GSNears_crust2_H.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
 
 #
 echo  EARS vs Crust2 for IU/II/IC Vp/Vs
 #
-grep 'I[ICU]' depth_vpvs.txt | perl -nae 'print "$F[10] $F[4]\n"' - | psxy -K -JX6i -R1.5/2.2/1.5/2.2 -Sc.1 -B.1:"Crust2.0 VpVs":/:"EARS VpVs"::."EARS vs Crust2.0 for GSN":WeSn > GSNears_crust2_vpvs.ps
-psxy -O -JX -R >> GSNears_crust2_vpvs.ps <<END
+OUT=GSNears_crust2_vpvs
+grep 'I[ICU]' depth_vpvs.txt | perl -nae 'print "$F[10] $F[4]\n"' - | psxy -K -JX6i -R1.5/2.2/1.5/2.2 -Sc.1 -B.1:"Crust2.0 VpVs":/:"EARS VpVs"::."EARS vs Crust2.0 for GSN":WeSn > ${OUT}.ps
+psxy -O -JX -R >> ${OUT}.ps <<END
 0 0
 100 100
+>>
+0 2.5
+100 102.5
+>>
+0 -2.5
+100 97.5
+>>
+0 5
+100 105
+>>
+0 -5
+100 95
 END
-pstopdf GSNears_crust2_vpvs.ps
-rm GSNears_crust2_vpvs.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
 
 #
 echo  EARS vs Crust2 for XM99
@@ -150,24 +248,6 @@ pstext -O -JQ -R >> gsn_world_H.ps <<END
 END
 pstopdf gsn_world_H.ps
 rm gsn_world_H.ps
-
-
-#
-echo Ears H map
-#
-psbasemap -K  -X1i -Y1i -JQ0/10i -R-180/180/-90/90  -B20 -U  > world_H.ps
-#grdimage crust2_180.grd -Credblue.cpt -JQ -R -K -O >> world_H.ps
-grdimage crust2_180.grd -Ccrust2.cpt -JQ -R -K -O >> world_H.ps
-pscoast -K -O -A10000 -JQ -R   -W -Di    >> world_H.ps
-cat depth_vpvs.txt |  perl -nae '$d = $F[3];print "$F[2] $F[1] $d\n"' - | psxy -K -O -JQ -R -Ccrust2.cpt -St0.45 >> world_H.ps
-#cat depth_vpvs.txt |  perl -nae '$d = $F[3];print "$F[2] $F[1] $d\n"' - | psxy -K -O -JQ -R  -St0.35 >> world_H.ps
-#cat depth_vpvs.txt  | perl -nae '$d = $F[3]-$F[9];print "$F[2] $F[1] $d\n"' - | psxy -K -O -JQ -R -Cdiffcrust2.cpt -St0.35 >> world_H.ps
-
-pstext -O -JQ -R >> world_H.ps <<END
-0 0 12 0 0 1 .
-END
-pstopdf world_H.ps
-rm world_H.ps
 
 #
 echo ears vs Lupei for S Cal

@@ -84,7 +84,7 @@
         <dependency>
             <groupId>cormorant</groupId>
             <artifactId>cormorant</artifactId>
-            <version>1.1beta</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>

@@ -10,6 +10,6 @@
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/jfreechart/jars/jfreechart-1.0.0-rc1.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/cormorant"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-cli/jars/commons-cli-1.0.jar"/>
-	<classpathentry exported="true" kind="var" path="MAVEN_REPO/jfreechart/jars/jcommon-1.0.0-pre2.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/jfreechart/jars/jcommon-1.0.0-rc1.jar"/>
 	<classpathentry kind="output" path="bin/target/classes"/>
 </classpath>

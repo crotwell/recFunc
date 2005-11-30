@@ -18,6 +18,7 @@ import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfParameterMgr.ParameterRef;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.iris.Fissures.model.MicroSecondDate;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
@@ -323,11 +324,13 @@ public class JDBCRecFunc extends JDBCTable {
         File f = new File(stationDir, rs.getString("recfuncITR"));
         itrSAC.read(new File(stationDir, rs.getString("recfuncITR")));
         LocalSeismogramImpl itrSeis = SacToFissures.getSeismogram(itrSAC);
+        itrSeis.y_unit = UnitImpl.DIMENSONLESS;
         result.radial = itrSeis;
         
         SacTimeSeries ittSAC = new SacTimeSeries();
         ittSAC.read(new File(stationDir, rs.getString("recfuncITT")));
         LocalSeismogramImpl ittSeis = SacToFissures.getSeismogram(ittSAC);
+        ittSeis.y_unit = UnitImpl.DIMENSONLESS;
         result.tansverse = ittSeis;
         
         LocalSeismogramImpl[] originals = new LocalSeismogramImpl[3];

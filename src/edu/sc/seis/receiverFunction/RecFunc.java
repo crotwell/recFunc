@@ -218,7 +218,7 @@ public class RecFunc {
 
     TimeInterval pad;
     
-    private static final TimeInterval DEFAULT_SHIFT = new TimeInterval(10, UnitImpl.SECOND);
+    static public final TimeInterval DEFAULT_SHIFT = new TimeInterval(10, UnitImpl.SECOND);
 
     public static TimeInterval getDefaultShift() {
         return DEFAULT_SHIFT;   

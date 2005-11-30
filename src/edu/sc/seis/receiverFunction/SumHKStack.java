@@ -117,7 +117,7 @@ public class SumHKStack {
                                                  getSum().getMaxValueK(getSmallestH()),
                                                  getSum().getAlpha(),
                                                  earsStaRef);
-        StackComplexity complexity = new StackComplexity(this, 4096, getSum().getGaussianWidth());
+        StackComplexity complexity = new StackComplexity(getSum(), 4096, getSum().getGaussianWidth());
         float residualPower = complexity.getResidual(result, 60).getPower(floor) / getSum().getPower(floor);
         return residualPower;
     }

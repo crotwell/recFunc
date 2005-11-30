@@ -113,6 +113,8 @@ public class RFStationEvent extends Revlet {
                 triggers.add(trigger);
             }
             vContext.put("ston", triggers);
+            RevUtil.copy("H", req, vContext);
+            RevUtil.copy("vpvs", req, vContext);
             
             RevletContext context = new RevletContext("rfStationEvent.vm", vContext);
             Revlet.loadStandardQueryParams(req, context);

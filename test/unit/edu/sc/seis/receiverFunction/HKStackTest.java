@@ -4,6 +4,7 @@ import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.mockFissures.IfNetwork.MockChannel;
+import edu.sc.seis.receiverFunction.compare.StationResult;
 import junit.framework.TestCase;
 
 public class HKStackTest extends TestCase {
@@ -64,10 +65,17 @@ public class HKStackTest extends TestCase {
         int num = 3;
         HKStack in = getMockHKStack(inMaxima);
         int[][] out = in.getLocalMaxima(startHIndex, num);
-        HKStack outStack = 
+        //HKStack outStack = 
         for(int i = 0; i < inMaxima.length; i++) {
             assertEquals("local max x " + i, inMaxima[i][0], out[i][0]);
             assertEquals("local max y " + i, inMaxima[i][1], out[i][1]);
         }
+    }
+    
+    public void testGetMaximumAsStationResult() {
+        HKStack in = getMockHKStack();
+        StationResult staResult = in.getMaximumAsStationResult(0);
+        assertEquals("h", in.getMaxValueH().getValue(UnitImpl.KILOMETER), staResult.getH().getValue(UnitImpl.KILOMETER), 0.00001);
+        assertEquals("k", in.getMaxValueK(), staResult.getVpVs(), 0.00001);
     }
 }

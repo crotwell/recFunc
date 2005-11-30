@@ -131,7 +131,7 @@ public class StackSummary {
     }
     
     public float calcComplexity(SumHKStack sumStack) throws FissuresException, TauModelException, SQLException {
-        StackComplexity complexity = new StackComplexity(sumStack, 4096, sumStack.getSum().getGaussianWidth());
+        StackComplexity complexity = new StackComplexity(sumStack.getSum(), 4096, sumStack.getSum().getGaussianWidth());
         StationResult model = new StationResult(sumStack.getChannel().get_id().network_id,
                                                 sumStack.getChannel().get_id().station_code,
                                                 sumStack.getSum().getMaxValueH(sumStack.getSmallestH()),

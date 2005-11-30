@@ -48,36 +48,35 @@ public class SimpleSynthReceiverFunction {
                                                            begin_time,
                                                            num_points,
                                                            samp,
-                                                           UnitImpl.COUNT,
+                                                           UnitImpl.DIMENSONLESS,
                                                            chan,
                                                            data);
+        // scale from unit area gaussian to unit amplitude gaussian
+        float scale = (float)2*SQRT_PI*gaussianWidth;
         // P
         TimeInterval timeP = new TimeInterval(0, UnitImpl.SECOND);
         double refTransP = getAmpP(flatRP);
         float index = HKStack.getDataIndex(seis, timeP.add(lagZeroOffset));
-        data[Math.round(index)] = (float)refTransP;
+        data[Math.round(index)] = scale * (float)refTransP;
         // Ps
         TimeInterval timePs = HKStack.getTimePs(flatRP, model.getVp(), model.getVpVs(), model.getH());
         double refTransPs = getAmpPs(flatRP);
         index = HKStack.getDataIndex(seis, timePs.add(lagZeroOffset));
-        data[Math.round(index)] = (float)refTransPs;
-        System.out.println("Ps: " + timePs + "  " + index + "  " + refTransPs);
+        data[Math.round(index)] = scale * (float)refTransPs;
         // PpPs
         TimeInterval timePpPs = HKStack.getTimePpPs(flatRP, model.getVp(), model.getVpVs(), model.getH());
         double refTransPpPs = getAmpPpPs(flatRP);
         index = HKStack.getDataIndex(seis, timePpPs.add(lagZeroOffset));
-        data[Math.round(index)] = (float)refTransPpPs;
-        System.out.println("PpPs: " + timePpPs + "  " + index + " " + refTransPpPs);
+        data[Math.round(index)] = scale * (float)refTransPpPs;
         // PsPs+PpSs
         TimeInterval timePsPs = HKStack.getTimePsPs(flatRP, model.getVp(), model.getVpVs(), model.getH());
         double refTransPsPs = getAmpPsPs(flatRP);
         index = HKStack.getDataIndex(seis, timePsPs.add(lagZeroOffset));
-        data[Math.round(index)] = (float)refTransPsPs;
-        System.out.println("PsPs: " + timePsPs + "  " + index + "  " + refTransPsPs);
-        System.out.println((float)((SamplingImpl)seis.sampling_info).getPeriod().getValue(UnitImpl.SECOND));
-        float[] tmp = IterDecon.gaussianFilter(data, 2.5f, (float)((SamplingImpl)seis.sampling_info).getPeriod()
+        data[Math.round(index)] = scale * (float)refTransPsPs;
+        float[] tmp = IterDecon.gaussianFilter(data, gaussianWidth, (float)((SamplingImpl)seis.sampling_info).getPeriod()
                 .getValue(UnitImpl.SECOND));
         System.arraycopy(tmp, 0, data, 0, data.length);
+        logger.debug("amp P = "+refTransP+"  after gaussian: "+data[Math.round(HKStack.getDataIndex(seis, timeP.add(lagZeroOffset)))]);
         return seis;
     }
 
@@ -149,6 +148,8 @@ public class SimpleSynthReceiverFunction {
     int num_points;
 
     static UnitImpl kmps = UnitImpl.KILOMETER_PER_SECOND;
+    
+    static final float SQRT_PI = (float)Math.sqrt(Math.PI);
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SimpleSynthReceiverFunction.class);
 }

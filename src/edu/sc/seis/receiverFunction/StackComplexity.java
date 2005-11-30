@@ -18,9 +18,9 @@ public class StackComplexity {
 
     private float gaussianWidth;
 
-    public StackComplexity(SumHKStack stack, int num_points, float gaussianWidth) {
-        this.stack = stack;
-        this.samp = stack.getChannel().sampling_info;
+    public StackComplexity(HKStack hkplot, int num_points, float gaussianWidth) {
+        this.hkplot = hkplot;
+        this.samp = hkplot.getChannel().sampling_info;
         this.num_points = num_points;
         this.gaussianWidth = gaussianWidth;
     }
@@ -48,23 +48,23 @@ public class StackComplexity {
                                                       ClockUtil.now()
                                                               .getFissuresTime(),
                                                       RecFunc.getDefaultShift(),
-                                                      stack.getChannel()
+                                                      hkplot.getChannel()
                                                               .get_id(), gaussianWidth);
-        HKStack synthStack = new HKStack(stack.getSum().getAlpha(),
+        HKStack synthStack = new HKStack(hkplot.getAlpha(),
                                          flatRP,
                                          gaussianWidth,
                                          100,
-                                         stack.getSum().minH,
-                                         stack.getSum().stepH,
-                                         stack.getSum().numH,
-                                         stack.getSum().minK,
-                                         stack.getSum().stepK,
-                                         stack.getSum().numK,
+                                         hkplot.minH,
+                                         hkplot.stepH,
+                                         hkplot.numH,
+                                         hkplot.minK,
+                                         hkplot.stepK,
+                                         hkplot.numK,
                                          1 / 3f,
                                          1 / 3f,
                                          1 / 3f,
                                          synthRF,
-                                         stack.getChannel(),
+                                         hkplot.getChannel(),
                                          RecFunc.getDefaultShift());
         synthStack.compact();
         return synthStack;
@@ -73,7 +73,7 @@ public class StackComplexity {
     public HKStack getResidual(StationResult staResult, float distDeg)
             throws FissuresException, TauModelException {
         HKStack synthStack = getSyntheticForDist(staResult, distDeg);
-        return getResidual(stack.getSum(), synthStack);
+        return getResidual(hkplot, synthStack);
     }
     
     public static HKStack getResidual(HKStack real, HKStack synth) {
@@ -81,9 +81,10 @@ public class StackComplexity {
         float[][] synthData = synth.getStack();
         // scale synth data by max of data so best HK -> 0
         // hopefully this subtracts the bulk of the "mountain" around the max
-        QuantityImpl smallestH = HKStack.getBestSmallestH(real.getChannel().my_site.my_station);
-        float scale = real.getMaxValue(smallestH)
-                / synth.getMaxValue(smallestH);
+        int[] maxIndex = synth.getMaxValueIndices();
+        System.out.println("data max="+data[maxIndex[0]][maxIndex[1]]+"  synth max="+synthData[maxIndex[0]][maxIndex[1]]);
+        float scale = data[maxIndex[0]][maxIndex[1]]
+                / synthData[maxIndex[0]][maxIndex[1]];
         float[][] diff = new float[real.numH][real.numK];
         for(int i = 0; i < diff.length; i++) {
             for(int jj = 0; jj < diff[0].length; jj++) {
@@ -117,6 +118,7 @@ public class StackComplexity {
     static final float sphRayParamRad = 6.877f;
 
     SumHKStack stack;
+    HKStack hkplot;
 
     Sampling samp;
 

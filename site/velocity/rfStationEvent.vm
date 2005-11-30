@@ -133,7 +133,7 @@ $header
 </tr>
 </table>
 
-<img class="dataimg" src="waveforms.png?rf=$rf&window=120"/>
+<img class="dataimg" src="waveforms.png?rf=$rf&window=120&H=$H&vpvs=$vpvs"/>
 
 <p>Signal To Noise<p/>
 <table>

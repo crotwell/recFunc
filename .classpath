@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test/unit"/>
+	<classpathentry output="target/test-classes" kind="src" path="test/unit"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/rev"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/gee"/>
@@ -11,5 +11,5 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/cormorant"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-cli/jars/commons-cli-1.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jfreechart/jars/jcommon-1.0.0-rc1.jar"/>
-	<classpathentry kind="output" path="bin/target/classes"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

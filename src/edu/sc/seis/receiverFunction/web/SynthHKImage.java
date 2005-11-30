@@ -39,8 +39,9 @@ public class SynthHKImage extends SummaryHKStackImageServlet {
     
     public static SumHKStack getSynthStack(SumHKStack stack, HttpServletRequest req, VelocityNetwork net, String staCode) throws FissuresException, TauModelException {
         float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
+        gaussianWidth =  RevUtil.getFloat("synthGaussian", req, gaussianWidth);
         float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
-        StackComplexity complexity = new StackComplexity(stack, 4096, gaussianWidth);
+        StackComplexity complexity = new StackComplexity(stack.getSum(), 4096, gaussianWidth);
         StationResult model = new StationResult(net.get_id(),
                                                 staCode, 
                                                 stack.getSum().getMaxValueH(stack.getSmallestH()),

@@ -60,7 +60,7 @@ public class HKStackTest extends TestCase {
     }
 
     public void testGetLocalMaxima() {
-        int[][] inMaxima = new int[][] { {40, 20}, {40, 30}, {40, 40}};
+        int[][] inMaxima = new int[][] { {40, 20}, {60, 30}, {80, 40}};
         int startHIndex = 5;
         int num = 3;
         HKStack in = getMockHKStack(inMaxima);

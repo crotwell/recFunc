@@ -81,8 +81,7 @@ public class StackComplexity {
         float[][] synthData = synth.getStack();
         // scale synth data by max of data so best HK -> 0
         // hopefully this subtracts the bulk of the "mountain" around the max
-        int[] maxIndex = synth.getMaxValueIndices();
-        System.out.println("data max="+data[maxIndex[0]][maxIndex[1]]+"  synth max="+synthData[maxIndex[0]][maxIndex[1]]);
+        int[] maxIndex = real.getMaxValueIndices();
         float scale = data[maxIndex[0]][maxIndex[1]]
                 / synthData[maxIndex[0]][maxIndex[1]];
         float[][] diff = new float[real.numH][real.numK];

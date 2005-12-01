@@ -372,12 +372,7 @@ public class HKStack implements Serializable {
         out[0][1] = maxIndexY;
         System.out.println(" getLocalMaxima: " + num + "  " + maxIndexX + ", " + maxIndexY + " = " + max);
         if(num > 1) {
-            StationResult maxResult = new StationResult(getChannelId().network_id,
-                                                        getChannelId().station_code,
-                                                        getHFromIndex(maxIndexY),
-                                                        getKFromIndex(maxIndexX),
-                                                        getAlpha(),
-                                                        null);
+            StationResult maxResult = getMaximumAsStationResult(startHIndex);
             StackComplexity complexity = new StackComplexity(this, 4096, getGaussianWidth());
             try {
                 HKStack residualStack = complexity.getResidual(maxResult, 80);

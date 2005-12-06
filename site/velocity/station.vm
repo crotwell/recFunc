@@ -113,13 +113,15 @@ $header
 <td class="headodd num">Depth</td>
 <td class="headodd num">Magnitude</td>
 </tr>
+#set( $maxValH = $!summary.getSum().getMaxValueH().getValue() )
+#set( $maxValK = $!summary.getSum().getMaxValueK() )
 #foreach($eq in $eventList)
 <tr>
 <td class="even">$eq.getParam("itr_match")</td>
 <td class="odd">$sta.getDistanceDeg($eq)</td>
 <td class="even">$sta.getBaz($eq)</td>
 #set( $recFunc_id = $eq.getParam("recFunc_id") )
-<td class="odd"><a href="stationEvent.html?rf=$recFunc_id&gaussian=${gaussian}&H=$!summary.getSum().getMaxValueH().getValue()&vpvs=$!summary.getSum().getMaxValueK()">$eq.getRegion()</a></td>
+<td class="odd"><a href="stationEvent.html?rf=$recFunc_id&gaussian=${gaussian}&H=$maxValueH&vpvs=$maxValueK">$eq.getRegion()</a></td>
 <td class="even">$eq.getTime()</td>
 <td class="odd">($eq.getLatitude(), $eq.getLongitude())</td>
 <td class="even">$eq.getDepth()</td>

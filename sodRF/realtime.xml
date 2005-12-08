@@ -43,7 +43,7 @@
                 <max>1000</max>
             </originDepthRange>
             <originTimeRange>
-                <startTime>20050101T00:00:00.001Z</startTime>
+                <startTime>20050701T00:00:00.001Z</startTime>
                 <endTime>20201231T23:59:59.999Z</endTime>
             </originTimeRange>
             <magnitudeRange>
@@ -106,10 +106,10 @@
             </phaseExists>
         </eventStationAND>
         <eventVectorNOT>
-                <externalEventVectorSubsetter>
-                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                    <gaussianWidth>2.5</gaussianWidth>
-                </externalEventVectorSubsetter>
+            <externalEventVectorSubsetter>
+                <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                <gaussianWidth>2.5</gaussianWidth>
+            </externalEventVectorSubsetter>
         </eventVectorNOT>
         <phaseRequest>
             <beginPhase>P</beginPhase>
@@ -156,7 +156,6 @@
                 <ratio>2.0</ratio>
             </phaseSignalToNoise>
         </ORWaveformProcessWrapper>
-        <printlineSeismogramProcess/>
         <phaseCut>
             <beginPhase>P</beginPhase>
             <beginOffset>
@@ -189,24 +188,23 @@
         <externalWaveformVectorProcess>
             <classname>edu.sc.seis.receiverFunction.crust2.Crust2Process</classname>
         </externalWaveformVectorProcess>
-        <waveformVectorAlwaysSuccess>
-            <waveformVectorFork>
-                    <embeddedEventVector>
-                        <externalEventVectorSubsetter>
-                            <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                            <gaussianWidth>2.5</gaussianWidth>
-                        </externalEventVectorSubsetter>
-                    </embeddedEventVector>
-                <externalWaveformVectorProcess>
-                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
-                    <fileType>sac</fileType>
-                    <dataDirectory>RT_recfunc</dataDirectory>
-                    <eventDirLabel>
-                        <originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/>
-                    </eventDirLabel>
+        <embeddedEventVector>
+            <eventVectorNOT>
+                <externalEventVectorSubsetter>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                     <gaussianWidth>2.5</gaussianWidth>
-                </externalWaveformVectorProcess>
-            </waveformVectorFork>
-        </waveformVectorAlwaysSuccess>
+                </externalEventVectorSubsetter>
+            </eventVectorNOT>
+        </embeddedEventVector>
+        <externalWaveformVectorProcess>
+            <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
+            <fileType>sac</fileType>
+            <dataDirectory>RT_recfunc</dataDirectory>
+            <eventDirLabel>
+                <originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/>
+            </eventDirLabel>
+            <gaussianWidth>2.5</gaussianWidth>
+        </externalWaveformVectorProcess>
+        <printlineSeismogramProcess/>
     </waveformVectorArm>
 </sod>

@@ -18,12 +18,13 @@ public class ComparePriorResultTxt extends ComparePriorResult {
         super();
         // TODO Auto-generated constructor stub
     }
-    public synchronized RevletContext getContext(HttpServletRequest req,
-                                    HttpServletResponse res) throws Exception {
-        RevletContext rc = super.getContext(req, res);
-        res.setContentType("text/plain");
-        return rc; 
+
+    protected void setContentType(HttpServletRequest request,
+                                  HttpServletResponse response)
+    {
+        response.setContentType("text/plain");
     }
+
     public String getVelocityTemplate(HttpServletRequest req) {
         return "comparePriorResultTxt.vm";
     }

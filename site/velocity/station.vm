@@ -113,8 +113,8 @@ $header
 <td class="headodd num">Depth</td>
 <td class="headodd num">Magnitude</td>
 </tr>
-#set( $maxValH = $!summary.getSum().getMaxValueH().getValue() )
-#set( $maxValK = $!summary.getSum().getMaxValueK() )
+#set( $maxValueH = $!summary.getSum().getMaxValueH().getValue() )
+#set( $maxValueK = $!summary.getSum().getMaxValueK() )
 #foreach($eq in $eventList)
 <tr>
 <td class="even">$eq.getParam("itr_match")</td>

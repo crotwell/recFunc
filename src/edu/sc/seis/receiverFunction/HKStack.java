@@ -78,7 +78,8 @@ public class HKStack implements Serializable {
                       float weightPpPs,
                       float weightPsPs) {
         if(alpha.getValue() <= 0) {
-            throw new IllegalArgumentException("alpha must be positive: " + alpha);
+            throw new IllegalArgumentException("alpha must be positive: "
+                    + alpha);
         }
         if(p < 0) {
             throw new IllegalArgumentException("p must be nonnegative: " + p);
@@ -115,9 +116,22 @@ public class HKStack implements Serializable {
                    float weightPpPs,
                    float weightPsPs,
                    DataSetSeismogram recFunc) throws FissuresException {
-        this(alpha, p, gwidth, percentMatch, minH, stepH, numH, minK, stepK, numK, weightPs, weightPpPs, weightPsPs);
+        this(alpha,
+             p,
+             gwidth,
+             percentMatch,
+             minH,
+             stepH,
+             numH,
+             minK,
+             stepK,
+             numK,
+             weightPs,
+             weightPpPs,
+             weightPsPs);
         this.recFunc = recFunc;
-        this.chan = recFunc.getDataSet().getChannel(recFunc.getRequestFilter().channel_id);
+        this.chan = recFunc.getDataSet()
+                .getChannel(recFunc.getRequestFilter().channel_id);
         calculate();
     }
 
@@ -137,7 +151,19 @@ public class HKStack implements Serializable {
                    LocalSeismogramImpl recFuncSeis,
                    Channel chan,
                    TimeInterval shift) throws FissuresException {
-        this(alpha, p, gwidth, percentMatch, minH, stepH, numH, minK, stepK, numK, weightPs, weightPpPs, weightPsPs);
+        this(alpha,
+             p,
+             gwidth,
+             percentMatch,
+             minH,
+             stepH,
+             numH,
+             minK,
+             stepK,
+             numK,
+             weightPs,
+             weightPpPs,
+             weightPsPs);
         this.recFunc = new MemoryDataSetSeismogram(recFuncSeis);
         this.chan = chan;
         analyticPs = new CmplxArray2D(numH, numK);
@@ -162,7 +188,19 @@ public class HKStack implements Serializable {
                    CmplxArray2D analyticPs,
                    CmplxArray2D analyticPpPs,
                    CmplxArray2D analyticPsPs) {
-        this(alpha, p, gwidth, percentMatch, minH, stepH, numH, minK, stepK, numK, weightPs, weightPpPs, weightPsPs);
+        this(alpha,
+             p,
+             gwidth,
+             percentMatch,
+             minH,
+             stepH,
+             numH,
+             minK,
+             stepK,
+             numK,
+             weightPs,
+             weightPpPs,
+             weightPsPs);
         this.recFunc = null;
         this.analyticPs = analyticPs;
         this.analyticPpPs = analyticPpPs;
@@ -204,7 +242,8 @@ public class HKStack implements Serializable {
              analyticPpPs,
              analyticPsPs);
         this.recFunc = recFunc;
-        this.chan = recFunc.getDataSet().getChannel(recFunc.getRequestFilter().channel_id);
+        this.chan = recFunc.getDataSet()
+                .getChannel(recFunc.getRequestFilter().channel_id);
     }
 
     public HKStack(QuantityImpl alpha,
@@ -258,7 +297,19 @@ public class HKStack implements Serializable {
                    float weightPsPs,
                    float[][] stack,
                    Channel chan) {
-        this(alpha, p, gwidth, percentMatch, minH, stepH, numH, minK, stepK, numK, weightPs, weightPpPs, weightPsPs);
+        this(alpha,
+             p,
+             gwidth,
+             percentMatch,
+             minH,
+             stepH,
+             numH,
+             minK,
+             stepK,
+             numK,
+             weightPs,
+             weightPpPs,
+             weightPsPs);
         this.recFunc = null;
         this.chan = chan;
         this.stack = stack;
@@ -285,7 +336,19 @@ public class HKStack implements Serializable {
                    Float peakK,
                    Float peakVal,
                    Channel chan) {
-        this(alpha, p, gwidth, percentMatch, minH, stepH, numH, minK, stepK, numK, weightPs, weightPpPs, weightPsPs);
+        this(alpha,
+             p,
+             gwidth,
+             percentMatch,
+             minH,
+             stepH,
+             numH,
+             minK,
+             stepK,
+             numK,
+             weightPs,
+             weightPpPs,
+             weightPsPs);
         this.recFunc = null;
         this.chan = chan;
         this.stack = null;
@@ -324,9 +387,8 @@ public class HKStack implements Serializable {
     }
 
     /**
-     * returns the x and y indices for the max value in the stack. The min x
-     * value is in index 0 and the y in index 1. The max x value is in 2 and the
-     * y in 3.
+     * returns the x and y indices for the max value in the stack. The max x
+     * value is in index 0 and the y in index 1. 
      */
     public int[] getMaxValueIndices() {
         return getMaxValueIndices(0);
@@ -337,25 +399,7 @@ public class HKStack implements Serializable {
      * grater than minH.
      */
     public int[] getMaxValueIndices(int startHIndex) {
-        return getLocalMaxima(startHIndex, 1)[0];
-    }
-
-    public int[][] getLocalMaxima(QuantityImpl startH, int num) {
-        try {
-            return getLocalMaxima(getHIndex(startH), num);
-        } catch(RuntimeException t) {
-            System.out.println("startH=" + startH);
-            throw t;
-        }
-    }
-
-    /**
-     * Finds the top num local maxuma that are not within minDeltaH and
-     * minDeltaK of another local maxima.
-     */
-    public int[][] getLocalMaxima(int startHIndex, int num) {
         float[][] stackOut = getStack();
-        int[][] out = new int[num][2];
         float max = stackOut[startHIndex][0];
         int maxIndexX = 0;
         int maxIndexY = 0;
@@ -368,32 +412,82 @@ public class HKStack implements Serializable {
                 }
             }
         }
-        out[0][0] = maxIndexX;
-        out[0][1] = maxIndexY;
-        if(num > 1) {
-            StationResult maxResult = getMaximumAsStationResult(startHIndex);
-            StackComplexity complexity = new StackComplexity(this, 4096, getGaussianWidth());
-            try {
-                HKStack residualStack = complexity.getResidual(maxResult, 80);
-                int[][] recursion = residualStack.getLocalMaxima(startHIndex, num - 1);
+        return new int[] {maxIndexX, maxIndexY};
+    }
+
+    public StackMaximum getGlobalMaximum() {
+        return getLocalMaxima(0, 1)[0];
+    }
+
+    public StackMaximum[] getLocalMaxima(QuantityImpl startH, int num) {
+        try {
+            return getLocalMaxima(getHIndex(startH), num);
+        } catch(RuntimeException t) {
+            System.out.println("startH=" + startH);
+            throw t;
+        }
+    }
+
+    /**
+     * Finds the top num local maxuma that are not within minDeltaH and
+     * minDeltaK of another local maxima.
+     */
+    public StackMaximum[] getLocalMaxima(int startHIndex, int num) {
+        System.out.println("getLocalMaxima("+startHIndex+", "+num+")");
+        int[] maxIndices = getMaxValueIndices(startHIndex);
+        StackMaximum[] out = new StackMaximum[num];
+        int maxIndexX = maxIndices[0];
+        int maxIndexY = maxIndices[1];
+        float max = getStack()[maxIndexX][maxIndexY];
+        
+        // do twice as we need StackMaximum to calc power to populate StackMaximum
+        StackMaximum dumb = new StackMaximum(maxIndexX,
+                                  getHFromIndex(maxIndexX),
+                                  maxIndexY,
+                                  getKFromIndex(maxIndexY),
+                                  max,
+                                  -1,
+                                  -1);
+        StationResult maxResult = getMaximumAsStationResult(dumb);
+        StackComplexity complexity = new StackComplexity(this,
+                                                         4096,
+                                                         getGaussianWidth());
+        try {
+            HKStack residualStack = complexity.getResidual(maxResult, 80);
+            out[0] = new StackMaximum(maxIndexX,
+                                      getHFromIndex(maxIndexX),
+                                      maxIndexY,
+                                      getKFromIndex(maxIndexY),
+                                      max,
+                                      getPower(),
+                                      residualStack.getPower());
+            if(num > 1) {
+                StackMaximum[] recursion = residualStack.getLocalMaxima(startHIndex,
+                                                                        num - 1);
                 System.arraycopy(recursion, 0, out, 1, recursion.length);
-            } catch(FissuresException e) {
-                throw new RuntimeException("problem getting residual for local maxima", e);
-            } catch(TauModelException e) {
-                throw new RuntimeException("problem getting residual for local maxima", e);
             }
+        } catch(FissuresException e) {
+            throw new RuntimeException("problem getting residual for local maxima",
+                                       e);
+        } catch(TauModelException e) {
+            throw new RuntimeException("problem getting residual for local maxima",
+                                       e);
         }
         return out;
     }
-    
+
     public StationResult getMaximumAsStationResult(int startHIndex) {
-        int[][] maxIndex = getLocalMaxima(startHIndex, 1);
+        StackMaximum[] maxIndex = getLocalMaxima(startHIndex, 1);
+        return getMaximumAsStationResult(maxIndex[0]);
+    } 
+    
+    public StationResult getMaximumAsStationResult(StackMaximum max) {
         return new StationResult(getChannelId().network_id,
-                                                    getChannelId().station_code,
-                                                    getHFromIndex(maxIndex[0][0]),
-                                                    getKFromIndex(maxIndex[0][1]),
-                                                    getAlpha(),
-                                                    null);
+                                 getChannelId().station_code,
+                                 max.getHValue(),
+                                 max.getKValue(),
+                                 getAlpha(),
+                                 null);
     }
 
     private boolean isLocalMaxima(int j, int k, float[][] stackOut) {
@@ -414,7 +508,8 @@ public class HKStack implements Serializable {
             if(k != 0 && stackOut[j - 1][k - 1] > stackOut[j][k]) {
                 return false;
             }
-            if(k != stackOut[0].length - 1 && stackOut[j - 1][k + 1] > stackOut[j][k]) {
+            if(k != stackOut[0].length - 1
+                    && stackOut[j - 1][k + 1] > stackOut[j][k]) {
                 return false;
             }
         }
@@ -422,7 +517,8 @@ public class HKStack implements Serializable {
             if(k != 0 && stackOut[j + 1][k - 1] > stackOut[j][k]) {
                 return false;
             }
-            if(k != stackOut[0].length - 1 && stackOut[j + 1][k + 1] > stackOut[j][k]) {
+            if(k != stackOut[0].length - 1
+                    && stackOut[j + 1][k + 1] > stackOut[j][k]) {
                 return false;
             }
         }
@@ -456,8 +552,8 @@ public class HKStack implements Serializable {
             return peakH;
         }
         try {
-            int[] indicies = getMaxValueIndices();
-            QuantityImpl peakH = getMinH().add(getStepH().multiplyBy(indicies[0]));
+            StackMaximum indicies = getGlobalMaximum();
+            QuantityImpl peakH = indicies.getHValue();
             return peakH;
         } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
@@ -467,8 +563,8 @@ public class HKStack implements Serializable {
 
     public QuantityImpl getMaxValueH(QuantityImpl smallestH) {
         try {
-            int[] indicies = getMaxValueIndices(getHIndex(smallestH));
-            QuantityImpl peakH = getMinH().add(getStepH().multiplyBy(indicies[0]));
+            StackMaximum[] indicies = getLocalMaxima(getHIndex(smallestH), 1);
+            QuantityImpl peakH = indicies[0].getHValue();
             return peakH;
         } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
@@ -488,15 +584,14 @@ public class HKStack implements Serializable {
         if(peakK != null) {
             return peakK.floatValue();
         }
-        int[] indicies = getMaxValueIndices();
-        float peakK = getMinK() + getStepK() * indicies[1];
+        StackMaximum indicies = getGlobalMaximum();
+        float peakK = getMinK() + getStepK() * indicies.getKIndex();
         return peakK;
     }
 
     public float getMaxValueK(QuantityImpl smallestH) {
-        int[] indicies = getMaxValueIndices(getHIndex(smallestH));
-        float peakK = getMinK() + getStepK() * indicies[1];
-        return peakK;
+        StackMaximum[] indicies = getLocalMaxima(smallestH, 1);
+        return indicies[0].getKValue();
     }
 
     public float getKFromIndex(int index) {
@@ -511,14 +606,13 @@ public class HKStack implements Serializable {
         if(peakVal != null) {
             return peakVal.floatValue();
         }
-        int[] indicies = getMaxValueIndices();
-        float peakVal = getStack()[indicies[0]][indicies[1]];
-        return peakVal;
+        StackMaximum indicies = getGlobalMaximum();
+        return indicies.getMaxValue();
     }
 
     public float getMaxValue(QuantityImpl smallestH) {
-        int[] indicies = getMaxValueIndices(getHIndex(smallestH));
-        return getStack()[indicies[0]][indicies[1]];
+        StackMaximum[] indicies = getLocalMaxima(smallestH, 1);
+        return indicies[0].getMaxValue();
     }
 
     public String formatMaxValue() {
@@ -545,7 +639,8 @@ public class HKStack implements Serializable {
         return getStackComponent(phase, minH);
     }
 
-    public BorderedDisplay getStackComponent(String phase, QuantityImpl smallestH) {
+    public BorderedDisplay getStackComponent(String phase,
+                                             QuantityImpl smallestH) {
         int startHIndex = getHIndex(smallestH);
         HKStackImage stackImage = new HKStackImage(this, phase, startHIndex);
         if(crust2 != null) {
@@ -559,18 +654,26 @@ public class HKStack implements Serializable {
             }
         }
         BorderedDisplay bd = new BorderedDisplay(stackImage);
-        UnitRangeImpl depthRange = new UnitRangeImpl(getMinH().getValue() + startHIndex * getStepH().getValue(),
-                                                     getMinH().getValue() + getNumH() * getStepH().getValue(),
-                                                     UnitImpl.KILOMETER);
-        UnitRangeBorder depthLeftBorder = new UnitRangeBorder(Border.LEFT, Border.DESCENDING, "Depth", depthRange);
+        UnitRangeImpl depthRange = new UnitRangeImpl(getMinH().getValue()
+                + startHIndex * getStepH().getValue(), getMinH().getValue()
+                + getNumH() * getStepH().getValue(), UnitImpl.KILOMETER);
+        UnitRangeBorder depthLeftBorder = new UnitRangeBorder(Border.LEFT,
+                                                              Border.DESCENDING,
+                                                              "Depth",
+                                                              depthRange);
         bd.add(depthLeftBorder, bd.CENTER_LEFT);
-        UnitRangeBorder depthRightBorder = new UnitRangeBorder(Border.RIGHT, Border.DESCENDING, "Depth", depthRange);
+        UnitRangeBorder depthRightBorder = new UnitRangeBorder(Border.RIGHT,
+                                                               Border.DESCENDING,
+                                                               "Depth",
+                                                               depthRange);
         bd.add(depthRightBorder, bd.CENTER_RIGHT);
         UnitRangeBorder kTopBorder = new UnitRangeBorder(Border.TOP,
                                                          Border.ASCENDING,
                                                          "Vp/Vs",
                                                          new UnitRangeImpl(getMinK(),
-                                                                           getMinK() + getNumK() * getStepK(),
+                                                                           getMinK()
+                                                                                   + getNumK()
+                                                                                   * getStepK(),
                                                                            UnitImpl.divide(UnitImpl.KILOMETER_PER_SECOND,
                                                                                            UnitImpl.KILOMETER_PER_SECOND,
                                                                                            "km/s/km/s")));
@@ -579,14 +682,18 @@ public class HKStack implements Serializable {
                                                             Border.ASCENDING,
                                                             "Vp/Vs",
                                                             new UnitRangeImpl(getMinK(),
-                                                                              getMinK() + getNumK() * getStepK(),
+                                                                              getMinK()
+                                                                                      + getNumK()
+                                                                                      * getStepK(),
                                                                               UnitImpl.divide(UnitImpl.KILOMETER_PER_SECOND,
                                                                                               UnitImpl.KILOMETER_PER_SECOND,
                                                                                               "km/s/km/s")));
         bd.add(kBottomBorder, bd.BOTTOM_CENTER);
         Dimension dim = stackImage.getPreferredSize();
-        dim = new Dimension(dim.width + depthLeftBorder.getPreferredSize().width
-                + depthRightBorder.getPreferredSize().width, dim.height + kTopBorder.getPreferredSize().height
+        dim = new Dimension(dim.width
+                + depthLeftBorder.getPreferredSize().width
+                + depthRightBorder.getPreferredSize().width, dim.height
+                + kTopBorder.getPreferredSize().height
                 + kBottomBorder.getPreferredSize().height);
         bd.setPreferredSize(dim);
         bd.setSize(dim);
@@ -615,7 +722,9 @@ public class HKStack implements Serializable {
             Dimension size = comp.getPreferredSize();
             int fullWidth = size.width + 40;
             int fullHeight = size.height + 140;
-            bufImage = new BufferedImage(fullWidth, fullHeight, BufferedImage.TYPE_INT_RGB);
+            bufImage = new BufferedImage(fullWidth,
+                                         fullHeight,
+                                         BufferedImage.TYPE_INT_RGB);
             g = bufImage.createGraphics();
             FontMetrics fm = g.getFontMetrics();
             g.setColor(Color.darkGray);
@@ -623,14 +732,16 @@ public class HKStack implements Serializable {
             g.translate(0, 5);
             String title = ChannelIdUtil.toStringNoDates(getChannelId());
             g.setColor(Color.white);
-            g.drawString(title, (fullWidth - fm.stringWidth(title)) / 2, fm.getHeight());
+            g.drawString(title,
+                         (fullWidth - fm.stringWidth(title)) / 2,
+                         fm.getHeight());
             g.translate(5, fm.getHeight() + fm.getDescent());
             comp.print(g);
             g.translate(0, size.height);
             int[] xyMin = getMinValueIndices();
-            int[] xyMax = getMaxValueIndices();
+            StackMaximum xyMax = getGlobalMaximum();
             float min = stack[xyMin[0]][xyMin[1]];
-            float max = stack[xyMax[0]][xyMax[1]];
+            float max = xyMax.getMaxValue();
             g.setColor(Color.white);
             g.drawString("% match=" + percentMatch, 0, fm.getHeight());
             g.drawString("    ", 0, 2 * fm.getHeight());
@@ -640,7 +751,11 @@ public class HKStack implements Serializable {
             g.translate(0, 2 * fm.getHeight());
             GMTColorPalette colorPallete = ((HKStackImage)comp.get(BorderedDisplay.CENTER)).getColorPallete();
             for(int i = 0; i < size.width; i++) {
-                g.setColor(colorPallete.getColor(SimplePlotUtil.linearInterp(0, 0, size.width, max, i)));
+                g.setColor(colorPallete.getColor(SimplePlotUtil.linearInterp(0,
+                                                                             0,
+                                                                             size.width,
+                                                                             max,
+                                                                             i)));
                 g.fillRect(i, 0, 1, 15);
             }
             g.setColor(Color.white);
@@ -648,7 +763,9 @@ public class HKStack implements Serializable {
             g.setColor(Color.white);
             String maxString = "Max=" + max;
             int stringWidth = fm.stringWidth(maxString);
-            g.drawString(maxString, size.width - 5 - stringWidth, 15 + fm.getHeight());
+            g.drawString(maxString,
+                         size.width - 5 - stringWidth,
+                         15 + fm.getHeight());
         } finally {
             if(g != null) {
                 g.dispose();
@@ -675,12 +792,16 @@ public class HKStack implements Serializable {
      * CPU by the same during stacking.
      */
     public void compact() {
-        compactAnalyticPhase = new CmplxArray2D(analyticPs.getXLength(), analyticPs.getYLength());
+        compactAnalyticPhase = new CmplxArray2D(analyticPs.getXLength(),
+                                                analyticPs.getYLength());
         for(int i = 0; i < getNumH(); i++) {
             for(int k = 0; k < getNumK(); k++) {
-                Cmplx ps = Cmplx.mul(analyticPs.get(i, k).zeroOrUnitVector(), getWeightPs());
-                Cmplx ppps = Cmplx.mul(analyticPpPs.get(i, k).zeroOrUnitVector(), getWeightPpPs());
-                Cmplx psps = Cmplx.mul(analyticPsPs.get(i, k).zeroOrUnitVector(), getWeightPsPs());
+                Cmplx ps = Cmplx.mul(analyticPs.get(i, k).zeroOrUnitVector(),
+                                     getWeightPs());
+                Cmplx ppps = Cmplx.mul(analyticPpPs.get(i, k)
+                        .zeroOrUnitVector(), getWeightPpPs());
+                Cmplx psps = Cmplx.mul(analyticPsPs.get(i, k)
+                        .zeroOrUnitVector(), getWeightPsPs());
                 Cmplx val = Cmplx.sub(Cmplx.add(ps, ppps), psps);
                 compactAnalyticPhase.set(i, k, val);
             }
@@ -710,7 +831,8 @@ public class HKStack implements Serializable {
         return new float[numH][numK];
     }
 
-    void calculate(LocalSeismogramImpl seis, QuantityImpl shift) throws FissuresException {
+    void calculate(LocalSeismogramImpl seis, QuantityImpl shift)
+            throws FissuresException {
         // set up analytic signal
         Hilbert hilbert = new Hilbert();
         Cmplx[] analytic = hilbert.analyticSignal(seis);
@@ -719,28 +841,42 @@ public class HKStack implements Serializable {
             imagFloats[i] = (float)analytic[i].imag();
         }
         LocalSeismogramImpl imag = new LocalSeismogramImpl(seis, imagFloats);
-        float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND).getValue();
+        float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND)
+                .getValue();
         float etaP = (float)Math.sqrt(1 / (a * a) - p * p);
         if(Float.isNaN(etaP)) {
-            throw new RuntimeException("Warning: Eta P is NaN alpha=" + alpha + "  p=" + p);
+            throw new RuntimeException("Warning: Eta P is NaN alpha=" + alpha
+                    + "  p=" + p);
         } else if(etaP <= 0) {
-            throw new RuntimeException("EtaP should never be negative: " + etaP + "  a=" + a + "  p=" + p);
+            throw new RuntimeException("EtaP should never be negative: " + etaP
+                    + "  a=" + a + "  p=" + p);
         }
         for(int kIndex = 0; kIndex < numK; kIndex++) {
             float beta = a / (minK + kIndex * stepK);
             float etaS = (float)Math.sqrt(1 / (beta * beta) - p * p);
             if(Float.isNaN(etaS)) {
-                throw new RuntimeException("Warning: Eta S is NaN " + kIndex + "  beta=" + beta + "  p=" + p);
+                throw new RuntimeException("Warning: Eta S is NaN " + kIndex
+                        + "  beta=" + beta + "  p=" + p);
             } else if(etaS <= 0) {
-                throw new RuntimeException("EtaS should never be negative: " + etaS + "   etaP=" + etaP + "  beta="
-                        + beta);
+                throw new RuntimeException("EtaS should never be negative: "
+                        + etaS + "   etaP=" + etaP + "  beta=" + beta);
             }
             for(int hIndex = 0; hIndex < numH; hIndex++) {
-                float h = (float)(minH.getValue(UnitImpl.KILOMETER) + hIndex * stepH.getValue(UnitImpl.KILOMETER));
-                TimeInterval timePs = new TimeInterval(h * (etaS - etaP) + shift.value, UnitImpl.SECOND);
-                TimeInterval timePpPs = new TimeInterval(h * (etaS + etaP) + shift.value, UnitImpl.SECOND);
-                TimeInterval timePsPs = new TimeInterval(h * (2 * etaS) + shift.value, UnitImpl.SECOND);
-                calcForStack(seis, imag, timePs, timePpPs, timePsPs, hIndex, kIndex);
+                float h = (float)(minH.getValue(UnitImpl.KILOMETER) + hIndex
+                        * stepH.getValue(UnitImpl.KILOMETER));
+                TimeInterval timePs = new TimeInterval(h * (etaS - etaP)
+                        + shift.value, UnitImpl.SECOND);
+                TimeInterval timePpPs = new TimeInterval(h * (etaS + etaP)
+                        + shift.value, UnitImpl.SECOND);
+                TimeInterval timePsPs = new TimeInterval(h * (2 * etaS)
+                        + shift.value, UnitImpl.SECOND);
+                calcForStack(seis,
+                             imag,
+                             timePs,
+                             timePpPs,
+                             timePsPs,
+                             hIndex,
+                             kIndex);
             }
         }
         calcPhaseStack();
@@ -761,8 +897,11 @@ public class HKStack implements Serializable {
         analyticPsPs.setImag(hIndex, kIndex, getAmp(imag, timePsPs));
     }
 
-    public static HKStack create(CachedResult cachedResult, float weightPs, float weightPpPs, float weightPsPs)
-            throws TauModelException, FissuresException {
+    public static HKStack create(CachedResult cachedResult,
+                                 float weightPs,
+                                 float weightPpPs,
+                                 float weightPsPs) throws TauModelException,
+            FissuresException {
         return create(cachedResult,
                       weightPs,
                       weightPpPs,
@@ -774,14 +913,16 @@ public class HKStack implements Serializable {
                                  float weightPs,
                                  float weightPpPs,
                                  float weightPsPs,
-                                 StationResult staResult) throws TauModelException, FissuresException {
+                                 StationResult staResult)
+            throws TauModelException, FissuresException {
         String[] pPhases = {"P"};
         TauPUtil tauPTime = TauPUtil.getTauPUtil(modelName);
         Arrival[] arrivals = tauPTime.calcTravelTimes(cachedResult.channels[0].my_site.my_station,
                                                       cachedResult.prefOrigin,
                                                       pPhases);
         // convert radian per sec ray param into km per sec
-        float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel().getRadiusOfEarth());
+        float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
+                .getRadiusOfEarth());
         HKStack stack = new HKStack(staResult.getVp(),
                                     kmRayParam,
                                     cachedResult.config.gwidth,
@@ -797,7 +938,7 @@ public class HKStack implements Serializable {
                                     weightPsPs,
                                     (LocalSeismogramImpl)cachedResult.radial,
                                     cachedResult.channels[2], // chan arraay
-                                                                // is a, b, z
+                                    // is a, b, z
                                     RecFunc.getDefaultShift());
         return stack;
     }
@@ -806,36 +947,51 @@ public class HKStack implements Serializable {
         return getTimePs(p, alpha, getMaxValueK(), getMaxValueH());
     }
 
-    public static TimeInterval getTimePs(float p, QuantityImpl alpha, float k, QuantityImpl h) {
-        float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND).getValue();
+    public static TimeInterval getTimePs(float p,
+                                         QuantityImpl alpha,
+                                         float k,
+                                         QuantityImpl h) {
+        float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND)
+                .getValue();
         float etaP = (float)Math.sqrt(1 / (a * a) - p * p);
         float beta = a / k;
         float etaS = (float)Math.sqrt(1 / (beta * beta) - p * p);
-        return new TimeInterval(h.getValue(UnitImpl.KILOMETER) * (etaS - etaP), UnitImpl.SECOND);
+        return new TimeInterval(h.getValue(UnitImpl.KILOMETER) * (etaS - etaP),
+                                UnitImpl.SECOND);
     }
 
     public TimeInterval getTimePpPs() {
         return getTimePpPs(p, alpha, getMaxValueK(), getMaxValueH());
     }
 
-    public static TimeInterval getTimePpPs(float p, QuantityImpl alpha, float k, QuantityImpl h) {
-        float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND).getValue();
+    public static TimeInterval getTimePpPs(float p,
+                                           QuantityImpl alpha,
+                                           float k,
+                                           QuantityImpl h) {
+        float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND)
+                .getValue();
         float etaP = (float)Math.sqrt(1 / (a * a) - p * p);
         float beta = a / k;
         float etaS = (float)Math.sqrt(1 / (beta * beta) - p * p);
-        return new TimeInterval(h.getValue(UnitImpl.KILOMETER) * (etaS + etaP), UnitImpl.SECOND);
+        return new TimeInterval(h.getValue(UnitImpl.KILOMETER) * (etaS + etaP),
+                                UnitImpl.SECOND);
     }
 
     public TimeInterval getTimePsPs() {
         return getTimePsPs(p, alpha, getMaxValueK(), getMaxValueH());
     }
 
-    public static TimeInterval getTimePsPs(float p, QuantityImpl alpha, float k, QuantityImpl h) {
-        float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND).getValue();
+    public static TimeInterval getTimePsPs(float p,
+                                           QuantityImpl alpha,
+                                           float k,
+                                           QuantityImpl h) {
+        float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND)
+                .getValue();
         float etaP = (float)Math.sqrt(1 / (a * a) - p * p);
         float beta = a / k;
         float etaS = (float)Math.sqrt(1 / (beta * beta) - p * p);
-        return new TimeInterval(h.getValue(UnitImpl.KILOMETER) * (2 * etaS), UnitImpl.SECOND);
+        return new TimeInterval(h.getValue(UnitImpl.KILOMETER) * (2 * etaS),
+                                UnitImpl.SECOND);
     }
 
     /**
@@ -843,23 +999,32 @@ public class HKStack implements Serializable {
      * relative position between the nearest samples can be determined.
      */
     public static float getDataIndex(LocalSeismogramImpl seis, TimeInterval time) {
-        double sampOffset = time.divideBy(seis.getSampling().getPeriod()).getValue(UnitImpl.DIMENSONLESS);
+        double sampOffset = time.divideBy(seis.getSampling().getPeriod())
+                .getValue(UnitImpl.DIMENSONLESS);
         return (float)sampOffset;
     }
 
     /** gets the amp at the given time offset from the start of the seismogram. */
-    float getAmp(LocalSeismogramImpl seis, TimeInterval time) throws FissuresException {
+    float getAmp(LocalSeismogramImpl seis, TimeInterval time)
+            throws FissuresException {
         float sampOffset = getDataIndex(seis, time);
         int offset = (int)Math.floor(sampOffset);
         if(sampOffset < 0 || offset > seis.getNumPoints() - 2) {
-            logger.warn("time " + time + " is outside of seismogram, returning 0: " + seis.getBeginTime() + " - "
-                    + seis.getEndTime() + " sampOffset=" + sampOffset + " npts=" + seis.getNumPoints());
+            logger.warn("time " + time
+                    + " is outside of seismogram, returning 0: "
+                    + seis.getBeginTime() + " - " + seis.getEndTime()
+                    + " sampOffset=" + sampOffset + " npts="
+                    + seis.getNumPoints());
             return 0;
         }
         float valA = seis.get_as_floats()[offset];
         float valB = seis.get_as_floats()[offset + 1];
         // linear interp
-        float retVal = (float)SimplePlotUtil.linearInterp(offset, valA, offset + 1, valB, sampOffset);
+        float retVal = (float)SimplePlotUtil.linearInterp(offset,
+                                                          valA,
+                                                          offset + 1,
+                                                          valB,
+                                                          sampOffset);
         if(Float.isNaN(retVal)) {
             logger.error("Got a NaN for HKStack.getAmp() at " + time + " chan="
                     + ChannelIdUtil.toStringNoDates(seis.channel_id));
@@ -1013,10 +1178,11 @@ public class HKStack implements Serializable {
         out.write("alpha=" + alpha);
         out.newLine();
         int[] xyMin = getMinValueIndices();
-        int[] xyMax = getMaxValueIndices();
-        float max = stack[xyMax[0]][xyMax[1]];
-        out.write("Max H=" + (getMinH().getValue() + xyMax[0] * getStepH().getValue()));
-        out.write("    K=" + (getMinK() + xyMax[1] * getStepK()));
+        StackMaximum xyMax = getGlobalMaximum();
+        float max = xyMax.getMaxValue();
+        out.write("Max H="
+                + xyMax.getHValue());
+        out.write("    K=" + xyMax.getKValue());
         out.write("  max=" + max);
         out.write("alpha=" + alpha);
         out.newLine();
@@ -1041,13 +1207,15 @@ public class HKStack implements Serializable {
     }
 
     float calcPhaseStack(int hIndex, int kIndex) {
-        return (float)(calcRegStack(hIndex, kIndex) * calcPhaseWeight(hIndex, kIndex));
+        return (float)(calcRegStack(hIndex, kIndex) * calcPhaseWeight(hIndex,
+                                                                      kIndex));
         // return (float)(calcRegStack(hIndex, kIndex));
     }
 
     double calcRegStack(int hIndex, int kIndex) {
-        return weightPs * analyticPs.getReal(hIndex, kIndex) + weightPpPs * analyticPpPs.getReal(hIndex, kIndex)
-                - weightPsPs * analyticPsPs.getReal(hIndex, kIndex);
+        return weightPs * analyticPs.getReal(hIndex, kIndex) + weightPpPs
+                * analyticPpPs.getReal(hIndex, kIndex) - weightPsPs
+                * analyticPsPs.getReal(hIndex, kIndex);
     }
 
     double calcPhaseWeight(int hIndex, int kIndex) {
@@ -1063,7 +1231,8 @@ public class HKStack implements Serializable {
         psps = Cmplx.div(analyticPsPs.get(hIndex, kIndex), magPsPs);
         Cmplx out = Cmplx.sub(Cmplx.add(ps, ppps), psps);
         if(Double.isNaN(out.mag())) {
-            System.out.println("calcPhaseWeight: NaN  " + " mag" + magPs + "\n" + ps + "\n" + ppps + "\n" + psps);
+            System.out.println("calcPhaseWeight: NaN  " + " mag" + magPs + "\n"
+                    + ps + "\n" + ppps + "\n" + psps);
         }
         return Math.pow(out.mag(), 2);
     }
@@ -1137,9 +1306,11 @@ public class HKStack implements Serializable {
 
     Float peakVal;
 
-    private static final QuantityImpl DEFAULT_MIN_H = new QuantityImpl(10, UnitImpl.KILOMETER);
+    private static final QuantityImpl DEFAULT_MIN_H = new QuantityImpl(10,
+                                                                       UnitImpl.KILOMETER);
 
-    private static final QuantityImpl DEFAULT_SMALLEST_H = new QuantityImpl(25, UnitImpl.KILOMETER);
+    private static final QuantityImpl DEFAULT_SMALLEST_H = new QuantityImpl(25,
+                                                                            UnitImpl.KILOMETER);
 
     static String modelName = "iasp91";
 
@@ -1179,18 +1350,22 @@ public class HKStack implements Serializable {
         return getBestSmallestH(station, getDefaultSmallestH());
     }
 
-    public static QuantityImpl getBestSmallestH(Station station, QuantityImpl smallestH) {
-        Crust2Profile crust2 = HKStack.getCrust2().getClosest(station.my_location.longitude,
-                                                              station.my_location.latitude);
+    public static QuantityImpl getBestSmallestH(Station station,
+                                                QuantityImpl smallestH) {
+        Crust2Profile crust2 = HKStack.getCrust2()
+                .getClosest(station.my_location.longitude,
+                            station.my_location.latitude);
         QuantityImpl crust2H = crust2.getCrustThickness();
         QuantityImpl modSmallestH = smallestH;
         if(crust2H.subtract(smallestH).getValue() < 5) {
-            modSmallestH = crust2H.subtract(new QuantityImpl(5, UnitImpl.KILOMETER));
+            modSmallestH = crust2H.subtract(new QuantityImpl(5,
+                                                             UnitImpl.KILOMETER));
             if(modSmallestH.lessThan(HKStack.getDefaultMinH())) {
                 modSmallestH = HKStack.getDefaultMinH();
             }
         }
-        System.out.println("getBestSmallestH in=" + smallestH + "  c2=" + crust2H + " out=" + modSmallestH);
+        System.out.println("getBestSmallestH in=" + smallestH + "  c2="
+                + crust2H + " out=" + modSmallestH);
         return modSmallestH;
     }
 

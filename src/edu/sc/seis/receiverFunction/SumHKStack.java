@@ -356,9 +356,9 @@ public class SumHKStack {
 
     protected void calcVarianceSecondDerivative() {
         float[] peakVals = new float[individuals.length];
-        int[] maxIndices = sum.getMaxValueIndices();
+        StackMaximum maxIndices = sum.getGlobalMaximum();
         for(int s = 0; s < individuals.length; s++) {
-            peakVals[s] = individuals[s].getStack()[maxIndices[0]][maxIndices[1]];
+            peakVals[s] = maxIndices.getMaxValue();
         }
         Statistics stat = new Statistics(peakVals);
         maxVariance = stat.var();
@@ -367,40 +367,40 @@ public class SumHKStack {
         double hsa;
         double hsb;
         double hsc;
-        if(maxIndices[0] == 0) {
+        if(maxIndices.getHIndex() == 0) {
             // off edge, shift by 1 for second diff???
-            hsa = sum.getStack()[maxIndices[0]][maxIndices[1]];
-            hsb = sum.getStack()[maxIndices[0] + 1][maxIndices[1]];
-            hsc = sum.getStack()[maxIndices[0] + 2][maxIndices[1]];
-        } else if(maxIndices[0] == sum.getStack().length - 1) {
+            hsa = sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex()];
+            hsb = sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex()];
+            hsc = sum.getStack()[maxIndices.getHIndex() + 2][maxIndices.getKIndex()];
+        } else if(maxIndices.getHIndex() == sum.getStack().length - 1) {
             // off edge, shift by 1 for second difference???
-            hsa = sum.getStack()[maxIndices[0] - 2][maxIndices[1]];
-            hsb = sum.getStack()[maxIndices[0] - 1][maxIndices[1]];
-            hsc = sum.getStack()[maxIndices[0]][maxIndices[1]];
+            hsa = sum.getStack()[maxIndices.getHIndex() - 2][maxIndices.getKIndex()];
+            hsb = sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex()];
+            hsc = sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex()];
         } else {
             // normal case in interior
-            hsa = sum.getStack()[maxIndices[0] - 1][maxIndices[1]];
-            hsb = sum.getStack()[maxIndices[0]][maxIndices[1]];
-            hsc = sum.getStack()[maxIndices[0] + 1][maxIndices[1]];
+            hsa = sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex()];
+            hsb = sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex()];
+            hsc = sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex()];
         }
         double ksa;
         double ksb;
         double ksc;
-        if(maxIndices[1] == 0) {
+        if(maxIndices.getKIndex() == 0) {
             // off edge, shift by 1???
-            ksa = sum.getStack()[maxIndices[0]][maxIndices[1]];
-            ksb = sum.getStack()[maxIndices[0]][maxIndices[1] + 1];
-            ksc = sum.getStack()[maxIndices[0]][maxIndices[1] + 2];
-        } else if(maxIndices[1] == sum.getStack()[0].length - 1) {
+            ksa = sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex()];
+            ksb = sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() + 1];
+            ksc = sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() + 2];
+        } else if(maxIndices.getKIndex() == sum.getStack()[0].length - 1) {
             // off edge, shift by 1???
-            ksa = sum.getStack()[maxIndices[0]][maxIndices[1] - 2];
-            ksb = sum.getStack()[maxIndices[0]][maxIndices[1] - 1];
-            ksc = sum.getStack()[maxIndices[0]][maxIndices[1]];
+            ksa = sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() - 2];
+            ksb = sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() - 1];
+            ksc = sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex()];
         } else {
             // normal case
-            ksa = sum.getStack()[maxIndices[0]][maxIndices[1] - 1];
-            ksb = sum.getStack()[maxIndices[0]][maxIndices[1]];
-            ksc = sum.getStack()[maxIndices[0]][maxIndices[1] + 1];
+            ksa = sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() - 1];
+            ksb = sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex()];
+            ksc = sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() + 1];
         }
         // for corners/sides for partial H partial K
         // 4* happens for each corner as both are simple first difference
@@ -410,57 +410,57 @@ public class SumHKStack {
         // see for example
         // http://snowball.millersville.edu/~adecaria/ESCI445/esci445_03_finite_diff_I.html
         double hkaa, hkab, hkba, hkbb;
-        if(maxIndices[1] == 0) {
-            if(maxIndices[0] == 0) {
-                hkaa = 4 * sum.getStack()[maxIndices[0]][maxIndices[1]];
-                hkab = 4 * sum.getStack()[maxIndices[0]][maxIndices[1] + 1];
-                hkba = 4 * sum.getStack()[maxIndices[0] + 1][maxIndices[1]];
-                hkbb = 4 * sum.getStack()[maxIndices[0] + 1][maxIndices[1] + 1];
-            } else if(maxIndices[0] == sum.getStack().length - 1) {
-                hkaa = 4 * sum.getStack()[maxIndices[0] - 1][maxIndices[1]];
-                hkab = 4 * sum.getStack()[maxIndices[0] - 1][maxIndices[1] + 1];
-                hkba = 4 * sum.getStack()[maxIndices[0]][maxIndices[1]];
-                hkbb = 4 * sum.getStack()[maxIndices[0]][maxIndices[1] + 1];
+        if(maxIndices.getKIndex() == 0) {
+            if(maxIndices.getHIndex() == 0) {
+                hkaa = 4 * sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex()];
+                hkab = 4 * sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() + 1];
+                hkba = 4 * sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex()];
+                hkbb = 4 * sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex() + 1];
+            } else if(maxIndices.getHIndex() == sum.getStack().length - 1) {
+                hkaa = 4 * sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex()];
+                hkab = 4 * sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex() + 1];
+                hkba = 4 * sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex()];
+                hkbb = 4 * sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() + 1];
             } else {
-                hkaa = 2 * sum.getStack()[maxIndices[0] - 1][maxIndices[1]];
-                hkab = 2 * sum.getStack()[maxIndices[0] - 1][maxIndices[1] + 1];
-                hkba = 2 * sum.getStack()[maxIndices[0] + 1][maxIndices[1]];
-                hkbb = 2 * sum.getStack()[maxIndices[0] + 1][maxIndices[1] + 1];
+                hkaa = 2 * sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex()];
+                hkab = 2 * sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex() + 1];
+                hkba = 2 * sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex()];
+                hkbb = 2 * sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex() + 1];
             }
-        } else if(maxIndices[1] == sum.getStack()[0].length - 1) {
-            if(maxIndices[0] == 0) {
-                hkaa = 4 * sum.getStack()[maxIndices[0]][maxIndices[1] - 1];
-                hkab = 4 * sum.getStack()[maxIndices[0]][maxIndices[1]];
-                hkba = 4 * sum.getStack()[maxIndices[0] + 1][maxIndices[1] - 1];
-                hkbb = 4 * sum.getStack()[maxIndices[0] + 1][maxIndices[1]];
-            } else if(maxIndices[0] == sum.getStack().length - 1) {
-                hkaa = 4 * sum.getStack()[maxIndices[0] - 1][maxIndices[1] - 1];
-                hkab = 4 * sum.getStack()[maxIndices[0] - 1][maxIndices[1]];
-                hkba = 4 * sum.getStack()[maxIndices[0]][maxIndices[1] - 1];
-                hkbb = 4 * sum.getStack()[maxIndices[0]][maxIndices[1]];
+        } else if(maxIndices.getKIndex() == sum.getStack()[0].length - 1) {
+            if(maxIndices.getHIndex() == 0) {
+                hkaa = 4 * sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() - 1];
+                hkab = 4 * sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex()];
+                hkba = 4 * sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex() - 1];
+                hkbb = 4 * sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex()];
+            } else if(maxIndices.getHIndex() == sum.getStack().length - 1) {
+                hkaa = 4 * sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex() - 1];
+                hkab = 4 * sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex()];
+                hkba = 4 * sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() - 1];
+                hkbb = 4 * sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex()];
             } else {
-                hkaa = 2 * sum.getStack()[maxIndices[0] - 1][maxIndices[1] - 1];
-                hkab = 2 * sum.getStack()[maxIndices[0] - 1][maxIndices[1]];
-                hkba = 2 * sum.getStack()[maxIndices[0] + 1][maxIndices[1] - 1];
-                hkbb = 2 * sum.getStack()[maxIndices[0] + 1][maxIndices[1]];
+                hkaa = 2 * sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex() - 1];
+                hkab = 2 * sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex()];
+                hkba = 2 * sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex() - 1];
+                hkbb = 2 * sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex()];
             }
         } else {
-            if(maxIndices[0] == 0) {
-                hkaa = 2 * sum.getStack()[maxIndices[0]][maxIndices[1] - 1];
-                hkab = 2 * sum.getStack()[maxIndices[0]][maxIndices[1] + 1];
-                hkba = 2 * sum.getStack()[maxIndices[0] + 1][maxIndices[1] - 1];
-                hkbb = 2 * sum.getStack()[maxIndices[0] + 1][maxIndices[1] + 1];
-            } else if(maxIndices[0] == sum.getStack().length - 1) {
-                hkaa = 2 * sum.getStack()[maxIndices[0] - 1][maxIndices[1] - 1];
-                hkab = 2 * sum.getStack()[maxIndices[0] - 1][maxIndices[1] + 1];
-                hkba = 2 * sum.getStack()[maxIndices[0]][maxIndices[1] - 1];
-                hkbb = 2 * sum.getStack()[maxIndices[0]][maxIndices[1] + 1];
+            if(maxIndices.getHIndex() == 0) {
+                hkaa = 2 * sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() - 1];
+                hkab = 2 * sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() + 1];
+                hkba = 2 * sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex() - 1];
+                hkbb = 2 * sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex() + 1];
+            } else if(maxIndices.getHIndex() == sum.getStack().length - 1) {
+                hkaa = 2 * sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex() - 1];
+                hkab = 2 * sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex() + 1];
+                hkba = 2 * sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() - 1];
+                hkbb = 2 * sum.getStack()[maxIndices.getHIndex()][maxIndices.getKIndex() + 1];
             } else {
                 // normal case
-                hkaa = sum.getStack()[maxIndices[0] - 1][maxIndices[1] - 1];
-                hkab = sum.getStack()[maxIndices[0] - 1][maxIndices[1] + 1];
-                hkba = sum.getStack()[maxIndices[0] + 1][maxIndices[1] - 1];
-                hkbb = sum.getStack()[maxIndices[0] + 1][maxIndices[1] + 1];
+                hkaa = sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex() - 1];
+                hkab = sum.getStack()[maxIndices.getHIndex() - 1][maxIndices.getKIndex() + 1];
+                hkba = sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex() - 1];
+                hkbb = sum.getStack()[maxIndices.getHIndex() + 1][maxIndices.getKIndex() + 1];
             }
         }
         double stepH = sum.getStepH().getValue(UnitImpl.KILOMETER);
@@ -473,8 +473,8 @@ public class SumHKStack {
                 * mixedPartialHK);
         if(secPartialH == 0 || secPartialK == 0 || mixedPartialHK == 0
                 || denom <= 0) {
-            logger.error("h or k Variance is NaN: index h/k: " + maxIndices[0]
-                    + "/" + maxIndices[1] + " delta h/k: " + stepH + "/"
+            logger.error("h or k Variance is NaN: index h/k: " + maxIndices.getHIndex()
+                    + "/" + maxIndices.getKIndex() + " delta h/k: " + stepH + "/"
                     + stepK);
             logger.error("h: a=" + hsa + "  b=" + hsb + "  c=" + hsc + "  "
                     + secPartialH);

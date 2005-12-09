@@ -64,11 +64,10 @@ public class HKStackTest extends TestCase {
         int startHIndex = 5;
         int num = 3;
         HKStack in = getMockHKStack(inMaxima);
-        int[][] out = in.getLocalMaxima(startHIndex, num);
-        HKStack outStack = null;
+        StackMaximum[] out = in.getLocalMaxima(startHIndex, num);
         for(int i = 0; i < inMaxima.length; i++) {
-            assertEquals("local max x " + i, inMaxima[i][0], out[i][0]);
-            assertEquals("local max y " + i, inMaxima[i][1], out[i][1]);
+            assertEquals("local max x " + i, inMaxima[i][0], out[i].getHIndex());
+            assertEquals("local max y " + i, inMaxima[i][1], out[i].getKIndex());
         }
     }
     

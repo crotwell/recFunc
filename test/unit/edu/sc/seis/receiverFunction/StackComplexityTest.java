@@ -16,10 +16,10 @@ public class StackComplexityTest extends TestCase {
                                                     null);
         StackComplexity complexity = new StackComplexity(stack, 4096, stack.getGaussianWidth());
         HKStack synth = complexity.getSynthetic(maxResult);
-        int[] maxIndex = stack.getMaxValueIndices();
-        int[] synthMaxIndex = synth.getMaxValueIndices();
+        StackMaximum maxIndex = stack.getGlobalMaximum();
+        StackMaximum synthMaxIndex = synth.getGlobalMaximum();
         // for some reason the synthetic max does not exactly align with the peak, but is close, so use within 2
-        assertEquals("max index 0 ", maxIndex[0], synthMaxIndex[0], 2);
-        assertEquals("max index 1 ", maxIndex[1], synthMaxIndex[1], 2);
+        assertEquals("max index 0 ", maxIndex.getHIndex(), synthMaxIndex.getHIndex(), 2);
+        assertEquals("max index 1 ", maxIndex.getKIndex(), synthMaxIndex.getKIndex(), 2);
     }
 }

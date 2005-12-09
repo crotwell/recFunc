@@ -301,9 +301,9 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                         bw.write("</html>");bw.newLine();
                         bw.close();
 
-                        int[] xyMax = stack.getMaxValueIndices();
-                        float max = stack.stack[xyMax[0]][xyMax[1]];
-                        appendToSummaryPage("<tr><td>"+getEventDirectory(event).getName()+"</td><td>"+channelIdString+"</td><td>"+stack.getPercentMatch()+"</td><td>"+(stack.getMaxValueH())+"</td><td>"+(stack.getMinK()+xyMax[1]*stack.getStepK())+"</td></tr>");
+                        StackMaximum xyMax = stack.getGlobalMaximum();
+                        float max = xyMax.getMaxValue();
+                        appendToSummaryPage("<tr><td>"+getEventDirectory(event).getName()+"</td><td>"+channelIdString+"</td><td>"+stack.getPercentMatch()+"</td><td>"+(stack.getMaxValueH())+"</td><td>"+xyMax.getKValue()+"</td></tr>");
 
 
                     }

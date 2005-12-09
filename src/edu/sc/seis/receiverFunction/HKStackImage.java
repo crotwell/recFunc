@@ -59,11 +59,11 @@ public class HKStackImage extends JComponent {
         setPreferredSize(imageSize);
         // color map max and min
         int[] xyMin = stack.getMinValueIndices();
-        int[] xyMax = stack.getMaxValueIndices();
+        StackMaximum xyMax = stack.getGlobalMaximum();
 
         //colorMapMin = stack.stack[xyMin[0]][xyMin[1]];
         colorMapMin = 0;
-        colorMapMax = stack.stack[xyMax[0]][xyMax[1]];
+        colorMapMax = xyMax.getMaxValue();
     }
     
 
@@ -76,10 +76,10 @@ public class HKStackImage extends JComponent {
         Color origColor = g.getColor();
 
         int[] xyMin = stack.getMinValueIndices();
-        int[] xyMax = stack.getMaxValueIndices();
+        StackMaximum xyMax = stack.getGlobalMaximum();
 
         float min = stack.stack[xyMin[0]][xyMin[1]];
-        float max = stack.stack[xyMax[0]][xyMax[1]];
+        float max = xyMax.getMaxValue();
 
         
         try {
@@ -94,7 +94,7 @@ public class HKStackImage extends JComponent {
         for (int j = smallestHindex; j < stackOut.length; j++) {
             //System.out.print(j+" : ");
             for (int k = 0; k < stackOut[j].length; k++) {
-                if (j== xyMax[0] && k==xyMax[1]) {
+                if (j== xyMax.getHIndex() && k==xyMax.getKIndex()) {
                     g.setColor(Color.red);
                 } else {
                     Color color = colorPallete.getColor(stackOut[j][k]);

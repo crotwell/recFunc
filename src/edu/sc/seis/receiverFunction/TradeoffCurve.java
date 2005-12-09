@@ -18,9 +18,9 @@ public class TradeoffCurve  {
 
     public TradeoffCurve(HKStack stack) {
         this.stack = stack;
-        peakIndices = stack.getMaxValueIndices();
-        peakH = stack.getMaxValueH();
-        peakK = stack.getMaxValueK();
+        peakIndices = stack.getGlobalMaximum();
+        peakH = peakIndices.getHValue();
+        peakK = peakIndices.getKValue();
         calc();
     }
 
@@ -57,7 +57,7 @@ public class TradeoffCurve  {
     
     QuantityImpl peakH;
     float peakK;
-    int[] peakIndices;
+    StackMaximum peakIndices;
     HKStack stack;
 
     float[] outH_Ps;

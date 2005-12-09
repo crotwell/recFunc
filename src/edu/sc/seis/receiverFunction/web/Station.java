@@ -23,6 +23,7 @@ import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.Marker;
+import edu.sc.seis.receiverFunction.StackMaximum;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.JDBCStationResult;
 import edu.sc.seis.receiverFunction.compare.JDBCStationResultRef;
@@ -144,7 +145,7 @@ public class Station extends Revlet {
                                                                    minPercentMatch);
             SumHKStack summary = jdbcSummaryHKStack.get(summaryDbId);
             context.put("summary", summary);
-            int[][] localMaxima = summary.getSum().getLocalMaxima(smallestH, 5);
+            StackMaximum[] localMaxima = summary.getSum().getLocalMaxima(smallestH, 5);
             for(int i = 0; i < localMaxima.length; i++) {
                 StationResultRef earsStaRef = new StationResultRef(i == 0 ? "Global Maxima"
                                                                            : "Local Maxima "
@@ -153,10 +154,8 @@ public class Station extends Revlet {
                                                                    "ears");
                 markerList.add(new StationResult(net.get_id(),
                                                  staCode,
-                                                 summary.getSum()
-                                                         .getHFromIndex(localMaxima[i][0]),
-                                                 summary.getSum()
-                                                         .getKFromIndex(localMaxima[i][1]),
+                                                 localMaxima[i].getHValue(),
+                                                 localMaxima[i].getKValue(),
                                                  summary.getSum().getAlpha(),
                                                  earsStaRef));
             }

@@ -433,7 +433,6 @@ public class HKStack implements Serializable {
      * minDeltaK of another local maxima.
      */
     public StackMaximum[] getLocalMaxima(int startHIndex, int num) {
-        System.out.println("getLocalMaxima("+startHIndex+", "+num+")");
         int[] maxIndices = getMaxValueIndices(startHIndex);
         StackMaximum[] out = new StackMaximum[num];
         int maxIndexX = maxIndices[0];

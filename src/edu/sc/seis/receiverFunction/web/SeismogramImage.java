@@ -107,7 +107,8 @@ public class SeismogramImage extends HttpServlet {
             DataSetSeismogram[] dss = getDSS(result);
             disp.add(dss);
             MemoryDataSetSeismogram synthDSS = null;
-            if(RevUtil.get("H", req, null) != null && RevUtil.get("vpvs", req, null) != null) {
+            if(RevUtil.get("H", req, null) != null &&  ! RevUtil.get("H", req, null).equals("$maxValueH")
+                && RevUtil.get("vpvs", req, null) != null && ! RevUtil.get("vpvs", req, null).equals("$maxValueK")) {
                 float h = RevUtil.getFloat("H", req);
                 float vpvs = RevUtil.getFloat("vpvs", req);
                 StationResult staResult = new StationResult(result.channels[0].get_id().network_id,

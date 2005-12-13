@@ -9,6 +9,8 @@ import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.IfNetwork.Station;
+import edu.iris.Fissures.model.MicroSecondDate;
+import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
@@ -36,17 +38,52 @@ public class StationList extends Revlet {
         jdbcEventAccess = new JDBCEventAccess(conn);
         jdbcChannel = new JDBCChannel(conn);
         jdbcSodConfig = new JDBCSodConfig(conn);
-        jdbcRecFunc = new JDBCRecFunc(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, DATA_LOC);
-        jdbcHKStack = new JDBCHKStack(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
+        jdbcRecFunc = new JDBCRecFunc(conn,
+                                      jdbcEventAccess,
+                                      jdbcChannel,
+                                      jdbcSodConfig,
+                                      DATA_LOC);
+        jdbcHKStack = new JDBCHKStack(conn,
+                                      jdbcEventAccess,
+                                      jdbcChannel,
+                                      jdbcSodConfig,
+                                      jdbcRecFunc);
         jdbcSumHKStack = new JDBCSummaryHKStack(jdbcHKStack);
     }
 
-    public synchronized RevletContext getContext(HttpServletRequest req, HttpServletResponse res) throws Exception {
-        float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
-        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
-        RevletContext context = new RevletContext(getVelocityTemplate(req), Start.getDefaultContext());
+    public synchronized RevletContext getContext(HttpServletRequest req,
+                                                 HttpServletResponse res)
+            throws Exception {
+        float gaussianWidth = RevUtil.getFloat("gaussian",
+                                               req,
+                                               Start.getDefaultGaussian());
+        float minPercentMatch = RevUtil.getFloat("minPercentMatch",
+                                                 req,
+                                                 Start.getDefaultMinPercentMatch());
+        RevletContext context = new RevletContext(getVelocityTemplate(req),
+                                                  Start.getDefaultContext());
         Revlet.loadStandardQueryParams(req, context);
         ArrayList stationList = getStations(req, context);
+        // weed out stations with same net and station code to avoid duplicates
+        // in list
+        HashMap codeMap = new HashMap();
+        Iterator it = stationList.iterator();
+        while(it.hasNext()) {
+            Station sta = (Station)it.next();
+            String key = StationIdUtil.toStringNoDates(sta.get_id());
+            if(codeMap.containsKey(key)) {
+                Station previousSta = (Station)codeMap.get(key);
+                MicroSecondDate staBegin = new MicroSecondDate(sta.effective_time.start_time);
+                MicroSecondDate previousStaBegin = new MicroSecondDate(previousSta.effective_time.start_time);
+                if(staBegin.after(previousStaBegin)) {
+                    codeMap.put(key, sta);
+                }
+            } else {
+                codeMap.put(key, sta);
+            }
+        }
+        stationList.clear();
+        stationList.addAll(codeMap.values());
         logger.debug("getStations done: " + stationList.size());
         HashMap summary = getSummaries(stationList, context, req);
         logger.debug("getSummaries done: " + summary.keySet().size());
@@ -58,7 +95,9 @@ public class StationList extends Revlet {
 
     public String getVelocityTemplate(HttpServletRequest req) {
         String path = req.getServletPath();
-        System.out.println("path: " + path+"  "+req.getContextPath()+"  "+req.getPathInfo()+"  "+req.getPathTranslated()+"  "+req.getServletPath());
+        System.out.println("path: " + path + "  " + req.getContextPath() + "  "
+                + req.getPathInfo() + "  " + req.getPathTranslated() + "  "
+                + req.getServletPath());
         if(path == null) {
             path = "";
         }
@@ -69,7 +108,8 @@ public class StationList extends Revlet {
         }
     }
 
-    protected void setContentType(HttpServletRequest req, HttpServletResponse response) {
+    protected void setContentType(HttpServletRequest req,
+                                  HttpServletResponse response) {
         String path = req.getServletPath();
         if(path.endsWith(".txt")) {
             response.setContentType("text/plain");
@@ -81,12 +121,17 @@ public class StationList extends Revlet {
             throw new RuntimeException("Unknown URL: " + req.getRequestURI());
         }
     }
-    
-    public ArrayList getStations(HttpServletRequest req, RevletContext context) throws SQLException, NotFound {
+
+    public ArrayList getStations(HttpServletRequest req, RevletContext context)
+            throws SQLException, NotFound {
         int netDbId = RevUtil.getInt("netdbid", req);
-        VelocityNetwork net = new VelocityNetwork(jdbcChannel.getStationTable().getNetTable().get(netDbId), netDbId);
+        VelocityNetwork net = new VelocityNetwork(jdbcChannel.getStationTable()
+                .getNetTable()
+                .get(netDbId), netDbId);
         context.put("net", net);
-        Station[] stations = jdbcChannel.getSiteTable().getStationTable().getAllStations(net.get_id());
+        Station[] stations = jdbcChannel.getSiteTable()
+                .getStationTable()
+                .getAllStations(net.get_id());
         ArrayList stationList = new ArrayList();
         for(int i = 0; i < stations.length; i++) {
             stationList.add(new VelocityStation(stations[i]));
@@ -98,25 +143,39 @@ public class StationList extends Revlet {
      * Populates a hashmap with keys (objects of type Station) from the list and
      * values of SumHKStack. Also populates the dbid for the stations and
      * network.
+     * 
      * @throws SQLException
      * @throws IOException
      */
-    public HashMap getSummaries(ArrayList stationList, RevletContext context, HttpServletRequest req) throws SQLException, IOException {
-        float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
-        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
+    public HashMap getSummaries(ArrayList stationList,
+                                RevletContext context,
+                                HttpServletRequest req) throws SQLException,
+            IOException {
+        float gaussianWidth = RevUtil.getFloat("gaussian",
+                                               req,
+                                               Start.getDefaultGaussian());
+        float minPercentMatch = RevUtil.getFloat("minPercentMatch",
+                                                 req,
+                                                 Start.getDefaultMinPercentMatch());
         Iterator it = stationList.iterator();
         HashMap summary = new HashMap();
         while(it.hasNext()) {
             VelocityStation sta = (VelocityStation)it.next();
             try {
                 sta.setDbId(jdbcChannel.getStationTable().getDBId(sta.get_id()));
-                int netDbId = jdbcChannel.getNetworkTable().getDbId(sta.getNet().get_id());
+                int netDbId = jdbcChannel.getNetworkTable()
+                        .getDbId(sta.getNet().get_id());
                 sta.getNet().setDbId(netDbId);
-                SumHKStack sumStack = jdbcSumHKStack.getForStation(netDbId, sta.get_code(), gaussianWidth, minPercentMatch, false);
+                SumHKStack sumStack = jdbcSumHKStack.getForStation(netDbId,
+                                                                   sta.get_code(),
+                                                                   gaussianWidth,
+                                                                   minPercentMatch,
+                                                                   false);
                 summary.put(sta, sumStack);
             } catch(NotFound e) {
                 // oh well, skip this station
-                logger.warn("not found for " + sta.getNetCode() + "." + sta.get_code());
+                logger.warn("not found for " + sta.getNetCode() + "."
+                        + sta.get_code());
             }
         }
         logger.debug("found " + summary.size() + " summaries");
@@ -124,8 +183,8 @@ public class StationList extends Revlet {
     }
 
     public HashMap cleanSummaries(ArrayList stationList, HashMap summary) {
-        logger.debug("before cleanSummaries stationList.size()=" + stationList.size() + "  summary.size()="
-                + summary.size());
+        logger.debug("before cleanSummaries stationList.size()="
+                + stationList.size() + "  summary.size()=" + summary.size());
         Iterator it = stationList.iterator();
         while(it.hasNext()) {
             Object next = it.next();
@@ -134,8 +193,8 @@ public class StationList extends Revlet {
                 it.remove();
             }
         }
-        logger.debug("after cleanSummaries stationList.size()=" + stationList.size() + "  summary.size()="
-                + summary.size());
+        logger.debug("after cleanSummaries stationList.size()="
+                + stationList.size() + "  summary.size()=" + summary.size());
         return summary;
     }
 

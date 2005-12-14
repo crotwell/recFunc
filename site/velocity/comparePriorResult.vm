@@ -40,7 +40,7 @@ $name
 <head>
 <title>Comparison with Prior Result $name</title>
 <link rel="stylesheet" type="text/css" href="style.css"/>
-<script src="sorttable.js" type="text/javascript"> </script>
+<script src="sorttable_2head.js" type="text/javascript"> </script>
 <script src="tableRuler.js" type="text/javascript"> </script>
 <script type="text/javascript">
 window.onload=function(){
@@ -66,7 +66,7 @@ $header
 <p>View results as <a href="comparePriorResult.txt?$req.getQueryString()">text</a></p>
 
 <table class="ruler sortable" id="dumb">
-<th><td colspan="4"/><td class="headodd" colspan="9">EARS</td><td class="headodd" colspan="5">$name</td></th>
+<th><td colspan="3"/><td class="headodd" colspan="9">EARS</td><td class="headodd" colspan="5">$name</td></th>
 
 #set( $items = [ "Net", "Station", "Name", "Lat/Lon", "Est. Thick", "StdDev", "Est. Vp/Vs", "StdDev", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Complexity", "Thick", "Vp/Vs", "Vp", "Vs", "Poissons Ratio" ] )
 #tablehead( $items )

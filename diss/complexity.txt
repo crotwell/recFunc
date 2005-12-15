@@ -1,0 +1,18 @@
+
+HKStack Complexity
+
+A problem with the HK stacking method is the fact that multiple maxima may occur. It is useful to have quantitative measures that give information as to the believability of the result, is the global maxima a good representation of the true crustal structure.
+
+One measure of the goodness of the maximum of the HK stack is how much of the power in the stack is due to the global maxima. We introduce the complexity of the HK stack as the ratio of the power in the residual HK plot to the power in the original stack. The residual is the difference between the original stack and an HK stack based on synthetic receiver functions for a crustal model that corresponds to the global maxima. The synthetic HK stack is very insensitive to ray parameter, and hence epicentral distance, and so there is no need to compute the synthetics at distances corresponding to all the earthquakes used in the stack, nor even a range of distances. 
+
+Bootstrap errors
+
+Multiple maxima also contribute to large errors in the bootstrap. If there are several maxima whose amplitudes are reasonably close, then within each bootstrap iteration there is a reasonable probability that one besides the global maxima will be the maximum. If this does happen frequently in the bootstrap, then the variance will be large, giving a second indication that the result is not to be trusted without further review.
+
+Ratio of global max to next largest local maxima
+
+A similar measure is the ratio of the amplitude of the global maximum to the next largest local maxima. If the global maximum is significantly larger then any other local maxima, then it is more likely that the resulting value can be trusted.
+
+Comparison to prior results
+
+Of course, prior results are highly useful in determining if the result if believable. But prior results are have their own errors and inconsistencies, most significantly that they do not all exist at all stations. Crust2.0 is certainly useful in this regard because there is a result for the entire earth. However, there can be significant variation over the 2 degree grid size in their model.

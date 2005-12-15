@@ -47,7 +47,7 @@
                 <endTime>20201231T23:59:59.999Z</endTime>
             </originTimeRange>
             <magnitudeRange>
-                <min>6.0</min>
+                <min>5.5</min>
                 <max>10.0</max>
             </magnitudeRange>
             <catalog>WHDF</catalog>

@@ -593,7 +593,7 @@ stackComplexity.create=CREATE TABLE $tablename ( \
                    complexity25 float, \
                    complexity50 float, \
                    FOREIGN KEY (hksummary_id) \
-                   REFERENCES hksummaryTMP (hksummary_id) \
+                   REFERENCES hksummary (hksummary_id) \
                    )
 
 stackComplexity.get=SELECT * from $tablename WHERE hksummary_id = ?

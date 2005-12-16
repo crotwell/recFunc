@@ -16,3 +16,4 @@ A similar measure is the ratio of the amplitude of the global maximum to the nex
 Comparison to prior results
 
 Of course, prior results are highly useful in determining if the result if believable. But prior results are have their own errors and inconsistencies, most significantly that they do not all exist at all stations. Crust2.0 is certainly useful in this regard because there is a result for the entire earth. However, there can be significant variation over the 2 degree grid size in their model.
+

@@ -9,13 +9,20 @@ import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 
 public class JDBCStackComplexity extends JDBCTable {
 
-    public JDBCStackComplexity(JDBCSummaryHKStack jdbcSummaryHKStack) throws SQLException {
+    public JDBCStackComplexity(JDBCSummaryHKStack jdbcSummaryHKStack)
+            throws SQLException {
         super("stackComplexity", jdbcSummaryHKStack.getConnection());
         this.jdbcSummaryHKStack = jdbcSummaryHKStack;
-        TableSetup.setup(getTableName(), conn, this, "edu/sc/seis/receiverFunction/server/default.props");
+        TableSetup.setup(getTableName(),
+                         conn,
+                         this,
+                         "edu/sc/seis/receiverFunction/server/default.props");
     }
 
-    public void put(int hksummary_id, float complexity, float complexity25, float complexity50) throws SQLException {
+    public void put(int hksummary_id,
+                    float complexity,
+                    float complexity25,
+                    float complexity50) throws SQLException {
         try {
             get(hksummary_id);
             // already an entry so update
@@ -26,7 +33,7 @@ public class JDBCStackComplexity extends JDBCTable {
             update.setInt(index++, hksummary_id);
             update.executeUpdate();
         } catch(NotFound e) {
-            int index=1;
+            int index = 1;
             put.setInt(index++, hksummary_id);
             put.setFloat(index++, complexity);
             put.setFloat(index++, complexity25);

@@ -22,7 +22,17 @@ public class JDBCStackComplexity extends JDBCTable {
     public void put(int hksummary_id,
                     float complexity,
                     float complexity25,
-                    float complexity50) throws SQLException {
+                    float complexity50,
+                    float bestH,
+                    float bestHStdDev,
+                    float bestK,
+                    float bestKStdDev,
+                    float bestVal,
+                    float covar,
+                    float nextH,
+                    float nextK,
+                    float nextVal,
+                    float crust2diff) throws SQLException {
         try {
             get(hksummary_id);
             // already an entry so update

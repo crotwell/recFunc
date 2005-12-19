@@ -592,6 +592,16 @@ stackComplexity.create=CREATE TABLE $tablename ( \
                    complexity float, \
                    complexity25 float, \
                    complexity50 float, \
+                   bestH float, \
+                   bestHStdDev float, \
+                   bestK float, \
+                   bestKStdDev float, \
+                   bestVal float, \
+                   covar float, \
+                   nextH float, \
+                   nextK float, \
+                   nextVal float, \
+                   crust2diff float, \
                    FOREIGN KEY (hksummary_id) \
                    REFERENCES hksummary (hksummary_id) \
                    )
@@ -602,12 +612,32 @@ stackComplexity.put=INSERT INTO $tablename ( \
 				hksummary_id, \
 				complexity, \
 				complexity25, \
-				complexity50 \
-				) VALUES ( ?, ?, ?, ? )
+				complexity50, \
+                   bestH , \
+                   bestHStdDev , \
+                   bestK , \
+                   bestKStdDev , \
+                   bestVal , \
+                   covar, \
+                   nextH , \
+                   nextK , \
+                   nextVal , \
+                   crust2diff
+				) VALUES ( ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?,  ?, ?, ?, ? )
 				
 stackComplexity.update=UPDATE $tablename \
 				SET complexity = ?, \
 				complexity25 = ?, \
-				complexity50 = ? \
+				complexity50 = ?, \
+                   bestH = ?, \
+                   bestHStdDev = ?, \
+                   bestK = ?, \
+                   bestKStdDev = ?, \
+                   bestVal = ?, \
+                   covar = ?, \
+                   nextH = ?, \
+                   nextK = ?, \
+                   nextVal = ?, \
+                   crust2diff = ? \
 				WHERE hksummary_id = ? \
 				

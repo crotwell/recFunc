@@ -164,11 +164,16 @@ public class Start {
                     "<a href=\""+edu.sc.seis.rev.Start.getVisibleURL()+"\"><img src=\"earslogo.png\"/></a><br/>"
                             + warning);
         ArrayList knownGaussians = new ArrayList();
+        if (true) {
         knownGaussians.add(new Float(5));
         knownGaussians.add(new Float(2.5f));
         knownGaussians.add(new Float(1));
         knownGaussians.add(new Float(0.7f));
         knownGaussians.add(new Float(0.4f));
+        } else {
+            knownGaussians.add(new Float(2.5f));
+            
+        }
         context.put("knownGaussians", knownGaussians);
         return context;
     }

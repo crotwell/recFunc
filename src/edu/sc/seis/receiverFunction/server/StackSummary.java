@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
@@ -34,6 +35,7 @@ import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
 import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.StackComplexity;
@@ -86,6 +88,7 @@ public class StackSummary {
                 }
             }
         }
+        TimeOMatic.print("Time for network: "+net);
     }
 
     public void createSummary(StationId station,
@@ -141,7 +144,7 @@ public class StackSummary {
         float complex = sumStack.getResidualPower();
         float complex25 = sumStack.getResidualPower(.25f);
         float complex50 = sumStack.getResidualPower(.50f);
-        jdbcStackComplexity.put(sumStack.getDbid(), complex, complex25, complex50);
+   //     jdbcStackComplexity.put(sumStack.getDbid(), complex, complex25, complex50);
         System.out.println(NetworkIdUtil.toStringNoDates(sumStack.getChannel().get_id().network_id)+"."+sumStack.getChannel().get_id().station_code+" Complexity: "+complex);
         return complex;
     }
@@ -154,7 +157,6 @@ public class StackSummary {
                           boolean doBootstrap,
                           boolean usePhaseWeight) throws FissuresException, NotFound, IOException, SQLException {
         logger.info("in sum for " + netCode + "." + staCode);
-        TimeOMatic.start();
         ArrayList individualHK = jdbcHKStack.getForStation(netCode, staCode, gaussianWidth, percentMatch, true);
         // if there is only 1 eq that matches, then we can't really do a stack
         if(individualHK.size() > 1) {
@@ -180,7 +182,6 @@ public class StackSummary {
                                   String phase,
                                   boolean usePhaseWeight) throws FissuresException, NotFound, IOException, SQLException {
         logger.info("in sum for " + netCode + "." + staCode);
-        TimeOMatic.start();
         HKStackIterator it = jdbcHKStack.getIteratorForStation(netCode, staCode, gaussianWidth, minPercentMatch, false);
         SumHKStack sumStack = sumForPhase(it, minPercentMatch, smallestH, phase, usePhaseWeight);
         it.close();
@@ -337,13 +338,14 @@ public class StackSummary {
             return;
         }
         try {
+            TimeOMatic.setWriter(new FileWriter("netTimes.txt"));
+            TimeOMatic.start();
             Properties props = loadProps(args);
             Connection conn = initDB(props);
             StackSummary summary = new StackSummary(conn);
             parseArgsAndRun(args, summary);
         } catch(Exception e) {
-            logger.error(e);
-            e.printStackTrace();
+            GlobalExceptionHandler.handle(e);
         }
     }
 

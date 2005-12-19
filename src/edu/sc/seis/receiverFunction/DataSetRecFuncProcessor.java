@@ -48,23 +48,10 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
         localSeis = new LocalSeismogramImpl[seis.length];
     }
 
-
-    /**
-     * Method error
-     *
-     * @param    sdce                a  SeisDataErrorEvent
-     *
-     */
     public void error(SeisDataErrorEvent sdce) {
         error = sdce;
     }
 
-    /**
-     * Method finished
-     *
-     * @param    sdce                a  SeisDataChangeEvent
-     *
-     */
     public void finished(SeisDataChangeEvent sdce) {
         logger.debug("finished for "+sdce.getSource().getName()+" "+getIndex(sdce.getSource()));
         finished[getIndex(sdce.getSource())] = true;

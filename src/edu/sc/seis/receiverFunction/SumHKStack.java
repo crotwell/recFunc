@@ -345,6 +345,7 @@ public class SumHKStack {
         hVariance = (float)hStat.var();
         Statistics kStat = new Statistics(kErrors);
         kVariance = (float)kStat.var();
+        mixedVariance = hStat.covariance(kErrors);
         TimeOMatic.print("Stat for "
                 + ChannelIdUtil.toStringNoDates(temp.getChannel())
                 + " h stddev=" + getHStdDev() + "  k stddev=" + getKStdDev());

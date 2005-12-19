@@ -40,7 +40,8 @@ public class RecFuncTask  extends SDMouseAdapter implements GUITask {
         try {
             taupUtil = TauPUtil.getTauPUtil("iasp91");
             recFunc = new RecFunc(taupUtil,
-                new IterDecon(100, true, .001f, gwidth));
+                new IterDecon(100, true, .001f, gwidth),
+                true);
         } catch (TauModelException e) {
             throw new ConfigurationException("Problem with TauP", e);
         }

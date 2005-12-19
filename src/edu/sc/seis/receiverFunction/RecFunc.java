@@ -30,20 +30,21 @@ import edu.sc.seis.sod.ChannelGroup;
 public class RecFunc {
 
     /** uses a default shift of 10 seconds. */
-    public RecFunc(TauPUtil timeCalc, IterDecon decon) {
-        this(timeCalc, decon, DEFAULT_SHIFT);
+    public RecFunc(TauPUtil timeCalc, IterDecon decon, boolean pWave) {
+        this(timeCalc, decon, pWave, DEFAULT_SHIFT);
 
     }
 
-    public RecFunc(TauPUtil timeCalc, IterDecon decon, TimeInterval shift) {
-        this(timeCalc, decon, shift, new TimeInterval(100, UnitImpl.SECOND));
+    public RecFunc(TauPUtil timeCalc, IterDecon decon, boolean pWave, TimeInterval shift) {
+        this(timeCalc, decon, pWave, shift, new TimeInterval(100, UnitImpl.SECOND));
     }
 
-    public RecFunc(TauPUtil timeCalc, IterDecon decon, TimeInterval shift, TimeInterval pad) {
+    public RecFunc(TauPUtil timeCalc, IterDecon decon, boolean pWave, TimeInterval shift, TimeInterval pad) {
         this.timeCalc = timeCalc;
         this.decon = decon;
         this.shift = shift;
         this.pad = pad;
+        this.pWave = pWave;
     }
 
     public IterDeconResult[] process(EventAccessOperations event,
@@ -104,17 +105,35 @@ public class RecFunc {
         rotated[0] = decon.makePowerTwo(rotated[0]);
         rotated[1] = decon.makePowerTwo(rotated[1]);
 
-        IterDeconResult ansRadial = processComponent(rotated[1],
-                                                     zdata,
-                                                         (float)period,
-                                                     staLoc,
-                                                     origin);
+        IterDeconResult ansRadial;
+        IterDeconResult ansTangential;
+        if (pWave) {
+            ansRadial = processComponent(rotated[1],
+                                         zdata,
+                                         (float)period,
+                                         staLoc,
+                                         origin);
 
-        IterDeconResult ansTangential = processComponent(rotated[0],
-                                                         zdata,
-                                                             (float)period,
-                                                         staLoc,
-                                                         origin);
+            ansTangential = processComponent(rotated[0],
+                                             zdata,
+                                             (float)period,
+                                             staLoc,
+                                             origin);
+        } else {
+            // s wave deconvolve horizontal from z, opposite of P wave
+            ansRadial = processComponent(zdata,
+                                         rotated[1],
+                                         (float)period,
+                                         staLoc,
+                                         origin);
+
+            ansTangential = processComponent(zdata,
+                                             rotated[0],
+                                             (float)period,
+                                             staLoc,
+                                             origin);
+            
+        }
         IterDeconResult[] ans = new IterDeconResult[2];
         ans[0] = ansRadial;
         ans[1] = ansTangential;
@@ -139,8 +158,9 @@ public class RecFunc {
         float[] predicted = ans.getPredicted();
         logger.info("predicted.length = "+predicted.length);
 
+        String[] phaseName = pWave ? new String[] {"ttp"} : new String[] {"tts"};
         Arrival[] pPhases =
-            timeCalc.calcTravelTimes(staLoc, origin, new String[] {"ttp"});
+            timeCalc.calcTravelTimes(staLoc, origin, phaseName);
 
         MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
         logger.debug("origin "+firstP);
@@ -217,6 +237,8 @@ public class RecFunc {
     TimeInterval shift;
 
     TimeInterval pad;
+    
+    boolean pWave;
     
     static public final TimeInterval DEFAULT_SHIFT = new TimeInterval(10, UnitImpl.SECOND);
 

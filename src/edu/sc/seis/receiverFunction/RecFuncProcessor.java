@@ -67,6 +67,15 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
         gwidth = deconConfig.gwidth;
         maxBumps = deconConfig.maxBumps;
         tol = deconConfig.tol;
+        Element phaseNameElement = SodUtil.getElement(config, "phaseName");
+        if (phaseNameElement != null) {
+            String phaseName = SodUtil.getNestedText(phaseNameElement);
+            if (phaseName.equals("P")) {
+                pWave = true;
+            } else {
+                pWave = false;
+            }
+        }
         logger.info("Init RecFuncProcessor");
     }
     
@@ -94,15 +103,6 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
 
     /**
      * Processes localSeismograms to calculate receiver functions.
-     *
-     * @param event an <code>EventAccessOperations</code> value
-     * @param network a <code>NetworkAccess</code> value
-     * @param channel a <code>Channel</code> value
-     * @param original a <code>RequestFilter[]</code> value
-     * @param available a <code>RequestFilter[]</code> value
-     * @param seismograms a <code>LocalSeismogram[]</code> value
-     * @param cookies a <code>CookieJar</code> value
-     * @exception Exception if an error occurs
      */
     public WaveformVectorResult process(EventAccessOperations event,
                                         ChannelGroup channelGroup,
@@ -124,7 +124,8 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
         if (recFunc == null) {
             tauPTime = TauPUtil.getTauPUtil(modelName);
             recFunc = new RecFunc(tauPTime,
-                                  new IterDecon(maxBumps, true, tol, gwidth));
+                                  new IterDecon(maxBumps, true, tol, gwidth),
+                                  pWave);
         }
         for (int i = 0; i < seismograms.length; i++) {
             if (seismograms[i].length == 0) {
@@ -376,6 +377,8 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
     protected float tol;
     
     protected int maxBumps;
+    
+    protected boolean pWave = true;
     
     String modelName = "iasp91";
 

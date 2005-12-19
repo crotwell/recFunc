@@ -55,23 +55,25 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
             TauModelException {
         super(config);
         Element dnsElement = SodUtil.getElement(config, "serverDNS");
-        if (dnsElement != null) {
-             dns = SodUtil.getNestedText(dnsElement);
+        if(dnsElement != null) {
+            dns = SodUtil.getNestedText(dnsElement);
         }
         Element serverElement = SodUtil.getElement(config, "serverName");
-        if (serverElement != null) {
-             serverName = SodUtil.getNestedText(serverElement);
+        if(serverElement != null) {
+            serverName = SodUtil.getNestedText(serverElement);
         }
         String modelName = "prem";
         taup = TauPUtil.getTauPUtil(modelName);
-        recFunc = new RecFunc(taup, new IterDecon(maxBumps, true, tol, gwidth));
+        recFunc = new RecFunc(taup,
+                              new IterDecon(maxBumps, true, tol, gwidth),
+                              pWave);
         FissuresNamingService fisName = CommonAccess.getCommonAccess()
                 .getFissuresNamingService();
         cache = new NSRecFuncCache(dns, serverName, fisName);
     }
 
     /**
-     *
+     * 
      */
     public WaveformVectorResult process(EventAccessOperations event,
                                         ChannelGroup channelGroup,
@@ -80,7 +82,7 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
                                         LocalSeismogramImpl[][] seismograms,
                                         CookieJar cookieJar) throws Exception {
         try {
-            if (sodconfig_id == -1) {
+            if(sodconfig_id == -1) {
                 try {
                     JDBCConfig jdbcConfig = new JDBCConfig(ConnMgr.createConnection());
                     String sodConfig = jdbcConfig.getCurrentConfig();
@@ -92,18 +94,18 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
                 }
             }
             Channel chan = channelGroup.getChannels()[0];
-            Location staLoc = chan.my_site.my_station.my_location;
             Origin origin = event.get_preferred_origin();
-            Location evtLoc = origin.my_location;
             IterDeconConfig config = new IterDeconConfig(gwidth, maxBumps, tol);
             ChannelId[] chanIds = new ChannelId[channelGroup.getChannels().length];
             for(int i = 0; i < chanIds.length; i++) {
                 chanIds[i] = channelGroup.getChannels()[i].get_id();
             }
-            if(!overwrite && cache.isCached(origin, chanIds, config)) { return new WaveformVectorResult(seismograms,
-                                                                                                        new StringTreeLeaf(this,
-                                                                                                                           true,
-                                                                                                                           "Already calculated")); }
+            if(!overwrite && cache.isCached(origin, chanIds, config)) {
+                return new WaveformVectorResult(seismograms,
+                                                new StringTreeLeaf(this,
+                                                                   true,
+                                                                   "Already calculated"));
+            }
             LocalSeismogramImpl[] singleSeismograms = new LocalSeismogramImpl[3];
             for(int i = 0; i < singleSeismograms.length; i++) {
                 singleSeismograms[i] = seismograms[i][0];
@@ -111,9 +113,10 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
             IterDeconResult[] ans = recFunc.process(event,
                                                     channelGroup,
                                                     singleSeismograms);
+            String[] phaseName = pWave ? new String[] {"ttp"} : new String[] {"tts"};
             Arrival[] pPhases = taup.calcTravelTimes(chan.my_site.my_station,
                                                      origin,
-                                                     new String[] {"ttp"});
+                                                     phaseName);
             MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
             firstP = firstP.add(new TimeInterval(pPhases[0].getTime(),
                                                  UnitImpl.SECOND));
@@ -131,7 +134,8 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
                                                          firstP.subtract(shift),
                                                          singleSeismograms[0],
                                                          UnitImpl.DIMENSONLESS);
-                cookieJar.put("recFunc_percentMatch_"+chanCode, ""+ans[i].getPercentMatch());
+                cookieJar.put("recFunc_percentMatch_" + chanCode, ""
+                        + ans[i].getPercentMatch());
             }
             while(true) {
                 try {
@@ -148,9 +152,10 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
                                  ans[1].getBump(),
                                  sodconfig_id);
                     break;
-                } catch (UNKNOWN e) {
-                    System.err.println(ClockUtil.now()+" Corba UNKNOWN while sending result to database, will not retry."+
-                                       e);
+                } catch(UNKNOWN e) {
+                    System.err.println(ClockUtil.now()
+                            + " Corba UNKNOWN while sending result to database, will not retry."
+                            + e);
                     GlobalExceptionHandler.handle("Corba UNKNOWN while sending result to database, will not retry.",
                                                   e);
                     WaveformVectorResult result = new WaveformVectorResult(seismograms,
@@ -160,8 +165,9 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
                                                                                               e));
                     return result;
                 } catch(Throwable e) {
-                    System.err.println(ClockUtil.now()+" Problem while sending result to database, will retry in 1 minute..."+
-                                       e);
+                    System.err.println(ClockUtil.now()
+                            + " Problem while sending result to database, will retry in 1 minute..."
+                            + e);
                     GlobalExceptionHandler.handle("Problem while sending result to database, will retry in 1 minute...",
                                                   e);
                     try {
@@ -190,7 +196,7 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
     String serverName = "Ears";
 
     int sodconfig_id = -1;
-    
+
     boolean overwrite = false;
 
     NSRecFuncCache cache;

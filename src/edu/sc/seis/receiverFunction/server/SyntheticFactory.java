@@ -90,7 +90,7 @@ public class SyntheticFactory {
                                         true,
                                         RecFuncProcessor.DEFAULT_TOL,
                                         RecFuncProcessor.DEFAULT_GWIDTH);
-        RecFunc recFunc = new RecFunc(taup, decon);
+        RecFunc recFunc = new RecFunc(taup, decon, true);
         float[] zdata = IterDecon.makePowerTwo(seis[0].get_as_floats());
         float[][] rotated = new float[2][];
         rotated[0] = IterDecon.makePowerTwo(seis[2].get_as_floats());

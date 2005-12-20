@@ -141,10 +141,35 @@ public class StackSummary {
                                                 sumStack.getSum().getMaxValueK(sumStack.getSmallestH()),
                                                 sumStack.getSum().getAlpha(),
                                                 null);
+        HKStack residual = sumStack.getResidual();
         float complex = sumStack.getResidualPower();
         float complex25 = sumStack.getResidualPower(.25f);
         float complex50 = sumStack.getResidualPower(.50f);
-   //     jdbcStackComplexity.put(sumStack.getDbid(), complex, complex25, complex50);
+        float bestH = (float)sumStack.getSum().getMaxValueH(sumStack.getSmallestH()).getValue(UnitImpl.KILOMETER);
+        float bestHStdDev = (float)sumStack.getHStdDev().getValue(UnitImpl.KILOMETER);
+        float bestK = sumStack.getSum().getMaxValueK(sumStack.getSmallestH());
+        float bestKStdDev = (float)sumStack.getKStdDev();
+        float bestVal = sumStack.getSum().getMaxValue(sumStack.getSmallestH());
+        float hkCorrelation = (float)sumStack.getMixedVariance();
+        float nextH = (float)residual.getMaxValueH(sumStack.getSmallestH()).getValue(UnitImpl.KILOMETER);
+        float nextK = residual.getMaxValueK(sumStack.getSmallestH());
+        float nextVal = residual.getMaxValue(sumStack.getSmallestH());
+        StationResult crust2Result = HKStack.getCrust2().getStationResult(sumStack.getChannel().my_site.my_station);
+        float crust2diff = bestH-(float)crust2Result.getH().getValue(UnitImpl.KILOMETER);
+        jdbcStackComplexity.put(sumStack.getDbid(),
+        		complex,
+        		complex25,
+        		complex50,
+        		bestH,
+        		bestHStdDev,
+        		bestK,
+        		bestKStdDev,
+        		bestVal,
+        		hkCorrelation,
+        		nextH,
+        		nextK,
+        		nextVal,
+        		crust2diff);
         System.out.println(NetworkIdUtil.toStringNoDates(sumStack.getChannel().get_id().network_id)+"."+sumStack.getChannel().get_id().station_code+" Complexity: "+complex);
         return complex;
     }

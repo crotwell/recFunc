@@ -8,6 +8,9 @@
 
 $header
 
+<p>Please see our article in 
+<a href="http://www.seismosoc.org/publications/SRL/SRL_76/srl_76-6_es.html">The Electronic Seismologist column of Seismological Research Letters, Nov/Dec 2005.</a>
+
 <p>Choose Gaussian: 
 #foreach ( $g in $knownGaussians )
 	#if ( $g == $gaussian) 

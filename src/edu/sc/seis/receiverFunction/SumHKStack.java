@@ -108,8 +108,15 @@ public class SumHKStack {
         return getResidualPower(0);
     }
     
-    public float getResidualPower(float percentFloor) throws FissuresException, TauModelException {
-        float floor = percentFloor*getSum().getMaxValue(getSmallestH());
+    public float getResidualPower(float percentFloor) throws FissuresException,
+			TauModelException {
+		float floor = percentFloor * getSum().getMaxValue(getSmallestH());
+		float residualPower = getResidual().getPower(floor)
+				/ getSum().getPower(floor);
+		return residualPower;
+	}
+    
+    public HKStack getResidual() throws FissuresException, TauModelException {
         StationResultRef earsStaRef = new StationResultRef( "Global Maxima", "ears", "ears");
         StationResult result = new StationResult(getChannel().get_id().network_id,
                                                  getChannel().get_id().station_code,
@@ -118,8 +125,7 @@ public class SumHKStack {
                                                  getSum().getAlpha(),
                                                  earsStaRef);
         StackComplexity complexity = new StackComplexity(getSum(), 4096, getSum().getGaussianWidth());
-        float residualPower = complexity.getResidual(result, 60).getPower(floor) / getSum().getPower(floor);
-        return residualPower;
+        return complexity.getResidual(result, 60);
     }
     
     static HKStack calculate(Channel chan,
@@ -345,7 +351,7 @@ public class SumHKStack {
         hVariance = (float)hStat.var();
         Statistics kStat = new Statistics(kErrors);
         kVariance = (float)kStat.var();
-        mixedVariance = hStat.covariance(kErrors);
+        mixedVariance = hStat.correlation(kErrors);
         TimeOMatic.print("Stat for "
                 + ChannelIdUtil.toStringNoDates(temp.getChannel())
                 + " h stddev=" + getHStdDev() + "  k stddev=" + getKStdDev());

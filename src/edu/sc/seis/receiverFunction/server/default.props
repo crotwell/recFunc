@@ -622,7 +622,7 @@ stackComplexity.put=INSERT INTO $tablename ( \
                    nextH , \
                    nextK , \
                    nextVal , \
-                   crust2diff
+                   crust2diff \
 				) VALUES ( ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?,  ?, ?, ?, ? )
 				
 stackComplexity.update=UPDATE $tablename \
@@ -639,5 +639,5 @@ stackComplexity.update=UPDATE $tablename \
                    nextK = ?, \
                    nextVal = ?, \
                    crust2diff = ? \
-				WHERE hksummary_id = ? \
+				WHERE hksummary_id = ? 
 				

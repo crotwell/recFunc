@@ -597,7 +597,7 @@ stackComplexity.create=CREATE TABLE $tablename ( \
                    bestK float, \
                    bestKStdDev float, \
                    bestVal float, \
-                   covar float, \
+                   hkCorrelation float, \
                    nextH float, \
                    nextK float, \
                    nextVal float, \
@@ -618,7 +618,7 @@ stackComplexity.put=INSERT INTO $tablename ( \
                    bestK , \
                    bestKStdDev , \
                    bestVal , \
-                   covar, \
+                   hkCorrelation, \
                    nextH , \
                    nextK , \
                    nextVal , \
@@ -634,7 +634,7 @@ stackComplexity.update=UPDATE $tablename \
                    bestK = ?, \
                    bestKStdDev = ?, \
                    bestVal = ?, \
-                   covar = ?, \
+                   hkCorrelation = ?, \
                    nextH = ?, \
                    nextK = ?, \
                    nextVal = ?, \

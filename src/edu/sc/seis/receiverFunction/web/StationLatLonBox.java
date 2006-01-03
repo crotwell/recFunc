@@ -76,7 +76,7 @@ public class StationLatLonBox extends StationList {
     	JFreeChart chart = HKLatLonPlot.getChart(req, stationList, summary, titleString); 
     	try {
 			String filename = ServletUtilities.saveChartAsPNG(chart, RevUtil.getInt("xdim", req, HKLatLonPlot.xdimDefault), RevUtil.getInt("ydim", req, HKLatLonPlot.ydimDefault), req.getSession());
-	context.put("plotfilename", filename);	
+	context.put("plotname", filename);	
 	ChartRenderingInfo info = new ChartRenderingInfo(new StandardEntityCollection());
 	context.put("imagemap", ImageMapUtilities.getImageMap(filename, info));
     	} catch (IOException e) {

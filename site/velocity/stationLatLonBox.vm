@@ -18,7 +18,7 @@ window.onload=function(){
 $header
 
 <p><b>Stations within latitude ($minLat, $maxLat) and longitude ($minLon, $maxLon)</p>
-<p><img src="/DisplayChart?filename=${filename}"/></p>
+<p><img src="/DisplayChart?filename=${plotname}"/></p>
 $imagemap
 
 <table class="ruler sortable" id="dumb">

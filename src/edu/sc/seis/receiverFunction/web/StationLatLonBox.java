@@ -71,7 +71,8 @@ public class StationLatLonBox extends StationList {
     }
     
     public void postProcess(HttpServletRequest req, RevletContext context, ArrayList stationList, HashMap summary) {
-    	JFreeChart chart = HKLatLonPlot.getChart(req, stationList, summary); 
+    	String titleString = "Ears results";
+    	JFreeChart chart = HKLatLonPlot.getChart(req, stationList, summary, titleString); 
     	try {
 			String filename = ServletUtilities.saveChartAsPNG(chart, RevUtil.getInt("xdim", req, HKLatLonPlot.xdimDefault), RevUtil.getInt("ydim", req, HKLatLonPlot.ydimDefault), req.getSession());
 	context.put("plotfilename", filename);	

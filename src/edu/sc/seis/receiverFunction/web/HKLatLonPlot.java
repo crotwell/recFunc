@@ -47,15 +47,13 @@ public class HKLatLonPlot extends HttpServlet {
         doGet(arg0, arg1);
     }
 
-    public static JFreeChart getChart(HttpServletRequest req, ArrayList stationList, HashMap summary) {
+    public static JFreeChart getChart(HttpServletRequest req, ArrayList stationList, HashMap summary, String titleString) {
 		XYZDataset dataset = new StationSummaryDataset(stationList, summary,
 				RevUtil.get("xAxis", req, LONGITUDE), RevUtil.get("yAxis", req,
 						THICKNESS), RevUtil.get("zAxis", req, VPVS));
 		boolean legend = false;
 		boolean tooltips = true;
 		boolean urls = true;
-		String titleString = "Ears results near " + RevUtil.get(LATITUDE, req)
-				+ ", " + RevUtil.get(LONGITUDE, req);
 		if (summary.size() == 0) {
 			titleString = "No " + titleString;
 		}
@@ -111,7 +109,10 @@ public class HKLatLonPlot extends HttpServlet {
             HashMap summary = stationsNearBy.cleanSummaries(stationList,
                                                             stationsNearBy.getSummaries(stationList,
                                                                                         context, req));
-            JFreeChart chart = getChart(req, stationList, summary);
+
+            String titleString = "Ears results near " + RevUtil.get(LATITUDE, req)
+            + ", " + RevUtil.get(LONGITUDE, req);
+            JFreeChart chart = getChart(req, stationList, summary, titleString);
             System.out.println(chart.getXYPlot().getClass().getName());
             OutputStream out = res.getOutputStream();
             BufferedImage image = chart.createBufferedImage(xdim, ydim);

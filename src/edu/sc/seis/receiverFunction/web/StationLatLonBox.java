@@ -71,6 +71,7 @@ public class StationLatLonBox extends StationList {
     }
     
     public void postProcess(HttpServletRequest req, RevletContext context, ArrayList stationList, HashMap summary) {
+    	summary = cleanSummaries(stationList, summary);
     	String titleString = "Ears results";
     	JFreeChart chart = HKLatLonPlot.getChart(req, stationList, summary, titleString); 
     	try {

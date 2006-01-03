@@ -47,6 +47,58 @@ public class HKLatLonPlot extends HttpServlet {
         doGet(arg0, arg1);
     }
 
+    public static JFreeChart getChart(HttpServletRequest req, ArrayList stationList, HashMap summary) {
+		XYZDataset dataset = new StationSummaryDataset(stationList, summary,
+				RevUtil.get("xAxis", req, LONGITUDE), RevUtil.get("yAxis", req,
+						THICKNESS), RevUtil.get("zAxis", req, VPVS));
+		boolean legend = false;
+		boolean tooltips = true;
+		boolean urls = true;
+		String titleString = "Ears results near " + RevUtil.get(LATITUDE, req)
+				+ ", " + RevUtil.get(LONGITUDE, req);
+		if (summary.size() == 0) {
+			titleString = "No " + titleString;
+		}
+		JFreeChart chart = ChartFactory.createScatterPlot(RevUtil.get("title",
+				req, titleString), RevUtil.get("xAxisLabel", req,
+				getLabel(RevUtil.get("xAxis", req, LONGITUDE))), RevUtil.get(
+				"yAxisLabel", req, getLabel(RevUtil
+						.get("yAxis", req, THICKNESS))), dataset,
+				PlotOrientation.VERTICAL, legend, tooltips, urls);
+		double minZ, maxZ;
+		if (dataset.getItemCount(0) != 0) {
+			if (RevUtil.exists("minZ", req)) {
+				minZ = RevUtil.getFloat("minZ", req);
+			} else {
+				minZ = dataset.getZValue(0, 0);
+				for (int i = 0; i < dataset.getItemCount(0); i++) {
+					double tmp = dataset.getZValue(0, i);
+					if (minZ > tmp) {
+						minZ = tmp;
+					}
+				}
+			}
+			if (RevUtil.exists("maxZ", req)) {
+				maxZ = RevUtil.getFloat("maxZ", req);
+			} else {
+				maxZ = dataset.getZValue(0, 0);
+				for (int i = 0; i < dataset.getItemCount(0); i++) {
+					double tmp = dataset.getZValue(0, i);
+					if (maxZ < tmp) {
+						maxZ = tmp;
+					}
+				}
+			}
+		} else {
+			minZ = 0;
+			maxZ = 0;
+		}
+		chart.getXYPlot().setRenderer(
+				new ZColorXYDotRenderer(dataset, GMTColorPalette.getDefault(
+						minZ, maxZ)));
+		return chart;
+
+	}
     protected synchronized void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         try {
@@ -59,80 +111,7 @@ public class HKLatLonPlot extends HttpServlet {
             HashMap summary = stationsNearBy.cleanSummaries(stationList,
                                                             stationsNearBy.getSummaries(stationList,
                                                                                         context, req));
-            XYZDataset dataset = new StationSummaryDataset(stationList,
-                                                           summary,
-                                                           RevUtil.get("xAxis",
-                                                                       req,
-                                                                       LONGITUDE),
-                                                           RevUtil.get("yAxis",
-                                                                       req,
-                                                                       THICKNESS),
-                                                           RevUtil.get("zAxis",
-                                                                       req,
-                                                                       VPVS));
-            boolean legend = false;
-            boolean tooltips = true;
-            boolean urls = true;
-            String titleString = 
-                "Ears results near "
-                + RevUtil.get(LATITUDE,
-                              req)
-                + ", "
-                + RevUtil.get(LONGITUDE,
-                              req);
-            if (summary.size() == 0) {
-                titleString = "No "+titleString;
-            }
-            JFreeChart chart = ChartFactory.createScatterPlot(RevUtil.get("title",
-                                                                          req,
-                                                                          titleString),
-                                                              RevUtil.get("xAxisLabel",
-                                                                          req,
-                                                                          getLabel(RevUtil.get("xAxis",
-                                                                                               req,
-                                                                                               LONGITUDE))),
-                                                              RevUtil.get("yAxisLabel",
-                                                                          req,
-                                                                          getLabel(RevUtil.get("yAxis",
-                                                                                               req,
-                                                                                               THICKNESS))),
-                                                              dataset,
-                                                              PlotOrientation.VERTICAL,
-                                                              legend,
-                                                              tooltips,
-                                                              urls);
-            double minZ, maxZ;
-            if(dataset.getItemCount(0) != 0) {
-                if(RevUtil.exists("minZ", req)) {
-                    minZ = RevUtil.getFloat("minZ", req);
-                } else {
-                    minZ = dataset.getZValue(0, 0);
-                    for(int i = 0; i < dataset.getItemCount(0); i++) {
-                        double tmp = dataset.getZValue(0, i);
-                        if(minZ > tmp) {
-                            minZ = tmp;
-                        }
-                    }
-                }
-                if(RevUtil.exists("maxZ", req)) {
-                    maxZ = RevUtil.getFloat("maxZ", req);
-                } else {
-                    maxZ = dataset.getZValue(0, 0);
-                    for(int i = 0; i < dataset.getItemCount(0); i++) {
-                        double tmp = dataset.getZValue(0, i);
-                        if(maxZ < tmp) {
-                            maxZ = tmp;
-                        }
-                    }
-                }
-            } else {
-                minZ = 0;
-                maxZ = 0;
-            }
-            chart.getXYPlot()
-                    .setRenderer(new ZColorXYDotRenderer(dataset,
-                                                         GMTColorPalette.getDefault(minZ,
-                                                                                    maxZ)));
+            JFreeChart chart = getChart(req, stationList, summary);
             System.out.println(chart.getXYPlot().getClass().getName());
             OutputStream out = res.getOutputStream();
             BufferedImage image = chart.createBufferedImage(xdim, ydim);
@@ -152,7 +131,7 @@ public class HKLatLonPlot extends HttpServlet {
         }
     }
 
-    String getLabel(String key) {
+    static String getLabel(String key) {
         if(THICKNESS.equals(key)) {
             return "Thickness";
         } else if(VPVS.equals(key)) {
@@ -173,77 +152,9 @@ public class HKLatLonPlot extends HttpServlet {
 
     StationsNearBy stationsNearBy;
 
-    int xdimDefault = 600;
+    public static final int xdimDefault = 600;
 
-    int ydimDefault = 600;
-
-    class StationSummaryDataset extends AbstractXYZDataset {
-
-        StationSummaryDataset(ArrayList stationList, HashMap summary,
-                String xAxis, String yAxis, String zAxis) {
-            this.stationList = stationList;
-            this.summary = summary;
-            this.xAxis = xAxis;
-            this.yAxis = yAxis;
-            this.zAxis = zAxis;
-        }
-
-        public int getItemCount(int series) {
-            return stationList.size();
-        }
-
-        Number get(int series, int item, String key) {
-            VelocityStation sta = (VelocityStation)stationList.get(item);
-            if(sta == null) {
-                logger.warn("getXValue station is NULL: " + series + "  "
-                        + item + "  " + stationList.size());
-                return new Float(0);
-            }
-            if(LATITUDE.equals(key)) {
-                return new Float(sta.my_location.latitude);
-            } else if(LONGITUDE.equals(key)) { return new Float(sta.my_location.longitude); }
-            SumHKStack stack = (SumHKStack)summary.get(stationList.get(item));
-            if(THICKNESS.equals(key)) {
-                return new Float(stack.getSum()
-                        .getMaxValueH()
-                        .getValue(UnitImpl.KILOMETER));
-            } else if(VPVS.equals(key)) { return new Float(stack.getSum()
-                    .getMaxValueK()); }
-            // default
-            logger.warn("default get: " + series + " " + item + " '" + key
-                    + "'");
-            return new Integer(0);
-        }
-
-        public Number getX(int series, int item) {
-            return get(series, item, xAxis);
-        }
-
-        public Number getY(int series, int item) {
-            return get(series, item, yAxis);
-        }
-
-        public Number getZ(int series, int item) {
-            return get(series, item, zAxis);
-        }
-
-        public int getSeriesCount() {
-            return 1;
-        }
-
-        public String getSeriesName(int series) {
-            return getLabel(yAxis);
-        }
-
-        public Comparable getSeriesKey(int arg0) {
-            return null;
-        }
-        ArrayList stationList;
-
-        HashMap summary;
-
-        String xAxis, yAxis, zAxis;
-    }
+    public static final int ydimDefault = 600;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(HKLatLonPlot.class);
 }

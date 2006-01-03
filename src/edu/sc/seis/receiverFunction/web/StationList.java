@@ -90,7 +90,12 @@ public class StationList extends Revlet {
         logger.debug("count successful events done");
         context.put("stationList", stationList);
         context.put("summary", summary);
+        postProcess(req, context, stationList, summary);
         return context;
+    }
+    
+    public void postProcess(HttpServletRequest req, RevletContext context, ArrayList stationList, HashMap summary) {
+    	    return;
     }
 
     public String getVelocityTemplate(HttpServletRequest req) {

@@ -1,8 +1,18 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
+
+import org.jfree.chart.ChartRenderingInfo;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.entity.StandardEntityCollection;
+import org.jfree.chart.imagemap.ImageMapUtilities;
+import org.jfree.chart.servlet.ServletUtilities;
+
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.LocationType;
 import edu.iris.Fissures.IfNetwork.Station;
@@ -58,6 +68,20 @@ public class StationLatLonBox extends StationList {
             }
         }
         return stationList;
+    }
+    
+    public void postProcess(HttpServletRequest req, RevletContext context, ArrayList stationList, HashMap summary) {
+    	JFreeChart chart = HKLatLonPlot.getChart(req, stationList, summary); 
+    	try {
+			String filename = ServletUtilities.saveChartAsPNG(chart, RevUtil.getInt("xdim", req, HKLatLonPlot.xdimDefault), RevUtil.getInt("ydim", req, HKLatLonPlot.ydimDefault), req.getSession());
+	context.put("plotfilename", filename);	
+	ChartRenderingInfo info = new ChartRenderingInfo(new StandardEntityCollection());
+	context.put("imagemap", ImageMapUtilities.getImageMap(filename, info));
+    	} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return;
     }
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StationLatLonBox.class);

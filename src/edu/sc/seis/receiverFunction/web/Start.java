@@ -135,7 +135,7 @@ public class Start {
                                               servletStrings,
                                               rootHandler);
         // jfreechart image servlet 
-        RevUtil.populateJetty("/DisplayChart.png",
+        RevUtil.populateJetty("/DisplayChart",
                               "org.jfree.chart.servlet.DisplayChart",
                               servletStrings,
                               rootHandler);

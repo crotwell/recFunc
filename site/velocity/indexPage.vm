@@ -56,7 +56,7 @@ $header
  
 <br/>
 <p>List results in a lat/lon box:</p>
-<form action="stationLatLonBox.html?gaussian=${gaussian}" method="get">
+<form action="stationLatLonBox.html?gaussian=${gaussian}&xAxis=lon&yAxis=lat" method="get">
 <p>
 <label for="lat">Min Latitude: </label><input type="text" name="minLat" value="30"/><br/>
 <label for="lat">Max Latitude: </label><input type="text" name="maxLat" value="45"/><br/>

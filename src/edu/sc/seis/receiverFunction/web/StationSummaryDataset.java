@@ -11,7 +11,7 @@ import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 public class StationSummaryDataset extends AbstractXYZDataset {
 
-	StationSummaryDataset(ArrayList stationList, HashMap summary, String xAxis,
+	public StationSummaryDataset(ArrayList stationList, HashMap summary, String xAxis,
 			String yAxis, String zAxis) {
 		this.stationList = stationList;
 		this.summary = summary;

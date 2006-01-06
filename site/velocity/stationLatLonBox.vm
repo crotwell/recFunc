@@ -41,8 +41,8 @@ $imagemap
 <tr>
 <td class="odd">$sta.getNet().getCodeWithYear()</td>
 
-<td class="odd"><a href="station.html?netCode=$sta.getNet().getCode()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getCode()</a></td>
-<td class="even"><a href="station.html?netCode=$sta.getNet().getCode()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getName()</a></td>
+<td class="odd"><a href="station.html?netCode=$sta.getNet().getCodeWithYear()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getCode()</a></td>
+<td class="even"><a href="station.html?netCode=$sta.getNet().getCodeWithYear()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getName()</a></td>
 <td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
     <td class="even">$!summary.get($sta).getSum().formatMaxValueH()</td>
     <td class="odd">$fissures.formatQuantity($!summary.get($sta).getHStdDev())</td>
@@ -52,7 +52,7 @@ $imagemap
     <td class="odd">$!summary.get($sta).getSum().formatVs()</td>
     <td class="even">$!summary.get($sta).getSum().formatPoissonsRatio()</td>
     <td class="odd">$!summary.get($sta).numEQ</td>
-    <td class="odd">$!summary.get($sta).formatComplexityResidual()</td>
+    <td class="even">$!summary.get($sta).formatComplexityResidual()</td>
 </tr>
 #end
 </table>

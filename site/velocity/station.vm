@@ -58,6 +58,8 @@ $header
 <p>Download stack as <a href="sumHKStackAsXYZ.txt?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}">xyz text file.</a></p>
 #if( $numEighty > 0)
 <img class="dataimg" src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}"/>
+<p>Azimuth distribution of events:</p>
+<img class="azPlot" src="DisplayChart?filename=${azPlot}"  />
 #end
 
 <p><b>Prior Results for this Station</b></p>

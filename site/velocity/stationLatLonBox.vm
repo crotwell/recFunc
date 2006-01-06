@@ -21,6 +21,35 @@ $header
 <p><img src="DisplayChart?filename=${plotname}" usemap="#${plotname}" /></p>
 $imagemap
 
+<form action="stationLatLonBox.html?gaussian=${gaussian}&xAxis=lon&yAxis=lat" method="get">
+<p>
+<label for="minLat">Min Latitude: </label><input type="text" name="minLat" value="$minLat"/><br/>
+<label for="maxLat">Max Latitude: </label><input type="text" name="maxLat" value="$maxLat"/><br/>
+<label for="minLon">Min Longitude: </label><input type="text" name="minLon" value="$minLon"/><br/>
+<label for="maxLon">Max Longitude: </label><input type="text" name="maxLon" value="$maxLon"/><br/>
+<label for="xAxis">X Axis: </label><select name="xAxis">
+	<option value="H">Thickness</option>
+	<option value="vpvs">Vp/Vs</option>
+	<option value="lat">Latitude</option>
+	<option selected="true" value="lon">Longitude</option>
+</select><br/>
+<label for="yAxis">Y Axis: </label><select name="yAxis">
+	<option selected="true"  value="H">Thickness</option>
+	<option value="vpvs">Vp/Vs</option>
+	<option value="lat">Latitude</option>
+	<option value="lon">Longitude</option>
+</select><br/>
+<label for="zAxis">Color: </label><select name="zAxis">
+	<option value="H">Thickness</option>
+	<option selected="true"  value="vpvs">Vp/Vs</option>
+	<option value="lat">Latitude</option>
+	<option value="lon">Longitude</option>
+</select><br/>
+	
+<input type="submit" value="Send"/>
+    </p>
+ </form>
+
 <table class="ruler sortable" id="dumb">
 <tr>
 <td class="headodd initiallySorted ascending">Net</td>

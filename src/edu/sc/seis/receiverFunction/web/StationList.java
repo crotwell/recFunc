@@ -54,12 +54,6 @@ public class StationList extends Revlet {
     public synchronized RevletContext getContext(HttpServletRequest req,
                                                  HttpServletResponse res)
             throws Exception {
-        float gaussianWidth = RevUtil.getFloat("gaussian",
-                                               req,
-                                               Start.getDefaultGaussian());
-        float minPercentMatch = RevUtil.getFloat("minPercentMatch",
-                                                 req,
-                                                 Start.getDefaultMinPercentMatch());
         RevletContext context = new RevletContext(getVelocityTemplate(req),
                                                   Start.getDefaultContext());
         Revlet.loadStandardQueryParams(req, context);
@@ -162,6 +156,9 @@ public class StationList extends Revlet {
         float minPercentMatch = RevUtil.getFloat("minPercentMatch",
                                                  req,
                                                  Start.getDefaultMinPercentMatch());
+        float maxComplexity = RevUtil.getFloat("maxComplexity",
+                                               req,
+                                               1.0f);
         Iterator it = stationList.iterator();
         HashMap summary = new HashMap();
         while(it.hasNext()) {
@@ -176,7 +173,9 @@ public class StationList extends Revlet {
                                                                    gaussianWidth,
                                                                    minPercentMatch,
                                                                    false);
-                summary.put(sta, sumStack);
+                if (sumStack.getComplexityResidual() <= maxComplexity) {
+                    summary.put(sta, sumStack);
+                }
             } catch(NotFound e) {
                 // oh well, skip this station
                 logger.warn("not found for " + sta.getNetCode() + "."

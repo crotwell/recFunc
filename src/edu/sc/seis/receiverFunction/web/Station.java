@@ -1,11 +1,13 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.awt.Color;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.Time;
@@ -73,19 +75,26 @@ public class Station extends Revlet {
     }
 
     /**
-     *
+     * 
      */
     public synchronized RevletContext getContext(HttpServletRequest req,
-                                    HttpServletResponse res) throws Exception {
-        float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
-        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
+                                                 HttpServletResponse res)
+            throws Exception {
+        float gaussianWidth = RevUtil.getFloat("gaussian",
+                                               req,
+                                               Start.getDefaultGaussian());
+        float minPercentMatch = RevUtil.getFloat("minPercentMatch",
+                                                 req,
+                                                 Start.getDefaultMinPercentMatch());
         int netDbId = RevUtil.getInt("netdbid", req, -1);
         if(netDbId == -1) {
             String netCode = RevUtil.get("netCode", req);
-            String netCodeNoYear = netCode; 
+            String netCodeNoYear = netCode;
             if(netCodeNoYear != null) {
                 // check for XE05 case, but allow G and II to not change
-                if (netCodeNoYear.length() > 2) {netCodeNoYear = netCodeNoYear.substring(0,2);}
+                if(netCodeNoYear.length() > 2) {
+                    netCodeNoYear = netCodeNoYear.substring(0, 2);
+                }
                 NetworkId[] netIds = jdbcChannel.getNetworkTable()
                         .getByCode(netCodeNoYear);
                 for(int i = 0; i < netIds.length; i++) {
@@ -102,7 +111,9 @@ public class Station extends Revlet {
         String staCode = req.getParameter("stacode");
         ArrayList stationList = getStationList(netDbId, staCode);
         TimeOMatic.start();
-        CacheEvent[] events = jdbcRecFunc.getSuccessfulEvents(netDbId, staCode, gaussianWidth);
+        CacheEvent[] events = jdbcRecFunc.getSuccessfulEvents(netDbId,
+                                                              staCode,
+                                                              gaussianWidth);
         TimeOMatic.print("successful events");
         ArrayList eventList = new ArrayList();
         int numNinty = 0;
@@ -145,7 +156,8 @@ public class Station extends Revlet {
                                                                    minPercentMatch);
             SumHKStack summary = jdbcSummaryHKStack.get(summaryDbId);
             context.put("summary", summary);
-            StackMaximum[] localMaxima = summary.getSum().getLocalMaxima(smallestH, 5);
+            StackMaximum[] localMaxima = summary.getSum()
+                    .getLocalMaxima(smallestH, 5);
             for(int i = 0; i < localMaxima.length; i++) {
                 StationResultRef earsStaRef = new StationResultRef(i == 0 ? "Global Maxima"
                                                                            : "Local Maxima "
@@ -172,6 +184,19 @@ public class Station extends Revlet {
             // no summary, oh well...
         }
         TimeOMatic.print("summary and local maxima");
+        Iterator it = eventList.iterator();
+        ArrayList eightyEvents = new ArrayList();
+        while(it.hasNext()) {
+            VelocityEvent event = (VelocityEvent)it.next();
+            float match = new Float(event.getParam("itr_match")).floatValue();
+            if (match >= 80) {
+               eightyEvents.add(event); 
+            }
+        }
+        String azPlotname = AzimuthPlot.plot((VelocityStation)stationList.get(0),
+                                             (VelocityEvent[])eightyEvents.toArray(new VelocityEvent[0]),
+                                             req.getSession());
+        context.put("azPlot", azPlotname);
         context.put("stationList", stationList);
         context.put("stacode", staCode);
         context.put("net", net);
@@ -214,14 +239,20 @@ public class Station extends Revlet {
     static class ITRMatchComparator implements Comparator {
 
         public int compare(Object o1, Object o2) {
-            if(o1.equals(o2)) { return 0; }
-            if(!(o1 instanceof VelocityEvent) || !(o2 instanceof VelocityEvent)) { return 0; }
+            if(o1.equals(o2)) {
+                return 0;
+            }
+            if(!(o1 instanceof VelocityEvent) || !(o2 instanceof VelocityEvent)) {
+                return 0;
+            }
             VelocityEvent v1 = (VelocityEvent)o1;
             VelocityEvent v2 = (VelocityEvent)o2;
             float f1 = new Float(v1.getParam("itr_match")).floatValue();
             float f2 = new Float(v2.getParam("itr_match")).floatValue();
-            if(f1 > f2) return 1;
-            if(f1 < f2) return -1;
+            if(f1 > f2)
+                return 1;
+            if(f1 < f2)
+                return -1;
             return 0;
         }
     }

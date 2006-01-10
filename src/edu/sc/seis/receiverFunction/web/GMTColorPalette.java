@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.util.ArrayList;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 
 /**
  * Color pallette modelled on the cpt files of GMT.
@@ -162,21 +163,25 @@ public class GMTColorPalette {
         }
 
         Color getColor(double val) {
-            return new Color(linearInterp(min,
-                                          minColor.getRed(),
-                                          max,
-                                          maxColor.getRed(),
-                                          val) / 256f,
-                             linearInterp(min,
-                                          minColor.getGreen(),
-                                          max,
-                                          maxColor.getGreen(),
-                                          val) / 256f,
-                             linearInterp(min,
-                                          minColor.getBlue(),
-                                          max,
-                                          maxColor.getBlue(),
-                                          val) / 256f);
+            float r = linearInterp(min,
+                                   minColor.getRed(),
+                                   max,
+                                   maxColor.getRed(),
+                                   val) / 256f;
+            r = makeInZeroOneRange(r);
+            float g = linearInterp(min,
+                                   minColor.getGreen(),
+                                   max,
+                                   maxColor.getGreen(),
+                                   val) / 256f;
+            g = makeInZeroOneRange(g);
+            float b = linearInterp(min,
+                                   minColor.getBlue(),
+                                   max,
+                                   maxColor.getBlue(),
+                                   val) / 256f;
+            b = makeInZeroOneRange(b);
+            return new Color(r, g, b);
         }
 
         public float linearInterp(double Xa,
@@ -186,6 +191,12 @@ public class GMTColorPalette {
                                   double val) {
             if(val == Ya) { return (float)Xa; }
             return (float)(Ya + (Yb - Ya) * (val - Xa) / (Xb - Xa));
+        }
+        
+        public static float makeInZeroOneRange(float f) {
+            if (f < 0) return 0;
+            if (f > 1) return 1;
+            return f;
         }
 
         double min, max;

@@ -25,31 +25,102 @@ public class StackComplexityResult {
 		this.crust2diff = crust2diff;
 	}
 
-	int hksummary_id;
+    
+    public float getBestH() {
+        return bestH;
+    }
 
-	float complexity;
+    
+    public float getBestHStdDev() {
+        return bestHStdDev;
+    }
 
-	float complexity25;
+    
+    public float getBestK() {
+        return bestK;
+    }
 
-	float complexity50;
+    
+    public float getBestKStdDev() {
+        return bestKStdDev;
+    }
 
-	float bestH;
+    
+    public float getBestVal() {
+        return bestVal;
+    }
 
-	float bestHStdDev;
+    
+    public float getComplexity() {
+        return complexity;
+    }
 
-	float bestK;
+    
+    public float getComplexity25() {
+        return complexity25;
+    }
 
-	float bestKStdDev;
+    
+    public float getComplexity50() {
+        return complexity50;
+    }
 
-	float bestVal;
+    
+    public float getCrust2diff() {
+        return crust2diff;
+    }
 
-	float hkCorrelation;
+    
+    public float getHkCorrelation() {
+        return hkCorrelation;
+    }
 
-	float nextH;
+    
+    public int getHksummary_id() {
+        return hksummary_id;
+    }
 
-	float nextK;
+    
+    public float getNextH() {
+        return nextH;
+    }
 
-	float nextVal;
+    
+    public float getNextK() {
+        return nextK;
+    }
 
-	float crust2diff;
+    
+    public float getNextVal() {
+        return nextVal;
+    }
+
+
+    int hksummary_id;
+
+    float complexity;
+
+    float complexity25;
+
+    float complexity50;
+
+    float bestH;
+
+    float bestHStdDev;
+
+    float bestK;
+
+    float bestKStdDev;
+
+    float bestVal;
+
+    float hkCorrelation;
+
+    float nextH;
+
+    float nextK;
+
+    float nextVal;
+
+    float crust2diff;
 }

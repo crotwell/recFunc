@@ -218,7 +218,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
                                         rs.getFloat("kVariance"),
                                         rs.getInt("numEQ"));
         sum.setDbid(rs.getInt("hksummary_id"));
-        sum.setComplexityResidual(rs.getFloat("complexity"));
+        sum.setComplexityResult(JDBCStackComplexity.extract(rs, sum.getDbid()));
         return sum;
     }
 

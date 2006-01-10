@@ -83,7 +83,7 @@ public class HKStackImage extends JComponent {
 
         
         try {
-            BufferedReader buf = new BufferedReader(new FileReader("/seis/local/src/GMT/GMT4.0/share/cpt/GMT_wysiwyg.cpt"));
+            BufferedReader buf = new BufferedReader(new FileReader("/seis/local/External/GMT4.0/share/cpt/GMT_wysiwyg.cpt"));
             colorPallete = GMTColorPalette.load(buf).renormalize(colorMapMin, colorMapMax, Color.BLACK, Color.MAGENTA, Color.CYAN);
             
             buf.close();

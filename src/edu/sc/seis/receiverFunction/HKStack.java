@@ -465,9 +465,6 @@ public class HKStack implements Serializable {
                                                                         num - 1);
                 System.arraycopy(recursion, 0, out, 1, recursion.length);
             }
-        } catch(FissuresException e) {
-            throw new RuntimeException("problem getting residual for local maxima",
-                                       e);
         } catch(TauModelException e) {
             throw new RuntimeException("problem getting residual for local maxima",
                                        e);

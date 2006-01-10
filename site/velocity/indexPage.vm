@@ -26,7 +26,7 @@ $header
 
 <br/>
 <p>Graph results near:</p>
-<form action="hklatlon.png?gaussian=${gaussian}" method="get">
+<form action="stationsNearBy.html?gaussian=${gaussian}" method="get">
 <p>
 <label for="lat">Latitude: </label><input type="text" name="lat" value="34"/><br/>
 <label for="lon">Longitude: </label><input type="text" name="lon" value="-117"/><br/>

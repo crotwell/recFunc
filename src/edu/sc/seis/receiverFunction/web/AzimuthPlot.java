@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.servlet.http.HttpSession;
 import edu.sc.seis.fissuresUtil.gmt.ConvertExecute;
-import edu.sc.seis.fissuresUtil.gmt.PSBasemapExecute;
+import edu.sc.seis.fissuresUtil.gmt.MapCropper;
 import edu.sc.seis.fissuresUtil.gmt.PSCoastExecute;
 import edu.sc.seis.fissuresUtil.gmt.PSXYExecute;
 import edu.sc.seis.sod.velocity.event.VelocityEvent;
@@ -18,10 +18,13 @@ public class AzimuthPlot {
             IOException {
         String prefix = "azplot-";
         File psFile = File.createTempFile(prefix, ".ps", tempDir);
+        float staLat = station.my_location.latitude;
+        // -JE proj has trouble at pole
+        if (staLat == -90) {staLat = -89.999f;}
+        if (staLat == 90) {staLat = 89.999f;}
         String proj = "E" + station.getLongitude() + "/"
-                + station.getLatitude() + "/6i";
+                + staLat + "/5i";
         String region = "g";
-        //PSXYExecute.open(psFile, proj, region);
         PSCoastExecute.createMap(psFile, proj, region, "60g30", "220/220/220", false, 0, 0);
         double[][] data = new double[events.length][2];
         for(int i = 0; i < data.length; i++) {
@@ -42,7 +45,9 @@ public class AzimuthPlot {
         ConvertExecute.convert(psFile,
                                pngFile,
                                "-antialias -rotate 90");
-        //psFile.delete();
+        psFile.delete();
+        MapCropper cropper = new MapCropper(500, 650, 0, 0, 250, 125, 0, 0);
+        cropper.crop(pngFile.getAbsolutePath());
         if(session != null) {
             JFreeChartServletUtilities.registerForDeletion(pngFile,
                                                       session);

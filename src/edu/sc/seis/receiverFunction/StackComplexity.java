@@ -32,15 +32,15 @@ public class StackComplexity {
     }
 
     public HKStack getSyntheticForDist(StationResult staResult, float distDeg)
-            throws FissuresException, TauModelException {
+            throws TauModelException {
         Arrival[] arrivals = TauPUtil.getTauPUtil()
                 .calcTravelTimes(distDeg, 0, new String[] {"P"});
         return getSyntheticForRayParam(staResult,
                                        (float)arrivals[0].getRayParam() / 6371);
     }
 
-    public HKStack getSyntheticForRayParam(StationResult staResult, float flatRP)
-            throws FissuresException {
+    public HKStack getSyntheticForRayParam(StationResult staResult, float flatRP) {
+        try {
         SimpleSynthReceiverFunction synth = new SimpleSynthReceiverFunction(staResult,
                                                                             samp,
                                                                             num_points);
@@ -68,10 +68,13 @@ public class StackComplexity {
                                          RecFunc.getDefaultShift());
         synthStack.compact();
         return synthStack;
+        } catch (FissuresException e) {
+            throw new RuntimeException("should never happen as synth data should always be good and convertible to floats", e);
+        }
     }
 
     public HKStack getResidual(StationResult staResult, float distDeg)
-            throws FissuresException, TauModelException {
+            throws TauModelException {
         HKStack synthStack = getSyntheticForDist(staResult, distDeg);
         return getResidual(hkplot, synthStack);
     }

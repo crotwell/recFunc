@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.MicroSecondDate;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
@@ -159,6 +160,18 @@ public class StationList extends Revlet {
         float maxComplexity = RevUtil.getFloat("maxComplexity",
                                                req,
                                                1.0f);
+        float minVpvs = RevUtil.getFloat("minVpvs",
+                                               req,
+                                               0.0f);
+        float maxVpvs = RevUtil.getFloat("maxVpvs",
+                                               req,
+                                               3.0f);
+        float minH = RevUtil.getFloat("minH",
+                                         req,
+                                         -90.0f);
+        float maxH = RevUtil.getFloat("maxH",
+                                         req,
+                                         99999.0f);
         Iterator it = stationList.iterator();
         HashMap summary = new HashMap();
         while(it.hasNext()) {
@@ -173,7 +186,11 @@ public class StationList extends Revlet {
                                                                    gaussianWidth,
                                                                    minPercentMatch,
                                                                    false);
-                if (sumStack.getComplexityResidual() <= maxComplexity) {
+                float bestVpvs = sumStack.getComplexityResult().getBestK();
+                float bestH = (float)sumStack.getComplexityResult().getBestH();
+                if (sumStack.getComplexityResidual() <= maxComplexity &&
+                        bestVpvs >= minVpvs && bestVpvs <= maxVpvs &&
+                        bestH >= minH && bestH <= maxH) {
                     summary.put(sta, sumStack);
                 }
             } catch(NotFound e) {

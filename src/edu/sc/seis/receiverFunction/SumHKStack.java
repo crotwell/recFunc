@@ -24,6 +24,7 @@ import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
+import edu.sc.seis.receiverFunction.server.StackComplexityResult;
 
 public class SumHKStack {
 
@@ -104,19 +105,18 @@ public class SumHKStack {
         return numEQ;
     }
     
-    public float getResidualPower() throws FissuresException, TauModelException {
+    public float getResidualPower() throws TauModelException {
         return getResidualPower(0);
     }
     
-    public float getResidualPower(float percentFloor) throws FissuresException,
-			TauModelException {
+    public float getResidualPower(float percentFloor) throws TauModelException {
 		float floor = percentFloor * getSum().getMaxValue(getSmallestH());
 		float residualPower = getResidual().getPower(floor)
 				/ getSum().getPower(floor);
 		return residualPower;
 	}
     
-    public HKStack getResidual() throws FissuresException, TauModelException {
+    public HKStack getResidual() throws TauModelException {
         StationResultRef earsStaRef = new StationResultRef( "Global Maxima", "ears", "ears");
         StationResult result = new StationResult(getChannel().get_id().network_id,
                                                  getChannel().get_id().station_code,
@@ -513,27 +513,17 @@ public class SumHKStack {
         this.dbid = dbid;
     }
 
+    public StackComplexityResult getComplexityResult() {
+        return complexityResult;
+    }
     
     public float getComplexityResidual() {
-        if (complexityResidual == -1) {
-            try {
-            complexityResidual = getResidualPower();
-            } catch (TauModelException e) {
-                // oh well...
-                GlobalExceptionHandler.handle(e);
-                complexityResidual = -2;
-            } catch(FissuresException e) {
-                // oh well...
-                GlobalExceptionHandler.handle(e);
-                complexityResidual = -3;
-            }
-        }
-        return complexityResidual;
+        return complexityResult.getComplexity();
     }
 
     
-    public void setComplexityResidual(float complexityResidual) {
-        this.complexityResidual = complexityResidual;
+    public void setComplexityResult(StackComplexityResult complexityResidual) {
+        this.complexityResult = complexityResidual;
     }
 
     public String formatComplexityResidual() {
@@ -564,7 +554,7 @@ public class SumHKStack {
     
     protected int dbid = -1;
     
-    protected float complexityResidual = -1;
+    protected StackComplexityResult complexityResult = null;
 
     private static DecimalFormat vpvsFormat = new DecimalFormat("0.000");
 

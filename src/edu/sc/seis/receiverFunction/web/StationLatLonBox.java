@@ -17,6 +17,7 @@ import edu.iris.Fissures.LocationType;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.ConfigurationException;
@@ -74,6 +75,13 @@ public class StationLatLonBox extends StationList {
                             ArrayList stationList,
                             HashMap summary) {
         summary = cleanSummaries(stationList, summary);
+        makeChart(req, context, stationList, summary);
+    }
+
+    public static void makeChart(HttpServletRequest req,
+                            RevletContext context,
+                            ArrayList stationList,
+                            HashMap summary) {
         String titleString = "Ears results";
         JFreeChart chart = HKLatLonPlot.getChart(req,
                                                  stationList,
@@ -95,8 +103,7 @@ public class StationLatLonBox extends StationList {
             context.put("imagemap", ImageMapUtilities.getImageMap(filename,
                                                                   info));
         } catch(IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            GlobalExceptionHandler.handle(e);
         }
         return;
     }

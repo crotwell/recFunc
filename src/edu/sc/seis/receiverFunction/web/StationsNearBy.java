@@ -2,6 +2,7 @@ package edu.sc.seis.receiverFunction.web;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.LocationType;
@@ -55,6 +56,14 @@ public class StationsNearBy extends StationList {
             }
         }
         return stationList;
+    }
+
+    public void postProcess(HttpServletRequest req,
+                            RevletContext context,
+                            ArrayList stationList,
+                            HashMap summary) {
+        summary = cleanSummaries(stationList, summary);
+        StationLatLonBox.makeChart(req, context, stationList, summary);
     }
     
     public static final QuantityImpl ZERO_KM = new QuantityImpl(0, UnitImpl.KILOMETER);

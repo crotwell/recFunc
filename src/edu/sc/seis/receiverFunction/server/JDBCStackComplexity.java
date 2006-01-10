@@ -7,6 +7,8 @@ import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+
 public class JDBCStackComplexity extends JDBCTable {
 
 	public JDBCStackComplexity(JDBCSummaryHKStack jdbcSummaryHKStack)
@@ -57,7 +59,10 @@ public class JDBCStackComplexity extends JDBCTable {
 			put.setFloat(index++, nextVal);
 			put.setFloat(index++, crust2diff);
 			put.executeUpdate();
-		}
+		} catch (SQLException e) {
+                        GlobalExceptionHandler.handle(get.toString(), e);
+                        throw e;
+                }
 	}
 
 	/**
@@ -67,24 +72,28 @@ public class JDBCStackComplexity extends JDBCTable {
         get.setInt(1, hksummary_id);
         ResultSet rs = get.executeQuery();
         if(rs.next()) {
-        	StackComplexityResult out = new StackComplexityResult(
-        			hksummary_id,
-            rs.getFloat("complexity"),
-            rs.getFloat("complexity25"),
-            rs.getFloat("complexity50"),
-            rs.getFloat("bestH"),
-            rs.getFloat("bestHStdDev"),
-            rs.getFloat("bestK"),
-            rs.getFloat("bestKStdDev"),
-            rs.getFloat("bestVal"),
-            rs.getFloat("hkCorrelation"),
-            rs.getFloat("nextH"),
-            rs.getFloat("nextK"),
-            rs.getFloat("nextVal"),
-            rs.getFloat("crust2diff"));
-            return out;
+            return extract(rs, hksummary_id);
         }
         throw new NotFound();
+    }
+    
+    public static StackComplexityResult extract(ResultSet rs, int hksummary_id) throws SQLException {
+        StackComplexityResult out = new StackComplexityResult(
+                hksummary_id,
+        rs.getFloat("complexity"),
+        rs.getFloat("complexity25"),
+        rs.getFloat("complexity50"),
+        rs.getFloat("bestH"),
+        rs.getFloat("bestHStdDev"),
+        rs.getFloat("bestK"),
+        rs.getFloat("bestKStdDev"),
+        rs.getFloat("bestVal"),
+        rs.getFloat("hkCorrelation"),
+        rs.getFloat("nextH"),
+        rs.getFloat("nextK"),
+        rs.getFloat("nextVal"),
+        rs.getFloat("crust2diff"));
+        return out;
     }
 	PreparedStatement put, get, update;
 

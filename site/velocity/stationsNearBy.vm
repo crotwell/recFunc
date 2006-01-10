@@ -19,6 +19,37 @@ $header
 
 <p><b>Stations within $delta degrees of ($lat, $lon)</p>
 
+<p><img src="DisplayChart?filename=${plotname}" usemap="#${plotname}" /></p>
+$imagemap
+
+<form action="stationsNearBy.html?gaussian=${gaussian}" method="get">
+<p>
+<label for="lat">Latitude: </label><input type="text" name="lat" value="$lat"/><br/>
+<label for="lon">Longitude: </label><input type="text" name="lon" value="$lon"/><br/>
+<label for="delta">Delta: </label><input type="text" name="delta" value="$delta"/><br/>
+
+<label for="xAxis">X Axis: </label>
+<input type="radio" name="xAxis" value="lat"> Latitude
+<input type="radio" name="xAxis" value="lon" checked="true"> Longitude
+<input type="radio" name="xAxis" value="H"> Thickness
+<input type="radio" name="xAxis" value="vpvs"> Vp/Vs<br/>
+
+<label for="yAxis">Y Axis: </label>
+<input type="radio" name="yAxis" value="lat" checked="true"> Latitude
+<input type="radio" name="yAxis" value="lon"> Longitude
+<input type="radio" name="yAxis" value="H"> Thickness
+<input type="radio" name="yAxis" value="vpvs"> Vp/Vs<br/>
+
+<label for="zAxis">Z (Color) Axis: </label>
+<input type="radio" name="zAxis" value="lat"> Latitude
+<input type="radio" name="zAxis" value="lon"> Longitude
+<input type="radio" name="zAxis" value="H" checked="true"> Thickness
+<input type="radio" name="zAxis" value="vpvs"> Vp/Vs<br/>
+
+<input type="submit" value="Send"/>
+    </p>
+ </form>
+ 
 <table class="ruler sortable" id="dumb">
 <tr>
 <td class="headodd initiallySorted ascending">Net</td>

@@ -1,6 +1,9 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -117,9 +120,17 @@ public class HKLatLonPlot extends HttpServlet {
             minZ = 0;
             maxZ = 0;
         }
+        GMTColorPalette colorPallete;
+        try {
+            BufferedReader buf = new BufferedReader(new FileReader("/seis/local/External/GMT4.0/share/cpt/GMT_seis.cpt"));
+            colorPallete = GMTColorPalette.load(buf).renormalize(minZ, maxZ, Color.BLACK, Color.MAGENTA, Color.CYAN);
+            buf.close();
+        } catch (IOException e) {
+            logger.warn(e);
+            colorPallete = GMTColorPalette.getDefault(minZ, maxZ);
+        }
         ZColorXYDotRenderer renderer = new ZColorXYDotRenderer(dataset,
-                                                               GMTColorPalette.getDefault(minZ,
-                                                                                          maxZ));
+                                                               colorPallete);
         renderer.setToolTipGenerator(new StationSummaryTooltipGenerator(dataset));
         renderer.setURLGenerator(new StationSummaryUrlGenerator(dataset, gaussianWidth));
         chart.getXYPlot().setRenderer(renderer);

@@ -1,40 +1,7 @@
-#macro( tablerow $items )
-#set( $row = "" )
-#set( $td = "$tdodd" )
-#foreach( $i in $items)
-#set( $row = "${row}${td}${i}${tdend}" )
-#if($td == $tdodd)
-#set( $td = "$tdeven")
-#else
-#set( $td = "$tdodd")
-#end
-#end
-${tr}$row${trend}
-#end
-#macro( tablehead $items )
-#set( $row = "" )
-#set( $td = "$tdhead" )
-#foreach( $i in $items)
-#set( $row = "${row}${td}${i}${tdend}" )
-#end
-${tr}$row${trend}
-#end
-##
-#set( $tdhead = '' )
-#set( $tdeven = '' )
-#set( $tdodd = '' )
-#set( $tdend = '' )
-#set( $tr = '' )
-#set( $trend = "" )
-#set( $tdend = ',' )
-##
-#set($items = [ "", "", "", "", "EARS", "", "", "", "", "", "", $name, "", "", "", "" ] )
-#tablehead( $items )
-#set( $items = [ "Net", "Station", "Name", "Lat", "Lon", "Est. Thick", "StdDev", "Est. Vp/Vs", "StdDev", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Complexity", "Thick", "Vp/Vs", "Vp", "Vs", "Poissons Ratio" ] )
-#tablehead( $items )
+,,,,,EARS,,,,,,,,, $name,,,,
+Net,Station,Name,Lat,Lon,Est. Thick,StdDev,Est. Vp/Vs,StdDev,Assumed Vp,Vs,Poissons Ratio,Num EQ,Complexity,Thick,Vp/Vs,Vp,Vs,Poissons Ratio
 #foreach($sta in $stationList)##
 #foreach($priorR in $prior.get($sta))
-#set( $items = [ "$sta.getNet().getCodeWithYear()", "$sta.getCode()", $name, "$sta.getLatitude(), $sta.getLongitude()", "$!summary.get($sta).getSum().formatMaxValueH()", "$fissures.formatQuantity($!summary.get($sta).getHStdDev())", "$!summary.get($sta).getSum().formatMaxValueK()", "$!summary.get($sta).formatKStdDev()", "$!summary.get($sta).getSum().formatAlpha()", "$!summary.get($sta).getSum().formatVs()", "$!summary.get($sta).getSum().formatPoissonsRatio()", "$!summary.get($sta).numEQ", "$!summary.get($sta).formatComplexityResidual()", "$!priorR.formatH()", "$!priorR.formatVpVs()", "$!priorR.formatVp()", "$!priorR.formatVs()", "$!priorR.formatPoissonsRatio()" ] )
-#tablerow( $items )
+$sta.getNet().getCodeWithYear(),$sta.getCode(),$name,$sta.getLatitude(),$sta.getLongitude(),$!summary.get($sta).getSum().formatMaxValueH(),$fissures.formatQuantity($!summary.get($sta).getHStdDev()),$!summary.get($sta).getSum().formatMaxValueK(),$!summary.get($sta).formatKStdDev(),$!summary.get($sta).getSum().formatAlpha(),$!summary.get($sta).getSum().formatVs(),$!summary.get($sta).getSum().formatPoissonsRatio(),$!summary.get($sta).numEQ,$!summary.get($sta).formatComplexityResidual(),$!priorR.formatH(),$!priorR.formatVpVs(),$!priorR.formatVp(),$!priorR.formatVs(),$!priorR.formatPoissonsRatio()
 #end
 #end

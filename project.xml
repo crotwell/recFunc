@@ -145,7 +145,7 @@
         </dependency>
         <dependency>
             <id>gee</id>
-            <version>2.1.4beta</version>
+            <version>2.1.4</version>
         </dependency>
         <dependency>
             <id>sod</id>

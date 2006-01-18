@@ -12,6 +12,14 @@ perl -nae 'print "$F[12]\n"' depth_vpvs.txt | pshistogram -JXh -W20 -L1g -V > ${
 pstopdf ${OUT}.ps 
 rm ${OUT}.ps 
 
+#
+echo histogram of diff to crust2.0
+#
+OUT=crust2_histo
+perl -nae '$a=$F[14]-$F[5];print "$a\n"' depth_vpvs.txt | pshistogram -JXh -W5 -L1g -V -B:."Diff to Crust2 Histogram": > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
 
 #
 echo histogram of complexity
@@ -25,18 +33,6 @@ rm ${OUT}.ps
 echo num eq vs complexity
 OUT=numeqVsComplexity
 psbasemap -JX6i/6il -R0/1/1/1000 -K  -B.1:"Complexity":/100:"Num EQ"::."NumEQ vs. Complexity": > ${OUT}.ps
-perl -nae 'print "$F[13] $F[12]\n"' depth_vpvs.txt | psxy -O -JX -R -Sc.03 >> ${OUT}.ps
-pstopdf ${OUT}.ps
-rm ${OUT}.ps
-
-echo EARS vs Crust2 for all
-#
-OUT=ears_crust2_H
-perl -nae 'print "$F[14] $F[5]\n"' depth_vpvs.txt | psxy -K -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/:"EARS Thickness"::."EARS vs Crust2.0":WeSn > ${OUT}.ps
-psxy -O -JX -R >> ${OUT}.ps <<END
-0 0
-100 100
-END
 pstopdf ${OUT}.ps
 rm ${OUT}.ps
 
@@ -54,10 +50,41 @@ rm ${OUT}.ps
 echo EARS - Crust2 vs complexity for all
 #
 OUT=ears-crust2_vs_complexity_H
-perl -nae '$a=$F[14]-$F[5]; print "$F[13] $a\n"' depth_vpvs.txt | psxy -K -JX6i -R0/1/-80/80 -Sc.1 -B.10:"Complexity":/10:"Crust2.0 Thickness - EARS Thickness"::."EARS - Crust2.0 vs Complexity":WeSn > ${OUT}.ps
+touch ${OUT}.ps
+perl -nae 'if ($F[7] > 1.7 && $F[7] < 1.85 ) {$a=$F[14]-$F[5]; print "$F[13] $a\n";}' depth_vpvs.txt | psxy -K -JX6i -R0/1/-80/80 -Sc.1 -G0/255/0 -B.10:"Complexity":/10:"Crust2.0 Thickness - EARS Thickness"::."EARS - Crust2.0 vs Complexity":WeSn >> ${OUT}.ps
+perl -nae 'if ($F[7] <= 1.7 ) {$a=$F[14]-$F[5]; print "$F[13] $a\n";}' depth_vpvs.txt | psxy -O -K -JX6i -R0/1/-80/80 -Sc.1 -G255/0/0 -B.10:"Complexity":/10:"Crust2.0 Thickness - EARS Thickness"::."EARS - Crust2.0 vs Complexity":WeSn >> ${OUT}.ps
+perl -nae 'if ($F[7] >= 1.85 ) {$a=$F[14]-$F[5]; print "$F[13] $a\n";}' depth_vpvs.txt | psxy -O -K -JX6i -R0/1/-80/80 -Sc.1 -G0/0/255 -B.10:"Complexity":/10:"Crust2.0 Thickness - EARS Thickness"::."EARS - Crust2.0 vs Complexity":WeSn >> ${OUT}.ps
 psxy -O -JX -R >> ${OUT}.ps <<END
 0 0
 100 100
+END
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+
+echo EARS - Crust2 vs bootstrap h error for all
+#
+OUT=ears-crust2_vs_bootstrap_h
+touch ${OUT}.ps
+perl -nae 'if ($F[7] > 1.7 && $F[7] < 1.85 ) {$a=$F[14]-$F[5]; print "$F[6] $a\n";}' depth_vpvs.txt | psxy -K -JX6i -R0/18/-80/80 -Sc.1 -G0/255/0 -B1.0:"Bootstrap H":/10:"Crust2.0 Thickness - EARS Thickness"::."EARS - Crust2.0 vs Bootstrap H":WeSn >> ${OUT}.ps
+perl -nae 'if ($F[7] <= 1.7 ) {$a=$F[14]-$F[5]; print "$F[6] $a\n";}' depth_vpvs.txt | psxy -O -K -JX6i -R -Sc.1 -G255/0/0  >> ${OUT}.ps
+perl -nae 'if ($F[7] >= 1.85 ) {$a=$F[14]-$F[5]; print "$F[6] $a\n";}' depth_vpvs.txt | psxy -O -K -JX6i -R -Sc.1 -G0/0/255  >> ${OUT}.ps
+psxy -O -JX -R >> ${OUT}.ps <<END
+0 0
+100 0
+END
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+
+echo Complexity vs bootstrap h error for all
+#
+OUT=complexity_vs_bootstrap_h
+touch ${OUT}.ps
+perl -nae 'if ($F[7] > 1.7 && $F[7] < 1.85 ) {print "$F[6] $F[13]\n";}' depth_vpvs.txt | psxy -K -JX6i -R0/18/0/1 -Sc.1 -G0/255/0 -B1.0:"Bootstrap H":/.1:"Complexity"::."Complexity vs Bootstrap H":WeSn >> ${OUT}.ps
+perl -nae 'if ($F[7] <= 1.7 ) {$a=$F[14]-$F[5]; print "$F[6] $F[13]\n";}' depth_vpvs.txt | psxy -O -K -JX6i -R -Sc.1 -G255/0/0  >> ${OUT}.ps
+perl -nae 'if ($F[7] >= 1.85 ) {$a=$F[14]-$F[5]; print "$F[6] $F[13]\n";}' depth_vpvs.txt | psxy -O -K -JX6i -R -Sc.1 -G0/0/255  >> ${OUT}.ps
+psxy -O -JX -R >> ${OUT}.ps <<END
+0 0.4
+100 0.4
 END
 pstopdf ${OUT}.ps
 rm ${OUT}.ps
@@ -88,9 +115,200 @@ END
 pstopdf ${OUT}.ps
 rm ${OUT}.ps
 
-open ${OUT}.pdf
-echo Exiting early
-exit 1
+#open ${OUT}.pdf
+
+######################
+# crust types:
+######################
+/bin/rm -f lines.ps
+psxy -K -JX6i -R0/80/0/80 -M > lines.ps <<END
+0 0
+100 100
+>>
+0 2.5
+100 102.5
+>>
+0 -2.5
+100 97.5
+>>
+0 5
+100 105
+>>
+0 -5
+100 95
+>>
+0 -10
+100 90
+>>
+0 10
+100 110
+END
+
+echo EARS vs Crust2 for all
+#
+OUT=ears_crust2_H
+cp lines.ps ${OUT}.ps
+perl -nae 'print "$F[14] $F[5]\n";' depth_vpvs.txt | psxy -O -JX -R -Sc.1 -B10:"Crust2.0 Thickness":/:"EARS Thickness"::."EARS vs Crust2.0":WeSn >> ${OUT}.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+
+
+OUT=Archean
+echo $OUT
+cp lines.ps ${OUT}.ps
+cat depth_vpvs.txt | perl -nae 'if ($F[19]=~/^[FG]./) {print "$F[14] $F[5]\n";}' - | psxy -O -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/10:"EARS Thickness"::."EARS vs Crust2.0 for $OUT":WeSn >> ${OUT}.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+#
+echo $OUT histogram 
+TITLE=Diff to Crust2 Histogram ${OUT}
+OUT=${OUT}_histo
+perl -nae 'if ($F[19]=~/^[FG]./) {$a=abs($F[14]-$F[5]);print "$a\n";}' depth_vpvs.txt | pshistogram -JXh -W2.5 -L1g -V -B:."${TITLE}": > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
+OUT=Platform
+echo $OUT
+cp lines.ps ${OUT}.ps
+cat depth_vpvs.txt | perl -nae 'if ($F[19]=~/^[DE]./) {print "$F[14] $F[5]\n";}' - | psxy -O -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/10:"EARS Thickness"::."EARS vs Crust2.0 for $OUT":WeSn >> ${OUT}.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+#
+echo $OUT histogram 
+TITLE=Diff to Crust2 Histogram ${OUT}
+OUT=${OUT}_histo
+perl -nae 'if ($F[19]=~/^[DE]./) {$a=abs($F[14]-$F[5]);print "$a\n";}' depth_vpvs.txt | pshistogram -JXh -W2.5 -L1g -V -B:."${TITLE}": > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
+OUT=early_mid_proter
+echo $OUT
+cp lines.ps ${OUT}.ps
+cat depth_vpvs.txt | perl -nae 'if ($F[19]=~/^[H]./) {print "$F[14] $F[5]\n";}' - | psxy -O -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/10:"EARS Thickness"::."EARS vs Crust2.0 for $OUT":WeSn >> ${OUT}.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+#
+echo $OUT histogram 
+TITLE=Diff to Crust2 Histogram ${OUT}
+OUT=${OUT}_histo
+perl -nae 'if ($F[19]=~/^[H]./) {$a=abs($F[14]-$F[5]);print "$a\n";}' depth_vpvs.txt | pshistogram -JXh -W2.5 -L1g -V -B:."${TITLE}": > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
+OUT=late_proter
+echo $OUT
+cp lines.ps ${OUT}.ps
+cat depth_vpvs.txt | perl -nae 'if ($F[19]=~/^[I]./) {print "$F[14] $F[5]\n";}' - | psxy -O -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/10:"EARS Thickness"::."EARS vs Crust2.0 for $OUT":WeSn >> ${OUT}.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+#
+echo $OUT histogram 
+TITLE=Diff to Crust2 Histogram ${OUT}
+OUT=${OUT}_histo
+perl -nae 'if ($F[19]=~/^[I]./) {$a=abs($F[14]-$F[5]);print "$a\n";}' depth_vpvs.txt | pshistogram -JXh -W2.5 -L1g -V -B:."${TITLE}": > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
+OUT=extended_crust
+echo $OUT
+cp lines.ps ${OUT}.ps
+cat depth_vpvs.txt | perl -nae 'if ($F[19]=~/^[MN]./) {print "$F[14] $F[5]\n";}' - | psxy -O -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/10:"EARS Thickness"::."EARS vs Crust2.0 for $OUT":WeSn >> ${OUT}.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+#
+echo $OUT histogram 
+TITLE=Diff to Crust2 Histogram ${OUT}
+OUT=${OUT}_histo
+perl -nae 'if ($F[19]=~/^[MN]./) {$a=abs($F[14]-$F[5]);print "$a\n";}' depth_vpvs.txt | pshistogram -JXh -W2.5 -L1g -V -B:."${TITLE}": > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
+OUT=orogen
+echo $OUT
+cp lines.ps ${OUT}.ps
+cat depth_vpvs.txt | perl -nae 'if ($F[19]=~/^[OPQR]./) {print "$F[14] $F[5]\n";}' - | psxy -O -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/10:"EARS Thickness"::."EARS vs Crust2.0 for $OUT":WeSn >> ${OUT}.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+#
+echo $OUT histogram 
+TITLE=Diff to Crust2 Histogram ${OUT}
+OUT=${OUT}_histo
+perl -nae 'if ($F[19]=~/^[OPQR]./) {$a=abs($F[14]-$F[5]);print "$a\n";}' depth_vpvs.txt | pshistogram -JXh -W2.5 -L1g -V -B:."${TITLE}": > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
+OUT=Phanerozoic
+echo $OUT
+cp lines.ps ${OUT}.ps
+cat depth_vpvs.txt | perl -nae 'if ($F[19]=~/^[Z]./) {print "$F[14] $F[5]\n";}' - | psxy -O -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/10:"EARS Thickness"::."EARS vs Crust2.0 for $OUT":WeSn >> ${OUT}.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+#
+echo $OUT histogram 
+TITLE=Diff to Crust2 Histogram ${OUT}
+OUT=${OUT}_histo
+perl -nae 'if ($F[19]=~/^[Z]./) {$a=abs($F[14]-$F[5]);print "$a\n";}' depth_vpvs.txt | pshistogram -JXh -W2.5 -L1g -V -B:."${TITLE}": > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
+OUT=margin_shield_trans
+echo $OUT
+cp lines.ps ${OUT}.ps
+cat depth_vpvs.txt | perl -nae 'if ($F[19]=~/^[T]./) {print "$F[14] $F[5]\n";}' - | psxy -O -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/10:"EARS Thickness"::."EARS vs Crust2.0 for $OUT":WeSn >> ${OUT}.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+#
+echo $OUT histogram 
+TITLE=Diff to Crust2 Histogram ${OUT}
+OUT=${OUT}_histo
+perl -nae 'if ($F[19]=~/^[T]./) {$a=abs($F[14]-$F[5]);print "$a\n";}' depth_vpvs.txt | pshistogram -JXh -W2.5 -L1g -V -B:."${TITLE}": > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
+OUT=margin_shield
+echo $OUT
+cp lines.ps ${OUT}.ps
+cat depth_vpvs.txt | perl -nae 'if ($F[19]=~/^[U]./) {print "$F[14] $F[5]\n";}' - | psxy -O -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/10:"EARS Thickness"::."EARS vs Crust2.0 for $OUT":WeSn >> ${OUT}.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+#
+echo $OUT histogram 
+TITLE=Diff to Crust2 Histogram ${OUT}
+OUT=${OUT}_histo
+perl -nae 'if ($F[19]=~/^[U]./) {$a=abs($F[14]-$F[5]);print "$a\n";}' depth_vpvs.txt | pshistogram -JXh -W2.5 -L1g -V -B:."${TITLE}": > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
+OUT=rift
+echo $OUT
+cp lines.ps ${OUT}.ps
+cat depth_vpvs.txt | perl -nae 'if ($F[19]=~/^[X]./) {print "$F[14] $F[5]\n";}' - | psxy -O -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/10:"EARS Thickness"::."EARS vs Crust2.0 for $OUT":WeSn >> ${OUT}.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+#
+echo $OUT histogram 
+TITLE=Diff to Crust2 Histogram ${OUT}
+OUT=${OUT}_histo
+perl -nae 'if ($F[19]=~/^[X]./) {$a=abs($F[14]-$F[5]);print "$a\n";}' depth_vpvs.txt | pshistogram -JXh -W2.5 -L1g -V -B:."${TITLE}": > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
+OUT=other
+echo $OUT
+cp lines.ps ${OUT}.ps
+cat depth_vpvs.txt | perl -nae 'if ($F[19]=~/^[^DEFGHIMNOPQRTUXZ]./) {print "$F[14] $F[5]\n";}' - | psxy -O -JX6i -R0/80/0/80 -Sc.1 -B10:"Crust2.0 Thickness":/10:"EARS Thickness"::."EARS vs Crust2.0 for $OUT":WeSn >> ${OUT}.ps
+pstopdf ${OUT}.ps
+rm ${OUT}.ps
+#
+echo $OUT histogram 
+TITLE=Diff to Crust2 Histogram ${OUT}
+OUT=${OUT}_histo
+perl -nae 'if ($F[19]=~/^[^DEFGHIMNOPQRTUXZ]./) {$a=abs($F[14]-$F[5]);print "$a\n";}' depth_vpvs.txt | pshistogram -JXh -W2.5 -L1g -V -B:."${TITLE}": > ${OUT}.ps
+pstopdf ${OUT}.ps 
+rm ${OUT}.ps 
+
+#
+
 
 #
 echo EARS vs Crust2 for IU/II/IC

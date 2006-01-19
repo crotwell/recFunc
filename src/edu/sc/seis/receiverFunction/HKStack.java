@@ -786,6 +786,11 @@ public class HKStack implements Serializable {
      * Compacts the complex values for the three phases, Ps, PpPs, PsPs, into a
      * single Cmplx array, thereby cutting memory usage by factor 3, and likely
      * CPU by the same during stacking.
+     * 
+     * Note that the PsPs phase is opposite polarity, so subtract. Also this is
+     * complex subtraction of unit vectors, so sub is correct. It is not phase 
+     * subtraction, in which case minus would be wrong as need a 180 phase shift.
+     * Lucky thing complex math takes care of this!
      */
     public void compact() {
         compactAnalyticPhase = new CmplxArray2D(analyticPs.getXLength(),

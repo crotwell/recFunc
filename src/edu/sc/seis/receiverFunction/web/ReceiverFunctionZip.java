@@ -2,6 +2,7 @@ package edu.sc.seis.receiverFunction.web;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
@@ -15,14 +16,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
+import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.bag.Rotate;
+import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.sac.FissuresToSac;
+import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
@@ -77,6 +81,9 @@ public class ReceiverFunctionZip extends HttpServlet {
             ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(res.getOutputStream()));
             DataOutputStream dos = new DataOutputStream(zip);
             ArrayList knownEntries = new ArrayList();
+
+            String[] pPhases = {"P"};
+            TauPUtil tauPTime = TauPUtil.getTauPUtil(HKStack.modelName);
             for(int i = 0; i < result.length; i++) {
                 VelocityEvent event = new VelocityEvent(new CacheEvent(result[i].event_attr,
                                                                        result[i].prefOrigin));
@@ -85,7 +92,7 @@ public class ReceiverFunctionZip extends HttpServlet {
                 for(int rfType = 0; rfType < 2; rfType++) {
                     String entryName = TOP_ZIP_DIR + "gauss_"+gaussianWidth+"/"+sta.getNetCode() + "."
                             + sta.getCode() + "/"
-                            + event.getTime("yyyy_DDD_HH_mm_ss") + (rfType == 0 ? ".itr" : "itt");
+                            + event.getTime("yyyy_DDD_HH_mm_ss") + (rfType == 0 ? ".itr" : ".itt");
                     String origEntryName = entryName;
                     int j = 2;
                     while(knownEntries.contains(entryName)) {
@@ -108,6 +115,14 @@ public class ReceiverFunctionZip extends HttpServlet {
                     sac.kuser0 = "% match ";
                     sac.user1 = result[i].config.gwidth;
                     sac.kuser1 = "gwidth";
+                    Arrival[] arrivals = tauPTime.calcTravelTimes(result[i].channels[0].my_site.my_station,
+                                                                  result[i].prefOrigin,
+                                                                  pPhases);
+                    // convert radian per sec ray param into km per sec
+                    float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
+                            .getRadiusOfEarth());
+                    sac.user2 = kmRayParam;
+                    sac.kuser2 = "rayparam";
                     sac.writeHeader(dos);
                     sac.writeData(dos);
                     dos.flush();
@@ -124,6 +139,9 @@ public class ReceiverFunctionZip extends HttpServlet {
                 zip.closeEntry();
             }
             zip.close();
+        } catch(EOFException e) {
+            // client has closed the connection, so not much we can do...
+            return;
         } catch(Exception e) {
             Revlet.sendToGlobalExceptionHandler(req, e);
             throw new ServletException(e);

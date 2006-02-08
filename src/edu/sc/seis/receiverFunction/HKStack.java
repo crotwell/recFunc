@@ -1313,7 +1313,7 @@ public class HKStack implements Serializable {
     private static final QuantityImpl DEFAULT_SMALLEST_H = new QuantityImpl(25,
                                                                             UnitImpl.KILOMETER);
 
-    static String modelName = "iasp91";
+    public static String modelName = "iasp91";
 
     transient static Crust2 crust2 = null;
 

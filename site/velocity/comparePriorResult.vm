@@ -66,21 +66,20 @@ $header
 <p>View results as <a href="comparePriorResult.txt?$req.getQueryString()">text</a></p>
 
 <table class="ruler sortable" id="dumb">
-<th><td colspan="3"/><td class="headodd" colspan="9">EARS</td><td class="headodd" colspan="5">$name</td></th>
+<th><td colspan="3"/><td class="headodd" colspan="9">EARS</td><td class="headodd" colspan="6">$name</td></th>
 
-#set( $items = [ "Net", "Station", "Name", "Lat/Lon", "Est. Thick", "StdDev", "Est. Vp/Vs", "StdDev", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Complexity", "Thick", "Vp/Vs", "Vp", "Vs", "Poissons Ratio" ] )
+#set( $items = [ "Net", "Station", "Name", "Lat/Lon", "Est. Thick", "StdDev", "Est. Vp/Vs", "StdDev", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Complexity", "Thick", "Vp/Vs", "Vp", "Vs", "Poissons Ratio", "H diff", "Extras" ] )
 #tablehead( $items )
 
 #foreach($sta in $stationList)
 #set( $staurl = "station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}" )
 #set( $stalink = "#link( $staurl $sta.getName() )" )
 #foreach($priorR in $prior.get($sta))
-#set( $items = [ "$sta.getNet().getCodeWithYear()", "$sta.getCode()", $stalink, "$sta.getLatitude()/$sta.getLongitude()", "$!summary.get($sta).getSum().formatMaxValueH()", "$fissures.formatQuantity($!summary.get($sta).getHStdDev())", "$!summary.get($sta).getSum().formatMaxValueK()", "$!summary.get($sta).formatKStdDev()", "$!summary.get($sta).getSum().formatAlpha()", "$!summary.get($sta).getSum().formatVs()", "$!summary.get($sta).getSum().formatPoissonsRatio()", "$!summary.get($sta).numEQ", "$!summary.get($sta).formatComplexityResidual()", "$!priorR.formatH()", "$!priorR.formatVpVs()", "$!priorR.formatVp()", "$!priorR.formatVs()", "$!priorR.formatPoissonsRatio()" ] )
+#set( $items = [ "$sta.getNet().getCodeWithYear()", "$sta.getCode()", $stalink, "$sta.getLatitude()/$sta.getLongitude()", "$!summary.get($sta).getSum().formatMaxValueH()", "$fissures.formatQuantity($!summary.get($sta).getHStdDev())", "$!summary.get($sta).getSum().formatMaxValueK()", "$!summary.get($sta).formatKStdDev()", "$!summary.get($sta).getSum().formatAlpha()", "$!summary.get($sta).getSum().formatVs()", "$!summary.get($sta).getSum().formatPoissonsRatio()", "$!summary.get($sta).numEQ", "$!summary.get($sta).formatComplexityResidual()", "$!priorR.formatH()", "$!priorR.formatVpVs()", "$!priorR.formatVp()", "$!priorR.formatVs()", "$!priorR.formatPoissonsRatio()", "$!hDiffMap.get($priorR)", "$!priorR.formatExtras()" ] )
 #tablerow( $items )
 #end
 #end
 </table>
-
 
 <div id="footer2" align="center">
   <a href="http://seis.sc.edu">

@@ -59,26 +59,7 @@ public class StationList extends Revlet {
                                                   Start.getDefaultContext());
         Revlet.loadStandardQueryParams(req, context);
         ArrayList stationList = getStations(req, context);
-        // weed out stations with same net and station code to avoid duplicates
-        // in list
-        HashMap codeMap = new HashMap();
-        Iterator it = stationList.iterator();
-        while(it.hasNext()) {
-            Station sta = (Station)it.next();
-            String key = StationIdUtil.toStringNoDates(sta.get_id());
-            if(codeMap.containsKey(key)) {
-                Station previousSta = (Station)codeMap.get(key);
-                MicroSecondDate staBegin = new MicroSecondDate(sta.effective_time.start_time);
-                MicroSecondDate previousStaBegin = new MicroSecondDate(previousSta.effective_time.start_time);
-                if(staBegin.after(previousStaBegin)) {
-                    codeMap.put(key, sta);
-                }
-            } else {
-                codeMap.put(key, sta);
-            }
-        }
-        stationList.clear();
-        stationList.addAll(codeMap.values());
+        cleanStations(stationList);
         logger.debug("getStations done: " + stationList.size());
         HashMap summary = getSummaries(stationList, context, req);
         logger.debug("getSummaries done: " + summary.keySet().size());
@@ -172,6 +153,12 @@ public class StationList extends Revlet {
         float maxH = RevUtil.getFloat("maxH",
                                          req,
                                          99999.0f);
+        int minEQ = RevUtil.getInt("minEQ",
+                                      req,
+                                      0);
+        int maxEQ = RevUtil.getInt("maxEQ",
+                                      req,
+                                      99999);
         Iterator it = stationList.iterator();
         HashMap summary = new HashMap();
         while(it.hasNext()) {
@@ -190,7 +177,8 @@ public class StationList extends Revlet {
                 float bestH = (float)sumStack.getComplexityResult().getBestH();
                 if (sumStack.getComplexityResidual() <= maxComplexity &&
                         bestVpvs >= minVpvs && bestVpvs <= maxVpvs &&
-                        bestH >= minH && bestH <= maxH) {
+                        bestH >= minH && bestH <= maxH &&
+                        sumStack.getNumEQ() >= minEQ && sumStack.getNumEQ() <= maxEQ) {
                     summary.put(sta, sumStack);
                 }
             } catch(NotFound e) {
@@ -201,6 +189,29 @@ public class StationList extends Revlet {
         }
         logger.debug("found " + summary.size() + " summaries");
         return summary;
+    }
+
+    /** weed out stations with same net and station code to avoid duplicates
+     in list. */
+    public static void cleanStations(ArrayList stationList) {
+        HashMap codeMap = new HashMap();
+        Iterator it = stationList.iterator();
+        while(it.hasNext()) {
+            Station sta = (Station)it.next();
+            String key = StationIdUtil.toStringNoDates(sta.get_id());
+            if(codeMap.containsKey(key)) {
+                Station previousSta = (Station)codeMap.get(key);
+                MicroSecondDate staBegin = new MicroSecondDate(sta.effective_time.start_time);
+                MicroSecondDate previousStaBegin = new MicroSecondDate(previousSta.effective_time.start_time);
+                if(staBegin.after(previousStaBegin)) {
+                    codeMap.put(key, sta);
+                }
+            } else {
+                codeMap.put(key, sta);
+            }
+        }
+        stationList.clear();
+        stationList.addAll(codeMap.values());
     }
 
     public HashMap cleanSummaries(ArrayList stationList, HashMap summary) {

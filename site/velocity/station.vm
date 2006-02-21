@@ -39,6 +39,7 @@ $header
 </table>
 
 <table>
+<tr><td class="odd">Crust2 Type</td><td class="even">$crust2Type</td></tr>
 <tr><td class="odd">Thickness Estimate</td><td class="even">$fissures.formatDepth($!summary.getSum().getMaxValueH())</td></tr>
 <tr><td class="odd">Thickness StdDev</td><td class="even">$fissures.formatQuantity($!summary.getHStdDev())</td></tr>
 <tr><td class="odd">Vp/Vs Estimate</td><td class="even">$!summary.getSum().getMaxValueK()</td></tr>
@@ -53,7 +54,7 @@ $header
 <tr><td class="odd">Residual Complexity</td><td class="even">$!summary.formatComplexityResidual()</td></tr>
 </table>
 
-<p>$numNinty with match > 90% and $numEighty with match > 80%.</p>
+<p>$numNinty with match > 90% ( $percentNinty %) and $numEighty with match > 80% ( $percentEighty %).</p>
 
 <p>Download stack as <a href="sumHKStackAsXYZ.txt?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}">xyz text file.</a></p>
 #if( $numEighty > 0)
@@ -73,6 +74,7 @@ $header
 <td class="headodd">Vp</td>
 <td class="headodd">Vs</td>
 <td class="headodd">Poissons Ratio</td>
+<td class="headodd">Extra</td>
  <tr>
  <td class="odd">EARS</td>
  <td class="even">$fissures.formatDepth($!summary.getSum().getMaxValueH())</td>
@@ -80,6 +82,7 @@ $header
  <td class="even">$fissures.formatQuantity($!summary.getSum().getAlpha())</td>
  <td class="odd">$fissures.formatQuantity($!summary.getSum().getVs())</td>
  <td class="even">$!summary.getSum().formatPoissonsRatio()</td>
+ <td class="odd"></td>
 </tr>
 </tr>
 #foreach( $marker in $markerList)
@@ -90,6 +93,7 @@ $header
  <td class="even">$marker.formatVp()</td>
  <td class="odd">$marker.formatVs()</td>
  <td class="even">$marker.formatPoissonsRatio()</td>
+ <td class="odd">$marker.getExtras()</td>
 </tr>
 #end
 </table>

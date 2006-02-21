@@ -318,7 +318,6 @@ public class JDBCRecFunc extends JDBCTable {
         
         CacheEvent cacheEvent = new CacheEvent(result.event_attr, result.prefOrigin);
         File stationDir = getDir(cacheEvent, result.channels[0], result.config.gwidth);
-        System.out.println("StationDir: "+stationDir);
         
         SacTimeSeries itrSAC = new SacTimeSeries();
         File f = new File(stationDir, rs.getString("recfuncITR"));

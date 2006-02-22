@@ -15,6 +15,10 @@ public class StationResult {
 
 
     public StationResult(NetworkId networkId, String stationCode, QuantityImpl h, float vpVs, QuantityImpl vp, StationResultRef ref) {
+        this(networkId, stationCode, h, vpVs, vp, ref, "");
+    }
+    
+    public StationResult(NetworkId networkId, String stationCode, QuantityImpl h, float vpVs, QuantityImpl vp, StationResultRef ref, String extras) {
         this.h = h;
         h.setFormat(depthFormat);
         this.vp = vp;
@@ -22,6 +26,7 @@ public class StationResult {
         this.networkId = networkId;
         this.ref = ref;
         this.stationCode = stationCode;
+        this.extras = extras;
     }
 
     public String formatH() {
@@ -71,6 +76,17 @@ public class StationResult {
     public String getStationCode() {
         return stationCode;
     }
+
+    public String getExtras() {
+        return extras;
+    }
+
+    /**
+     * Same as getExtras() except all commas are removed. Mainly for use in CSV output.
+     */
+    public String formatExtras() {
+        return extras.replaceAll(",", "");
+    }
     
     public String toString() {
         return "H="+formatH()+" Vp="+formatVp()+" Vs="+formatVs()+" Vp/Vs="+formatVpVs()+" pr="+formatPoissonsRatio();
@@ -88,8 +104,12 @@ public class StationResult {
     
     private QuantityImpl vp;
     
+    private String extras;
+    
     private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
 
     private static DecimalFormat depthFormat = new DecimalFormat("0.##");
+
+    
     
 }

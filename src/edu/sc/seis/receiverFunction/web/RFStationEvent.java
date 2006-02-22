@@ -93,6 +93,7 @@ public class RFStationEvent extends Revlet {
                     stack = hkStack.get(RevUtil.getInt("rf", req));
                 }
                 vContext.put("stack", stack);
+                vContext.put("rayparam", ""+stack.getP());
                 TimeInterval timePs = stack.getTimePs();
                 timePs.setFormat(FissuresFormatter.getDepthFormat());
                 vContext.put("timePs", timePs);

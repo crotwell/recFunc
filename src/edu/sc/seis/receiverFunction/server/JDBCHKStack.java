@@ -17,6 +17,7 @@ import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.NetworkIdUtil;
+import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
@@ -31,6 +32,8 @@ import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
+import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
+import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.sod.ConfigurationException;
@@ -224,7 +227,12 @@ public class JDBCHKStack extends JDBCTable {
                                           String staCode,
                                           float gaussinWidth,
                                           float minPercentMatch, boolean compact) throws SQLException {
-
+        return getIteratorForStation(netCode, staCode, gaussinWidth, minPercentMatch, compact, false);
+    }
+    public HKStackIterator getIteratorForStation(String netCode,
+                                                 String staCode,
+                                                 float gaussinWidth,
+                                                 float minPercentMatch, boolean compact, boolean withRadialSeismogram) throws SQLException {
         int index = 1;
         getForStation.setString(index++, netCode);
         getForStation.setString(index++, staCode);
@@ -233,7 +241,7 @@ public class JDBCHKStack extends JDBCTable {
         boolean autoCommit = conn.getAutoCommit();
         getConnection().setAutoCommit(false);
         ResultSet rs = getForStation.executeQuery();
-        HKStackIterator iter = new HKStackIterator(rs, this, autoCommit);
+        HKStackIterator iter = new HKStackIterator(rs, this, autoCommit, withRadialSeismogram);
         return iter;
     }
 
@@ -244,8 +252,23 @@ public class JDBCHKStack extends JDBCTable {
 
     public HKStack extract(ResultSet rs, boolean compact) throws  NotFound,
             IOException, SQLException {
+        return extract(rs, compact, false);
+    }
+    public HKStack extract(ResultSet rs, boolean compact, boolean withRadialSeis) throws  NotFound,
+    IOException, SQLException {
         Channel[] channels = jdbcRecFunc.extractChannels(rs);
-        CachedResult recFunc = jdbcRecFunc.extractWithoutSeismograms(rs);
+        CachedResult recFunc;
+        if (withRadialSeis) {
+            try {
+                recFunc = jdbcRecFunc.extract(rs);
+            } catch(FileNotFoundException e) {
+                throw new RuntimeException("Problem getting receiver function from file", e);
+            } catch(FissuresException e) {
+                throw new RuntimeException("Problem getting receiver function from file", e);
+            }
+        } else {
+            recFunc = jdbcRecFunc.extractWithoutSeismograms(rs);
+        }
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
         CmplxArray2D[] data = jdbcHKRealImag.extractData(rs, numH, numK);
@@ -267,6 +290,9 @@ public class JDBCHKStack extends JDBCTable {
                                   data[2],
                                   channels[0]);
         out.setOrigin(recFunc.prefOrigin);
+        if (withRadialSeis) {
+            out.setRecFunc(new MemoryDataSetSeismogram((LocalSeismogramImpl)recFunc.radial));
+        }
         if (compact) {
             out.compact();
         }

@@ -4,13 +4,18 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
+import edu.sc.seis.receiverFunction.HKStack;
 
 public class HKStackIterator implements Iterator {
 
     public HKStackIterator(ResultSet rs, JDBCHKStack jdbcHKStack, boolean autoCommit) {
+        this(rs, jdbcHKStack, autoCommit, false);
+    }
+    public HKStackIterator(ResultSet rs, JDBCHKStack jdbcHKStack, boolean autoCommit, boolean withRadialSeismogram) {
         this.rs = rs;
         this.jdbcHKStack = jdbcHKStack;
         this.autoCommit = autoCommit;
+        this.withRadialSeismogram = withRadialSeismogram;
     }
 
     public boolean hasNext() {
@@ -19,6 +24,10 @@ public class HKStackIterator implements Iterator {
             System.out.println("extracted "+num);
         }
         return next != null;
+    }
+    
+    public HKStack nextStack() {
+        return (HKStack)next();
     }
 
     public Object next() {
@@ -45,7 +54,7 @@ public class HKStackIterator implements Iterator {
     private void checkNext() {
         try {
             if(next == null && rs.next()) {
-                next = jdbcHKStack.extract(rs);
+                next = jdbcHKStack.extract(rs, false, withRadialSeismogram);
             }
         } catch(Exception e) {
             throw new RuntimeException(e);
@@ -62,4 +71,5 @@ public class HKStackIterator implements Iterator {
 
     JDBCHKStack jdbcHKStack;
 
+    boolean withRadialSeismogram;
 }

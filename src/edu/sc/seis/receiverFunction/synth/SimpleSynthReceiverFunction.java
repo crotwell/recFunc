@@ -14,6 +14,11 @@ import edu.sc.seis.receiverFunction.compare.StationResult;
 
 public class SimpleSynthReceiverFunction {
 
+
+    public SimpleSynthReceiverFunction(StationResult model) {
+        this(model, new SamplingImpl(20, new TimeInterval(1, UnitImpl.SECOND)), 4096);
+    }
+    
     public SimpleSynthReceiverFunction(StationResult model, Sampling samp, int num_points) {
         this(model, samp, num_points, 2.7, 8.0, 4.5, 3.2);
     }

@@ -9,7 +9,17 @@ Receiver functions determine near receiver earth structure by the strength and t
 
 The extraction of the S wave arrivals is possible due to the incident P wave appearing mostly on both the vertical component, while the S wave reverberations are mostly confined to the radial, along with the fact that the wave shape of each reverberation is determined by the source time function of the event and hence should be the same as the initial P wave except for a polarity reversal of PsPs/PpSs. Thus, by deconvolving the vertical from the radial component, the timing and amplitude of the reverberations can be determined. 
 
+
+\subsection{Iteritive Deconvolution}
+
+The implementation of the iterative deconvolution is based on the iterDecon fortran code of Ammon \cite{iterdecon}. 
+
+The iterative deconvolution begins with the numerator and denominator seismograms, usually the horizontal and verticle respectively, with all preprocessing such as filtering, instrument correction and mean removal already applied. After each seismogram is padded with zeros to the next larger power of two, the given gaussian filter is applied to both. Generally the width of the gaussian is in or around .5 to 5. The gaussian is applied in the frequency domain.
+
+The iteration begins at this point and continues until one of two conditions are meet, either the maximum nummber of iterations are done, or the improvement fromthe previous step is below the tolerence. Within each iteration, the correlation between the current numerator and the denominator is calculated, normalized by the zero lag autocorrelation of the denominator. The largest absolute value of the correlation defines the lag at which the denominator best matches the numerator. The normalized correlation is added to the seismogram of spikes at the corresponding lag time. This spike seismogram is then gaussian filtered and convolved with the denominator to form a prediction of the numerator. The prediction is then subtracted from the numerator. The iterator continues in this manner, repeatedly subtracting scaled and shifted versions of the demoninator.
+
 \end{subsection}
+
 \subsection{Determining Crustal Structure}
 
 From the timing of the reverberations, the bulk properties of the crust can be determined. There is of course a tradeoff between thickness of the crust and the velocity of the crust. However, each of the reverberations has a different tradeoff, and hence by analyzing all three phases the correct depth and velocity can be determined.

@@ -5,6 +5,7 @@ import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.fissuresUtil.bag.Hilbert;
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
@@ -25,7 +26,6 @@ public class AnalyticPhaseSeismogramImage extends SeismogramImage {
         super();
         // TODO Auto-generated constructor stub
     }
-    
 
     public DataSetSeismogram[] getDSS(CachedResult stack) {
         DataSetSeismogram[] tmp = super.getDSS(stack);
@@ -40,9 +40,9 @@ public class AnalyticPhaseSeismogramImage extends SeismogramImage {
             out[tmp.length+1] = radialDSS;
             
             Cmplx[] analytic = hilbert.analyticSignal(radial);
-            double[] amp = hilbert.envelope(analytic);
-            double[] phase = hilbert.unwrapPhase(analytic);
-            double[] freq = hilbert.instantFreq(analytic);
+            float[] amp = doubleArrayToFloat(hilbert.envelope(analytic));
+            float[] phase = doubleArrayToFloat(hilbert.phase(analytic));
+            float[] freq = doubleArrayToFloat(hilbert.instantFreq(analytic));
             
             LocalSeismogramImpl hilbertAmp = new LocalSeismogramImpl(hilbertSeis, amp);
             MemoryDataSetSeismogram radialAmp = new MemoryDataSetSeismogram(hilbertAmp, "analytic amp");
@@ -59,18 +59,18 @@ public class AnalyticPhaseSeismogramImage extends SeismogramImage {
             tmp[0].getDataSet().addDataSetSeismogram(radialFreq, emptyAudit);
             out[0] = radialFreq;
 
-            double[] imag = new double[analytic.length];
+            float[] imag = new float[analytic.length];
             for(int i = 0; i < imag.length; i++) {
-                imag[i] = analytic[i].imag();
+                imag[i] = (float)analytic[i].imag();
             }
             LocalSeismogramImpl imagSeis = new LocalSeismogramImpl(hilbertSeis, imag);
             MemoryDataSetSeismogram imagMSeis = new MemoryDataSetSeismogram(imagSeis, "imagXYZ");
             tmp[0].getDataSet().addDataSetSeismogram(imagMSeis, emptyAudit);
             out[tmp.length+4] = imagMSeis;
             
-            double[] real = new double[analytic.length];
+            float[] real = new float[analytic.length];
             for(int i = 0; i < real.length; i++) {
-                real[i] = analytic[i].real();
+                real[i] = (float)analytic[i].real();
             }
             LocalSeismogramImpl realSeis = new LocalSeismogramImpl(hilbertSeis, real);
             MemoryDataSetSeismogram realMSeis = new MemoryDataSetSeismogram(realSeis, "realASD");
@@ -83,6 +83,14 @@ public class AnalyticPhaseSeismogramImage extends SeismogramImage {
             e.printStackTrace();
             return tmp;
         }
+    }
+    
+    float[] doubleArrayToFloat(double[] in) {
+        float[] out = new float[in.length];
+        for(int i = 0; i < out.length; i++) {
+            out[i] = (float)in[i];
+        }
+        return out;
     }
     
     Hilbert hilbert = new Hilbert();

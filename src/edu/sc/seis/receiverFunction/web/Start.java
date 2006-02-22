@@ -131,9 +131,13 @@ public class Start {
                                               servletStrings,
                                               rootHandler);
         RevUtil.populateJetty("/synthHKImage.png",
-                                              "edu.sc.seis.receiverFunction.web.SynthHKImage",
-                                              servletStrings,
-                                              rootHandler);
+                              "edu.sc.seis.receiverFunction.web.SynthHKImage",
+                              servletStrings,
+                              rootHandler);
+        RevUtil.populateJetty("/crust2TypeStats.html",
+                              "edu.sc.seis.receiverFunction.web.Crust2TypeStats",
+                              servletStrings,
+                              rootHandler);
         // jfreechart image servlet 
         RevUtil.populateJetty("/DisplayChart",
                               "org.jfree.chart.servlet.DisplayChart",

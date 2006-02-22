@@ -19,6 +19,7 @@ import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.ConfigurationException;
+import edu.sc.seis.sod.status.FissuresFormatter;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 /**
@@ -37,20 +38,22 @@ public class ComparePriorResult extends StationList {
             throws SQLException, NotFound {
         TimeOMatic.start();
         ArrayList stations = new ArrayList();
-        String name = RevUtil.get("name", req);
+        String name = RevUtil.get("name", req, "crust2.0");
         context.put("name", name);
         float hDiff = RevUtil.getFloat("hDiff", req, -1);
-        if (hDiff != -1) {
+        if(hDiff != -1) {
             context.put("hDiff", RevUtil.get("hDiff", req));
         }
         HashMap prior = new HashMap();
         context.put("prior", prior);
         StationResult[] results;
-        if (name.equals("crust2.0") || name.equals("Crust2.0")) {
+        if(name.equals("crust2.0") || name.equals("Crust2.0")) {
             Station[] allsta = jdbcChannel.getStationTable().getAllStations();
             context.put("ref", Crust2.getReference());
             for(int i = 0; i < allsta.length; i++) {
-                VelocityStation station = new VelocityStation(allsta[i], jdbcChannel.getStationTable().getDBId(allsta[i].get_id()));
+                VelocityStation station = new VelocityStation(allsta[i],
+                                                              jdbcChannel.getStationTable()
+                                                                      .getDBId(allsta[i].get_id()));
                 stations.add(station);
                 ArrayList resultList = new ArrayList();
                 resultList.add(crust2.getStationResult(station));
@@ -58,74 +61,94 @@ public class ComparePriorResult extends StationList {
             }
         } else {
             results = jdbcStationResult.getAll(name);
-            if (results.length != 0) {
+            if(results.length != 0) {
                 context.put("ref", results[0].getRef());
             }
             for(int i = 0; i < results.length; i++) {
                 try {
-                    int[] dbids = jdbcChannel.getStationTable().getDBIds(results[i].getNetworkId(), results[i].getStationCode());
-                    VelocityStation station = new VelocityStation(jdbcChannel.getStationTable().get(dbids[0]));
+                    int[] dbids = jdbcChannel.getStationTable()
+                            .getDBIds(results[i].getNetworkId(),
+                                      results[i].getStationCode());
+                    VelocityStation station = new VelocityStation(jdbcChannel.getStationTable()
+                            .get(dbids[0]));
                     boolean found = false;
                     for(Iterator iter = stations.iterator(); iter.hasNext();) {
                         VelocityStation sta = (VelocityStation)iter.next();
-                        if (sta.getNetCode().equals(station.getNetCode()) && sta.get_code().equals(station.get_code())) {
+                        if(sta.getNetCode().equals(station.getNetCode())
+                                && sta.get_code().equals(station.get_code())) {
                             // station already in list, use prior station
                             found = true;
                             station = sta;
                             break;
                         }
                     }
-                    if (! found) {
+                    if(!found) {
                         stations.add(station);
                         Collections.sort(stations, new StationAlpha());
                     }
-                    if ( ! prior.containsKey(station)) {
+                    if(!prior.containsKey(station)) {
                         prior.put(station, new ArrayList());
                     }
                     ArrayList resultList = (ArrayList)prior.get(station);
                     resultList.add(results[i]);
-                    System.out.println(" Compare: " +results[i].getStationCode()+"  vp="+results[i].formatVp());
-                } catch (NotFound e) {
-                    // this station is in the prior result, but not in ears, skip...
+                    System.out.println(" Compare: "
+                            + results[i].getStationCode() + "  vp="
+                            + results[i].formatVp());
+                } catch(NotFound e) {
+                    // this station is in the prior result, but not in ears,
+                    // skip...
                 }
             }
         }
         TimeOMatic.print("getStations");
         return stations;
     }
-    
-    public HashMap getSummaries(ArrayList stationList, RevletContext context, HttpServletRequest req) throws SQLException, IOException {
+
+    public HashMap getSummaries(ArrayList stationList,
+                                RevletContext context,
+                                HttpServletRequest req) throws SQLException,
+            IOException {
         TimeOMatic.start();
         // clean station/prior results if they agree within hDiff km
         HashMap summary = super.getSummaries(stationList, context, req);
+        cleanSummaries(stationList, summary);
         HashMap prior = (HashMap)context.get("prior");
-        
+        HashMap hDiffMap = new HashMap();
+        context.put("hDiffMap", hDiffMap);
         float hDiff;
-        if (context.containsKey("hDiff")) {
+        if(context.containsKey("hDiff")) {
             hDiff = Float.parseFloat((String)context.get("hDiff"));
         } else {
             hDiff = -1;
         }
-        if (hDiff > 0) {
-            Iterator it = stationList.iterator();
-            while(it.hasNext()) {
-                VelocityStation station = (VelocityStation)it.next();
-                StationResult result = (StationResult)prior.get(station);
+        Iterator it = stationList.iterator();
+        while(it.hasNext()) {
+            VelocityStation station = (VelocityStation)it.next();
+            ArrayList resultList = (ArrayList)prior.get(station);
+            Iterator resultListIterator = resultList.iterator();
+            boolean remove = false;
+            while(resultListIterator.hasNext()) {
+                StationResult result = (StationResult)resultListIterator.next();
                 SumHKStack sumStack = (SumHKStack)summary.get(station);
-                boolean remove = false;
-                if (result == null || sumStack == null) {
+                if(result == null || sumStack == null) {
                     remove = true;
                 } else {
-                    double diff =sumStack.getSum().getMaxValueH().subtract(result.getH()).getValue(UnitImpl.KILOMETER); 
-                    if (Math.abs(diff) < hDiff ) {
+                    double diff = sumStack.getSum()
+                            .getMaxValueH()
+                            .subtract(result.getH())
+                            .getValue(UnitImpl.KILOMETER);
+                    if(hDiff > 0 && Math.abs(diff) < hDiff) {
                         remove = true;
+                    } else {
+                        logger.debug("Add diff of " + diff
+                                + " to hDiffMap for " + station);
+                        hDiffMap.put(result, ""+diff);
                     }
                 }
-                if (remove) {
-                    it.remove();
-                    prior.remove(station);
-                }
-                
+            }
+            if(remove) {
+                it.remove();
+                prior.remove(station);
             }
         }
         TimeOMatic.print("getSummaries");
@@ -135,21 +158,21 @@ public class ComparePriorResult extends StationList {
     public String getVelocityTemplate(HttpServletRequest req) {
         return "comparePriorResult.vm";
     }
-    
+
     static Crust2 crust2 = null;
-    
+
     JDBCStationResult jdbcStationResult;
-    
+
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ComparePriorResult.class);
 }
 
 class StationAlpha implements Comparator {
-    
+
     public int compare(Object o1, Object o2) {
         VelocityStation s1 = (VelocityStation)o1;
         VelocityStation s2 = (VelocityStation)o2;
         int netCompare = s1.getNetCode().compareTo(s2.getNetCode());
-        if (netCompare  != 0) {
+        if(netCompare != 0) {
             return s1.get_code().compareTo(s2.get_code());
         } else {
             return netCompare;

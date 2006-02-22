@@ -32,7 +32,7 @@ import edu.sc.seis.receiverFunction.SumHKStack;
 public class JDBCSummaryHKStack extends JDBCTable {
 
     public JDBCSummaryHKStack(JDBCHKStack jdbcHKStack) throws Exception {
-        //super("hksummaryTMP", jdbcHKStack.getConnection());
+        // super("hksummaryTMP", jdbcHKStack.getConnection());
         super("hksummary", jdbcHKStack.getConnection());
         this.jdbcHKStack = jdbcHKStack;
         hksummarySeq = new JDBCSequence(conn, getTableName() + "Seq");
@@ -46,9 +46,10 @@ public class JDBCSummaryHKStack extends JDBCTable {
                          "edu/sc/seis/receiverFunction/server/default.props");
     }
 
-    public int calc(int netDbId, String stationCode,
-                    float gaussianWidth, float percentMatch)
-            throws SQLException {
+    public int calc(int netDbId,
+                    String stationCode,
+                    float gaussianWidth,
+                    float percentMatch) throws SQLException {
         int index = 1;
         uncalculated.setInt(index++, netDbId);
         uncalculated.setString(index++, stationCode);
@@ -229,8 +230,12 @@ public class JDBCSummaryHKStack extends JDBCTable {
                                     boolean withData) throws NotFound,
             SQLException, IOException {
         return getForStation(jdbcHKStack.getJDBCChannel()
-                .getNetworkTable()
-                .getDbId(net), station_code, gaussianWidth, percentMatch, withData);
+                                     .getNetworkTable()
+                                     .getDbId(net),
+                             station_code,
+                             gaussianWidth,
+                             percentMatch,
+                             withData);
     }
 
     public SumHKStack getForStation(int netId,
@@ -240,26 +245,28 @@ public class JDBCSummaryHKStack extends JDBCTable {
                                     boolean withData) throws NotFound,
             SQLException, IOException {
         try {
-        int index = 1;
-        getForStation.setInt(index++, netId);
-        getForStation.setString(index++, station_code);
-        getForStation.setFloat(index++, gaussianWidth);
-        getForStation.setFloat(index++, percentMatch);
-        ResultSet rs = getForStation.executeQuery();
-        if(rs.next()) {
-            return extract(rs, withData);
-        }
-        }catch(SQLException e) {
-            SQLException s = new SQLException(e.getMessage()+" sql="+getForStation.toString());
+            int index = 1;
+            getForStation.setInt(index++, netId);
+            getForStation.setString(index++, station_code);
+            getForStation.setFloat(index++, gaussianWidth);
+            getForStation.setFloat(index++, percentMatch);
+            ResultSet rs = getForStation.executeQuery();
+            if(rs.next()) {
+                return extract(rs, withData);
+            }
+        } catch(SQLException e) {
+            SQLException s = new SQLException(e.getMessage() + " sql="
+                    + getForStation.toString());
             s.initCause(e);
         }
         throw new NotFound("No Summary stack for " + netId + " " + station_code);
     }
 
-    public int getDbIdForStation(NetworkId net, String station_code, 
+    public int getDbIdForStation(NetworkId net,
+                                 String station_code,
                                  float gaussianWidth,
-                                 float percentMatch)
-            throws SQLException, NotFound {
+                                 float percentMatch) throws SQLException,
+            NotFound {
         int index = 1;
         getForStation.setInt(index++, jdbcHKStack.getJDBCChannel()
                 .getNetworkTable()
@@ -286,16 +293,16 @@ public class JDBCSummaryHKStack extends JDBCTable {
             IOException {
         ArrayList out = new ArrayList();
         try {
-        ResultSet rs = getAllWithoutData.executeQuery();
-        while(rs.next()) {
-            out.add(extract(rs, false));
-        }
-        } catch (SQLException e) {
-            GlobalExceptionHandler.handle(""+getAllWithoutData, e);
+            ResultSet rs = getAllWithoutData.executeQuery();
+            while(rs.next()) {
+                out.add(extract(rs, false));
+            }
+        } catch(SQLException e) {
+            GlobalExceptionHandler.handle("" + getAllWithoutData, e);
         }
         return out;
     }
-    
+
     public HKSummaryIterator getAllIterator() throws SQLException {
         boolean autoCommit = conn.getAutoCommit();
         getConnection().setAutoCommit(false);

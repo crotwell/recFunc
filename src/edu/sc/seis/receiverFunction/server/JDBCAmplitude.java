@@ -75,14 +75,12 @@ public class JDBCAmplitude extends JDBCTable {
                                                            Start.getDefaultGaussian(),
                                                            Start.getDefaultMinPercentMatch(),
                                                            false);
-        System.out.println("Got sum stack");
         HKStackIterator iter = jdbcHKStack.getIteratorForStation(netCode,
                                                                  staCode,
                                                                  Start.getDefaultGaussian(),
                                                                  Start.getDefaultMinPercentMatch(),
                                                                  true,
                                                                  true);
-        System.out.println("got iterator");
         StationResult model = new StationResult(netId,
                                                 staCode,
                                                 sumStack.getSum()

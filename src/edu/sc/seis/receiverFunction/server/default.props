@@ -514,3 +514,32 @@ stackComplexity.update=UPDATE $tablename \
                    crust2diff = ? \
 				WHERE hksummary_id = ? 
 				
+amplitude.create=CREATE TABLE $tablename ( \
+    hkstack_id int, \
+    recFunc_id int, \
+    ampP float, \
+    ampPs float, \
+    ampPpPs float, \
+    ampPsPs float, \
+    insertTime timestamp, \
+    PRIMARY KEY (hkstack_id), \
+    FOREIGN KEY (recFunc_id) \
+    REFERENCES receiverFunction (recFunc_id) \
+	)
+	
+amplitude.put=INSERT INTO $tablename ( \
+    hkstack_id, \
+    recFunc_id, \
+    ampP, \
+    ampPs, \
+    ampPpPs, \
+    ampPsPs, \
+    insertTime \
+    ) VALUES ( ?, ?, ?, ?, ?,  ?, ? )
+
+amplitude.getForStation=SELECT net_code, sta_code, ampP, ampPs, ampPpPs, ampPsPs, insertTime from $tablename \
+    JOIN receiverFunction ON ( ${tablename}.recFunc_id = receiverFunction.recFunc_id ) \
+    JOIN netchan ON ( receiverFunction.chanz_id = netchan.chanz_id ) \
+    WHERE net_code = ? AND sta_code = ?
+ 
+ 

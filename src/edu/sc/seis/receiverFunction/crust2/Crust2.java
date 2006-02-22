@@ -70,7 +70,8 @@ public class Crust2 {
                                  profile.getCrustThickness(),
                                  (float)(profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity()),
                                  new QuantityImpl((float)profile.getPWaveAvgVelocity(), UnitImpl.KILOMETER_PER_SECOND),
-                                 getReference());
+                                 getReference(),
+                                 profile.getCode()+","+profile.getName());
     }
 
     private static final StationResultRef reference = new StationResultRef("Crust2.0",

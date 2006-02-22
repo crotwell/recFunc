@@ -1051,6 +1051,10 @@ public class HKStack implements Serializable {
     public DataSetSeismogram getRecFunc() {
         return recFunc;
     }
+    
+    public void setRecFunc(DataSetSeismogram dss) {
+        this.recFunc = dss;
+    }
 
     public void setOrigin(Origin origin) {
         this.origin = origin;

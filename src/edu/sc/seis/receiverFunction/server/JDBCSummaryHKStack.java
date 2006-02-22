@@ -239,6 +239,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
                                     float percentMatch,
                                     boolean withData) throws NotFound,
             SQLException, IOException {
+        try {
         int index = 1;
         getForStation.setInt(index++, netId);
         getForStation.setString(index++, station_code);
@@ -247,6 +248,10 @@ public class JDBCSummaryHKStack extends JDBCTable {
         ResultSet rs = getForStation.executeQuery();
         if(rs.next()) {
             return extract(rs, withData);
+        }
+        }catch(SQLException e) {
+            SQLException s = new SQLException(e.getMessage()+" sql="+getForStation.toString());
+            s.initCause(e);
         }
         throw new NotFound("No Summary stack for " + netId + " " + station_code);
     }

@@ -135,9 +135,11 @@ public class Station extends Revlet {
         VelocityStation sta = (VelocityStation)stationList.get(0);
         ArrayList markerList = new ArrayList();
         QuantityImpl smallestH = HKStack.getBestSmallestH(sta);
+        String crust2Type = "";
         if(crust2 != null) {
             StationResult result = crust2.getStationResult(sta);
             markerList.add(result);
+            crust2Type = result.getExtras();
         }
         TimeOMatic.print("crust2");
         StationResult[] results = jdbcStationResult.get(sta.my_network.get_id(),
@@ -148,6 +150,7 @@ public class Station extends Revlet {
         TimeOMatic.print("other results");
         RevletContext context = new RevletContext("station.vm",
                                                   Start.getDefaultContext());
+        context.put("crust2Type", crust2Type);
         Revlet.loadStandardQueryParams(req, context);
         try {
             int summaryDbId = jdbcSummaryHKStack.getDbIdForStation(net.get_id(),
@@ -202,7 +205,9 @@ public class Station extends Revlet {
         context.put("net", net);
         context.put("eventList", eventList);
         context.put("numNinty", new Integer(numNinty));
+        context.put("percentNinty", ""+new Float(numNinty*100f/events.length));
         context.put("numEighty", new Integer(numEighty));
+        context.put("percentEighty", new Float(numEighty*100f/events.length));
         context.put("markerList", markerList);
         context.put("smallestH", smallestH);
         TimeOMatic.print("done");

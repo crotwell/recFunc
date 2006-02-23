@@ -16,7 +16,7 @@ The implementation of the iterative deconvolution is based on the iterDecon fort
 
 The iterative deconvolution begins with the numerator and denominator seismograms, usually the horizontal and verticle respectively, with all preprocessing such as filtering, instrument correction and mean removal already applied. After each seismogram is padded with zeros to the next larger power of two, the given gaussian filter is applied to both. Generally the width of the gaussian is in or around .5 to 5. The gaussian is applied in the frequency domain.
 
-The iteration begins at this point and continues until one of two conditions are meet, either the maximum nummber of iterations are done, or the improvement fromthe previous step is below the tolerence. Within each iteration, the correlation between the current numerator and the denominator is calculated, normalized by the zero lag autocorrelation of the denominator. The largest absolute value of the correlation defines the lag at which the denominator best matches the numerator. The normalized correlation is added to the seismogram of spikes at the corresponding lag time. This spike seismogram is then gaussian filtered and convolved with the denominator to form a prediction of the numerator. The prediction is then subtracted from the numerator. The iterator continues in this manner, repeatedly subtracting scaled and shifted versions of the demoninator.
+The iteration begins at this point and continues until one of two conditions are meet, either the maximum nummber of iterations are done, or the improvement fromthe previous step is below the tolerence. Within each iteration, the correlation between the current numerator and the denominator is calculated, normalized by the zero lag autocorrelation of the denominator. The largest absolute value of the correlation defines the lag at which the denominator best matches the numerator. The normalized correlation is added to the seismogram of spikes at the corresponding lag time. This spike seismogram is then gaussian filtered and convolved with the denominator to form a prediction of the numerator. The prediction is then subtracted from the numerator. If the power in the numerator, scaled by the denominator, is small enough, the iteration stops. Otherwise it continues until the maximum number of repititions is reached. The spikes, after being gaussian filtered, is the receiver function.
 
 \end{subsection}
 
@@ -28,11 +28,11 @@ However, it has been shown ****[REF]*** that the timing of the reverberations is
 
 The relative arrival times of the three reverberations with respect to the direct P wave are given by:
 
-t_{Ps} - t_{P} = H ( \eta_\beta - \eta_\alpha )
+$t_{Ps} - t_{P} = H ( \eta_\beta - \eta_\alpha )$
 
-t_{PpPs} - t_{P} = H ( \eta_\beta + \eta_\alpha )
+$t_{PpPs} - t_{P} = H ( \eta_\beta + \eta_\alpha )$
 
-t_{PsPs/PpSs} - t_{P} = 2 H \eta_\beta
+$t_{PsPs/PpSs} - t_{P} = 2 H \eta_\beta$
 
 where $\eta_\alpha = \sqrt{1/V_P^2 - p^2}$ and $\eta_\beta = \sqrt{1/V_S^2 - p^2}$ represent the P and S wave vertical slowness respectively.
 

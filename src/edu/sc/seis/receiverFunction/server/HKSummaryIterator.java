@@ -3,6 +3,7 @@ package edu.sc.seis.receiverFunction.server;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
+import edu.sc.seis.receiverFunction.SumHKStack;
 
 
 public class HKSummaryIterator implements Iterator {
@@ -21,16 +22,21 @@ public class HKSummaryIterator implements Iterator {
         return next != null;
     }
 
+
     public Object next() {
+        return nextSummary();
+    }
+    
+    public SumHKStack nextSummary() {
         num++;
         checkNext();
-        Object tmp = next;
+        SumHKStack tmp = next;
         next = null;
         return tmp;
     }
 
     public void remove() {
-    // no impl
+        throw new RuntimeException("Not implemented");
     }
 
     public ResultSet getResultSet() {
@@ -56,7 +62,7 @@ public class HKSummaryIterator implements Iterator {
 
     int num = 1;
     
-    Object next = null;
+    SumHKStack next = null;
 
     ResultSet rs;
 

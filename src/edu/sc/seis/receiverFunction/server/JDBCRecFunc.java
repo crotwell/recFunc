@@ -52,6 +52,14 @@ import edu.sc.seis.sod.status.EventFormatter;
  */
 public class JDBCRecFunc extends JDBCTable {
     
+    public JDBCRecFunc(Connection conn, String dataDirectory) throws Exception {
+        this(conn,
+             new JDBCEventAccess(conn),
+             new JDBCChannel(conn),
+             new JDBCSodConfig(conn),
+             dataDirectory);
+    }
+    
     public JDBCRecFunc(Connection conn,
                        JDBCEventAccess jdbcEventAccess,
                        JDBCChannel jdbcChannel,
@@ -511,6 +519,14 @@ public class JDBCRecFunc extends JDBCTable {
         File netDir = new File(eventDir, chan.get_id().network_id.network_code);
         File stationDir = new File(netDir, chan.get_id().station_code);
         return stationDir;
+    }
+    
+    public JDBCEventAccess getJDBCEventAccess() {
+        return jdbcEventAccess;
+    }
+    
+    public JDBCSodConfig getJDBCSodConfig() {
+        return jdbcSodConfig;
     }
     
     public JDBCOrigin getJDBCOrigin() {

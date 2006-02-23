@@ -258,6 +258,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
             SQLException s = new SQLException(e.getMessage() + " sql="
                     + getForStation.toString());
             s.initCause(e);
+            throw s;
         }
         throw new NotFound("No Summary stack for " + netId + " " + station_code);
     }

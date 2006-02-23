@@ -138,6 +138,14 @@ public class Start {
                               "edu.sc.seis.receiverFunction.web.Crust2TypeStats",
                               servletStrings,
                               rootHandler);
+        RevUtil.populateJetty("/crust2GridCompare.html",
+                              "edu.sc.seis.receiverFunction.web.Crust2GridCompare",
+                              servletStrings,
+                              rootHandler);
+        RevUtil.populateJetty("/crust2GridCompare.txt",
+                              "edu.sc.seis.receiverFunction.web.Crust2GridCompare",
+                              servletStrings,
+                              rootHandler);
         // jfreechart image servlet 
         RevUtil.populateJetty("/DisplayChart",
                               "org.jfree.chart.servlet.DisplayChart",

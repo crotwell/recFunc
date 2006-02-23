@@ -1,0 +1,4 @@
+
+#foreach( $r in $gridLists)
+$r.profile.code $r.profile.formatPWaveAvgVelocity() $r.profile.formatSWaveAvgVelocity() $r.profile.formatVpVs() $r.profile.getCrustThickness() $r.formatHAvg() $r.formatKAvg() $r.lat $r.lon $r.getStationSummary().size()
+#end

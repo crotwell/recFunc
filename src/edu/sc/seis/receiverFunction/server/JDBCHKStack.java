@@ -44,16 +44,28 @@ import edu.sc.seis.sod.status.EventFormatter;
  */
 public class JDBCHKStack extends JDBCTable {
 
-    public JDBCHKStack(Connection conn, JDBCEventAccess jdbcEventAccess,
-            JDBCChannel jdbcChannel, JDBCSodConfig jdbcSodConfig,
-            JDBCRecFunc jdbcRecFunc) throws SQLException,
+    public JDBCHKStack(JDBCRecFunc jdbcRecFunc)
+            throws SQLException, ConfigurationException, TauModelException,
+            Exception {
+        this(jdbcRecFunc.getConnection(),
+             jdbcRecFunc.getJDBCEventAccess(),
+             jdbcRecFunc.getJDBCChannel(),
+             jdbcRecFunc.getJDBCSodConfig(),
+             jdbcRecFunc);
+    }
+
+    public JDBCHKStack(Connection conn,
+                       JDBCEventAccess jdbcEventAccess,
+                       JDBCChannel jdbcChannel,
+                       JDBCSodConfig jdbcSodConfig,
+                       JDBCRecFunc jdbcRecFunc) throws SQLException,
             ConfigurationException, TauModelException, Exception {
         super("hkstack", conn);
         this.jdbcEventAccess = jdbcEventAccess;
         this.jdbcChannel = jdbcChannel;
         this.jdbcRecFunc = jdbcRecFunc;
         this.jdbcHKRealImag = new JDBCHKRealImag(conn);
-        hkstackSeq = new JDBCSequence(conn, getTableName()+"Seq");
+        hkstackSeq = new JDBCSequence(conn, getTableName() + "Seq");
         TableSetup.setup(getTableName(),
                          conn,
                          this,
@@ -65,27 +77,31 @@ public class JDBCHKStack extends JDBCTable {
         getForStation.setFetchSize(25);
         getForStation.setFetchDirection(ResultSet.FETCH_FORWARD);
     }
-    
-    public HKStack get(int recfunc_id) throws IOException, SQLException, NotFound {
-       get.setInt(1, recfunc_id);
-       ResultSet rs = get.executeQuery();
-       if (rs.next()) {
-           return extract(rs);
-       } else {
-           System.out.println("get hkstack: "+get);
-           rs.close();
-           throw new NotFound();
-       }
+
+    public HKStack get(int recfunc_id) throws IOException, SQLException,
+            NotFound {
+        get.setInt(1, recfunc_id);
+        ResultSet rs = get.executeQuery();
+        if(rs.next()) {
+            return extract(rs);
+        } else {
+            System.out.println("get hkstack: " + get);
+            rs.close();
+            throw new NotFound();
+        }
     }
-    
+
     public int put(int recfunc_id, HKStack stack) throws SQLException,
             IOException {
         int hkstack_id = hkstackSeq.next();
-        int hkrealimag_id = jdbcHKRealImag.put(stack.getAnalyticPs(), stack.getAnalyticPpPs(), stack.getAnalyticPsPs());
+        int hkrealimag_id = jdbcHKRealImag.put(stack.getAnalyticPs(),
+                                               stack.getAnalyticPpPs(),
+                                               stack.getAnalyticPsPs());
         int index = 1;
         put.setInt(index++, hkstack_id);
         put.setInt(index++, recfunc_id);
-        put.setFloat(index++, (float)stack.getAlpha().getValue(UnitImpl.KILOMETER_PER_SECOND));
+        put.setFloat(index++, (float)stack.getAlpha()
+                .getValue(UnitImpl.KILOMETER_PER_SECOND));
         put.setFloat(index++, stack.getP());
         put.setFloat(index++, stack.getPercentMatch());
         put.setFloat(index++, (float)stack.getMinH().getValue());
@@ -118,21 +134,21 @@ public class JDBCHKStack extends JDBCTable {
     }
 
     public void calc(String netCode,
-                          String staCode,
-                          float percentMatch,
-                          boolean save) throws FileNotFoundException,
+                     String staCode,
+                     float percentMatch,
+                     boolean save) throws FileNotFoundException,
             FissuresException, NotFound, IOException, SQLException,
             TauModelException {
         calc(netCode, staCode, percentMatch, save, 1, 1, 1);
     }
 
     public void calc(String netCode,
-                          String staCode,
-                          float percentMatch,
-                          boolean save,
-                          float weightPs,
-                          float weightPpPs,
-                          float weightPsPs) throws FileNotFoundException,
+                     String staCode,
+                     float percentMatch,
+                     boolean save,
+                     float weightPs,
+                     float weightPpPs,
+                     float weightPsPs) throws FileNotFoundException,
             FissuresException, NotFound, IOException, SQLException,
             TauModelException {
         // get all uncalculated rows
@@ -144,12 +160,12 @@ public class JDBCHKStack extends JDBCTable {
     }
 
     public void calcAll(String netCode,
-                             String staCode,
-                             float percentMatch,
-                             boolean save,
-                             float weightPs,
-                             float weightPpPs,
-                             float weightPsPs) throws FileNotFoundException,
+                        String staCode,
+                        float percentMatch,
+                        boolean save,
+                        float weightPs,
+                        float weightPpPs,
+                        float weightPsPs) throws FileNotFoundException,
             FissuresException, NotFound, IOException, SQLException,
             TauModelException {
         // get all uncalculated rows
@@ -161,10 +177,10 @@ public class JDBCHKStack extends JDBCTable {
     }
 
     public void calcStmt(ResultSet rs,
-                              boolean save,
-                              float weightPs,
-                              float weightPpPs,
-                              float weightPsPs) throws FileNotFoundException,
+                         boolean save,
+                         float weightPs,
+                         float weightPpPs,
+                         float weightPsPs) throws FileNotFoundException,
             FissuresException, SQLException, TauModelException, NotFound,
             IOException {
         while(rs.next()) {
@@ -176,13 +192,13 @@ public class JDBCHKStack extends JDBCTable {
             }
         }
     }
-    
+
     void calcAndStore(int recFuncDbId,
                       float weightPs,
                       float weightPpPs,
                       float weightPsPs) throws TauModelException,
-                 FileNotFoundException, FissuresException, NotFound, IOException,
-                 SQLException {
+            FileNotFoundException, FissuresException, NotFound, IOException,
+            SQLException {
         HKStack stack = calc(recFuncDbId, weightPs, weightPpPs, weightPsPs);
         put(recFuncDbId, stack);
     }
@@ -194,45 +210,71 @@ public class JDBCHKStack extends JDBCTable {
             FileNotFoundException, FissuresException, NotFound, IOException,
             SQLException {
         CachedResult cachedResult = jdbcRecFunc.get(recFuncDbId);
-        HKStack stack = HKStack.create(cachedResult, weightPs, weightPpPs, weightPsPs);
+        HKStack stack = HKStack.create(cachedResult,
+                                       weightPs,
+                                       weightPpPs,
+                                       weightPsPs);
         System.out.println("Stack calc for "
                 + ChannelIdUtil.toStringNoDates(cachedResult.channels[2]));
         return stack;
     }
-    
+
     public ArrayList getForStation(String netCode,
                                    String staCode,
                                    float gaussianWidth,
-                                   float percentMatch) throws FissuresException, NotFound, IOException, SQLException {
-        return getForStation(netCode, staCode, gaussianWidth, percentMatch, false);
+                                   float percentMatch)
+            throws FissuresException, NotFound, IOException, SQLException {
+        return getForStation(netCode,
+                             staCode,
+                             gaussianWidth,
+                             percentMatch,
+                             false);
     }
 
     public ArrayList getForStation(String netCode,
                                    String staCode,
                                    float gaussianWidth,
                                    float percentMatch,
-                                   boolean compact) throws FissuresException, NotFound, IOException, SQLException {
+                                   boolean compact) throws FissuresException,
+            NotFound, IOException, SQLException {
         ArrayList individualHK = new ArrayList();
-        HKStackIterator it = getIteratorForStation(netCode, staCode, gaussianWidth, percentMatch, compact);
+        HKStackIterator it = getIteratorForStation(netCode,
+                                                   staCode,
+                                                   gaussianWidth,
+                                                   percentMatch,
+                                                   compact);
         while(it.hasNext()) {
             HKStack stack = (HKStack)it.next();
-            if (compact) {stack.compact();}
+            if(compact) {
+                stack.compact();
+            }
             individualHK.add(stack);
         }
         it.close();
         return individualHK;
     }
-    
-    public HKStackIterator getIteratorForStation(String netCode,
-                                          String staCode,
-                                          float gaussinWidth,
-                                          float minPercentMatch, boolean compact) throws SQLException {
-        return getIteratorForStation(netCode, staCode, gaussinWidth, minPercentMatch, compact, false);
-    }
+
     public HKStackIterator getIteratorForStation(String netCode,
                                                  String staCode,
                                                  float gaussinWidth,
-                                                 float minPercentMatch, boolean compact, boolean withRadialSeismogram) throws SQLException {
+                                                 float minPercentMatch,
+                                                 boolean compact)
+            throws SQLException {
+        return getIteratorForStation(netCode,
+                                     staCode,
+                                     gaussinWidth,
+                                     minPercentMatch,
+                                     compact,
+                                     false);
+    }
+
+    public HKStackIterator getIteratorForStation(String netCode,
+                                                 String staCode,
+                                                 float gaussinWidth,
+                                                 float minPercentMatch,
+                                                 boolean compact,
+                                                 boolean withRadialSeismogram)
+            throws SQLException {
         int index = 1;
         getForStation.setString(index++, netCode);
         getForStation.setString(index++, staCode);
@@ -241,30 +283,36 @@ public class JDBCHKStack extends JDBCTable {
         boolean autoCommit = conn.getAutoCommit();
         getConnection().setAutoCommit(false);
         ResultSet rs = getForStation.executeQuery();
-        HKStackIterator iter = new HKStackIterator(rs, this, autoCommit, withRadialSeismogram);
+        HKStackIterator iter = new HKStackIterator(rs,
+                                                   this,
+                                                   autoCommit,
+                                                   withRadialSeismogram);
         return iter;
     }
 
-    public HKStack extract(ResultSet rs) throws  NotFound,
-            IOException, SQLException {
+    public HKStack extract(ResultSet rs) throws NotFound, IOException,
+            SQLException {
         return extract(rs, false);
     }
 
-    public HKStack extract(ResultSet rs, boolean compact) throws  NotFound,
+    public HKStack extract(ResultSet rs, boolean compact) throws NotFound,
             IOException, SQLException {
         return extract(rs, compact, false);
     }
-    public HKStack extract(ResultSet rs, boolean compact, boolean withRadialSeis) throws  NotFound,
-    IOException, SQLException {
+
+    public HKStack extract(ResultSet rs, boolean compact, boolean withRadialSeis)
+            throws NotFound, IOException, SQLException {
         Channel[] channels = jdbcRecFunc.extractChannels(rs);
         CachedResult recFunc;
-        if (withRadialSeis) {
+        if(withRadialSeis) {
             try {
                 recFunc = jdbcRecFunc.extract(rs);
             } catch(FileNotFoundException e) {
-                throw new RuntimeException("Problem getting receiver function from file", e);
+                throw new RuntimeException("Problem getting receiver function from file",
+                                           e);
             } catch(FissuresException e) {
-                throw new RuntimeException("Problem getting receiver function from file", e);
+                throw new RuntimeException("Problem getting receiver function from file",
+                                           e);
             }
         } else {
             recFunc = jdbcRecFunc.extractWithoutSeismograms(rs);
@@ -272,12 +320,15 @@ public class JDBCHKStack extends JDBCTable {
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
         CmplxArray2D[] data = jdbcHKRealImag.extractData(rs, numH, numK);
-        HKStack out = new HKStack(new QuantityImpl(rs.getFloat("alpha"), UnitImpl.KILOMETER_PER_SECOND),
+        HKStack out = new HKStack(new QuantityImpl(rs.getFloat("alpha"),
+                                                   UnitImpl.KILOMETER_PER_SECOND),
                                   rs.getFloat("p"),
                                   rs.getFloat("gwidth"),
                                   rs.getFloat("percentMatch"),
-                                  new QuantityImpl(rs.getFloat("minH"), UnitImpl.KILOMETER),
-                                  new QuantityImpl(rs.getFloat("stepH"), UnitImpl.KILOMETER),
+                                  new QuantityImpl(rs.getFloat("minH"),
+                                                   UnitImpl.KILOMETER),
+                                  new QuantityImpl(rs.getFloat("stepH"),
+                                                   UnitImpl.KILOMETER),
                                   numH,
                                   rs.getFloat("minK"),
                                   rs.getFloat("stepK"),
@@ -290,17 +341,17 @@ public class JDBCHKStack extends JDBCTable {
                                   data[2],
                                   channels[0]);
         out.setOrigin(recFunc.prefOrigin);
-        if (withRadialSeis) {
+        if(withRadialSeis) {
             out.setRecFunc(new MemoryDataSetSeismogram((LocalSeismogramImpl)recFunc.radial));
         }
-        if (compact) {
+        if(compact) {
             out.compact();
         }
         return out;
     }
-    
 
-    private PreparedStatement uncalculated, calcByPercent, put, get, getForStation;
+    private PreparedStatement uncalculated, calcByPercent, put, get,
+            getForStation;
 
     private JDBCEventAccess jdbcEventAccess;
 
@@ -311,7 +362,7 @@ public class JDBCHKStack extends JDBCTable {
     private JDBCSequence hkstackSeq;
 
     private JDBCHKRealImag jdbcHKRealImag;
-    
+
     private File dataDir;
 
     private EventFormatter eventFormatter;
@@ -325,23 +376,30 @@ public class JDBCHKStack extends JDBCTable {
         }
         float minPercentMatch = 80;
         try {
-            System.out.println("calc for percent match > "+minPercentMatch+" with weights of 1/3");
-                       float weightPs = 1/3f;
-                       float weightPpPs = 1/3f;
-                       float weightPsPs = 1 - weightPs - weightPpPs;
-            calcAndSave(args, minPercentMatch, true, false, weightPs, weightPpPs, weightPsPs);
+            System.out.println("calc for percent match > " + minPercentMatch
+                    + " with weights of 1/3");
+            float weightPs = 1 / 3f;
+            float weightPpPs = 1 / 3f;
+            float weightPsPs = 1 - weightPs - weightPpPs;
+            calcAndSave(args,
+                        minPercentMatch,
+                        true,
+                        false,
+                        weightPs,
+                        weightPpPs,
+                        weightPsPs);
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);
         }
     }
 
     public static void calcAndSave(String[] args,
-                                        float minPercentMatch,
-                                        boolean save,
-                                        boolean forceAllCalc,
-                                        float weightPs,
-                                        float weightPpPs,
-                                        float weightPsPs)
+                                   float minPercentMatch,
+                                   boolean save,
+                                   boolean forceAllCalc,
+                                   float weightPs,
+                                   float weightPpPs,
+                                   float weightPsPs)
             throws FileNotFoundException, FissuresException, NotFound,
             IOException, TauModelException, SQLException,
             ConfigurationException, Exception {
@@ -362,19 +420,18 @@ public class JDBCHKStack extends JDBCTable {
                                                   jdbcChannel,
                                                   jdbcSodConfig,
                                                   jdbcRecFunc);
-        
         String netCode = "";
         String staCode = "";
         for(int i = 0; i < args.length; i++) {
-            if (args[i].equals("-all")) {
+            if(args[i].equals("-all")) {
                 netCode = args[i];
-            } else if (args[i].equals("-net")) {
-                netCode = args[i+1];
-            } else if (args[i].equals("-sta")) {
-                staCode = args[i+1];
+            } else if(args[i].equals("-net")) {
+                netCode = args[i + 1];
+            } else if(args[i].equals("-sta")) {
+                staCode = args[i + 1];
             }
         }
-        if (staCode.length() > 0 && netCode.length() == 0 ) {
+        if(staCode.length() > 0 && netCode.length() == 0) {
             System.err.println("If using -sta, you must also use -net netCode");
             return;
         }
@@ -382,20 +439,20 @@ public class JDBCHKStack extends JDBCTable {
             System.out.println("calc for " + netCode + "." + staCode);
             if(forceAllCalc) {
                 jdbcHKStack.calcAll(netCode,
-                                           staCode,
-                                           minPercentMatch,
-                                           save,
-                                           weightPs,
-                                           weightPpPs,
-                                           weightPsPs);
+                                    staCode,
+                                    minPercentMatch,
+                                    save,
+                                    weightPs,
+                                    weightPpPs,
+                                    weightPsPs);
             } else {
                 jdbcHKStack.calc(netCode,
-                                        staCode,
-                                        minPercentMatch,
-                                        save,
-                                        weightPs,
-                                        weightPpPs,
-                                        weightPsPs);
+                                 staCode,
+                                 minPercentMatch,
+                                 save,
+                                 weightPs,
+                                 weightPpPs,
+                                 weightPsPs);
             }
         } else {
             // do all or for a net
@@ -416,12 +473,12 @@ public class JDBCHKStack extends JDBCTable {
                                 + "." + station[j].get_code());
                         try {
                             jdbcHKStack.calc(netId[i].network_code,
-                                                        station[j].get_code(),
-                                                        minPercentMatch,
-                                                        save,
-                                                        weightPs,
-                                                        weightPpPs,
-                                                        weightPsPs);
+                                             station[j].get_code(),
+                                             minPercentMatch,
+                                             save,
+                                             weightPs,
+                                             weightPpPs,
+                                             weightPsPs);
                         } catch(IllegalArgumentException e) {
                             System.out.println("Problem with receiver function, skipping station. "
                                     + e);
@@ -448,9 +505,9 @@ public class JDBCHKStack extends JDBCTable {
     public JDBCRecFunc getJDBCRecFunc() {
         return jdbcRecFunc;
     }
-    
+
     Crust2 crust2;
-    
+
     public JDBCHKRealImag getJDBCHKRealImag() {
         return jdbcHKRealImag;
     }

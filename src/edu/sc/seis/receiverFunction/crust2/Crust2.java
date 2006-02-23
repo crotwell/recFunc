@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import edu.iris.Fissures.Location;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
@@ -45,6 +46,10 @@ public class Crust2 {
         return (Crust2Profile)profileMap.get(code);
     }
 
+    public static int[] getClosestLatLon(Location loc) {
+        return getClosestLatLon(loc.longitude, loc.latitude);
+    }
+
     public static int[] getClosestLatLon(double lon, double lat) {
         int[] out = new int[2];
         out[0] = (int)Math.round((lon - 1) / 2) * 2 + 1;
@@ -54,6 +59,11 @@ public class Crust2 {
 
     public String getClosestCode(double lon, double lat) {
         int[] closest = getClosestLatLon(lon, lat);
+        return getCode(closest[0], closest[1]);
+    }
+
+    public String getClosestCode(Location loc) {
+        int[] closest = getClosestLatLon(loc);
         return getCode(closest[0], closest[1]);
     }
 

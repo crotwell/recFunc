@@ -6,6 +6,7 @@
 
 package edu.sc.seis.receiverFunction.crust2;
 
+import java.text.DecimalFormat;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.TauP.VelocityLayer;
@@ -43,6 +44,10 @@ public class Crust2Profile {
         }
         return travelTime/layers[layers.length-1].getTopDepth();
     }
+    
+    public String formatPWaveAvgVelocity() {
+        return formatter.format(getPWaveAvgVelocity());
+    }
 
     /** Calculated for vertical incidence S wave, assumes layers are constant velocity
      * and ignores the last layer (halfspace). */
@@ -54,13 +59,29 @@ public class Crust2Profile {
         return travelTime/layers[layers.length-1].getTopDepth();
     }
     
+    public String formatSWaveAvgVelocity() {
+        return formatter.format(getSWaveAvgVelocity());
+    }
+    
     public QuantityImpl getCrustThickness() {
-        return new QuantityImpl(layers[7].getTopDepth(), UnitImpl.KILOMETER);
+        QuantityImpl q = new QuantityImpl(layers[7].getTopDepth(), UnitImpl.KILOMETER);
+        q.setFormat(formatter);
+        return q;
+    }
+    
+    public double getVpVs() {
+        return getPWaveAvgVelocity()/getSWaveAvgVelocity();
+    }
+    
+    public String formatVpVs() {
+        return formatter.format(getVpVs());
     }
 
     String name;
     String code;
     VelocityLayer[] layers;
+    
+    DecimalFormat formatter = new DecimalFormat("0.##");
 
 }
 

@@ -1,5 +1,8 @@
 package edu.sc.seis.receiverFunction;
 
+import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
+
 
 /**
  * IterDecon.java
@@ -8,7 +11,7 @@ package edu.sc.seis.receiverFunction;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 12134 2005-02-16 20:48:12Z crotwell $
+ * @version $Id: IterDecon.java 16252 2006-02-23 21:02:03Z crotwell $
  */
 
 public class IterDecon {
@@ -181,8 +184,12 @@ public class IterDecon {
         }
         float[] forward = new float[x.length];
         System.arraycopy(x, 0, forward, 0, x.length);
-        NativeFFT.forward(forward);
-
+        if(useNativeFFT) {
+            NativeFFT.forward(forward);
+        } else {
+            // not on mac, so no altavec fft
+            Cmplx.four1Forward(forward);
+        }
         double df = 1/(forward.length * dt);
         double d_omega = 2*Math.PI*df;
         double gwidth = 4*gwidthFactor*gwidthFactor;
@@ -203,7 +210,12 @@ public class IterDecon {
             forward[j+1] *= gauss;
         }
 
-        NativeFFT.inverse(forward);
+        if(useNativeFFT) {
+            NativeFFT.inverse(forward);
+        } else {
+            // not on mac, so no altavec fft
+            Cmplx.four1Inverse(forward);
+        }
         return forward;
     }
 
@@ -255,7 +267,16 @@ public class IterDecon {
     protected boolean useAbsVal;
     protected float tol;
     protected float gwidthFactor;
+    protected static boolean useNativeFFT = true;
     
+    static {
+        try {
+        NativeFFT nativeFFT = new NativeFFT();
+        } catch (UnsatisfiedLinkError e) {
+            // not on mac, so no altavec fft
+            useNativeFFT = false;
+        }
+    }
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(IterDecon.class);
 
 }// IterDecon

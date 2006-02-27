@@ -21,7 +21,7 @@
     <siteDirectory>/Library/WebServer/software/${pom.artifactId}</siteDirectory>
     <distributionDirectory>/Library/WebServer/software/mavenRepository</distributionDirectory>
     <repository>
-        <url>http://roo.seis.sc.edu/fisheye/viewrep/CVS/seis/${pom.artifactId}</url>
+        <url>http://roo.seis.sc.edu/fisheye/viewrep/seis/trunk/${pom.artifactId}</url>
     </repository>
     <mailingLists/>
     <developers>

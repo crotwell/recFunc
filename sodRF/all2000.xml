@@ -311,6 +311,6 @@
                 </externalWaveformVectorProcess>
             </waveformVectorFork>
         </waveformVectorAlwaysSuccess>
-    </waveformVectorArm>
     <printlineSeismogramProcess/>
+    </waveformVectorArm>
 </sod>

@@ -113,7 +113,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                       transverseBump,
                                                       sodConfig_id);
                     System.out.println("insert " + recFuncDbId
-                            + " with weights of 1/3");
+                            + " with weights of 1/3 for gaussian="+config.gwidth+" for "+ChannelIdUtil.toStringNoDates(channels[0]));
                     float weightPs = 1/3f;
                     float weightPpPs = 1/3f;
                     float weightPsPs = 1 - weightPs - weightPpPs;

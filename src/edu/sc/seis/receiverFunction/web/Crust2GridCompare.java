@@ -52,10 +52,13 @@ public class Crust2GridCompare extends Revlet {
             Location loc = sum.getChannel().my_site.my_station.my_location;
             int[] ll = Crust2.getClosestLatLon(loc.longitude, loc.latitude);
             String llStr = ll[0]+","+ll[1];
+            List gridList;
             if (! sumByGrid.containsKey(llStr)) {
-                sumByGrid.put(llStr, new ArrayList());
+            	gridList = new ArrayList();
+                sumByGrid.put(llStr, gridList);
+            } else {
+            	gridList = (List)sumByGrid.get(llStr);
             }
-            List gridList = (List)sumByGrid.get(llStr);
             gridList.add(sum);
         }
         it = sumByGrid.keySet().iterator();

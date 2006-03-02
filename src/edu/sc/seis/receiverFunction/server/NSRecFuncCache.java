@@ -52,6 +52,11 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
                 try {
                     recFuncCache = RecFuncCacheHelper.narrow(namingService.resolve(serverDNS, interfaceName, serverName));
                 } catch (Throwable t) {
+                    try {
+                        Thread.sleep(100);
+                    } catch(InterruptedException e) {
+                        // oh well
+                    }
                     namingService.reset();
                     recFuncCache = RecFuncCacheHelper.narrow(namingService.resolve(serverDNS, interfaceName, serverName));
                 }
@@ -87,6 +92,11 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
             // retry in case regetting from name service helps
             logger.warn("Exception in isCached(), regetting from nameservice to try again.", e);
             reset();
+            try {
+                Thread.sleep(100);
+            } catch(InterruptedException ee) {
+                // oh well
+            }
             return getCorbaObject().isCached(prefOrigin, channel, config);
         } // end of try-catch
     }
@@ -102,6 +112,11 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
             // retry in case regetting from name service helps
             logger.warn("Exception in getCachedConfigs(), regetting from nameservice to try again.", e);
             reset();
+            try {
+                Thread.sleep(100);
+            } catch(InterruptedException ee) {
+                // oh well
+            }
             return getCorbaObject().getCachedConfigs(prefOrigin, channel);
         } // end of try-catch
     }
@@ -121,6 +136,11 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
             // retry in case regetting from name service helps
             logger.warn("Exception in get(), regetting from nameservice to try again.", e);
             reset();
+            try {
+                Thread.sleep(100);
+            } catch(InterruptedException ee) {
+                // oh well
+            }
             return getCorbaObject().get(prefOrigin, channel, config);
         } // end of try-catch
     }
@@ -133,6 +153,11 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
             // retry in case regetting from name service helps
             logger.warn("Exception in insertSodConfig(), regetting from nameservice to try again.", e);
             reset();
+            try {
+                Thread.sleep(100);
+            } catch(InterruptedException ee) {
+                // oh well
+            }
             return getCorbaObject().insertSodConfig(config);
         } // end of try-catch
     }
@@ -146,6 +171,11 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
             // retry in case regetting from name service helps
             logger.warn("Exception in getSodConfig(), regetting from nameservice to try again.", e);
             reset();
+            try {
+                Thread.sleep(100);
+            } catch(InterruptedException ee) {
+                // oh well
+            }
             return getCorbaObject().getSodConfig(sodConfig_id);
         } // end of try-catch
     }
@@ -182,6 +212,11 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
             // retry in case regetting from name service helps
             logger.warn("Exception in insert(), regetting from nameservice to try again.", e);
             reset();
+            try {
+                Thread.sleep(100);
+            } catch(InterruptedException ee) {
+                // oh well
+            }
             getCorbaObject().insert(prefOrigin,
                                     eventAttr,
                                     config,

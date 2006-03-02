@@ -1,0 +1,9 @@
+#	cpt file created by: grd2cpt crustThinkness.grd
+#COLOR_MODEL = RGB
+#
+-25.	0	0	255	-5.	0	100	255	
+-5.	255	255	0	5.	255	255	0	
+5.	255	100	0	25.	255	0	0	
+B	255	0	255
+F	0	255	255
+N	128	228	128

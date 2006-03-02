@@ -16,6 +16,7 @@ import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
+import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 
@@ -31,6 +32,7 @@ public class Crust2GridCompare extends Revlet {
     }
 
     public RevletContext getContext(HttpServletRequest req, HttpServletResponse res) throws Exception {
+        int minPerCell = RevUtil.getInt("minPerCell", req, 5);
         String path = req.getServletPath();
         String vmFile;
         if(path.endsWith(".txt")) {
@@ -61,7 +63,7 @@ public class Crust2GridCompare extends Revlet {
         while(it.hasNext()) {
             String code = (String)it.next();
             List gridList = (List)sumByGrid.get(code);
-            if (gridList.size() < 5) {
+            if (gridList.size() <= minPerCell) {
                 it.remove();
                 continue;
             }
@@ -77,7 +79,7 @@ public class Crust2GridCompare extends Revlet {
             hAvg /= gridList.size();
             kAvg /= gridList.size();
             Location loc = sum.getChannel().my_site.my_station.my_location;
-            int[] latLon = crust2.getClosestLatLon( loc);
+            int[] latLon = Crust2.getClosestLatLon( loc);
             output.add(new Crust2GridCompareResult(hAvg, kAvg, latLon[0], latLon[1], gridList, crust2.getByCode(code)));
         }
         return context;

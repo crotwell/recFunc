@@ -50,7 +50,7 @@ public class Crust2GridCompare extends Revlet {
 		while (it.hasNext()) {
 			SumHKStack sum = (SumHKStack) it.next();
 			Location loc = sum.getChannel().my_site.my_station.my_location;
-			int[] ll = Crust2.getClosestLatLon(loc.longitude, loc.latitude);
+			int[] ll = Crust2.getClosestLonLat(loc.longitude, loc.latitude);
 			String llStr = ll[0] + "," + ll[1];
 			List gridList;
 			if (!sumByGrid.containsKey(llStr)) {
@@ -83,9 +83,9 @@ public class Crust2GridCompare extends Revlet {
 				kVals[i] = sum.getSum().getMaxValueK();
 			}
 			Location loc = sum.getChannel().my_site.my_station.my_location;
-			int[] latLon = Crust2.getClosestLatLon(loc);
-			output.add(new Crust2GridCompareResult(hVals, kVals, latLon[0],
-					latLon[1], gridList, crust2.getByCode(crust2
+			int[] lonLat = Crust2.getClosestLonLat(loc);
+			output.add(new Crust2GridCompareResult(hVals, kVals, lonLat[1],
+					lonLat[0], gridList, crust2.getByCode(crust2
 							.getClosestCode(loc))));
 		}
 		return context;

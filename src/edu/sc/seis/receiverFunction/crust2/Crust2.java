@@ -46,11 +46,11 @@ public class Crust2 {
         return (Crust2Profile)profileMap.get(code);
     }
 
-    public static int[] getClosestLatLon(Location loc) {
-        return getClosestLatLon(loc.longitude, loc.latitude);
+    public static int[] getClosestLonLat(Location loc) {
+        return getClosestLonLat(loc.longitude, loc.latitude);
     }
 
-    public static int[] getClosestLatLon(double lon, double lat) {
+    public static int[] getClosestLonLat(double lon, double lat) {
         int[] out = new int[2];
         out[0] = (int)Math.round((lon - 1) / 2) * 2 + 1;
         out[1] = (int)Math.round((lat - 1) / 2) * 2 + 1;
@@ -58,12 +58,12 @@ public class Crust2 {
     }
 
     public String getClosestCode(double lon, double lat) {
-        int[] closest = getClosestLatLon(lon, lat);
+        int[] closest = getClosestLonLat(lon, lat);
         return getCode(closest[0], closest[1]);
     }
 
     public String getClosestCode(Location loc) {
-        int[] closest = getClosestLatLon(loc);
+        int[] closest = getClosestLonLat(loc);
         return getCode(closest[0], closest[1]);
     }
 

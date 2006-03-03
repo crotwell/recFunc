@@ -2,13 +2,19 @@ package edu.sc.seis.receiverFunction.web;
 
 import java.text.DecimalFormat;
 import java.util.List;
+
+import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 
 public class Crust2GridCompareResult {
 
-    float hAvg;
+    float[] hVals;
 
-    float kAvg;
+    float[] kVals;
+    
+	Statistics hStat;
+	
+	Statistics kStat;
 
     float lat;
 
@@ -18,16 +24,18 @@ public class Crust2GridCompareResult {
 
     Crust2Profile profile;
 
-    public Crust2GridCompareResult(float hAvg,
-                                   float kAvg,
+    public Crust2GridCompareResult(float[] hVals,
+                                   float[] kVals,
                                    float lat,
                                    float lon,
                                    List stationSummary,
                                    Crust2Profile profile) {
         super();
         // TODO Auto-generated constructor stub
-        this.hAvg = hAvg;
-        this.kAvg = kAvg;
+        this.hVals = hVals;
+        this.kVals = kVals;
+		hStat = new Statistics(hVals);
+		kStat = new Statistics(kVals);
         this.lat = lat;
         this.lon = lon;
         this.stationSummary = stationSummary;
@@ -35,7 +43,7 @@ public class Crust2GridCompareResult {
     }
 
     public float getHAvg() {
-        return hAvg;
+        return (float)hStat.mean();
     }
     
     public String formatHAvg() {
@@ -43,13 +51,29 @@ public class Crust2GridCompareResult {
     }
 
     public float getKAvg() {
-        return kAvg;
+        return (float)kStat.mean();
     }
     
     public String formatKAvg() {
         return formatter.format(getKAvg());
     }
 
+
+    public float getHStdDev() {
+        return (float)hStat.stddev();
+    }
+    
+    public String formatHStdDev() {
+        return formatter.format(getHStdDev());
+    }
+
+    public float getKStdDev() {
+        return (float)kStat.stddev();
+    }
+    
+    public String formatKStdDev() {
+        return formatter.format(getKStdDev());
+    }
     public Crust2Profile getProfile() {
         return profile;
     }

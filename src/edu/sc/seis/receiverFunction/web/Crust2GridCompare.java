@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
@@ -70,21 +71,20 @@ public class Crust2GridCompare extends Revlet {
 				it.remove();
 				continue;
 			}
-			float hAvg = 0;
-			float kAvg = 0;
 			Iterator listIt = gridList.iterator();
 			SumHKStack sum = null;
+			float[] hVals = new float[gridList.size()];
+			float[] kVals = new float[gridList.size()];
+			int i=0;
 			while (listIt.hasNext()) {
 				sum = (SumHKStack) listIt.next();
-				hAvg += sum.getSum().getMaxValueH()
+				hVals[i] = (float)sum.getSum().getMaxValueH()
 						.getValue(UnitImpl.KILOMETER);
-				kAvg += sum.getSum().getMaxValueK();
+				kVals[i] = sum.getSum().getMaxValueK();
 			}
-			hAvg /= gridList.size();
-			kAvg /= gridList.size();
 			Location loc = sum.getChannel().my_site.my_station.my_location;
 			int[] latLon = Crust2.getClosestLatLon(loc);
-			output.add(new Crust2GridCompareResult(hAvg, kAvg, latLon[0],
+			output.add(new Crust2GridCompareResult(hVals, kVals, latLon[0],
 					latLon[1], gridList, crust2.getByCode(crust2
 							.getClosestCode(loc))));
 		}

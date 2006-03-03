@@ -60,7 +60,10 @@ public class Crust2GridCompareResult {
 
 
     public float getHStdDev() {
-        return (float)hStat.stddev();
+        if (getStationSummary().size() >1) {
+            return (float)hStat.stddev();
+        }
+        return 99999;
     }
     
     public String formatHStdDev() {
@@ -68,7 +71,10 @@ public class Crust2GridCompareResult {
     }
 
     public float getKStdDev() {
-        return (float)kStat.stddev();
+        if (getStationSummary().size() >1) {
+            return (float)kStat.stddev();
+        }
+        return 99999;
     }
     
     public String formatKStdDev() {

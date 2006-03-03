@@ -16,6 +16,8 @@
 			<td>Lat</td>
 			<td>Lon</td>
 			<td>num Stations</td>
+			<td>H StdDev</td>
+			<td>K StdDev</td>
 			</thead>
 #foreach( $r in $gridLists)
 	<tr>
@@ -30,6 +32,8 @@
 	<td> $r.lat</td>
 	<td> $r.lon</td>
 	<td> $r.getStationSummary().size()</td>
+	<td>$r.formatHStdDev()</td>
+	<td>$r.formatKStdDev()</td>
 	</tr>
 #end
 		</table>

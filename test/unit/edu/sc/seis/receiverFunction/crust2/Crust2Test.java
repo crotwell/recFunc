@@ -24,17 +24,17 @@ public class Crust2Test extends TestCase {
 
     public void testClosest() {
         int[] out;
-        out = Crust2.getClosestLatLon(0, 0);
+        out = Crust2.getClosestLonLat(0, 0);
         assertEquals(" 0, 0", 1, out[0]);
         assertEquals(" 0, 0", 1, out[1]);
 
 
-        out = Crust2.getClosestLatLon(1, 1);
+        out = Crust2.getClosestLonLat(1, 1);
         assertEquals(" 1, 1", 1, out[1]);
         assertEquals(" 1, 1", 1, out[1]);
 
 
-        out = Crust2.getClosestLatLon(-180, -88);
+        out = Crust2.getClosestLonLat(-180, -88);
         assertEquals(" -180, -88", -179, out[0]);
         assertEquals(" -180, -88", -87, out[1]);
     }

@@ -443,7 +443,6 @@ public class JDBCRecFunc extends JDBCTable {
         getOriginByStationByPercent.setString(index++, stationCode);
         getOriginByStationByPercent.setFloat(index++, gaussianWidth);
         getOriginByStationByPercent.setFloat(index++, percentMatch);
-        System.out.println("RecFunc.getByPercent:"+getOriginByStationByPercent);
         ArrayList out = new ArrayList();
         ResultSet rs = getOriginByStationByPercent.executeQuery();
         while(rs.next()) {

@@ -211,6 +211,11 @@
             <url>http://www.seis.sc.edu/software/TauP</url>
         </dependency>
         <dependency>
+            <groupId>winkle</groupId>
+            <artifactId>winkle</artifactId>
+            <version>0.1alpha</version>
+        </dependency>
+        <dependency>
             <id>mockFissures</id>
             <version>0.2</version>
             <type>test</type>

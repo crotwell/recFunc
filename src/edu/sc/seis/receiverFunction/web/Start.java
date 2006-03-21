@@ -165,6 +165,7 @@ public class Start {
         List handlers = new ArrayList();
         handlers.add(rootHandler);
         handlers.add(axisHandler);
+        handlers.addAll(edu.sc.seis.winkle.Start.loadHandlers("/winkle", servletStrings, rootHandler));
         Revlet.addStandardQueryParam(new FloatQueryParamParser("gaussian", Start.getDefaultGaussian()));
         Revlet.addStandardQueryParam(new FloatQueryParamParser("minPercentMatch", Start.getDefaultMinPercentMatch()));
         edu.sc.seis.rev.Start.runREV(args, handlers);

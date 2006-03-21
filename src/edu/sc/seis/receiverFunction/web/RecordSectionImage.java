@@ -116,7 +116,7 @@ public class RecordSectionImage extends HttpServlet {
             disp.add(itrDSS);
             disp.outputToPNG(out, dim);
             out.close();
-        } catch(Exception e) {
+        } catch(Throwable e) {
             Revlet.sendToGlobalExceptionHandler(req, e);
             throw new ServletException(e);
         }

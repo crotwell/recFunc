@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.VelocityContext;
+import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
@@ -19,6 +20,7 @@ import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.receiverFunction.HKStack;
+import edu.sc.seis.receiverFunction.server.CachedResultPlusDbId;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
@@ -68,14 +70,14 @@ public class RFStationEvent extends Revlet {
         try {
             logger.debug("doGet called");
             res.setContentType("image/png");
-            if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
-            CachedResult result;
-            if (req.getParameter("rf").equals("synth")) {
-                result = SyntheticFactory.getCachedResult();
+            CachedResultPlusDbId resultPlusDbId;
+            if (RevUtil.get("rf", req).equals("synth")) {
+                resultPlusDbId = new CachedResultPlusDbId(SyntheticFactory.getCachedResult(), -1);
             } else {
                 int rfid = RevUtil.getInt("rf", req);
-                result = hkStack.getJDBCRecFunc().get(rfid);
+                resultPlusDbId = hkStack.getJDBCRecFunc().get(rfid);
             }
+            CachedResult result = resultPlusDbId.getCachedResult();
             CacheEvent eq = new CacheEvent(result.event_attr, result.prefOrigin);
             VelocityEvent velEvent = new VelocityEvent(eq);
             VelocityStation sta = new VelocityStation(result.channels[0].my_site.my_station);

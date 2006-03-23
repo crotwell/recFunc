@@ -69,7 +69,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
 								IterDeconConfig config) {
         try {
             synchronized (jdbcRecFunc.getConnection()) {
-                return jdbcRecFunc.get(prefOrigin, channel, config);
+                return jdbcRecFunc.get(prefOrigin, channel, config).getCachedResult();
             }
         } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);

@@ -117,7 +117,7 @@ public class HKStackImageServlet  extends HttpServlet {
         } else {
             int rf_id = RevUtil.getInt("rf", req);
             synchronized(hkStack.getConnection()) {
-                return hkStack.getJDBCRecFunc().get(rf_id);
+                return hkStack.getJDBCRecFunc().get(rf_id).getCachedResult();
             }
         }
     }

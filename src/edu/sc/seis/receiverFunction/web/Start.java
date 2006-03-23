@@ -13,6 +13,7 @@ import edu.sc.seis.fissuresUtil.simple.Initializer;
 import edu.sc.seis.rev.FloatQueryParamParser;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
+import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.rev.ServletFromSet;
 
 /**
@@ -165,7 +166,12 @@ public class Start {
         List handlers = new ArrayList();
         handlers.add(rootHandler);
         handlers.add(axisHandler);
-        handlers.addAll(edu.sc.seis.winkle.Start.loadHandlers("/winkle", servletStrings, rootHandler));
+        handlers.addAll(edu.sc.seis.winkle.Start.loadHandlers(WINKLE, servletStrings, rootHandler));
+        // override winkle Event servlet
+
+        axisHandler.addServlet(WINKLE+"/earthquakes",
+                               WINKLE+"/earthquakes/*",
+                               "edu.sc.seis.receiverFunction.web.Event");
         Revlet.addStandardQueryParam(new FloatQueryParamParser("gaussian", Start.getDefaultGaussian()));
         Revlet.addStandardQueryParam(new FloatQueryParamParser("minPercentMatch", Start.getDefaultMinPercentMatch()));
         edu.sc.seis.rev.Start.runREV(args, handlers);
@@ -180,7 +186,7 @@ public class Start {
         
         VelocityContext context = new VelocityContext();
         context.put("header",
-                    "<a href=\""+edu.sc.seis.rev.Start.getVisibleURL()+"\"><img src=\"earslogo.png\"/></a><br/>"
+                    "<a href=\""+RevletContext.getDefault("revBase")+"\"><img src=\""+RevletContext.getDefault("staticFiles")+"earslogo.png\"/></a><br/>"
                             + warning);
         ArrayList knownGaussians = new ArrayList();
         if (false) {
@@ -210,4 +216,6 @@ public class Start {
     public static float getDefaultMinPercentMatch() {
         return 80;
     }
+    
+    public static String WINKLE = "/winkle";
 }

@@ -81,7 +81,7 @@ public class SeismogramImage extends HttpServlet {
             } else {
                 int rf_id = new Integer(req.getParameter("rf")).intValue();
                 synchronized(jdbcRecFunc.getConnection()) {
-                    result = jdbcRecFunc.get(rf_id);
+                    result = jdbcRecFunc.get(rf_id).getCachedResult();
                 }
             }
             int xdim = RevUtil.getInt("xdim", req, xdimDefault);

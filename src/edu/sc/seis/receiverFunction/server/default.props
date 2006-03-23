@@ -59,7 +59,19 @@ receiverFunction.getOriginByStation=SELECT * FROM network \
     WHERE network.net_id = ? \
     AND station.sta_code = ? \
     AND gwidth = ?
-                   
+                 
+receiverFunction.getStationsByEventByPercent=SELECT * FROM netchan \
+    JOIN  receiverfunction ON (chanz_id = chan_id ) \
+    JOIN origin ON (receiverfunction.origin_id = origin.origin_id) \
+    JOIN eventattr ON (receiverfunction.eventattr_id = eventattr.eventattr_id) \
+    JOIN eventaccess ON (eventaccess.eventattr_id = eventattr.eventattr_id) \
+    JOIN location ON (origin.origin_location_id = location.loc_id) \
+    JOIN catalog ON (origin.origin_catalog_id = catalog.catalog_id) \
+    JOIN contributor ON (catalog_contributor_id =   contributor.contributor_id) \
+    WHERE event_id = ? \
+    AND gwidth = ? \
+    AND itr_match >= ?
+    
 receiverFunction.countOriginByStationByPercent=SELECT count(*) FROM  \
     station \
     JOIN site ON (station.sta_id = site.sta_id ) \

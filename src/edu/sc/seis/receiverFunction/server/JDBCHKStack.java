@@ -209,13 +209,13 @@ public class JDBCHKStack extends JDBCTable {
                  float weightPsPs) throws TauModelException,
             FileNotFoundException, FissuresException, NotFound, IOException,
             SQLException {
-        CachedResult cachedResult = jdbcRecFunc.get(recFuncDbId);
-        HKStack stack = HKStack.create(cachedResult,
+        CachedResultPlusDbId cachedResult = jdbcRecFunc.get(recFuncDbId);
+        HKStack stack = HKStack.create(cachedResult.getCachedResult(),
                                        weightPs,
                                        weightPpPs,
                                        weightPsPs);
         System.out.println("Stack calc for "
-                + ChannelIdUtil.toStringNoDates(cachedResult.channels[2]));
+                + ChannelIdUtil.toStringNoDates(cachedResult.getCachedResult().channels[2]));
         return stack;
     }
 
@@ -303,7 +303,7 @@ public class JDBCHKStack extends JDBCTable {
     public HKStack extract(ResultSet rs, boolean compact, boolean withRadialSeis)
             throws NotFound, IOException, SQLException {
         Channel[] channels = jdbcRecFunc.extractChannels(rs);
-        CachedResult recFunc;
+        CachedResultPlusDbId recFunc;
         if(withRadialSeis) {
             try {
                 recFunc = jdbcRecFunc.extract(rs);
@@ -340,9 +340,9 @@ public class JDBCHKStack extends JDBCTable {
                                   data[1],
                                   data[2],
                                   channels[0]);
-        out.setOrigin(recFunc.prefOrigin);
+        out.setOrigin(recFunc.getCachedResult().prefOrigin);
         if(withRadialSeis) {
-            out.setRecFunc(new MemoryDataSetSeismogram((LocalSeismogramImpl)recFunc.radial));
+            out.setRecFunc(new MemoryDataSetSeismogram((LocalSeismogramImpl)recFunc.getCachedResult().radial));
         }
         if(compact) {
             out.compact();

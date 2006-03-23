@@ -133,7 +133,11 @@ $header
 </tr>
 </table>
 
+#if($H)
 <img class="dataimg" src="waveforms.png?rf=$rf&window=120&H=$H&vpvs=$vpvs"/>
+#else
+<img class="dataimg" src="waveforms.png?rf=$rf&window=120"/>
+#end
 
 <p>Signal To Noise<p/>
 <table>

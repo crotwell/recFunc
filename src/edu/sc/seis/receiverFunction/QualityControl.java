@@ -102,17 +102,20 @@ public class QualityControl {
             for(int i = 0; i < nets.length; i++) {
                 try {
                     String[] staCodes;
-                    if(staArg == "") {
+                    if(staArg.length() == 0) {
+                        System.out.println("Calc for all stations in "+NetworkIdUtil.toStringFormatDates(nets[i]));
                         StationId[] staIds = jdbcStation.getAllStationIds(nets[i]);
+                        System.out.println("Got "+staIds.length+" stations");
                         Set allCodes = new HashSet();
                         for(int j = 0; j < staIds.length; j++) {
-                            allCodes.add(staIds[j]);
+                            allCodes.add(staIds[j].station_code);
                         }
                         staCodes = (String[])allCodes.toArray(new String[0]);
                     } else {
                         staCodes = new String[] {staArg};
                     }
                     for(int j = 0; j < staCodes.length; j++) {
+                        System.out.println("Processing "+staCodes[j]);
                         int[] dbids = jdbcStation.getDBIds(nets[i], staCodes[j]);
                         Station station = jdbcStation.get(dbids[0]);
                         int numGood = 0;
@@ -145,7 +148,7 @@ public class QualityControl {
                                 + results.length
                                 + "  => "
                                 + decFormat.format(numGood * 100.0
-                                        / results.length));
+                                        / results.length)+"%");
                     }
                 } catch(NotFound e) {
                     System.out.println("NotFound for :"

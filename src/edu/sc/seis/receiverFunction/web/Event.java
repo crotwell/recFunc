@@ -37,7 +37,7 @@ public class Event extends edu.sc.seis.winkle.Event {
                                     HttpServletResponse res) throws Exception {
         try {
             VelocityEvent event = extractEvent(req, res);
-            CachedResultPlusDbId[] resultsWithDbId = extractRF(req, res, event);
+            CachedResultPlusDbId[] resultsWithDbId = extractRF(req, res, event, false);
             List stationList = new ArrayList();
             HashMap resultMap = new HashMap();
             for(int i = 0; i < resultsWithDbId.length; i++) {
@@ -65,7 +65,7 @@ public class Event extends edu.sc.seis.winkle.Event {
         response.setContentType("text/html");
     }
     
-    public CachedResultPlusDbId[] extractRF(HttpServletRequest req, HttpServletResponse resp, VelocityEvent event) throws SQLException, FileNotFoundException, FissuresException, IOException {
+    public CachedResultPlusDbId[] extractRF(HttpServletRequest req, HttpServletResponse resp, VelocityEvent event, boolean withSeismograms) throws SQLException, FileNotFoundException, FissuresException, IOException {
         float gaussianWidth = RevUtil.getFloat("gaussian",
                                                req,
                                                Start.getDefaultGaussian());
@@ -73,7 +73,7 @@ public class Event extends edu.sc.seis.winkle.Event {
                                                  req,
                                                  Start.getDefaultMinPercentMatch());
         try {
-            return jdbcRecFunc.getStationsByEvent(event.getCacheEvent(), gaussianWidth, minPercentMatch, false);
+            return jdbcRecFunc.getStationsByEvent(event.getCacheEvent(), gaussianWidth, minPercentMatch, withSeismograms);
         } catch(NotFound e) {
             return new CachedResultPlusDbId[0];
         }

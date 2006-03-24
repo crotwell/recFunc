@@ -46,6 +46,7 @@ $header
 <p>$stationList.size() stations.</p>
 <p>View as <a href="stationList.txt?netdbid=${net.getDbId()}&gaussian=${gaussian}">text</a></p>
 	
+<p>Download as <a href="${revBase}eventReceiverFunction.zip/$eq.getURL()">ZIP file</a></p>
 <table class="ruler sortable" id="dumb">
 <tr>
 	<td class="headodd">Network</td>

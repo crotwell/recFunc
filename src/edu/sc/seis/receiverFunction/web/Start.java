@@ -163,6 +163,9 @@ public class Start {
         axisHandler.addServlet("EarthquakeStation",
                                "/es/*",
                                "edu.sc.seis.rev.servlets.EarthquakeStationServlet");
+        axisHandler.addServlet("/eventReceiverFunction.zip",
+                               "/eventReceiverFunction.zip/*",
+                              "edu.sc.seis.receiverFunction.web.EventReceiverFunctionZip");
         List handlers = new ArrayList();
         handlers.add(rootHandler);
         handlers.add(axisHandler);

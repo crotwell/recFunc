@@ -210,7 +210,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     
     private JDBCSodConfig jdbcSodConfig;
 
-    private static String DATA_LOC = "../Ears/Data";
+    private static String DATA_LOC = "../Data";
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(RecFuncCacheImpl.class);
 }

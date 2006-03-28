@@ -24,7 +24,7 @@ import edu.sc.seis.sod.velocity.network.VelocityStation;
 public class Network extends Revlet {
 
     public Network() throws SQLException, IOException {
-        Connection conn = ConnMgr.createConnection();
+        Connection conn = getConnection();
         jdbcChannel = new JDBCChannel(conn);
     }
 

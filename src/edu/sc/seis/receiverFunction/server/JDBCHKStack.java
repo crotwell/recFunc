@@ -113,6 +113,7 @@ public class JDBCHKStack extends JDBCTable {
                 }
             }
         }
+        out.close();
         int index = 1;
         put.setInt(index++, hkstack_id);
         put.setInt(index++, recfuncResult.getDbId());

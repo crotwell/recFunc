@@ -1,5 +1,6 @@
 package edu.sc.seis.receiverFunction.server;
 
+import java.sql.Connection;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.SystemException;
 import org.omg.CORBA.UNKNOWN;
@@ -83,14 +84,21 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
                                         CookieJar cookieJar) throws Exception {
         try {
             if(sodconfig_id == -1) {
+                Connection conn = null;
                 try {
-                    JDBCConfig jdbcConfig = new JDBCConfig(ConnMgr.createConnection());
+                    conn = ConnMgr.createConnection();
+                    JDBCConfig jdbcConfig = new JDBCConfig(conn);
                     String sodConfig = jdbcConfig.getCurrentConfig();
                     sodconfig_id = cache.insertSodConfig(sodConfig);
+                    conn.close();
                 } catch(Exception e) {
                     // oh well
                     GlobalExceptionHandler.handle(e);
                     sodconfig_id = -2;
+                } finally {
+                    if (conn != null) {
+                        conn.close();
+                    }
                 }
             }
             Channel chan = channelGroup.getChannels()[0];

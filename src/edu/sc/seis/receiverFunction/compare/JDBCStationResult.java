@@ -214,6 +214,7 @@ public class JDBCStationResult extends JDBCTable {
                 logger.error(net + "  " + netYear);
             }
         }
+        conn.close();
     }
 
     PreparedStatement put, get, getAllForName;

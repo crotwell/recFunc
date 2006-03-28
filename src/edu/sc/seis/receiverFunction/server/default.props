@@ -93,28 +93,6 @@ receiverFunction.getOriginByStationByPercent=SELECT * FROM netchan \
     AND sta_code = ? \
     AND gwidth = ? \
     AND itr_match >= ?
-    
-hkrealimag.create=CREATE TABLE $tablename ( \
-	hkrealimag_id int, \
-	PsReal bytea, \
-	PsImag bytea, \
-	PpPsReal bytea, \
-	PpPsImag bytea, \
-	PsPsReal bytea, \
-	PsPsImag bytea, \
-	PRIMARY KEY (hkrealimag_id) )
-	
-hkrealimag.put=INSERT INTO $tablename ( \
-	hkrealimag_id, \
-	PsReal, \
-	PsImag , \
-	PpPsReal , \
-	PpPsImag , \
-	PsPsReal , \
-	PsPsImag \
-	 ) VALUES ( ?, ?, ?, ?, ?,   ?, ? )
-	 
-hkrealimag.get=SELECT * FROM $tablename WHERE hkrealimag_id = ?
 
 hkstack.create=CREATE TABLE $tablename ( \
                    hkstack_id int, \
@@ -134,13 +112,10 @@ hkstack.create=CREATE TABLE $tablename ( \
                    weightPs float, \
                    weightPpPs float, \
                    weightPsPs float, \
-                   hkrealimag_id int, \
                    insertTime timestamp, \
                    PRIMARY KEY (hkstack_id), \
                    FOREIGN KEY (recFunc_id) \
-                   REFERENCES receiverFunction (recFunc_id), \
-                   FOREIGN KEY (hkrealimag_id) \
-                   REFERENCES hkrealimag (hkrealimag_id) )
+                   REFERENCES receiverFunction (recFunc_id) )
 
 hkstack.calcbypercent=SELECT receiverFunction.recfunc_id FROM network \
                    JOIN station ON (network.net_id = station.net_id ) \
@@ -185,10 +160,9 @@ hkstack.put=INSERT INTO hkstack ( \
                    weightPs , \
                    weightPpPs , \
                    weightPsPs , \
-                   hkrealimag_id , \
                    insertTime) \
                    VALUES ( \
-                   ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?, ?,?,?)
+                   ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?,  ?, ?, ?, ?, ?,?)
 
 
 hkstack.get=SELECT * FROM  \
@@ -198,7 +172,6 @@ hkstack.get=SELECT * FROM  \
                    JOIN channel ON (channel.site_id = site.site_id ) \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
                    JOIN hkStack ON (hkstack.recfunc_id = receiverFunction.recfunc_id ) \
-                   JOIN hkrealimag ON (hkstack.hkrealimag_id = hkrealimag.hkrealimag_id ) \
                    WHERE  \
                    hkstack.recfunc_id = ?
 
@@ -208,21 +181,10 @@ hkstack.getForStation=SELECT * FROM network \
                    JOIN channel ON (channel.site_id = site.site_id ) \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
                    JOIN hkStack ON (hkstack.recfunc_id = receiverFunction.recfunc_id ) \
-                   JOIN hkrealimag ON (hkstack.hkrealimag_id = hkrealimag.hkrealimag_id ) \
                    WHERE net_code = ? \
                    AND sta_code = ? \
                    AND gwidth = ? \
                    AND percentMatch > ?
-
-hkstackToSummary.create=CREATE TABLE $tablename ( \
-					hkstack_id int , \
-					hksummary_id int , \
-					FOREIGN KEY (hkstack_id) REFERENCES hkstack (hkstack_id) , \
-					FOREIGN KEY (hksummary_id) REFERENCES hksummary (hksummary_id) )
-					
-hkstackToSummary.put=INSERT INTO $tablename \
-                   ( hkstack_id, hksummary_id ) \
-                   VALUES ( ?, ? )
 
 hksummary.create=CREATE TABLE $tablename ( \
                    hksummary_id int, \

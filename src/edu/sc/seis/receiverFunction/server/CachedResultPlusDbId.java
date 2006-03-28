@@ -1,6 +1,7 @@
 package edu.sc.seis.receiverFunction.server;
 
 import edu.sc.seis.IfReceiverFunction.CachedResult;
+import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 
 
 public class CachedResultPlusDbId {
@@ -21,5 +22,9 @@ public class CachedResultPlusDbId {
         // TODO Auto-generated constructor stub
         this.cachedResult = cachedResult;
         this.dbid = dbid;
+    }
+    
+    public CacheEvent getEvent() {
+        return new CacheEvent(getCachedResult().event_attr, getCachedResult().prefOrigin);
     }
 }

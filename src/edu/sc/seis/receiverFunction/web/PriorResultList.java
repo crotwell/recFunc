@@ -20,7 +20,7 @@ import edu.sc.seis.rev.RevletContext;
 public class PriorResultList extends Revlet {
     
     public PriorResultList() throws SQLException {
-        Connection conn = ConnMgr.createConnection();
+        Connection conn = getConnection();
         jdbcStationResultRef = new JDBCStationResultRef(conn);  
     }
 

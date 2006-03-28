@@ -46,7 +46,7 @@ import edu.sc.seis.sod.velocity.network.VelocityStation;
 public class RFStationEvent extends Revlet {
 
     public RFStationEvent() throws SQLException, ConfigurationException, Exception {
-        Connection conn = ConnMgr.createConnection();
+        Connection conn = getConnection();
         jdbcEvent = new JDBCEventAccess(conn);
         
         JDBCChannel jdbcChannel  = new JDBCChannel(conn);

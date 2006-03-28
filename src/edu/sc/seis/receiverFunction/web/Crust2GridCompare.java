@@ -24,7 +24,7 @@ import edu.sc.seis.rev.RevletContext;
 public class Crust2GridCompare extends Revlet {
 
 	public Crust2GridCompare() throws Exception {
-		Connection conn = ConnMgr.createConnection();
+		Connection conn = getConnection();
 		JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, Start.getDataLoc());
 		JDBCHKStack jdbcHKStack = new JDBCHKStack(jdbcRecFunc);
 		jdbcSummaryHKStack = new JDBCSummaryHKStack(jdbcHKStack);

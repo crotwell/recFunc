@@ -55,7 +55,7 @@ public class Station extends Revlet {
 
     public Station() throws SQLException, ConfigurationException, Exception {
         DATA_LOC = Start.getDataLoc();
-        Connection conn = ConnMgr.createConnection();
+        Connection conn = getConnection();
         jdbcEventAccess = new JDBCEventAccess(conn);
         jdbcChannel = new JDBCChannel(conn);
         jdbcSodConfig = new JDBCSodConfig(conn);

@@ -8,6 +8,8 @@ rev.host=hopalong.seis.sc.edu
 #rev.host=localhost
 rev.port=8084
 rev.visibleURL=http://www.seis.sc.edu/ears/
+rev.base=/ears/
+rev.jettylogs=logs/jetty
 
 velocimacro.library.autoreload = false
 #

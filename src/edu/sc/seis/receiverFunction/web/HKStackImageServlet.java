@@ -129,5 +129,15 @@ public class HKStackImageServlet  extends HttpServlet {
     protected JDBCHKStack hkStack;
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(HKStackImageServlet.class);
+
+    public void destroy() {
+        try {
+            Connection conn = jdbcEvent.getConnection();
+            if (conn != null) {conn.close();}
+        } catch(SQLException e) {
+            // oh well
+        }
+        super.destroy();
+    }
     
 }

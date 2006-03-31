@@ -79,6 +79,11 @@ public class ReceiverFunctionZip extends HttpServlet {
                                                   gaussianWidth,
                                                   minPercentMatch);
             }
+            String netCode = "";
+            if (result.length != 0) {
+                netCode = result[0].channels[0].my_site.my_station.my_network.get_code();
+            }
+            res.addHeader("Content-Disposition", "inline; filename="+"rf_"+netCode+"_"+staCode+".zip");
             processResults(result, req, res);
         } catch(EOFException e) {
             // client has closed the connection, so not much we can do...
@@ -153,6 +158,17 @@ public class ReceiverFunctionZip extends HttpServlet {
         }
         zip.close();
     }
+
+    public void destroy() {
+        try {
+            Connection conn = jdbcRecFunc.getConnection();
+            if (conn != null) {conn.close();}
+        } catch(SQLException e) {
+            // oh well
+        }
+        super.destroy();
+    }
+    
     private static final String TOP_ZIP_DIR = "Ears/";
     
     JDBCRecFunc jdbcRecFunc;

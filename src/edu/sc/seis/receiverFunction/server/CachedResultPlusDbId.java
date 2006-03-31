@@ -1,5 +1,6 @@
 package edu.sc.seis.receiverFunction.server;
 
+import java.text.DecimalFormat;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 
@@ -27,4 +28,10 @@ public class CachedResultPlusDbId {
     public CacheEvent getEvent() {
         return new CacheEvent(getCachedResult().event_attr, getCachedResult().prefOrigin);
     }
+    
+    public String formatRadialMatch() {
+        return df.format(getCachedResult().radialMatch);
+    }
+    
+    private DecimalFormat df = new DecimalFormat("0.0");
 }

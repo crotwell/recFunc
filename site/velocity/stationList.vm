@@ -1,9 +1,9 @@
 <html>
 <head>
 <title>Stations in $net.getCode()</title>
-<link rel="stylesheet" type="text/css" href="style.css"/>
-<script src="sorttable.js" type="text/javascript"> </script>
-<script src="tableRuler.js" type="text/javascript"> </script>
+<link rel="stylesheet" type="text/css" href="$!{staticFiles}style.css"/>
+<script src="$!{staticFiles}sorttable.js" type="text/javascript"> </script>
+<script src="$!{staticFiles}tableRuler.js" type="text/javascript"> </script>
 <script type="text/javascript">
 window.onload=function(){
         tableruler();
@@ -22,7 +22,7 @@ $header
 <p><b>Owner: </b>$net.getOwner()</p>
 <p><b>Dates: </b>$fissures.formatYMD($net.getStartDate()) / $fissures.formatYMD($net.getEndDate())</p>
 <p>$stationList.size() stations.</p>
-<p>View as <a href="stationList.txt?netdbid=${net.getDbId()}&gaussian=${gaussian}">text</a></p>
+<p>View as <a href="$!{revBase}stationList.txt?netdbid=${net.getDbId()}&gaussian=${gaussian}">text</a></p>
 	
 <table class="ruler sortable" id="dumb">
 <tr>

@@ -44,7 +44,6 @@ $header
 </tr>
 </table>
 <p>$stationList.size() stations.</p>
-<p>View as <a href="stationList.txt?netdbid=${net.getDbId()}&gaussian=${gaussian}">text</a></p>
 	
 <p>Download as <a href="${revBase}eventReceiverFunction.zip/$eq.getURL()">ZIP file</a></p>
 <table class="ruler sortable" id="dumb">
@@ -54,14 +53,6 @@ $header
 	<td class="headodd">Name</td>
 	<td class="headodd num">Lat/Lon</td>
 	<td class="headodd num">Percent Match</td>
-	<td class="headodd num">StdDev</td>
-	<td class="headodd num">Est. Vp/Vs</td>
-	<td class="headodd num">StdDev</td>
-	<td class="headodd num">Assumed Vp</td>
-	<td class="headodd num">Vs</td>
-	<td class="headodd num">Poissons Ratio</td>
-	<td class="headodd num">Num EQ</td>
-	<td class="headodd num">Complexity</td>
 </tr>
 #foreach($sta in $stationList)
 <tr>
@@ -69,7 +60,7 @@ $header
 	<td class="odd"><a href="$!{revBase}stationEvent.html?rf=$recfunc.get($sta).getDbId()&gaussian=${gaussian}">$sta.getCode()</a></td>
     <td class="even"><a href="$!{revBase}stationEvent.html?rf=$recfunc.get($sta).getDbId()&gaussian=${gaussian}">$sta.getName()</a></td>
     <td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
-	<td class="even">$recfunc.get($sta).getCachedResult().radialMatch</td>
+	<td class="even">$recfunc.get($sta).formatRadialMatch()</td>
 </tr>
 #end
 </table>

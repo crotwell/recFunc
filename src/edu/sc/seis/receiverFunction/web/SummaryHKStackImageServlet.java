@@ -191,6 +191,16 @@ public class SummaryHKStackImageServlet extends HttpServlet {
         out.close();
     }
 
+    public void destroy() {
+        try {
+            Connection conn = jdbcHKStack.getConnection();
+            if (conn != null) {conn.close();}
+        } catch(SQLException e) {
+            // oh well
+        }
+        super.destroy();
+    }
+    
     private StackSummary stackSummary;
 
     private JDBCHKStack jdbcHKStack;

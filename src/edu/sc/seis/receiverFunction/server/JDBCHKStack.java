@@ -49,9 +49,8 @@ import edu.sc.seis.sod.status.EventFormatter;
  */
 public class JDBCHKStack extends JDBCTable {
 
-    public JDBCHKStack(JDBCRecFunc jdbcRecFunc)
-            throws SQLException, ConfigurationException, TauModelException,
-            Exception {
+    public JDBCHKStack(JDBCRecFunc jdbcRecFunc) throws SQLException,
+            ConfigurationException, TauModelException, Exception {
         this(jdbcRecFunc.getConnection(),
              jdbcRecFunc.getJDBCEventAccess(),
              jdbcRecFunc.getJDBCChannel(),
@@ -89,18 +88,22 @@ public class JDBCHKStack extends JDBCTable {
         if(rs.next()) {
             return extract(rs);
         } else {
-            System.out.println("get hkstack: " + get);
             rs.close();
             throw new NotFound();
         }
     }
 
-    public int put(CachedResultPlusDbId recfuncResult, HKStack stack) throws SQLException,
-            IOException {
+    public int put(CachedResultPlusDbId recfuncResult, HKStack stack)
+            throws SQLException, IOException {
         int hkstack_id = hkstackSeq.next();
         CachedResult rfResult = recfuncResult.getCachedResult();
-        File datadir = jdbcRecFunc.getDir(recfuncResult.getEvent(), rfResult.channels[0], rfResult.config.gwidth);
+        File datadir = jdbcRecFunc.getDir(recfuncResult.getEvent(),
+                                          rfResult.channels[0],
+                                          rfResult.config.gwidth);
         File analyticData = new File(datadir, ANALYTIC_DATA);
+        if(analyticData.exists()) {
+            throw new IOException(analyticData + " already exists...");
+        }
         DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(analyticData)));
         CmplxArray2D[] dataByPhase = new CmplxArray2D[] {stack.getAnalyticPs(),
                                                          stack.getAnalyticPpPs(),
@@ -108,8 +111,8 @@ public class JDBCHKStack extends JDBCTable {
         for(int p = 0; p < dataByPhase.length; p++) {
             for(int i = 0; i < dataByPhase[p].getXLength(); i++) {
                 for(int j = 0; j < dataByPhase[p].getYLength(); j++) {
-                    out.writeFloat(dataByPhase[p].getReal(i,j));
-                    out.writeFloat(dataByPhase[p].getImag(i,j));
+                    out.writeFloat(dataByPhase[p].getReal(i, j));
+                    out.writeFloat(dataByPhase[p].getImag(i, j));
                 }
             }
         }
@@ -147,6 +150,37 @@ public class JDBCHKStack extends JDBCTable {
         }
         getConnection().commit();
         return hkstack_id;
+    }
+
+    public void deleteForRecFuncId(int recfunc_id) throws SQLException,
+            NotFound, IOException {
+        get.setInt(1, recfunc_id);
+        ResultSet rs = get.executeQuery();
+        if(rs.next()) {
+            Channel[] channels = jdbcRecFunc.extractChannels(rs);
+            CachedResultPlusDbId recFunc = jdbcRecFunc.extractWithoutSeismograms(rs);
+            File datadir = jdbcRecFunc.getDir(recFunc.getEvent(),
+                                              channels[0],
+                                              recFunc.getCachedResult().config.gwidth);
+            File analyticData = new File(datadir, "AnalyticPlotData");
+            rs.close();
+            if(analyticData.exists()) {
+                analyticData.delete();
+            }
+            deleteStmt.setInt(1, recfunc_id);
+            System.out.println("Deleting: " + deleteStmt);
+            try {
+                int numChanged = deleteStmt.executeUpdate();
+                System.out.println("deleteForRecFuncId " + recfunc_id
+                        + " deleted=" + numChanged);
+            } catch(SQLException e) {
+                logger.error("statement causeing error: " + deleteStmt);
+                throw e;
+            }
+        } else {
+            rs.close();
+            throw new NotFound();
+        }
     }
 
     public void calc(String netCode,
@@ -202,7 +236,11 @@ public class JDBCHKStack extends JDBCTable {
         while(rs.next()) {
             int recFuncDbId = rs.getInt(1);
             System.out.println("Calc for " + recFuncDbId);
-            HKStack stack = calc(recFuncDbId, weightPs, weightPpPs, weightPsPs, save);
+            HKStack stack = calc(recFuncDbId,
+                                 weightPs,
+                                 weightPpPs,
+                                 weightPsPs,
+                                 save);
         }
     }
 
@@ -212,16 +250,19 @@ public class JDBCHKStack extends JDBCTable {
                       float weightPsPs) throws TauModelException,
             FileNotFoundException, FissuresException, NotFound, IOException,
             SQLException {
-        HKStack stack = calc(recFuncDbId, weightPs, weightPpPs, weightPsPs, true);
+        HKStack stack = calc(recFuncDbId,
+                             weightPs,
+                             weightPpPs,
+                             weightPsPs,
+                             true);
     }
 
     HKStack calc(int recFuncDbId,
                  float weightPs,
                  float weightPpPs,
                  float weightPsPs,
-                 boolean save) throws TauModelException,
-            FileNotFoundException, FissuresException, NotFound, IOException,
-            SQLException {
+                 boolean save) throws TauModelException, FileNotFoundException,
+            FissuresException, NotFound, IOException, SQLException {
         CachedResultPlusDbId cachedResult = jdbcRecFunc.get(recFuncDbId);
         HKStack stack = HKStack.create(cachedResult.getCachedResult(),
                                        weightPs,
@@ -335,41 +376,58 @@ public class JDBCHKStack extends JDBCTable {
         }
         int numH = rs.getInt("numH");
         int numK = rs.getInt("numK");
-        
-        File datadir = jdbcRecFunc.getDir(recFunc.getEvent(), channels[0], recFunc.getCachedResult().config.gwidth);
-        File analyticData = new File(datadir, "AnalyticPlotData");
-        DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(analyticData)));
-        CmplxArray2D[] dataByPhase = new CmplxArray2D[3];
-        for(int p = 0; p < dataByPhase.length; p++) {
-            dataByPhase[p] = new CmplxArray2D(numH, numK);
-            for(int i = 0; i < dataByPhase[p].getXLength(); i++) {
-                for(int j = 0; j < dataByPhase[p].getYLength(); j++) {
-                    dataByPhase[p].setReal(i,j, in.readFloat());
-                    dataByPhase[p].setImag(i,j, in.readFloat());
+        File datadir = jdbcRecFunc.getDir(recFunc.getEvent(),
+                                          channels[0],
+                                          recFunc.getCachedResult().config.gwidth);
+        File analyticData = new File(datadir, ANALYTIC_DATA);
+        HKStack out;
+        if(analyticData.exists()) {
+            DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(analyticData)));
+            CmplxArray2D[] dataByPhase = new CmplxArray2D[3];
+            for(int p = 0; p < dataByPhase.length; p++) {
+                dataByPhase[p] = new CmplxArray2D(numH, numK);
+                for(int i = 0; i < dataByPhase[p].getXLength(); i++) {
+                    for(int j = 0; j < dataByPhase[p].getYLength(); j++) {
+                        dataByPhase[p].setReal(i, j, in.readFloat());
+                        dataByPhase[p].setImag(i, j, in.readFloat());
+                    }
                 }
             }
+            out = new HKStack(new QuantityImpl(rs.getFloat("alpha"),
+                                               UnitImpl.KILOMETER_PER_SECOND),
+                              rs.getFloat("p"),
+                              rs.getFloat("gwidth"),
+                              rs.getFloat("percentMatch"),
+                              new QuantityImpl(rs.getFloat("minH"),
+                                               UnitImpl.KILOMETER),
+                              new QuantityImpl(rs.getFloat("stepH"),
+                                               UnitImpl.KILOMETER),
+                              numH,
+                              rs.getFloat("minK"),
+                              rs.getFloat("stepK"),
+                              numK,
+                              rs.getFloat("weightPs"),
+                              rs.getFloat("weightPpPs"),
+                              rs.getFloat("weightPsPs"),
+                              dataByPhase[0],
+                              dataByPhase[1],
+                              dataByPhase[2],
+                              channels[0]);
+        } else {
+            logger.error(ANALYTIC_DATA + " does not exist for rfid="
+                    + recFunc.getDbId());
+            // didn't read data
+            deleteForRecFuncId(recFunc.getDbId());
+            try {
+                out = calc(recFunc.getDbId(),
+                           rs.getFloat("weightPs"),
+                           rs.getFloat("weightPpPs"),
+                           rs.getFloat("weightPsPs"),
+                           true);
+            } catch(Throwable e) {
+                throw new FileNotFoundException(analyticData.toString());
+            }
         }
-        
-        HKStack out = new HKStack(new QuantityImpl(rs.getFloat("alpha"),
-                                                   UnitImpl.KILOMETER_PER_SECOND),
-                                  rs.getFloat("p"),
-                                  rs.getFloat("gwidth"),
-                                  rs.getFloat("percentMatch"),
-                                  new QuantityImpl(rs.getFloat("minH"),
-                                                   UnitImpl.KILOMETER),
-                                  new QuantityImpl(rs.getFloat("stepH"),
-                                                   UnitImpl.KILOMETER),
-                                  numH,
-                                  rs.getFloat("minK"),
-                                  rs.getFloat("stepK"),
-                                  numK,
-                                  rs.getFloat("weightPs"),
-                                  rs.getFloat("weightPpPs"),
-                                  rs.getFloat("weightPsPs"),
-                                  dataByPhase[0],
-                                  dataByPhase[1],
-                                  dataByPhase[2],
-                                  channels[0]);
         out.setOrigin(recFunc.getCachedResult().prefOrigin);
         if(withRadialSeis) {
             out.setRecFunc(new MemoryDataSetSeismogram((LocalSeismogramImpl)recFunc.getCachedResult().radial));
@@ -381,7 +439,7 @@ public class JDBCHKStack extends JDBCTable {
     }
 
     private PreparedStatement uncalculated, calcByPercent, put, get,
-            getForStation;
+            getForStation, deleteStmt, getForRecFuncId;
 
     private JDBCEventAccess jdbcEventAccess;
 
@@ -396,7 +454,7 @@ public class JDBCHKStack extends JDBCTable {
     private EventFormatter eventFormatter;
 
     public static final String ANALYTIC_DATA = "AnalyticPlotData";
-    
+
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCHKStack.class);
 
     public static void main(String[] args) {
@@ -522,7 +580,9 @@ public class JDBCHKStack extends JDBCTable {
                 }
             }
         }
-        if (conn != null) {conn.close();}
+        if(conn != null) {
+            conn.close();
+        }
     }
 
     public JDBCChannel getJDBCChannel() {
@@ -538,5 +598,4 @@ public class JDBCHKStack extends JDBCTable {
     }
 
     Crust2 crust2;
-
 }

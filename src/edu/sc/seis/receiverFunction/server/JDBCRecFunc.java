@@ -289,6 +289,34 @@ public class JDBCRecFunc extends JDBCTable {
         }
         throw new NotFound("No rec func entry found for dbid=" + dbid);
     }
+    
+    public void delete(int dbid) throws SQLException, NotFound, FileNotFoundException, IOException {
+        getByDbIdStmt.setInt(1, dbid);
+        ResultSet rs = getByDbIdStmt.executeQuery();
+        if(rs.next()) {
+            CachedResultPlusDbId withDbId = extractWithoutSeismograms(rs);
+            CachedResult result = withDbId.getCachedResult();
+            CacheEvent cacheEvent = new CacheEvent(result.event_attr,
+                                                   result.prefOrigin);
+            File stationDir = getDir(cacheEvent,
+                                     result.channels[0],
+                                     result.config.gwidth);
+            File f = new File(stationDir, rs.getString("recfuncITR"));
+            f.delete();
+            f = new File(stationDir, rs.getString("recfuncITT"));
+            f.delete();
+            rs.close();
+            deleteStmt.setInt(1, dbid);
+            try {
+                deleteStmt.executeUpdate();
+            } catch (SQLException e) {
+                logger.error("statement causeing error: "+deleteStmt);
+                throw e;
+            }
+            return;
+        }
+        throw new NotFound("No rec func entry found for dbid=" + dbid);
+    }
 
     public CachedResultPlusDbId getWithoutSeismograms(int dbid)
             throws FileNotFoundException, FissuresException, NotFound,
@@ -588,7 +616,8 @@ public class JDBCRecFunc extends JDBCTable {
 
     private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt,
             getByDbIdStmt, getOriginByStation, getOriginByStationByPercent,
-            countOriginByStationByPercent, getStationsByEventByPercent;
+            countOriginByStationByPercent, getStationsByEventByPercent,
+            deleteStmt;
 
     private JDBCSequence receiverFunctionSeq;
     

@@ -1,0 +1,53 @@
+<html>
+<head>
+<title>EARS</title>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+<style type="text/css">@import url($!{staticFiles}styles/calendar-system.css);</style>
+<script type="text/javascript" src="$!{staticFiles}scripts/calendar/calendar.js"></script>
+<script type="text/javascript" src="$!{staticFiles}scripts/calendar/calendar-en.js"></script>
+<script type="text/javascript" src="$!{staticFiles}scripts/calendar/calendar-setup.js"></script>
+</head>
+<body>
+<div id="content">
+
+$header
+
+<p>Find earthquakes:</p>
+<form action="winkle/eventSearch.html?gaussian=${gaussian}" method="get">
+<p>
+<label for="begin">Begin: </label><input type="text" name="begin" id="begin" value="20000101T000000.000Z"/><br/>
+<label for="end">End: </label><input type="text" name="end" id="end"  value="20000131T000000.000Z"/><br/>
+<label for="minLat">Min Latitude: </label><input type="text" name="minLat" value="-90"/><br/>
+<label for="maxLat">Max Latitude: </label><input type="text" name="maxLat" value="90"/><br/>
+<label for="minLon">Min Longitude: </label><input type="text" name="minLon" value="-180"/><br/>
+<label for="maxLon">Max Longitude: </label><input type="text" name="maxLon" value="180"/><br/>
+<label for="minDepth">Min Depth: </label><input type="text" name="minDepth" value="0"/><br/>
+<label for="maxDepth">Max Depth: </label><input type="text" name="maxDepth" value="1000"/><br/>
+<label for="minMag">Min Mag: </label><input type="text" name="minMag" value="0"/><br/>
+<label for="maxMag">Max Mag: </label><input type="text" name="maxMag" value="10"/><br/>
+
+<label for="HTML" ><input id="HTML" checked type="radio" name="filetype" value="text/html" />HTML</label>
+<label for="XML" ><input id="XML" type="radio" name="filetype" value="text/xml"/>XML</label>
+<label for="CSV"><input id="CSV" type="radio" name="filetype" value="text/csv"/>CSV</label><br/>
+<input type="submit" value="Send"/>
+    </p>
+ </form>
+
+<script type="text/javascript">
+    Calendar.setup({
+        inputField     :    "begin",   // id of the input field
+        ifFormat       :    "%Y%m%dT%H%M00.000Z",       // format of the input field
+        showsTime      :    true,
+        timeFormat     :    "24",
+    });
+    Calendar.setup({
+        inputField     :    "end",
+        ifFormat       :    "%Y%m%dT%H:%M:00.000Z",
+        showsTime      :    true,
+        timeFormat     :    "24",
+    });
+</script>
+ 
+</div>
+</body>
+</html>

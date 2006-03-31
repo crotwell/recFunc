@@ -188,6 +188,16 @@ public class SeismogramImage extends HttpServlet {
         dataset.addParameter(DataSet.EVENT, event, emptyAudit);
         return new DataSetSeismogram[] {radialDSS, tangentialDSS, zDSS, aDSS, bDSS};
     }
+    
+    public void destroy() {
+        try {
+            Connection conn = jdbcRecFunc.getConnection();
+            if (conn != null) {conn.close();}
+        } catch(SQLException e) {
+            // oh well
+        }
+        super.destroy();
+    }
 
     private static final UnitImpl SEC_PER_SEC = UnitImpl.divide(UnitImpl.SECOND, UnitImpl.SECOND);
 

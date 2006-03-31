@@ -94,6 +94,8 @@ receiverFunction.getOriginByStationByPercent=SELECT * FROM netchan \
     AND gwidth = ? \
     AND itr_match >= ?
 
+receiverFunction.deleteStmt=DELETE FROM receiverFunction WHERE recfunc_id = ?
+
 hkstack.create=CREATE TABLE $tablename ( \
                    hkstack_id int, \
                    recFunc_id int, \
@@ -116,6 +118,10 @@ hkstack.create=CREATE TABLE $tablename ( \
                    PRIMARY KEY (hkstack_id), \
                    FOREIGN KEY (recFunc_id) \
                    REFERENCES receiverFunction (recFunc_id) )
+
+hkstack.deleteStmt=DELETE FROM hkstack WHERE recfunc_id = ?
+
+hkstack.getForRecFuncId=SELECT * from hkstack WHERE recfunc_id = ?
 
 hkstack.calcbypercent=SELECT receiverFunction.recfunc_id FROM network \
                    JOIN station ON (network.net_id = station.net_id ) \

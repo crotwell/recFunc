@@ -362,15 +362,24 @@ public class StackSummary {
             System.out.println("Usage: StackSummary -net netCode [ -sta staCode ]");
             return;
         }
+        Connection conn = null;
         try {
             TimeOMatic.setWriter(new FileWriter("netTimes.txt"));
             TimeOMatic.start();
             Properties props = loadProps(args);
-            Connection conn = initDB(props);
+            conn = initDB(props);
             StackSummary summary = new StackSummary(conn);
             parseArgsAndRun(args, summary);
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch(SQLException e) {
+                    // oh well
+                } 
+            }
         }
     }
 

@@ -152,6 +152,10 @@ public class Start {
                               "org.jfree.chart.servlet.DisplayChart",
                               servletStrings,
                               rootHandler);
+        RevUtil.populateJetty("/eventSearch.html",
+                              "edu.sc.seis.receiverFunction.web.EventSearch",
+                              servletStrings,
+                              rootHandler);
         
         ServletHandler axisHandler = new ServletHandler();
         axisHandler.addServlet("Earthquakes",

@@ -20,7 +20,7 @@ $header
 #end
 #end
 </p>
-<p><a href="networkList.html?gaussian=${gaussian}">Networks</a></p>
+<p>Browse by <a href="networkList.html?gaussian=${gaussian}">Networks</a> or by <a href="eventSearch.html?gaussian=${gaussian}">Earthquakes</a></p>
 <p>Compare with <a href="priorResultList.html?gaussian=${gaussian}">prior results</a>
 </p>
 

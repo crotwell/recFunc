@@ -40,10 +40,6 @@ public class JDBCSummaryHKStack extends JDBCTable {
                          conn,
                          this,
                          "edu/sc/seis/receiverFunction/server/default.props");
-        TableSetup.setup("hkstackToSummary",
-                         conn,
-                         new Object(),
-                         "edu/sc/seis/receiverFunction/server/default.props");
     }
 
     public int calc(int netDbId,

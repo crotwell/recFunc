@@ -122,6 +122,16 @@ public class RecordSectionImage extends HttpServlet {
         }
     }
 
+    public void destroy() {
+        try {
+            Connection conn = jdbcEventAccess.getConnection();
+            if (conn != null) {conn.close();}
+        } catch(SQLException e) {
+            // oh well
+        }
+        super.destroy();
+    }
+    
     String DATA_LOC;
 
     JDBCEventAccess jdbcEventAccess;

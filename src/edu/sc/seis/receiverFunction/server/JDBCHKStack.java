@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -323,7 +324,8 @@ public class JDBCHKStack extends JDBCTable {
 				recFunc.getCachedResult().config.gwidth);
 		File analyticData = new File(datadir, ANALYTIC_DATA);
 		HKStack out;
-		if (analyticData.exists()) {
+		if (analyticData.canRead()) {
+			try {
 			DataInputStream in = new DataInputStream(new BufferedInputStream(
 					new FileInputStream(analyticData)));
 			CmplxArray2D[] dataByPhase = new CmplxArray2D[3];
@@ -345,12 +347,16 @@ public class JDBCHKStack extends JDBCTable {
 							.getFloat("weightPs"), rs.getFloat("weightPpPs"),
 					rs.getFloat("weightPsPs"), dataByPhase[0], dataByPhase[1],
 					dataByPhase[2], channels[0]);
+			} catch (EOFException e) {
+				// bad phase file?
+				logger.warn("Problem with "+analyticData, e);
+				throw e;
+			}
 		} else {
 			int rfdbid = recFunc.getDbId();
 			float weightPs = rs.getFloat("weightPs");
 			float weightPpPs = rs.getFloat("weightPpPs");
 			float weightPsPs = rs.getFloat("weightPsPs");
-			rs.close();
 			logger.error(ANALYTIC_DATA + " does not exist for rfid=" + rfdbid+"  path="+analyticData);
 			// didn't read data
 			deleteForRecFuncId(rfdbid);

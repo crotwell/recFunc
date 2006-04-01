@@ -351,7 +351,7 @@ public class JDBCHKStack extends JDBCTable {
 			float weightPpPs = rs.getFloat("weightPpPs");
 			float weightPsPs = rs.getFloat("weightPsPs");
 			rs.close();
-			logger.error(ANALYTIC_DATA + " does not exist for rfid=" + rfdbid);
+			logger.error(ANALYTIC_DATA + " does not exist for rfid=" + rfdbid+"  path="+analyticData);
 			// didn't read data
 			deleteForRecFuncId(rfdbid);
 			try {

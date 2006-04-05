@@ -103,6 +103,12 @@ public class JDBCHKStack extends JDBCTable {
 		CmplxArray2D[] dataByPhase = new CmplxArray2D[] {
 				stack.getAnalyticPs(), stack.getAnalyticPpPs(),
 				stack.getAnalyticPsPs() };
+		if(dataByPhase[0].getXLength() != stack.getNumH()) {
+			throw new IllegalArgumentException("must be same: nulH="+stack.getNumH()+"  dataByPhase="+dataByPhase[0].getXLength());
+		}
+		if(dataByPhase[0].getYLength() != stack.getNumK()) {
+			throw new IllegalArgumentException("must be same: numK="+stack.getNumK()+"  dataByPhase="+dataByPhase[0].getYLength());
+		}
 		for (int p = 0; p < dataByPhase.length; p++) {
 			for (int i = 0; i < dataByPhase[p].getXLength(); i++) {
 				for (int j = 0; j < dataByPhase[p].getYLength(); j++) {
@@ -112,6 +118,14 @@ public class JDBCHKStack extends JDBCTable {
 			}
 		}
 		out.close();
+		// double check to make sure everything is there...
+
+		// 3 arrays, 2 floats per entry, numH x numK, 4 bytes per float
+		int expectedSize = 3*2*4*stack.getNumH()*stack.getNumK();
+		if (analyticData.length() != expectedSize) {
+			throw new IOException("File size is incorrect file="+analyticData.length()+" expected="+expectedSize+"  "+analyticData);
+		}
+		
 		int index = 1;
 		put.setInt(index++, hkstack_id);
 		put.setInt(index++, recfuncResult.getDbId());
@@ -325,6 +339,11 @@ public class JDBCHKStack extends JDBCTable {
 		File analyticData = new File(datadir, ANALYTIC_DATA);
 		HKStack out;
 		if (analyticData.canRead()) {
+			// 3 arrays, 2 floats per entry, numH x numK, 4 bytes per float
+			int expectedSize = 3*2*4*numH*numK;
+			if (analyticData.length() != expectedSize) {
+				throw new IOException("File size is incorrect file="+analyticData.length()+" expected="+expectedSize+"  "+analyticData);
+			}
 			try {
 			DataInputStream in = new DataInputStream(new BufferedInputStream(
 					new FileInputStream(analyticData)));
@@ -333,8 +352,13 @@ public class JDBCHKStack extends JDBCTable {
 				dataByPhase[p] = new CmplxArray2D(numH, numK);
 				for (int i = 0; i < dataByPhase[p].getXLength(); i++) {
 					for (int j = 0; j < dataByPhase[p].getYLength(); j++) {
+						try {
 						dataByPhase[p].setReal(i, j, in.readFloat());
 						dataByPhase[p].setImag(i, j, in.readFloat());
+						}catch(EOFException e) {
+							logger.error("p="+p+" i="+i+" j="+j);
+							throw e;
+						}
 					}
 				}
 			}
@@ -359,14 +383,23 @@ public class JDBCHKStack extends JDBCTable {
 			float weightPsPs = rs.getFloat("weightPsPs");
 			logger.error(ANALYTIC_DATA + " does not exist for rfid=" + rfdbid+"  path="+analyticData);
 			// didn't read data
-			deleteForRecFuncId(rfdbid);
+			Connection deleteConn = ConnMgr.createConnection();
+			JDBCHKStack deleteStack;
 			try {
-				out = calc(rfdbid, weightPs, weightPpPs, weightPsPs, true);
-			} catch (Throwable e) {
-				FileNotFoundException ee = new FileNotFoundException(
-						analyticData.toString());
-				ee.initCause(e);
-				throw ee;
+				deleteStack = new JDBCHKStack(new JDBCRecFunc(conn, RecFuncCacheImpl.getDataLoc()));
+				deleteStack.deleteForRecFuncId(rfdbid);
+				try {
+					out = deleteStack.calc(rfdbid, weightPs, weightPpPs, weightPsPs, true);
+				} catch (Throwable e) {
+					FileNotFoundException ee = new FileNotFoundException(
+							analyticData.toString());
+					ee.initCause(e);
+					throw ee;
+				}
+			} catch (Exception e1) {
+				throw new RuntimeException(e1);
+			} finally {
+				deleteConn.close();
 			}
 		}
 		out.setOrigin(recFunc.getCachedResult().prefOrigin);

@@ -305,6 +305,12 @@ public class JDBCRecFunc extends JDBCTable {
             f.delete();
             f = new File(stationDir, rs.getString("recfuncITT"));
             f.delete();
+            f = new File(stationDir, rs.getString("seisa"));
+            f.delete();
+            f = new File(stationDir, rs.getString("seisb"));
+            f.delete();
+            f = new File(stationDir, rs.getString("seisz"));
+            f.delete();
             rs.close();
             deleteStmt.setInt(1, dbid);
             try {

@@ -34,6 +34,7 @@ $header
 <td class="even">$sta.getName()</td>
 <td class="odd">($sta.getLatitude(), $sta.getLongitude())</td>
 <td class="even">$fissures.formatYMD($sta.getStartDate()) / $fissures.formatYMD($sta.getEndDate())</td>
+<td class="odd">$sta.getElevation()</td>
 </tr>
 #end
 </table>

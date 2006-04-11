@@ -56,6 +56,7 @@ $imagemap
 <td class="headodd">Station</td>
 <td class="headodd">Name</td>
 <td class="headodd num">Lat/Lon</td>
+<td class="headodd num">Elevation</td>
 <td class="headodd num">Est. Thick</td>
 	<td class="headodd num">StdDev</td>
 <td class="headodd num">Est. Vp/Vs</td>
@@ -73,15 +74,16 @@ $imagemap
 <td class="odd"><a href="station.html?netCode=$sta.getNet().getCodeWithYear()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getCode()</a></td>
 <td class="even"><a href="station.html?netCode=$sta.getNet().getCodeWithYear()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getName()</a></td>
 <td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
-    <td class="even">$!summary.get($sta).getSum().formatMaxValueH()</td>
-    <td class="odd">$fissures.formatQuantity($!summary.get($sta).getHStdDev())</td>
-    <td class="even">$!summary.get($sta).getSum().formatMaxValueK()</td>
-    <td class="odd">$!summary.get($sta).formatKStdDev()</td>
-    <td class="even">$!summary.get($sta).getSum().formatAlpha()</td>
-    <td class="odd">$!summary.get($sta).getSum().formatVs()</td>
-    <td class="even">$!summary.get($sta).getSum().formatPoissonsRatio()</td>
-    <td class="odd">$!summary.get($sta).numEQ</td>
-    <td class="even">$!summary.get($sta).formatComplexityResidual()</td>
+<td class="even">$sta.getElevation()</td>
+    <td class="odd">$!summary.get($sta).getSum().formatMaxValueH()</td>
+    <td class="even">$fissures.formatQuantity($!summary.get($sta).getHStdDev())</td>
+    <td class="odd">$!summary.get($sta).getSum().formatMaxValueK()</td>
+    <td class="even">$!summary.get($sta).formatKStdDev()</td>
+    <td class="odd">$!summary.get($sta).getSum().formatAlpha()</td>
+    <td class="even">$!summary.get($sta).getSum().formatVs()</td>
+    <td class="odd">$!summary.get($sta).getSum().formatPoissonsRatio()</td>
+    <td class="even">$!summary.get($sta).numEQ</td>
+    <td class="odd">$!summary.get($sta).formatComplexityResidual()</td>
 </tr>
 #end
 </table>

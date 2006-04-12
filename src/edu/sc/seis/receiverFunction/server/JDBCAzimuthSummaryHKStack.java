@@ -12,7 +12,6 @@ import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 import edu.sc.seis.receiverFunction.AzimuthSumHKStack;
-import edu.sc.seis.receiverFunction.SumHKStack;
 
 public class JDBCAzimuthSummaryHKStack extends JDBCTable {
 

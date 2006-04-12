@@ -491,7 +491,7 @@ public class JDBCRecFunc extends JDBCTable {
         return (CachedResultPlusDbId[])out.toArray(new CachedResultPlusDbId[0]);
     }
 
-    public CachedResult[] getByPercent(int netDbId,
+    public CachedResultPlusDbId[] getByPercent(int netDbId,
                                        String stationCode,
                                        float gaussianWidth,
                                        float percentMatch)
@@ -507,7 +507,7 @@ public class JDBCRecFunc extends JDBCTable {
         while(rs.next()) {
             out.add(extract(rs));
         }
-        return (CachedResult[])out.toArray(new CachedResult[0]);
+        return (CachedResultPlusDbId[])out.toArray(new CachedResultPlusDbId[0]);
     }
 
     protected int populateGetStmt(PreparedStatement stmt,

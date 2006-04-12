@@ -10,6 +10,7 @@ import org.apache.velocity.VelocityContext;
 import org.mortbay.jetty.servlet.ServletHandler;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
+import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.rev.FloatQueryParamParser;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
@@ -211,7 +212,7 @@ public class Start {
     }
     
     public static String getDataLoc() {
-        return "../Ears";
+        return RecFuncCacheImpl.getDataLoc();
     }
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Start.class);

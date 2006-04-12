@@ -30,12 +30,10 @@ public class EventReceiverFunctionZip extends ReceiverFunctionZip {
             synchronized(jdbcRecFunc.getConnection()) {
                 VelocityEvent event = eventServlet.extractEvent(req, res);
                 resultsWithDbId = eventServlet.extractRF(req, res, event, true);
+            
+            res.addHeader("Content-Disposition", "inline; filename="+"ears_"+event.getFilizedTime()+".zip");
             }
-            CachedResult[] result = new CachedResult[resultsWithDbId.length];
-            for(int i = 0; i < result.length; i++) {
-                result[i] = resultsWithDbId[i].getCachedResult();
-            }
-            processResults(result, req, res);
+            processResults(resultsWithDbId, req, res);
         } catch(EOFException e) {
             // client has closed the connection, so not much we can do...
             return;

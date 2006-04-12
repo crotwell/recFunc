@@ -34,6 +34,7 @@ import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.gee.organizer.DataSetEventOrganizer;
 import edu.sc.seis.receiverFunction.compare.JDBCStationResult;
 import edu.sc.seis.receiverFunction.compare.JDBCStationResultRef;
+import edu.sc.seis.receiverFunction.server.CachedResultPlusDbId;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
@@ -76,7 +77,7 @@ public class RecordSectionImage extends HttpServlet {
 
             float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
             float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
-            CachedResult[] results;
+            CachedResultPlusDbId[] results;
             synchronized(jdbcRecFunc.getConnection()) {
                 results = jdbcRecFunc.getByPercent(netDbId,
                                                               staCode,
@@ -86,11 +87,12 @@ public class RecordSectionImage extends HttpServlet {
             DataSetEventOrganizer organizer = new DataSetEventOrganizer();
             DataSetSeismogram[] itrDSS = new DataSetSeismogram[results.length];
             for(int i = 0; i < itrDSS.length; i++) {
-                itrDSS[i] = new MemoryDataSetSeismogram((LocalSeismogramImpl)results[i].radial);
-                CacheEvent event = new CacheEvent(results[i].event_attr, results[i].prefOrigin);
+                CachedResult cr = results[i].getCachedResult();
+                itrDSS[i] = new MemoryDataSetSeismogram((LocalSeismogramImpl)cr.radial);
+                CacheEvent event = new CacheEvent(cr.event_attr, cr.prefOrigin);
                 organizer.addSeismogram(itrDSS[i], event, emptyAudit);
-                Channel chan = results[i].channels[2];
-                chan = new ChannelImpl(results[i].radial.channel_id,
+                Channel chan = cr.channels[2];
+                chan = new ChannelImpl(cr.radial.channel_id,
                                        chan.name, chan.an_orientation, chan.sampling_info, chan.effective_time, chan.my_site);
                 organizer.addChannel(chan, event, emptyAudit);
                 Channel outchan = itrDSS[i].getChannel();

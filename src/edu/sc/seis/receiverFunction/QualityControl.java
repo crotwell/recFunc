@@ -26,6 +26,7 @@ import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
+import edu.sc.seis.receiverFunction.server.CachedResultPlusDbId;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
@@ -121,19 +122,20 @@ public class QualityControl {
                         int numGood = 0;
                         int netDbId = jdbcStation.getNetTable()
                                 .getDbId(station.my_network.get_id());
-                        CachedResult[] results = jdbcRecFunc.getByPercent(netDbId,
+                        CachedResultPlusDbId[] resultsWithDbId = jdbcRecFunc.getByPercent(netDbId,
                                                                           staCodes[j],
                                                                           2.5f,
                                                                           80f);
-                        for(int r = 0; r < results.length; r++) {
-                            float tToR = control.transverseToRadial(results[r]);
-                            float pAmp = control.radialPAmp(results[r]);
+                        for(int r = 0; r < resultsWithDbId.length; r++) {
+                            CachedResult result = resultsWithDbId[r].getCachedResult();
+                            float tToR = control.transverseToRadial(result);
+                            float pAmp = control.radialPAmp(result);
                             if(tToR > .5 || pAmp < .8) {
-                                System.out.println(decFormat.format(results[r].radialMatch)
+                                System.out.println(decFormat.format(result.radialMatch)
                                         + " "
                                         + StationIdUtil.toStringFormatDates(station)
                                         + " origin="
-                                        + results[r].prefOrigin.origin_time.date_time
+                                        + result.prefOrigin.origin_time.date_time
                                         + "  T to R="
                                         + decFormat.format(tToR)
                                         + "  P amp=" + decFormat.format(pAmp));
@@ -145,10 +147,10 @@ public class QualityControl {
                                 + " Num good = "
                                 + numGood
                                 + " out of "
-                                + results.length
+                                + resultsWithDbId.length
                                 + "  => "
                                 + decFormat.format(numGood * 100.0
-                                        / results.length)+"%");
+                                        / resultsWithDbId.length)+"%");
                     }
                 } catch(NotFound e) {
                     System.out.println("NotFound for :"

@@ -29,6 +29,7 @@ import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.sac.FissuresToSac;
 import edu.sc.seis.receiverFunction.HKStack;
+import edu.sc.seis.receiverFunction.server.CachedResultPlusDbId;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
@@ -72,7 +73,7 @@ public class ReceiverFunctionZip extends HttpServlet {
         float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
         float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         try {
-            CachedResult[] result;
+            CachedResultPlusDbId[] result;
             synchronized(jdbcRecFunc.getConnection()) {
                 result = jdbcRecFunc.getByPercent(netDbId,
                                                   staCode,
@@ -81,9 +82,9 @@ public class ReceiverFunctionZip extends HttpServlet {
             }
             String netCode = "";
             if (result.length != 0) {
-                netCode = result[0].channels[0].my_site.my_station.my_network.get_code();
+                netCode = result[0].getCachedResult().channels[0].my_site.my_station.my_network.get_code();
             }
-            res.addHeader("Content-Disposition", "inline; filename="+"rf_"+netCode+"_"+staCode+".zip");
+            res.addHeader("Content-Disposition", "inline; filename="+"ears_"+netCode+"_"+staCode+".zip");
             processResults(result, req, res);
         } catch(EOFException e) {
             // client has closed the connection, so not much we can do...
@@ -94,7 +95,7 @@ public class ReceiverFunctionZip extends HttpServlet {
         }
     }
     
-    protected void processResults(CachedResult[] result, HttpServletRequest req, HttpServletResponse res) throws CodecException, IOException, TauModelException {
+    protected void processResults(CachedResultPlusDbId[] result, HttpServletRequest req, HttpServletResponse res) throws CodecException, IOException, TauModelException {
         float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
         res.setContentType("application/zip");
         ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(res.getOutputStream()));
@@ -104,9 +105,10 @@ public class ReceiverFunctionZip extends HttpServlet {
         String[] pPhases = {"P"};
         TauPUtil tauPTime = TauPUtil.getTauPUtil(HKStack.modelName);
         for(int i = 0; i < result.length; i++) {
-            VelocityEvent event = new VelocityEvent(new CacheEvent(result[i].event_attr,
-                                                                   result[i].prefOrigin));
-            VelocityStation sta = new VelocityStation(result[i].channels[2].my_site.my_station);
+            CachedResult cr = result[i].getCachedResult();
+            VelocityEvent event = new VelocityEvent(new CacheEvent(cr.event_attr,
+                                                                   cr.prefOrigin));
+            VelocityStation sta = new VelocityStation(cr.channels[2].my_site.my_station);
             // 0 for radial, 1 for transverse
             for(int rfType = 0; rfType < 2; rfType++) {
                 String entryName = TOP_ZIP_DIR + "gauss_"+gaussianWidth+"/"+sta.getNetCode() + "."
@@ -122,20 +124,20 @@ public class ReceiverFunctionZip extends HttpServlet {
                 ZipEntry entry = new ZipEntry(entryName);
                 System.out.println("Start new ZipEntry: " + entry);
                 zip.putNextEntry(entry);
-                LocalSeismogramImpl rfSeis = (LocalSeismogramImpl) (rfType == 0 ? result[i].radial : result[i].tansverse);
+                LocalSeismogramImpl rfSeis = (LocalSeismogramImpl) (rfType == 0 ? cr.radial : cr.tansverse);
                 SacTimeSeries sac = FissuresToSac.getSAC(rfSeis,
-                                                         result[i].channels[2],
-                                                         result[i].prefOrigin);
+                                                         cr.channels[2],
+                                                         cr.prefOrigin);
                 // fix orientation to radial and transverse
-                sac.cmpaz = (float)(rfType == 0 ? Rotate.getRadialAzimuth(sta.my_location, result[i].prefOrigin.my_location) : Rotate.getTransverseAzimuth(sta.my_location, result[i].prefOrigin.my_location));
+                sac.cmpaz = (float)(rfType == 0 ? Rotate.getRadialAzimuth(sta.my_location, cr.prefOrigin.my_location) : Rotate.getTransverseAzimuth(sta.my_location, cr.prefOrigin.my_location));
                 sac.cmpinc = 90;
                 // put percent match in user0 and gaussian width in user1
-                sac.user0 = (rfType == 0 ? result[i].radialMatch : result[i].transverseMatch);
+                sac.user0 = (rfType == 0 ? cr.radialMatch : cr.transverseMatch);
                 sac.kuser0 = "% match ";
-                sac.user1 = result[i].config.gwidth;
+                sac.user1 = cr.config.gwidth;
                 sac.kuser1 = "gwidth";
-                Arrival[] arrivals = tauPTime.calcTravelTimes(result[i].channels[0].my_site.my_station,
-                                                              result[i].prefOrigin,
+                Arrival[] arrivals = tauPTime.calcTravelTimes(cr.channels[0].my_site.my_station,
+                                                              cr.prefOrigin,
                                                               pPhases);
                 // convert radian per sec ray param into km per sec
                 float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()

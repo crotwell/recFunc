@@ -20,3 +20,39 @@
   </a>
 </div>
 #end
+
+#macro(eventTable $list $isLoser) 
+<table class="ruler sortable" id="dumb" cellpadding="0" cellspacing="0">
+<tr>
+<td class="headodd num initiallySorted descending">Radial Match</td>
+<td class="headodd num">Distance</td>
+<td class="headodd num">Baz</td>
+<td class="headodd">FERegion</td>
+<td class="headodd num">Time</td>
+<td class="headodd num">Lat/Lon</td>
+<td class="headodd num">Depth</td>
+<td class="headodd num">Magnitude</td>
+#if($isLoser)
+<td class="headodd num">Reason</td>
+#end
+</tr>
+#set( $maxValueH = $!summary.getSum().getMaxValueH().getValue() )
+#set( $maxValueK = $!summary.getSum().getMaxValueK() )
+#foreach($eq in $list)
+<tr>
+<td class="odd">$eq.getParam("itr_match")</td>
+<td class="even">$sta.getDistanceDeg($eq)</td>
+<td class="odd">$sta.getBaz($eq)</td>
+#set( $recFunc_id = $eq.getParam("recFunc_id") )
+<td class="even"><a href="stationEvent.html?rf=$recFunc_id&gaussian=${gaussian}&H=$maxValueH&vpvs=$maxValueK">$eq.getRegion()</a></td>
+<td class="odd">$eq.getTime()</td>
+<td class="even">($eq.getLatitude(), $eq.getLongitude())</td>
+<td class="odd">$eq.getDepth()</td>
+<td class="even">$eq.getAllMagnitudes()</td>
+#if($isLoser)
+<td class="odd">$eq.getParam("reason")</td>
+#end
+</tr>
+#end
+</table>
+#end

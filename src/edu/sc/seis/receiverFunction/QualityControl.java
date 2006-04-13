@@ -22,6 +22,7 @@ import edu.sc.seis.fissuresUtil.bag.PhaseCut;
 import edu.sc.seis.fissuresUtil.bag.PhaseNonExistent;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
+import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
@@ -29,7 +30,9 @@ import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.server.CachedResultPlusDbId;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
+import edu.sc.seis.receiverFunction.server.JDBCRecFuncQC;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
+import edu.sc.seis.receiverFunction.server.RecFuncQCResult;
 import edu.sc.seis.receiverFunction.server.StackSummary;
 
 public class QualityControl {
@@ -88,16 +91,20 @@ public class QualityControl {
             QualityControl control = new QualityControl();
             String netArg = "";
             String staArg = "";
+            boolean dbUpdate = false;
             for(int i = 0; i < args.length; i++) {
                 if(args[i].equals("-net")) {
                     netArg = args[i + 1];
                 } else if(args[i].equals("-sta")) {
                     staArg = args[i + 1];
+                } else if(args[i].equals("-db")) {
+                    dbUpdate = true;
                 }
             }
             logger.info("calc for station: " + netArg + "." + staArg);
             JDBCStation jdbcStation = jdbcRecFunc.getJDBCChannel()
                     .getStationTable();
+            JDBCRecFuncQC jdbcRecFuncQC = new JDBCRecFuncQC(conn);
             NetworkId[] nets = jdbcStation.getNetTable().getByCode(netArg);
             System.out.println("calc for "+nets.length+" nets");
             for(int i = 0; i < nets.length; i++) {
@@ -130,7 +137,16 @@ public class QualityControl {
                             CachedResult result = resultsWithDbId[r].getCachedResult();
                             float tToR = control.transverseToRadial(result);
                             float pAmp = control.radialPAmp(result);
-                            if(tToR > .5 || pAmp < .8) {
+                            if(tToR > MAX_T_TO_R_RATIO || pAmp < MIN_P_TO_MAX_AMP_RATIO) {
+                                if (dbUpdate) {
+                                    jdbcRecFuncQC.put(new RecFuncQCResult(resultsWithDbId[r].getDbId(),
+                                                                          false,
+                                                                          false,
+                                                                          tToR,
+                                                                          pAmp,
+                                                                          "",
+                                                                          ClockUtil.now().getTimestamp()));
+                                }
                                 System.out.println(decFormat.format(result.radialMatch)
                                         + " "
                                         + StationIdUtil.toStringFormatDates(station)
@@ -163,7 +179,21 @@ public class QualityControl {
         }
     }
 
+    public static float getMAX_T_TO_R_RATIO() {
+        return MAX_T_TO_R_RATIO;
+    }
+
+    public static float getMIN_P_TO_MAX_AMP_RATIO() {
+        return MIN_P_TO_MAX_AMP_RATIO;
+    }
+    
+    private static float MAX_T_TO_R_RATIO = .5f;
+    
+    private static float MIN_P_TO_MAX_AMP_RATIO = .8f;
+
     private static DecimalFormat decFormat = new DecimalFormat("0.000");
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(QualityControl.class);
+
+    
 }

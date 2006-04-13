@@ -113,8 +113,13 @@ public class Station extends Revlet {
         TimeOMatic.start();
         CacheEvent[] events = jdbcRecFunc.getSuccessfulEvents(netDbId,
                                                               staCode,
-                                                              gaussianWidth);
+                                                              gaussianWidth, 
+                                                              80);
         TimeOMatic.print("successful events");
+        CacheEvent[] loserEvents = jdbcRecFunc.getUnsuccessfulEvents(netDbId,
+                                                              staCode,
+                                                              gaussianWidth, 
+                                                              80);
         ArrayList eventList = new ArrayList();
         int numNinty = 0;
         int numEighty = 0;
@@ -122,15 +127,22 @@ public class Station extends Revlet {
             VelocityEvent ve = new VelocityEvent(events[i]);
             eventList.add(ve);
             float match = new Float(ve.getParam("itr_match")).floatValue();
-            if(match >= 80) {
+            if(match >= 80 ) {
                 numEighty++;
                 if(match >= 90) {
                     numNinty++;
                 }
             }
         }
+        ArrayList eventLoserList = new ArrayList();
+        for(int i = 0; i < loserEvents.length; i++) {
+            VelocityEvent ve = new VelocityEvent(loserEvents[i]);
+            eventLoserList.add(ve);
+        }
         Collections.sort(eventList, itrMatchComparator);
         Collections.reverse(eventList);
+        Collections.sort(eventLoserList, itrMatchComparator);
+        Collections.reverse(eventLoserList);
         TimeOMatic.print("sort");
         VelocityStation sta = (VelocityStation)stationList.get(0);
         ArrayList markerList = new ArrayList();
@@ -187,23 +199,15 @@ public class Station extends Revlet {
             // no summary, oh well...
         }
         TimeOMatic.print("summary and local maxima");
-        Iterator it = eventList.iterator();
-        ArrayList eightyEvents = new ArrayList();
-        while(it.hasNext()) {
-            VelocityEvent event = (VelocityEvent)it.next();
-            float match = new Float(event.getParam("itr_match")).floatValue();
-            if (match >= 80) {
-               eightyEvents.add(event); 
-            }
-        }
         String azPlotname = AzimuthPlot.plot((VelocityStation)stationList.get(0),
-                                             (VelocityEvent[])eightyEvents.toArray(new VelocityEvent[0]),
+                                             (VelocityEvent[])eventList.toArray(new VelocityEvent[0]),
                                              req.getSession());
         context.put("azPlot", azPlotname);
         context.put("stationList", stationList);
         context.put("stacode", staCode);
         context.put("net", net);
         context.put("eventList", eventList);
+        context.put("eventLoserList", eventLoserList);
         context.put("numNinty", new Integer(numNinty));
         context.put("percentNinty", ""+new Float(numNinty*100f/events.length));
         context.put("numEighty", new Integer(numEighty));

@@ -46,6 +46,7 @@ import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.fissuresUtil.xml.SeismogramFileTypes;
 import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.UnsupportedFileTypeException;
+import edu.sc.seis.receiverFunction.QualityControl;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import edu.sc.seis.sod.ConfigurationException;
@@ -444,7 +445,7 @@ public class JDBCRecFunc extends JDBCTable {
         return rs.getInt(1);
     }
 
-    public CacheEvent[] getSuccessfulEvents(int netDbId,
+    public CacheEvent[] getEvents(int netDbId,
                                             String stationCode,
                                             float gaussianWidth)
             throws SQLException, NotFound {
@@ -468,6 +469,84 @@ public class JDBCRecFunc extends JDBCTable {
                     + rs.getFloat("itr_match"));
             newParms[newParms.length - 1] = new ParameterRef("recFunc_id", ""
                     + rs.getInt("recFunc_id"));
+            o.parm_ids = newParms;
+            out.add(event);
+        }
+        return (CacheEvent[])out.toArray(new CacheEvent[0]);
+    }
+
+    public CacheEvent[] getSuccessfulEvents(int netDbId,
+                                            String stationCode,
+                                            float gaussianWidth,
+                                            float minPercentMatch)
+            throws SQLException, NotFound {
+        int index = 1;
+        getSuccessfulOriginByStation.setInt(index++, netDbId);
+        getSuccessfulOriginByStation.setString(index++, stationCode);
+        getSuccessfulOriginByStation.setFloat(index++, gaussianWidth);
+        getSuccessfulOriginByStation.setFloat(index++, minPercentMatch);
+        ResultSet rs = getSuccessfulOriginByStation.executeQuery();
+        TimeOMatic.print("result set");
+        ArrayList out = new ArrayList();
+        while(rs.next()) {
+            Origin o = jdbcOrigin.extract(rs);
+            // TimeOMatic.print("origin");
+            EventAttr attr = jdbcEventAttr.extract(rs);
+            // TimeOMatic.print("attr");
+            CacheEvent event = new CacheEvent(attr, o);
+            ParameterRef[] parms = o.parm_ids;
+            ParameterRef[] newParms = new ParameterRef[parms.length + 2];
+            System.arraycopy(parms, 0, newParms, 0, parms.length);
+            newParms[newParms.length - 2] = new ParameterRef("itr_match", ""
+                    + rs.getFloat("itr_match"));
+            newParms[newParms.length - 1] = new ParameterRef("recFunc_id", ""
+                    + rs.getInt("recFunc_id"));
+            o.parm_ids = newParms;
+            out.add(event);
+        }
+        return (CacheEvent[])out.toArray(new CacheEvent[0]);
+    }
+
+    public CacheEvent[] getUnsuccessfulEvents(int netDbId,
+                                            String stationCode,
+                                            float gaussianWidth,
+                                            float minPercentMatch)
+            throws SQLException, NotFound {
+        int index = 1;
+        getUnsuccessfulOriginByStation.setInt(index++, netDbId);
+        getUnsuccessfulOriginByStation.setString(index++, stationCode);
+        getUnsuccessfulOriginByStation.setFloat(index++, gaussianWidth);
+        getUnsuccessfulOriginByStation.setFloat(index++, minPercentMatch);
+        ResultSet rs = getUnsuccessfulOriginByStation.executeQuery();
+        TimeOMatic.print("result set");
+        ArrayList out = new ArrayList();
+        while(rs.next()) {
+            Origin o = jdbcOrigin.extract(rs);
+            // TimeOMatic.print("origin");
+            EventAttr attr = jdbcEventAttr.extract(rs);
+            // TimeOMatic.print("attr");
+            CacheEvent event = new CacheEvent(attr, o);
+            ParameterRef[] parms = o.parm_ids;
+            ParameterRef[] newParms = new ParameterRef[parms.length + 3];
+            System.arraycopy(parms, 0, newParms, 0, parms.length);
+            float itrMatch = rs.getFloat("itr_match");
+            newParms[newParms.length - 2] = new ParameterRef("itr_match", ""
+                    + itrMatch);
+            newParms[newParms.length - 1] = new ParameterRef("recFunc_id", ""
+                    + rs.getInt("recFunc_id"));
+            String reason = rs.getString("reason");
+            if (reason == null || reason.length() == 0) {
+                float tToR = rs.getFloat("transradialratio");
+                float pAmp = rs.getFloat("pmaxampratio");
+                if (itrMatch < 80) {
+                    reason = "% match";
+                } else if (tToR > QualityControl.getMAX_T_TO_R_RATIO()) {
+                    reason = "large T ratio, "+tToR;
+                } else if (pAmp < QualityControl.getMIN_P_TO_MAX_AMP_RATIO()) {
+                    reason = "small P amp ratio, "+pAmp;
+                }
+            }
+            newParms[newParms.length - 3] = new ParameterRef("reason", reason);
             o.parm_ids = newParms;
             out.add(event);
         }
@@ -623,7 +702,7 @@ public class JDBCRecFunc extends JDBCTable {
     private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt,
             getByDbIdStmt, getOriginByStation, getOriginByStationByPercent,
             countOriginByStationByPercent, getStationsByEventByPercent,
-            deleteStmt;
+            deleteStmt, getSuccessfulOriginByStation, getUnsuccessfulOriginByStation;
 
     private JDBCSequence receiverFunctionSeq;
     

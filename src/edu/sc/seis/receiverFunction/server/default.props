@@ -59,6 +59,39 @@ receiverFunction.getOriginByStation=SELECT * FROM network \
     WHERE network.net_id = ? \
     AND station.sta_code = ? \
     AND gwidth = ?
+
+receiverFunction.getSuccessfulOriginByStation=SELECT * FROM network \
+    JOIN station ON (network.net_id = station.net_id ) \
+    JOIN site ON (station.sta_id = site.sta_id ) \
+    JOIN channel ON (channel.site_id = site.site_id ) \
+    JOIN  receiverFunction ON (chanz_id = chan_id ) \
+    LEFT JOIN recfuncQC ON (receiverFunction.recfunc_id = recfuncQC.recfunc_id ) \
+    JOIN origin ON (receiverfunction.origin_id = origin.origin_id) \
+    JOIN eventattr ON (receiverfunction.eventattr_id = eventattr.eventattr_id) \
+    JOIN location ON (origin.origin_location_id = location.loc_id) \
+    JOIN catalog ON (origin.origin_catalog_id = catalog.catalog_id) \
+    JOIN contributor ON (catalog_contributor_id = contributor.contributor_id) \
+    WHERE network.net_id = ? \
+    AND station.sta_code = ? \
+    AND gwidth = ? \
+    AND itr_match >= ? \
+    AND (keep = true OR keep IS NULL)
+    
+receiverFunction.getUnsuccessfulOriginByStation=SELECT * FROM network \
+    JOIN station ON (network.net_id = station.net_id ) \
+    JOIN site ON (station.sta_id = site.sta_id ) \
+    JOIN channel ON (channel.site_id = site.site_id ) \
+    JOIN  receiverFunction ON (chanz_id = chan_id ) \
+    LEFT JOIN recfuncQC ON (receiverFunction.recfunc_id = recfuncQC.recfunc_id ) \
+    JOIN origin ON (receiverfunction.origin_id = origin.origin_id) \
+    JOIN eventattr ON (receiverfunction.eventattr_id = eventattr.eventattr_id) \
+    JOIN location ON (origin.origin_location_id = location.loc_id) \
+    JOIN catalog ON (origin.origin_catalog_id = catalog.catalog_id) \
+    JOIN contributor ON (catalog_contributor_id = contributor.contributor_id) \
+    WHERE network.net_id = ? \
+    AND station.sta_code = ? \
+    AND gwidth = ? \
+    AND (keep = FALSE OR itr_match <= ?)
                  
 receiverFunction.getStationsByEventByPercent=SELECT * FROM netchan \
     JOIN  receiverfunction ON (chanz_id = chan_id ) \
@@ -190,7 +223,8 @@ hkstack.getForStation=SELECT * FROM network \
                    WHERE net_code = ? \
                    AND sta_code = ? \
                    AND gwidth = ? \
-                   AND percentMatch > ?
+                   AND percentMatch > ? \
+                   EXCEPT SELECT recfunc_id FROM recfuncQC WHERE keep = false
 
 hksummary.create=CREATE TABLE $tablename ( \
                    hksummary_id int, \
@@ -522,4 +556,43 @@ amplitude.getForStation=SELECT net_code, sta_code, ampP, ampPs, ampPpPs, ampPsPs
     JOIN netchan ON ( receiverFunction.chanz_id = netchan.chanz_id ) \
     WHERE net_code = ? AND sta_code = ?
  
- 
+recfuncQC.create=CREATE TABLE $tablename ( \
+    recFunc_id int, \
+    keep boolean, \
+    manualOverride boolean, \
+    transRadialRatio real, \
+    pMaxAmpRatio real, \
+    reason varchar, \
+    insertTime timestamp, \
+    FOREIGN KEY (recFunc_id) \
+    REFERENCES receiverFunction (recFunc_id) \
+	)
+
+recfuncQC.put=INSERT INTO $tablename ( \
+    recFunc_id, \
+    keep, \
+    manualOverride, \
+    transRadialRatio, \
+    pMaxAmpRatio, \
+    reason, \
+    insertTime \
+    ) VALUES ( ?, ?, ?, ?, ?,  ?, ? )
+
+recfuncQC.update=UPDATE $tablename \
+    SET keep = ? , \
+    SET manualOverride = ? , \
+    SET reason = ? , \
+    SET transRadialRatio = ? , \
+    SET pMaxAmpRatio = ? , \
+    SET insertTime = ? \
+    WHERE recFunc_id = ?
+
+recfuncQC.get=SELECT * FROM $tablename WHERE recFunc_id = ?
+
+recfuncQC.getToTestByStation=SELECT * FROM $tablename \
+    JOIN receiverfunction ON ( receiverfunction.recfunc_id = ${tablename}.recfunc_id) \
+    JOIN netchan ON (chanz_id = chan_id) \
+    WHERE net_code = ? \
+    AND sta_code = ? \
+    
+

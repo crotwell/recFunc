@@ -50,7 +50,7 @@ $imagemap
     </p>
  </form>
  
-<table class="ruler sortable" id="dumb">
+<table cellpadding="0" cellspacing="0" class="ruler sortable" id="dumb">
 <tr>
 <td class="headodd initiallySorted ascending">Net</td>
 <td class="headodd">Station</td>

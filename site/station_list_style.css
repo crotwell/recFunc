@@ -5,13 +5,15 @@
 
 body {
           font-family: "Trebuchet MS", Arial, sans-serif;
+         
 }
 
-#outer {
-        width: 800px;
-        margin-left: auto;
-        margin-right: auto;
-        }
+p {
+   padding-left: 15px;
+   padding-bottom: 15px;
+   }
+
+
 
 #header {
          margin-top: 10px;
@@ -24,6 +26,17 @@ body {
               text-align: center;
               font-size: 12px;
               }
+#stat_info   {
+               margin-left: 15px;
+               margin-right: 15px;
+               width: 98%;
+               border: 1px solid #999999;
+               margin-bottom: 15px;
+               }
+#stat_info td {
+               text-align: center;
+               color: #007C39;
+               }
          
 #footer {
          clear: both;
@@ -40,10 +53,6 @@ body {
            text-decoration: none;
            }
 
-p {
-   padding-left: 15px;
-    padding-top: 15px;
-   }
 
 
 h1 {
@@ -51,28 +60,28 @@ h1 {
      color: #007C39;
      padding-top: 10px;
      padding-left: 15px;
+     padding-bottom: 10px;
     }
-
-img.dataimg {
-margin: 20px 10px 20px 5%; 
-}
-
-
-#dumb {
-       margin: 10px 15px 15px 15px;
+    
+    #dumb {
+       margin: 0 15px 15px 15px;
        width: 98%;
-        border: 1px solid #999999;
+       border: 1px solid #999999;
        }
+       
+#dumb td.even, #dumb td.stat_name {
+          border-bottom: 1px solid #ececec;
+          }
 
 td {
      padding: 2px;
 }
 
 td.odd {
-             color: #007C39;
              background: #ececec;
              text-align: center;
              border-bottom: 1px solid #d7d7d7;
+             color: #666666;
 }
 
 td.headodd {
@@ -80,10 +89,10 @@ td.headodd {
                        font-weight: bold;
                        color: #666666;
                         text-align: center;
-                         border-top: 1px solid #999999;
-                           border-left: 1px solid #999999;
-                             border-right: 1px solid #999999;
-                               border-bottom: 2px solid #999999;
+                        border-top: 1px solid #999999;
+          border-left: 1px solid #999999;
+          border-right: 1px solid #999999;
+          border-bottom: 2px solid #999999;
                          background: #d7d7d7;
                         
 }
@@ -94,15 +103,20 @@ td.headeven {
                        color: #666666;
                         text-align: center;
                         border-top: 1px solid #999999;
-                           border-left: 1px solid #999999;
-                             border-right: 1px solid #999999;
-                               border-bottom: 2px solid #999999;
-                          background: #d7d7d7;
+          border-left: 1px solid #999999;
+          border-right: 1px solid #999999;
+          border-bottom: 2px solid #999999;
+                          background: #ececec;
 }
 
 td.even {
+               text-align: center;
+               color: #666666;
+}
+
+td.stat_name{
                color: #007C39;
-               border-bottom: 1px solid #d7d7d7;
+               text-align: left;
 }
 
 a:link {
@@ -121,17 +135,4 @@ a img {
             border: none;
 }
 
-
-
-li {
-     margin-left: 10px;
-       color: #007C39;
-       padding-top: 10px;
-       list-style: none;
-       font-size: 16px;
-}
-
-#backbutton {
-             margin: 15px;
-             text-align: center;
-             }  
+    

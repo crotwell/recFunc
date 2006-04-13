@@ -1,0 +1,22 @@
+
+#macro(header)
+	<div id="header">
+	<a href="index.html"><img src="images/earslogo.gif"/></a>
+	
+	</div>
+
+#end
+
+#macro(footer)
+<div id="footer">
+  <a href="http://seis.sc.edu">
+    <img src="images/seislogo.png" alt="Seismology at USC" title="USC"/>
+  </a>
+  <a href="http://www.iris.edu">
+    <img src="images/irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
+  </a>
+   <a href="http://www.earthscope.org">
+    <img src="images/earthscope_logo.png" alt="Earthscope" title="Earthscope"/>
+  </a>
+</div>
+#end

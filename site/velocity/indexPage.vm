@@ -1,17 +1,105 @@
 <html>
 <head>
-<title>EARS</title>
-<link rel="stylesheet" type="text/css" href="style.css"/>
+<title>EARS - Home</title>
+<link rel="stylesheet" type="text/css" href="index_style.css"/>
 </head>
 <body>
+	#header()
+	<div id="outer">
+		<table id="article">
+		<tr><td><a href="http://www.seismosoc.org/publications/SRL/SRL_76/srl_76-6_es.html"><img src="images/article.gif"/></a></td>
+<td>Please see our article in 
+<a href="http://www.seismosoc.org/publications/SRL/SRL_76/srl_76-6_es.html">The Electronic Seismologist column of Seismological Research Letters, Nov/Dec 2005.</a></td>
+		</tr>
+		</table>
 <div id="content">
 
-$header
 
-<p>Please see our article in 
-<a href="http://www.seismosoc.org/publications/SRL/SRL_76/srl_76-6_es.html">The Electronic Seismologist column of Seismological Research Letters, Nov/Dec 2005.</a>
 
-<p>Choose Gaussian: 
+
+
+
+
+<div id="search_station">
+<h1>Search by station</h1>
+<ul>
+<li>Browse the <a href="networkList.html?gaussian=${gaussian}">network list</a> </li>
+<p>or</p>
+
+
+<li>Graph results near:
+<form action="stationsNearBy.html?gaussian=${gaussian}" method="get">
+<table class="entry_form">
+<tr><td class="label"><label for="lat">Latitude: </label></td><td colspan="2"><input type="text" name="lat" value="34"/></td></tr>
+<tr><td class="label"><label for="lon">Longitude: </label></td><td colspan="2"><input type="text" name="lon" value="-117"/></td></tr>
+<tr><td class="label"><label for="delta">Delta: </label></td><td colspan="2"><input type="text" name="delta" value="2"/></td></tr>
+
+<tr><td class="label"><label for="xAxis">X Axis: </label></td>
+<td><input type="radio" name="xAxis" value="lat"> Latitude</td>
+<td><input type="radio" name="xAxis" value="lon" checked="true"> Longitude</td>
+<td><input type="radio" name="xAxis" value="H"> Thickness</td>
+<td><input type="radio" name="xAxis" value="vpvs"> Vp/Vs</td></tr>
+
+<tr><td class="label"><label for="yAxis">Y Axis: </label></td>
+<td><input type="radio" name="yAxis" value="lat" checked="true"> Latitude</td>
+<td><input type="radio" name="yAxis" value="lon"> Longitude</td>
+<td><input type="radio" name="yAxis" value="H"> Thickness</td>
+<td><input type="radio" name="yAxis" value="vpvs"> Vp/Vs</td></tr>
+
+<tr><td class="label"><label for="zAxis">Z (Color) Axis: </label></td>
+<td><input type="radio" name="zAxis" value="lat"> Latitude</td>
+<td><input type="radio" name="zAxis" value="lon"> Longitude</td>
+<td><input type="radio" name="zAxis" value="H" checked="true"> Thickness</td>
+<td><input type="radio" name="zAxis" value="vpvs"> Vp/Vs</td></tr>
+
+<tr><td></td><td><input type="submit" value="Send"/></td></tr>
+</table>   
+ </form>
+</li>
+<p>or</p>
+<li>List results in a lat/lon box:
+<form action="stationLatLonBox.html?gaussian=${gaussian}&xAxis=lon&yAxis=lat" method="get">
+<table  class="entry_form">
+<tr><td class="label"><label for="minLat">Min Latitude: </label></td><td><input type="text" name="minLat" value="30"/></td></tr>
+<tr><td class="label"><label for="maxLat">Max Latitude: </label></td><td><input type="text" name="maxLat" value="45"/></td></tr>
+<tr><td class="label"><label for="minLon">Min Longitude: </label></td><td><input type="text" name="minLon" value="-122"/></td></tr>
+<tr><td class="label"><label for="maxLon">Max Longitude: </label></td><td><input type="text" name="maxLon" value="-110"/></td></tr>
+
+<tr><td></td><td><input type="submit" value="Send"/></td></tr>
+    </table>
+ </form>
+</li>
+</ul>
+ </div>
+ <div id="search_earthquake">
+ <h1>Search by earthquake</h1>
+ <ul><li>Find earthquakes:
+<form action="winkle/eventSearch.html?gaussian=${gaussian}" method="get">
+<table class="entry_form">
+<tr><td class="label"><label for="begin">Begin: </label></td><td colspan="3"><input type="text" name="begin" id="begin" value="20000101T000000.000Z"/></td></tr>
+<tr><td class="label"><label for="end">End: </label></td><td colspan="3"><input type="text" name="end" id="end"  value="20000131T000000.000Z"/></td></tr>
+<tr><td class="label"><label for="minLat">Min Latitude: </label></td><td colspan="3"><input type="text" name="minLat" value="-90"/></td></tr>
+<tr><td class="label"><label for="maxLat">Max Latitude: </label></td><td colspan="3"><input type="text" name="maxLat" value="90"/></td></tr>
+<tr><td class="label"><label for="minLon">Min Longitude: </label></td><td colspan="3"><input type="text" name="minLon" value="-180"/></td></tr>
+<tr><td class="label"><label for="maxLon">Max Longitude: </label></td><td colspan="3"><input type="text" name="maxLon" value="180"/></td></tr>
+<tr><td class="label"><label for="minDepth">Min Depth: </label></td><td colspan="3"><input type="text" name="minDepth" value="0"/></td></tr>
+<tr><td class="label"><label for="maxDepth">Max Depth: </label></td><td colspan="3"><input type="text" name="maxDepth" value="1000"/></td></tr>
+<tr><td class="label"><label for="minMag">Min Mag: </label></td><td colspan="3"><input type="text" name="minMag" value="0"/></td></tr>
+<tr><td class="label"><label for="maxMag">Max Mag: </label></td><td colspan="3"><input type="text" name="maxMag" value="10"/></td></tr>
+
+<tr><td></td><td><label for="HTML" ><input id="HTML" checked type="radio" name="filetype" value="text/html" />HTML</label></td><td>
+<label for="XML" ><input id="XML" type="radio" name="filetype" value="text/xml"/>XML</label></td><td>
+<label for="CSV"><input id="CSV" type="radio" name="filetype" value="text/csv"/>CSV</label></td></tr>
+<tr><td></td><td><input type="submit" value="Send"/></td></tr>
+    </table>
+ </form>
+ </li></ul>
+ </div>
+  <div id="other_options">
+ <h1>Other Options</h1>
+ <ul>
+	<li>
+ Choose Gaussian: 
 #foreach ( $g in $knownGaussians )
 	#if ( $g == $gaussian) 
 		$g
@@ -19,53 +107,15 @@ $header
 <a href="index.html?gaussian=${g}">${g}</a>
 #end
 #end
-</p>
-<p>Browse by <a href="networkList.html?gaussian=${gaussian}">Networks</a> or by <a href="eventSearch.html?gaussian=${gaussian}">Earthquakes</a></p>
-<p>Compare with <a href="priorResultList.html?gaussian=${gaussian}">prior results</a>
-</p>
+</li>
+ <li>Compare with <a href="priorResultList.html?gaussian=${gaussian}">prior results</a>
+</li>
+ <li>Get a summary of the results for all stations as <a href="overview.html?gaussian=${gaussian}">html</a> or as a <a href="overview.txt?gaussian=${gaussian}">CSV text</a> file</li>
+</ul>  
+</div>
 
-<br/>
-<p>Graph results near:</p>
-<form action="stationsNearBy.html?gaussian=${gaussian}" method="get">
-<p>
-<label for="lat">Latitude: </label><input type="text" name="lat" value="34"/><br/>
-<label for="lon">Longitude: </label><input type="text" name="lon" value="-117"/><br/>
-<label for="delta">Delta: </label><input type="text" name="delta" value="2"/><br/>
-
-<label for="xAxis">X Axis: </label>
-<input type="radio" name="xAxis" value="lat"> Latitude
-<input type="radio" name="xAxis" value="lon" checked="true"> Longitude
-<input type="radio" name="xAxis" value="H"> Thickness
-<input type="radio" name="xAxis" value="vpvs"> Vp/Vs<br/>
-
-<label for="yAxis">Y Axis: </label>
-<input type="radio" name="yAxis" value="lat" checked="true"> Latitude
-<input type="radio" name="yAxis" value="lon"> Longitude
-<input type="radio" name="yAxis" value="H"> Thickness
-<input type="radio" name="yAxis" value="vpvs"> Vp/Vs<br/>
-
-<label for="zAxis">Z (Color) Axis: </label>
-<input type="radio" name="zAxis" value="lat"> Latitude
-<input type="radio" name="zAxis" value="lon"> Longitude
-<input type="radio" name="zAxis" value="H" checked="true"> Thickness
-<input type="radio" name="zAxis" value="vpvs"> Vp/Vs<br/>
-
-<input type="submit" value="Send"/>
-    </p>
- </form>
- 
-<br/>
-<p>List results in a lat/lon box:</p>
-<form action="stationLatLonBox.html?gaussian=${gaussian}&xAxis=lon&yAxis=lat" method="get">
-<p>
-<label for="minLat">Min Latitude: </label><input type="text" name="minLat" value="30"/><br/>
-<label for="maxLat">Max Latitude: </label><input type="text" name="maxLat" value="45"/><br/>
-<label for="minLon">Min Longitude: </label><input type="text" name="minLon" value="-122"/><br/>
-<label for="maxLon">Max Longitude: </label><input type="text" name="maxLon" value="-110"/><br/>
-
-<input type="submit" value="Send"/>
-    </p>
- </form>
- <p>Summary of the results for all stations as <a href="overview.html?gaussian=${gaussian}">html</a> or as a <a href="overview.txt?gaussian=${gaussian}">CSV text</a> file.</p>
+</div>
+	</div>
+#footer()
 </body>
 </html>

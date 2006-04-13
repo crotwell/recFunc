@@ -43,6 +43,7 @@ import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.sod.ConfigurationException;
+import edu.sc.seis.sod.velocity.event.VelocityEvent;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
 public class RecordSectionImage extends HttpServlet {
@@ -89,7 +90,9 @@ public class RecordSectionImage extends HttpServlet {
             for(int i = 0; i < itrDSS.length; i++) {
                 CachedResult cr = results[i].getCachedResult();
                 itrDSS[i] = new MemoryDataSetSeismogram((LocalSeismogramImpl)cr.radial);
-                CacheEvent event = new CacheEvent(cr.event_attr, cr.prefOrigin);
+                CacheEvent cEvent = new CacheEvent(cr.event_attr, cr.prefOrigin);
+                VelocityEvent event = new VelocityEvent(cEvent);
+                itrDSS[i].setName(event.getTime());
                 organizer.addSeismogram(itrDSS[i], event, emptyAudit);
                 Channel chan = cr.channels[2];
                 chan = new ChannelImpl(cr.radial.channel_id,

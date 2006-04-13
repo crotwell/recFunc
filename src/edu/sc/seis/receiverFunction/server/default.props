@@ -219,12 +219,13 @@ hkstack.getForStation=SELECT * FROM network \
                    JOIN site ON (station.sta_id = site.sta_id ) \
                    JOIN channel ON (channel.site_id = site.site_id ) \
                    JOIN  receiverFunction ON (chanz_id = chan_id ) \
+                   LEFT JOIN recfuncQC ON (receiverFunction.recfunc_id = recfuncQC.recfunc_id ) \
                    JOIN hkStack ON (hkstack.recfunc_id = receiverFunction.recfunc_id ) \
                    WHERE net_code = ? \
                    AND sta_code = ? \
                    AND gwidth = ? \
                    AND percentMatch > ? \
-                   EXCEPT SELECT recfunc_id FROM recfuncQC WHERE keep = false
+                   AND (keep = true OR keep IS NULL)
 
 hksummary.create=CREATE TABLE $tablename ( \
                    hksummary_id int, \

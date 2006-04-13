@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import edu.iris.Fissures.FissuresException;
@@ -474,6 +475,26 @@ public class JDBCRecFunc extends JDBCTable {
         }
         return (CacheEvent[])out.toArray(new CacheEvent[0]);
     }
+    
+
+    /** on left join, there are two recfunc_id columns, 
+     one from receiver function that is right
+     and one from recfuncqc that might be null
+     find both index so we can find the non-null field
+     * @throws SQLException */
+    public static int[] getColNumbers(ResultSetMetaData rsmd, String name) throws SQLException {
+        int numCols = rsmd.getColumnCount();
+        int[] guess = new int[0];
+        for(int col =1; col <= numCols; col++) {
+            if (rsmd.getColumnLabel(col).equalsIgnoreCase("recfunc_id")) {
+                int[] guessTmp = new int[guess.length+1];
+                System.arraycopy(guess, 0, guessTmp, 0, guess.length);
+                guessTmp[guessTmp.length-1] = col;
+                guess = guessTmp;
+            }
+        }
+        return guess;
+    }
 
     public CacheEvent[] getSuccessfulEvents(int netDbId,
                                             String stationCode,
@@ -488,6 +509,7 @@ public class JDBCRecFunc extends JDBCTable {
         ResultSet rs = getSuccessfulOriginByStation.executeQuery();
         TimeOMatic.print("result set");
         ArrayList out = new ArrayList();
+        int[] guessRFIDIndex = getColNumbers(rs.getMetaData(), "recfunc_id");
         while(rs.next()) {
             Origin o = jdbcOrigin.extract(rs);
             // TimeOMatic.print("origin");
@@ -497,10 +519,15 @@ public class JDBCRecFunc extends JDBCTable {
             ParameterRef[] parms = o.parm_ids;
             ParameterRef[] newParms = new ParameterRef[parms.length + 2];
             System.arraycopy(parms, 0, newParms, 0, parms.length);
+            int recFuncId = rs.getInt(guessRFIDIndex[0]);
+            int guessIndex = 1;
+            while (recFuncId == 0 && guessIndex < guessRFIDIndex.length) {
+                recFuncId = rs.getInt(guessRFIDIndex[guessIndex]);
+            }
             newParms[newParms.length - 2] = new ParameterRef("itr_match", ""
                     + rs.getFloat("itr_match"));
             newParms[newParms.length - 1] = new ParameterRef("recFunc_id", ""
-                    + rs.getInt("recFunc_id"));
+                    + recFuncId);
             o.parm_ids = newParms;
             out.add(event);
         }
@@ -520,6 +547,7 @@ public class JDBCRecFunc extends JDBCTable {
         ResultSet rs = getUnsuccessfulOriginByStation.executeQuery();
         TimeOMatic.print("result set");
         ArrayList out = new ArrayList();
+        int[] guessRFIDIndex = getColNumbers(rs.getMetaData(), "recfunc_id");
         while(rs.next()) {
             Origin o = jdbcOrigin.extract(rs);
             // TimeOMatic.print("origin");
@@ -530,10 +558,15 @@ public class JDBCRecFunc extends JDBCTable {
             ParameterRef[] newParms = new ParameterRef[parms.length + 3];
             System.arraycopy(parms, 0, newParms, 0, parms.length);
             float itrMatch = rs.getFloat("itr_match");
+            int recFuncId = rs.getInt(guessRFIDIndex[0]);
+            int guessIndex = 1;
+            while (recFuncId == 0 && guessIndex < guessRFIDIndex.length) {
+                recFuncId = rs.getInt(guessRFIDIndex[guessIndex]);
+            }
             newParms[newParms.length - 2] = new ParameterRef("itr_match", ""
                     + itrMatch);
             newParms[newParms.length - 1] = new ParameterRef("recFunc_id", ""
-                    + rs.getInt("recFunc_id"));
+                    + recFuncId);
             String reason = rs.getString("reason");
             if (reason == null || reason.length() == 0) {
                 float tToR = rs.getFloat("transradialratio");

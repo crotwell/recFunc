@@ -21,7 +21,7 @@
 
 
 <div id="search_station">
-<h1>Search by station</h1>
+<h1>Search by Station</h1>
 <ul>
 <li>Browse the <a href="networkList.html?gaussian=${gaussian}">network list</a> </li>
 <p>or</p>
@@ -72,7 +72,7 @@
 </ul>
  </div>
  <div id="search_earthquake">
- <h1>Search by earthquake</h1>
+ <h1>Search by Earthquake</h1>
  <ul><li>Find earthquakes:
 <form action="winkle/eventSearch.html?gaussian=${gaussian}" method="get">
 <table class="entry_form">

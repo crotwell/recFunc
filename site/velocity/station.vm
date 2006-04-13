@@ -16,13 +16,17 @@ window.onload=function(){
 #header()	
 	
 <div id="content">
+<h1>Station $net.getCode() $stacode</h1>
+
 
 
 #set ($firstSta = $stationList.get(0) )
 <p><b>Network: </b><a href="stationList.html?netdbid=$net.getDbId()&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name</a></p>
 <p><a href="stationsNearBy.html?lat=$firstSta.getLatitude()&lon=$firstSta.getLongitude()&delta=2&gaussian=${gaussian}">Nearby stations (2 deg radius)</a></p>
 
-<table cellpadding="0" cellspacing="0">
+<img id="dataimg" class="dataimg" src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}"/>
+
+<table class="station_page" cellpadding="0" cellspacing="0">
 <tr>
 <td class="headodd">Station</td>
 <td class="headodd">Name</td>
@@ -41,35 +45,36 @@ window.onload=function(){
 #end
 </table>
 
-<table>
-<tr><td class="odd">Crust2 Type</td><td class="even">$crust2Type</td></tr>
-<tr><td class="odd">Thickness Estimate</td><td class="even">$fissures.formatDepth($!summary.getSum().getMaxValueH())</td></tr>
-<tr><td class="odd">Thickness StdDev</td><td class="even">$fissures.formatQuantity($!summary.getHStdDev())</td></tr>
-<tr><td class="odd">Vp/Vs Estimate</td><td class="even">$!summary.getSum().getMaxValueK()</td></tr>
-<tr><td class="odd">Vp/Vs StdDev</td><td class="even">$!summary.formatKStdDev()</td></tr>
-<tr><td class="odd">Vs Estimate</td><td class="even">$fissures.formatQuantity($!summary.getSum().getVs())</td></tr>
-<tr><td class="odd">Poisson's Ratio</td><td class="even">$!summary.getSum().formatPoissonsRatio()</td></tr>
-<tr><td class="odd">Peak Value</td><td class="even">$!summary.getSum().formatMaxValue()</td></tr>
-<tr><td class="odd">Assumed Vp</td><td class="even">$fissures.formatQuantity($!summary.getSum().getAlpha())</td></tr>
-<tr><td class="odd">Ps Weight</td><td class="even">$!summary.getSum().getWeightPs()</td></tr>
-<tr><td class="odd">PpPs Weight</td><td class="even">$!summary.getSum().getWeightPpPs()</td></tr>
-<tr><td class="odd">PsPs Weight</td><td class="even">$!summary.getSum().getWeightPsPs()</td></tr>
-<tr><td class="odd">Residual Complexity</td><td class="even">$!summary.formatComplexityResidual()</td></tr>
+<table class="station_page1" cellpadding="0" cellspacing="0">
+<tr><td class="bold">Crust2 Type:</td><td class="data">$crust2Type</td></tr>
+<tr><td class="bold">Thickness Estimate:</td><td class="data">$fissures.formatDepth($!summary.getSum().getMaxValueH())</td></tr>
+<tr><td class="bold">Thickness StdDev:</td><td class="data">$fissures.formatQuantity($!summary.getHStdDev())</td></tr>
+<tr><td class="bold">Vp/Vs Estimate:</td><td class="data">$!summary.getSum().getMaxValueK()</td></tr>
+<tr><td class="bold">Vp/Vs StdDev:</td><td class="data">$!summary.formatKStdDev()</td></tr>
+<tr><td class="bold">Vs Estimate:</td><td class="data">$fissures.formatQuantity($!summary.getSum().getVs())</td></tr>
+<tr><td class="bold">Poisson's Ratio:</td><td class="data">$!summary.getSum().formatPoissonsRatio()</td></tr>
+<tr><td class="bold">Peak Value:</td><td class="data">$!summary.getSum().formatMaxValue()</td></tr>
+<tr><td class="bold">Assumed Vp:</td><td class="data">$fissures.formatQuantity($!summary.getSum().getAlpha())</td></tr>
+<tr><td class="bold">Ps Weight:</td><td class="data">$!summary.getSum().getWeightPs()</td></tr>
+<tr><td class="bold">PpPs Weight:</td><td class="data">$!summary.getSum().getWeightPpPs()</td></tr>
+<tr><td class="bold">PsPs Weight:</td><td class="data">$!summary.getSum().getWeightPsPs()</td></tr>
+<tr><td class="bold">Residual Complexity:</td><td class="data">$!summary.formatComplexityResidual()</td></tr>
 </table>
-
+<div id="eventmap">
 <p>$numNinty with match > 90% ( $percentNinty %) and $numEighty with match > 80% ( $percentEighty %).</p>
 
 <p>Download stack as <a href="sumHKStackAsXYZ.txt?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}">xyz text file.</a></p>
 #if( $numEighty > 0)
-<img class="dataimg" src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}"/>
-<div class="eventmap">
-	<p>Azimuth distribution of events:</p>
+
+<div id="azplot">
+	<h2>Azimuth Distribution of Events:</h2>
     <img class="azPlot" src="DisplayChart?filename=${azPlot}"  />
+</div>
 </div>
 #end
 
-<p><b>Prior Results for this Station</b></p>
-<table>
+<h2>Prior Results for this Station</h2>
+<table class="station_page" cellpadding="0" cellspacing="0">
 <tr>
 <td class="headodd">Study</td>
 <td class="headodd">Thickness</td>
@@ -78,6 +83,7 @@ window.onload=function(){
 <td class="headodd">Vs</td>
 <td class="headodd">Poissons Ratio</td>
 <td class="headodd">Extra</td>
+</tr>
  <tr>
  <td class="odd">EARS</td>
  <td class="even">$fissures.formatDepth($!summary.getSum().getMaxValueH())</td>
@@ -101,59 +107,25 @@ window.onload=function(){
 #end
 </table>
 
-<table>
-<tr><td class="odd" colspan=2>Arrivals for vertical incidence (zero ray parameter)</td></tr>
-<tr><td class="odd">Ps</td><td class="even">$timePs</tr>
-<tr><td class="odd">PpPs</td><td class="even">$timePpPs</tr>
-<tr><td class="odd">PsPs/PpSs</td><td class="even">$timePsPs</tr>
+<table class="station_page2" cellpadding="0" cellspacing="0">
+<tr><td class="headodd" colspan="2">Arrivals for vertical incidence <br />(zero ray parameter)</td></tr>
+<tr><td class="even">Ps</td><td class="odd">$timePs</td></tr>
+<tr><td class="even">PpPs</td><td class="odd">$timePpPs</td></tr>
+<tr><td class="even">PsPs/PpSs</td><td class="odd">$timePsPs</td></tr>
 </table>
 
 
-<p><b>Events processed for this station.</b></p>
+<h2>Events Processed for this Station</h2>
 <p><a href="receiverFunction.zip?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&gaussian=${gaussian}">Download zip of receiver functions as SAC</a></p>
 <p><a href="recordSection.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&gaussian=${gaussian}">View Record Section</a></p>
 <p><a href="earthquakeHKPlot.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}">Plot maxima for each earthquake.</a></p>
 
 #set( $sta = $stationList.get(0) )
-#macro( eventTable $list $isLoser) 
-<table class="ruler sortable" id="dumb">
-<tr>
-<td class="headodd num initiallySorted descending">Radial Match</td>
-<td class="headodd num">Distance</td>
-<td class="headodd num">Baz</td>
-<td class="headodd">FERegion</td>
-<td class="headodd num">Time</td>
-<td class="headodd num">Lat/Lon</td>
-<td class="headodd num">Depth</td>
-<td class="headodd num">Magnitude</td>
-#if($isLoser)
-<td class="headodd num">Reason</td>
-#end
-</tr>
-#set( $maxValueH = $!summary.getSum().getMaxValueH().getValue() )
-#set( $maxValueK = $!summary.getSum().getMaxValueK() )
-#foreach($eq in $list)
-<tr>
-<td class="even">$eq.getParam("itr_match")</td>
-<td class="odd">$sta.getDistanceDeg($eq)</td>
-<td class="even">$sta.getBaz($eq)</td>
-#set( $recFunc_id = $eq.getParam("recFunc_id") )
-<td class="odd"><a href="stationEvent.html?rf=$recFunc_id&gaussian=${gaussian}&H=$maxValueH&vpvs=$maxValueK">$eq.getRegion()</a></td>
-<td class="even">$eq.getTime()</td>
-<td class="odd">($eq.getLatitude(), $eq.getLongitude())</td>
-<td class="even">$eq.getDepth()</td>
-<td class="odd">$eq.getAllMagnitudes()</td>
-#if($isLoser)
-<td class="even">$eq.getParam("reason")</td>
-#end
-</tr>
-#end
-</table>
-#end
 
-<h3>Events used in the stack</h3>
+
+<h2>Events Used in the Stack</h2>
 #eventTable($eventList false)
-<h3>Losers</h3>
+<h2>Losers</h2>
 #eventTable($eventLoserList true)
 
 

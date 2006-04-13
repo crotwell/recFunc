@@ -52,9 +52,15 @@ h1 {
      padding-top: 10px;
      padding-left: 15px;
     }
+    
+h2 {
+    padding: 15px 15px 0 15px;
+    color: #007C39;
+    font-size: 18px;
+    }
 
 img.dataimg {
-margin: 20px 10px 20px 5%; 
+margin: 15px 15px 0 15px; 
 }
 
 
@@ -69,7 +75,7 @@ td {
 }
 
 td.odd {
-             color: #007C39;
+             color: #666666;
              background: #ececec;
              text-align: center;
              border-bottom: 1px solid #d7d7d7;
@@ -101,7 +107,7 @@ td.headeven {
 }
 
 td.even {
-               color: #007C39;
+               color: #666666;
                border-bottom: 1px solid #d7d7d7;
 }
 
@@ -135,3 +141,47 @@ li {
              margin: 15px;
              text-align: center;
              }  
+             
+
+           
+table.station_page1 {
+                    margin: 15px;
+                    }
+                    
+table.station_page2 {
+                    margin: 15px;
+                    float: left;
+                    border: 1px solid #999999;
+                    }
+
+table.station_page {
+                    margin: 15px;
+                    border: 1px solid #999999;
+                    }
+                
+td.bold {
+         text-align: right;
+         font-weight: bold;
+         padding-right: 10px;
+         }
+   
+td.data {
+         color: #666666;
+         }
+         
+img.azPlot {
+            padding-top: 15px;
+            padding-left: 15px;
+            }
+            
+#dataimg {
+          float: left;
+          }
+          
+#eventmap {
+           clear: left;
+           }
+
+#azplot {
+         float: left;
+         }

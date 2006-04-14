@@ -24,7 +24,7 @@ window.onload=function(){
 <p><b>Network: </b><a href="stationList.html?netdbid=$net.getDbId()&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name</a></p>
 <p><a href="stationsNearBy.html?lat=$firstSta.getLatitude()&lon=$firstSta.getLongitude()&delta=2&gaussian=${gaussian}">Nearby stations (2 deg radius)</a></p>
 
-<img id="dataimg" class="dataimg" src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}"/>
+<img id="dataimg" class="dataimg" height="600" width="600" src="summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}"/>
 
 <table class="station_page" cellpadding="0" cellspacing="0">
 <tr>

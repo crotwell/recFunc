@@ -13,7 +13,9 @@ p {
    padding-bottom: 15px;
    }
 
-
+li {
+    list-style: none;
+    }
 
 #header {
          margin-top: 10px;
@@ -67,6 +69,7 @@ h1 {
        margin: 0 15px 15px 15px;
        width: 98%;
        border: 1px solid #999999;
+       clear: both;
        }
        
 #dumb td.even, #dumb td.stat_name {
@@ -83,6 +86,15 @@ td.odd {
              border-bottom: 1px solid #d7d7d7;
              color: #666666;
 }
+
+td.odd1 {
+             background: #ececec;
+             text-align: left;
+             border-bottom: 1px solid #d7d7d7;
+             color: #666666;
+               padding-left: 5px;
+}
+
 
 td.headodd {
                        font-size: 18px;
@@ -114,6 +126,14 @@ td.even {
                color: #666666;
 }
 
+td.even1 {
+               text-align: left;
+               color: #666666;
+               border-bottom: 1px solid #ececec;
+               padding-left: 5px;
+}
+
+
 td.stat_name{
                color: #007C39;
                text-align: left;
@@ -135,4 +155,34 @@ a img {
             border: none;
 }
 
+#station_near_by {
+                  float: left;
+                  margin: 15px;
+                  border: 1px solid#999999;
+                  }    
+                
+#stat_nearby_form {
+                   margin-top: 15px;
+                   margin-left: 630px;
+                   background: #D0EFBB;
+                   padding-top: 15px;
+                   padding-left: 15px;
+                   padding-bottom: 10px;
+                   margin-right: 15px;
+                   width: 500px;
+                   border: 1px solid #999999;
+                   }
+                   
+td.label {
+          text-align: right;
+          font-weight: bold;
+          }
+          
+li {
+     margin-left: 10px;
+       color: #007C39;
+       padding-top: 10px;
+       list-style: none;
+       font-size: 18px;
+}
     

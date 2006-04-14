@@ -55,7 +55,10 @@ window.onload=function(){
 	
 <div id="content">
 
-
+<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <a href="priorResultList.html">Prior Results List</a> > <b>Comparison with Prior Result $name
+#if($hDiff)
+ for results with a difference > $hDiff.
+#end</b></p>
 
 <h1>Comparison with Prior Result $name
 #if($hDiff)

@@ -16,6 +16,9 @@ window.onload=function(){
 #header()	
 	
 <div id="content">
+	
+<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <a href="networkList.html">Network List</a> > <a href="stationList.html?netdbid=${net.getDbId()}&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name Stations List</a> > <b>Station $net.getCode() $stacode</b></p>	
+	
 <h1>Station $net.getCode() $stacode</h1>
 
 

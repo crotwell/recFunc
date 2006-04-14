@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>Stations within $delta degrees of ($lat, $lon)</title>
-<link rel="stylesheet" type="text/css" href="style.css"/>
+<link rel="stylesheet" type="text/css" href="station_list_style.css"/>
 <script src="sorttable.js" type="text/javascript"> </script>
 <script src="tableRuler.js" type="text/javascript"> </script>
 <script type="text/javascript">
@@ -12,44 +12,52 @@ window.onload=function(){
 </script>
 </head>
 <body>
+
+#header()	
 	
 <div id="content">
 
-$header
+<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <b>Stations within $delta degrees of ($lat, $lon)</b></p>
 
-<p><b>Stations within $delta degrees of ($lat, $lon)</p>
+<h1>Stations within $delta degrees of ($lat, $lon)</h1>
 
-<p><img src="DisplayChart?filename=${plotname}" usemap="#${plotname}" /></p>
+
+
+<img id="station_near_by" src="DisplayChart?filename=${plotname}" usemap="#${plotname}" />
 $imagemap
 
+<ul id="stat_nearby_form">
+	<li>Change Results Criteria</li>
+<li>
 <form action="stationsNearBy.html?gaussian=${gaussian}" method="get">
-<p>
-<label for="lat">Latitude: </label><input type="text" name="lat" value="$lat"/><br/>
-<label for="lon">Longitude: </label><input type="text" name="lon" value="$lon"/><br/>
-<label for="delta">Delta: </label><input type="text" name="delta" value="$delta"/><br/>
+<table>
+<tr><td class="label"><label for="lat">Latitude: </label></td><td colspan="2"><input type="text" name="lat" value="$lat"/></td></tr>
+<tr><td class="label"><label for="lon">Longitude: </label></td><td colspan="2"><input type="text" name="lon" value="$lon"/></td></tr>
+<tr><td class="label"><label for="delta">Delta: </label></td><td colspan="2"><input type="text" name="delta" value="$delta"/></td></tr>
 
-<label for="xAxis">X Axis: </label>
-<input type="radio" name="xAxis" value="lat"> Latitude
-<input type="radio" name="xAxis" value="lon" checked="true"> Longitude
-<input type="radio" name="xAxis" value="H"> Thickness
-<input type="radio" name="xAxis" value="vpvs"> Vp/Vs<br/>
+<tr><td class="label"><label for="xAxis">X Axis: </label></td>
+<td><input type="radio" name="xAxis" value="lat"> Latitude</td>
+<td><input type="radio" name="xAxis" value="lon" checked="true"> Longitude</td>
+<td><input type="radio" name="xAxis" value="H"> Thickness</td>
+<td><input type="radio" name="xAxis" value="vpvs"> Vp/Vs</td></tr>
 
-<label for="yAxis">Y Axis: </label>
-<input type="radio" name="yAxis" value="lat" checked="true"> Latitude
-<input type="radio" name="yAxis" value="lon"> Longitude
-<input type="radio" name="yAxis" value="H"> Thickness
-<input type="radio" name="yAxis" value="vpvs"> Vp/Vs<br/>
+<tr><td class="label"><label for="yAxis">Y Axis: </label></td>
+<td><input type="radio" name="yAxis" value="lat" checked="true"> Latitude</td>
+<td><input type="radio" name="yAxis" value="lon"> Longitude</td>
+<td><input type="radio" name="yAxis" value="H"> Thickness</td>
+<td><input type="radio" name="yAxis" value="vpvs"> Vp/Vs</td></tr>
 
-<label for="zAxis">Z (Color) Axis: </label>
-<input type="radio" name="zAxis" value="lat"> Latitude
-<input type="radio" name="zAxis" value="lon"> Longitude
-<input type="radio" name="zAxis" value="H" checked="true"> Thickness
-<input type="radio" name="zAxis" value="vpvs"> Vp/Vs<br/>
+<tr><td class="label"><label for="zAxis">Z (Color) Axis: </label></td>
+<td><input type="radio" name="zAxis" value="lat"> Latitude</td>
+<td><input type="radio" name="zAxis" value="lon"> Longitude</td>
+<td><input type="radio" name="zAxis" value="H" checked="true"> Thickness</td>
+<td><input type="radio" name="zAxis" value="vpvs"> Vp/Vs</td></tr>
 
-<input type="submit" value="Send"/>
-    </p>
+<tr><td></td><td><input type="submit" value="Send"/></td></tr>
+    </table>
  </form>
- 
+</li>
+</ul>
 <table cellpadding="0" cellspacing="0" class="ruler sortable" id="dumb">
 <tr>
 <td class="headodd initiallySorted ascending">Net</td>
@@ -71,7 +79,7 @@ $imagemap
 <td class="even">$sta.getNet().getCodeWithYear()</td>
 
 <td class="odd"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getCode()</a></td>
-<td class="even"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getName()</a></td>
+<td class="even1"><a href="station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getName()</a></td>
 <td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
     <td class="even">$!summary.get($sta).getSum().formatMaxValueH()</td>
     <td class="odd">$fissures.formatQuantity($!summary.get($sta).getHStdDev())</td>
@@ -87,14 +95,8 @@ $imagemap
 </table>
 
 
-<div id="footer2" align="center">
-  <a href="http://seis.sc.edu">
-    <img src="seislogo.gif" alt="Seismology at USC" title="USC"/>
-  </a>
-  <a href="http://www.iris.edu">
-    <img src="irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
-  </a>
+
 </div>
-</div>
+#footer()
 </body>
 </html>

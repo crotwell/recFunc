@@ -81,7 +81,7 @@ public class SimpleSynthReceiverFunction {
         float[] tmp = IterDecon.gaussianFilter(data, gaussianWidth, (float)((SamplingImpl)seis.sampling_info).getPeriod()
                 .getValue(UnitImpl.SECOND));
         System.arraycopy(tmp, 0, data, 0, data.length);
-        logger.debug("amp P = "+refTransP+"  after gaussian: "+data[Math.round(HKStack.getDataIndex(seis, timeP.add(lagZeroOffset)))]);
+        
         return seis;
     }
 
@@ -132,7 +132,7 @@ public class SimpleSynthReceiverFunction {
         double etas0 = Math.sqrt(1 / (Vs * Vs) - flatRP * flatRP);
         double etap0 = Math.sqrt(1 / (Vp * Vp) - flatRP * flatRP);
         double c1 = (1 / (Vs * Vs) - 2 * flatRP * flatRP);
-        double c2 = 4 * flatRP * flatRP * etap0 * etas0;
+        //double c2 = 4 * flatRP * flatRP * etap0 * etas0;
         rsr0 = Vs * c1 / 2. / Vp / flatRP / etap0;
         zsz0 = -2. * flatRP * etas0 * Vs / c1 / Vp;
         rpz0 = 2. * flatRP * etas0 / (1. / Vs / Vs - 2. * flatRP * flatRP);

@@ -420,12 +420,7 @@ public class HKStack implements Serializable {
     }
 
     public StackMaximum[] getLocalMaxima(QuantityImpl startH, int num) {
-        try {
-            return getLocalMaxima(getHIndex(startH), num);
-        } catch(RuntimeException t) {
-            System.out.println("startH=" + startH);
-            throw t;
-        }
+        return getLocalMaxima(getHIndex(startH), num);
     }
 
     /**

@@ -46,7 +46,6 @@ public class BazIterator implements Iterator {
             if (baz < 0) {baz += 360;}
             if(baz >= minBaz && baz <= maxBaz) {
                 next = temp;
-                System.out.println("Found Baz in range: "+baz);
                 return;
             }
         }

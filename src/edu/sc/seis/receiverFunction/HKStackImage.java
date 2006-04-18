@@ -48,9 +48,6 @@ public class HKStackImage extends JComponent {
             for(int i = 0; i < analytic.getXLength(); i++) {
                 for(int j = 0; j < analytic.getYLength(); j++) {
                     stackOut[i][j] = analytic.getReal(i, j);
-                    if (i==0) {
-                        System.out.println("stackOut "+stackOut[i][j]);
-                    }
                 }
             }
         }
@@ -92,7 +89,6 @@ public class HKStackImage extends JComponent {
             colorPallete = GMTColorPalette.getDefault(colorMapMin, colorMapMax);
         }
         for (int j = smallestHindex; j < stackOut.length; j++) {
-            //System.out.print(j+" : ");
             for (int k = 0; k < stackOut[j].length; k++) {
                 if (j== xyMax.getHIndex() && k==xyMax.getKIndex()) {
                     g.setColor(Color.red);
@@ -101,9 +97,7 @@ public class HKStackImage extends JComponent {
                     g.setColor(color);
                 }
                 g.fillRect( 2*k, 2*(j-smallestHindex), 2, 2);
-                //System.out.print(colorVal+" ");
             }
-            //System.out.println("");
         }
         
         // tradeoff curves
@@ -129,7 +123,6 @@ public class HKStackImage extends JComponent {
         Iterator it = markers.iterator();
         while(it.hasNext()) {
             Marker mark = (Marker)it.next();
-            System.out.println("Marker "+mark.getName()+" "+mark.getVpvs()+"-->"+Math.round(2*stack.getKIndexFloat(mark.getVpvs()))+"  "+mark.getDepth()+"-->"+ Math.round(2*stack.getHIndexFloat(mark.getDepth())));
             g.setColor(mark.getColor());
             g.fillRect(Math.round(2*stack.getKIndexFloat(mark.getVpvs())), Math.round(2*stack.getHIndexFloat(mark.getDepth())), 2, 2);
         }

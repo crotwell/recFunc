@@ -1,14 +1,20 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.VelocityContext;
 import org.mortbay.jetty.servlet.ServletHandler;
+import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
+import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.rev.FloatQueryParamParser;
@@ -16,6 +22,7 @@ import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.rev.ServletFromSet;
+import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
 /**
  * @author crotwell Created on Feb 10, 2005
@@ -213,6 +220,28 @@ public class Start {
     
     public static String getDataLoc() {
         return RecFuncCacheImpl.getDataLoc();
+    }
+
+    public static VelocityNetwork getNetwork(HttpServletRequest req, JDBCNetwork jdbcNetwork) throws SQLException, NotFound {
+        int netDbId = RevUtil.getInt("netdbid", req, -1);
+        if(netDbId == -1) {
+            String netCode = RevUtil.get("netcode", req);
+            String netCodeNoYear = netCode;
+            if(netCodeNoYear != null) {
+                // check for XE05 case, but allow G and II to not change
+                if(netCodeNoYear.length() > 2) {
+                    netCodeNoYear = netCodeNoYear.substring(0, 2);
+                }
+                NetworkId[] netIds = jdbcNetwork.getByCode(netCodeNoYear);
+                for(int i = 0; i < netIds.length; i++) {
+                    if(NetworkIdUtil.toStringNoDates(netIds[i]).equals(netCode)) {
+                        netDbId = jdbcNetwork.getDbId(netIds[i]);
+                        break;
+                    }
+                }
+            }
+        }
+        return new VelocityNetwork(jdbcNetwork.get(netDbId), netDbId);
     }
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Start.class);

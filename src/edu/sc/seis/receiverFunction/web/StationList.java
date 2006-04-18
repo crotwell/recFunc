@@ -102,10 +102,8 @@ public class StationList extends Revlet {
 
     public ArrayList getStations(HttpServletRequest req, RevletContext context)
             throws SQLException, NotFound {
-        int netDbId = RevUtil.getInt("netdbid", req);
-        VelocityNetwork net = new VelocityNetwork(jdbcChannel.getStationTable()
-                .getNetTable()
-                .get(netDbId), netDbId);
+        VelocityNetwork net = Start.getNetwork(req, jdbcChannel.getStationTable()
+                .getNetTable());
         context.put("net", net);
         Station[] stations = jdbcChannel.getSiteTable()
                 .getStationTable()

@@ -11,11 +11,9 @@ import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.Time;
-import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
-import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
@@ -73,7 +71,7 @@ public class Station extends Revlet {
         jdbcStationResult = new JDBCStationResult(jdbcChannel.getNetworkTable(),
                                                   new JDBCStationResultRef(conn));
     }
-
+    
     /**
      * 
      */
@@ -86,37 +84,17 @@ public class Station extends Revlet {
         float minPercentMatch = RevUtil.getFloat("minPercentMatch",
                                                  req,
                                                  Start.getDefaultMinPercentMatch());
-        int netDbId = RevUtil.getInt("netdbid", req, -1);
-        if(netDbId == -1) {
-            String netCode = RevUtil.get("netcode", req);
-            String netCodeNoYear = netCode;
-            if(netCodeNoYear != null) {
-                // check for XE05 case, but allow G and II to not change
-                if(netCodeNoYear.length() > 2) {
-                    netCodeNoYear = netCodeNoYear.substring(0, 2);
-                }
-                NetworkId[] netIds = jdbcChannel.getNetworkTable()
-                        .getByCode(netCodeNoYear);
-                for(int i = 0; i < netIds.length; i++) {
-                    if(NetworkIdUtil.toStringNoDates(netIds[i]).equals(netCode)) {
-                        netDbId = jdbcChannel.getNetworkTable()
-                                .getDbId(netIds[i]);
-                        break;
-                    }
-                }
-            }
-        }
-        VelocityNetwork net = getNetwork(netDbId);
+        VelocityNetwork net = Start.getNetwork(req, jdbcChannel.getNetworkTable());
         // possible that there are multiple stations with the same code
         String staCode = req.getParameter("stacode");
-        ArrayList stationList = getStationList(netDbId, staCode);
+        ArrayList stationList = getStationList(net.getDbId(), staCode);
         TimeOMatic.start();
-        CacheEvent[] events = jdbcRecFunc.getSuccessfulEvents(netDbId,
+        CacheEvent[] events = jdbcRecFunc.getSuccessfulEvents(net.getDbId(),
                                                               staCode,
                                                               gaussianWidth, 
                                                               80);
         TimeOMatic.print("successful events");
-        CacheEvent[] loserEvents = jdbcRecFunc.getUnsuccessfulEvents(netDbId,
+        CacheEvent[] loserEvents = jdbcRecFunc.getUnsuccessfulEvents(net.getDbId(),
                                                               staCode,
                                                               gaussianWidth, 
                                                               80);
@@ -216,13 +194,6 @@ public class Station extends Revlet {
         context.put("smallestH", smallestH);
         TimeOMatic.print("done");
         return context;
-    }
-
-    public VelocityNetwork getNetwork(int netDbId) throws SQLException,
-            NotFound {
-        return new VelocityNetwork(jdbcChannel.getStationTable()
-                .getNetTable()
-                .get(netDbId), netDbId);
     }
 
     public ArrayList getStationList(int netDbId, String staCode)

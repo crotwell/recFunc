@@ -34,7 +34,6 @@ public class AzimuthStackSummary extends StackSummary {
                               QuantityImpl smallestH,
                               boolean doBootstrap,
                               boolean usePhaseWeight) throws FissuresException, NotFound, IOException, SQLException {
-        System.out.println("createSummary for " + StationIdUtil.toStringNoDates(station));
         AzimuthSumHKStack[] azimuthSum = azimuthSum(station.network_id.network_code,
                                                     station.station_code,
                                                     gaussianWidth,

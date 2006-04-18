@@ -37,7 +37,7 @@ public class StationSummaryUrlGenerator implements XYURLGenerator {
 
     public String generateURL(XYDataset dataset, int series, int item) {
         VelocityStation sta = (VelocityStation)stationList.get(item);
-        return "station.html?netCode="
+        return "station.html?netcode="
                 + NetworkIdUtil.toStringNoDates(sta.my_network) + "&stacode="
                 + sta.get_code()+"&gaussian="+gaussianWidth;
     }

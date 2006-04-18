@@ -88,7 +88,7 @@ public class Station extends Revlet {
                                                  Start.getDefaultMinPercentMatch());
         int netDbId = RevUtil.getInt("netdbid", req, -1);
         if(netDbId == -1) {
-            String netCode = RevUtil.get("netCode", req);
+            String netCode = RevUtil.get("netcode", req);
             String netCodeNoYear = netCode;
             if(netCodeNoYear != null) {
                 // check for XE05 case, but allow G and II to not change

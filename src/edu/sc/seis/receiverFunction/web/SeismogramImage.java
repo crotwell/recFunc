@@ -152,6 +152,8 @@ public class SeismogramImage extends HttpServlet {
                                                                   RecFunc.DEFAULT_SHIFT,
                                                                   dss[0].getChannelId(),
                                                                   result.config.gwidth);
+
+                
                 synthDSS = new MemoryDataSetSeismogram(synthRadial);
                 createChannel(synthRadial.channel_id, result.channels[0], dss[0].getDataSet());
                 dss[0].getDataSet().addDataSetSeismogram(synthDSS,
@@ -183,8 +185,6 @@ public class SeismogramImage extends HttpServlet {
             out.close();
         } catch(NotFound e) {
             OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
-            System.out.println("No waveforms found for id "
-                    + req.getParameter("rf"));
             writer.write("<html><body><p>No waveforms found for id "
                     + req.getParameter("rf") + "</p></body></html>");
             writer.flush();

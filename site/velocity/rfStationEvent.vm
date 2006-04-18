@@ -1,68 +1,80 @@
 <html>
 <head>
-<title>Station-Earthquake Result Viewer</title>
-<link rel="stylesheet" type="text/css" href="style.css"/>
+<title>EARS - $sta.getCode() $sta.getName() - Earthquake Result Viewer</title>
+<link rel="stylesheet" type="text/css" href="$!{staticFiles}style.css"/>
+
 </head>
 <body>
 	
+#header()	
+	
 <div id="content">
+	#set($net = $sta.net)
 
-$header
-
-<table>
+	<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <a href="networkList.html">Network List</a> > <a href="stationList.html?netcode=$sta.getNet().getCode()&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name Stations List</a>
+		> <a href="station.html?netcode=$sta.getNet().getCode()&stacode=$sta.getCode()&gaussian=${gaussian}">Station $sta.getCode() $sta.getName()</a> > <b>Earthquake Result Viewer</b></p>	
+	
+	<h1>$sta.getCode() $sta.getName() - Earthquake Result Viewer</h1>
+<img height="600" width="600" id="dataimg" class="dataimg" src="hkstackimage.png?rf=$rf"/>
+<table id="eq_results">
+	<tr><td>
+<table class="station_page1">
+	
 <tr>
-<td class="odd">Earthquake location</td>
-<td class="even">$eq.region</td>
+<td class="bold">Earthquake location:</td>
+<td class="data">$eq.region</td>
 </tr>
 <tr>
-<td class="odd">Earthquake latitude/longitude</td>
-<td class="even">$eq.latitude/$eq.longitude</td>
+<td class="bold">Earthquake latitude/longitude:</td>
+<td class="data">$eq.latitude/$eq.longitude</td>
 </tr>
 <tr>
-<td class="odd">Earthquake time(UTC)</td>
-<td class="even">$eq.time</td>
+<td class="bold">Earthquake time(UTC):</td>
+<td class="data">$eq.time</td>
 </tr>
 <tr>
-<td class="odd">Earthquake Depth</td>
-<td class="even">$eq.depth</td>
+<td class="bold">Earthquake Depth:</td>
+<td class="data">$eq.depth</td>
 </tr>
 <tr>
-<td class="odd">Earthquake Magnitude</td>
-<td class="even">$eq.getAllMagnitudes()</td>
+<td class="bold">Earthquake Magnitude:</td>
+<td class="data">$eq.getAllMagnitudes()</td>
 </tr>
 <tr>
-<td class="odd">Earthquake Catalog/Contributor</td>
-<td class="even">$eq.getCatalog()/$eq.getContributor()</td>
+<td class="bold">Earthquake Catalog/Contributor:</td>
+<td class="data">$eq.getCatalog()/$eq.getContributor()</td>
 </tr>
 </table>
-
-<table>
+	</td></tr>
+	<tr><td>
+<table class="station_page1">
 <tr>
-<td class="odd">Network</td>
-<td class="even">$sta.getNet().getCode() $sta.getNet().getName()</td>
+<td class="bold">Network:</td>
+<td class="data">$sta.getNet().getCode() $sta.getNet().getName()</td>
 </tr>
 <tr>
-<td class="odd">Station</td>
-<td class="even">$sta.getCode() $sta.getName()</td>
+<td class="bold">Station:</td>
+<td class="data">$sta.getCode() $sta.getName()</td>
 </tr>
 <tr>
-<td class="odd">Lat/Lon</td>
-<td class="even">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
+<td class="bold">Lat/Lon:</td>
+<td class="data">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
 </tr>
 </table>
-
-<table>
+	</td></tr>
+	<tr><td>
+<table class="station_page1">
 <tr>
-<td class="odd">Distance</td>
-<td class="even">$sta.getDistanceDeg($eq)</td>
+<td class="bold">Distance:</td>
+<td  class="data">$sta.getDistanceDeg($eq)</td>
 </tr>
 <tr>
-<td class="odd">Az</td>
-<td class="even">$sta.getAz($eq)</td>
+<td class="bold">Az:</td>
+<td  class="data">$sta.getAz($eq)</td>
 </tr>
 <tr>
-<td class="odd">Baz</td>
-<td class="even">$sta.getBaz($eq)</td>
+<td class="bold">Baz:</td>
+<td class="data">$sta.getBaz($eq)</td>
 </tr>
 <tr>
 <td class="odd">Ray Param</td>
@@ -70,102 +82,99 @@ $header
 </tr>
 #if($stack)
 <tr>
-<td class="odd">Estimated Moho Depth</td>
-<td class="even">$stack.formatMaxValueH()</td>
+<td class="bold">Estimated Moho Depth:</td>
+<td class="data">$stack.formatMaxValueH()</td>
 </tr>
 <tr>
-<td class="odd">Estimated Crust Vp/Vs</td>
-<td class="even">$stack.formatMaxValueK()</td>
+<td class="bold">Estimated Crust Vp/Vs:</td>
+<td class="data">$stack.formatMaxValueK()</td>
 </tr>
 <tr>
-<td class="odd">Assumed Crust Vp</td>
-<td class="even">$stack.formatAlpha()</td>
+<td class="bold">Assumed Crust Vp:</td>
+<td class="data">$stack.formatAlpha()</td>
 </tr>
 <tr>
-<td class="odd">Estimated Crust Vs</td>
-<td class="even">$stack.formatVs()</td>
+<td class="bold">Estimated Crust Vs:</td>
+<td class="data">$stack.formatVs()</td>
 </tr>
 <tr>
-<td class="odd">Estimated Crust Poisson's Ratio</td>
-<td class="even">$stack.formatPoissonsRatio()</td>
+<td class="bold">Estimated Crust Poisson's Ratio:</td>
+<td class="data">$stack.formatPoissonsRatio()</td>
 </tr>
 </table>
 
-<img class="dataimg" src="hkstackimage.png?rf=$rf"/>
+
 
 #else
-</table>
+
 <p>The percent match for this event was below the threshold and hence was not used in the summary stack.</p>
 #end
-
-<table>
+</td></tr>
+<tr><td>
+<table class="station_page1">
 <tr>
-<td class="odd">Radial Match</td>
-<td class="even"> ${result.radialMatch} %</td>
+<td class="bold">Radial Match:</td>
+<td class="data"> ${result.radialMatch} %</td>
 </tr>
 <tr>
-<td class="odd">Radial Bump</td>
-<td class="even"> $result.radialBump </td>
+<td class="bold">Radial Bump:</td>
+<td class="data"> $result.radialBump </td>
 </tr>
 <tr>
-<td class="odd">Transverse Match</td>
-<td class="even">$result.transverseMatch %</td>
+<td class="bold">Transverse Match:</td>
+<td class="data">$result.transverseMatch %</td>
 </tr>
 <tr>
-<td class="odd">Transverse Bump</td>
-<td class="even">$result.transverseBump</td>
+<td class="bold">Transverse Bump:</td>
+<td class="data">$result.transverseBump</td>
 </tr>
 <tr>
-<td class="odd">SOD ConfigId</td>
-<td class="even">$result.sodConfigId</td>
+<td class="bold">SOD ConfigId:</td>
+<td class="data">$result.sodConfigId</td>
 </tr>
 <tr>
-<td class="odd">Insert Time</td>
-<td class="even">$result.insertTime</td>
+<td class="bold">Insert Time:</td>
+<td class="data">$result.insertTime</td>
 </tr>
 <tr>
-<td class="odd">GWidth</td>
-<td class="even">$result.gwidth</td>
+<td class="bold">GWidth:</td>
+<td class="data">$result.gwidth</td>
 </tr>
 <tr>
-<td class="odd">Max Bumps</td>
-<td class="even">$result.maxBumps</td>
+<td class="bold">Max Bumps:</td>
+<td class="data">$result.maxBumps</td>
 </tr>
 <tr>
-<td class="odd">Tol</td>
-<td class="even">$result.tol</td>
+<td class="bold">Tol:</td>
+<td class="data">$result.tol</td>
 </tr>
 </table>
-
+</td></tr>
+</table>
 #if($H)
 <img class="dataimg" src="waveforms.png?rf=$rf&window=120&H=$H&vpvs=$vpvs"/>
 #else
 <img class="dataimg" src="waveforms.png?rf=$rf&window=120"/>
 #end
-
-<p>Signal To Noise<p/>
-<table>
+<div id="signal">
+<h2>Signal To Noise</h2>
+<table class="station_page" cellpadding="0" cellspacing="0">
 <tr><td class="headodd">Channel</td><td class="headodd">StoN</td><td class="headodd">STA</td><td class="headodd">LTA</td></tr>
 #foreach($trig in $ston )
 <tr><td class="odd">$trig.getChannelId()</td><td class="even">$trig.getValue()</td><td class="odd">$trig.getSTA()</td><td class="even">$trig.getLTA()</td></tr>
 #end
 </table>
-
-<table>
-<tr><td colspan=2>Arrivals</td></tr>
-<tr><td class="odd">Ps</td><td class="even">$timePs</tr>
-<tr><td class="odd">PpPs</td><td class="even">$timePpPs</tr>
-<tr><td class="odd">PsPs/PpSs</td><td class="even">$timePsPs</tr>
+</div>
+<table id="arrivals" class="station_page" cellpadding="0" cellspacing="0">
+<tr><td class="headodd"colspan="2">Arrivals</td></tr>
+<tr><td class="odd">Ps</td><td class="even">$timePs</td></tr>
+<tr><td class="odd">PpPs</td><td class="even">$timePpPs</td></tr>
+<tr><td class="odd">PsPs/PpSs</td><td class="even">$timePsPs</td></tr>
 </table>
 
-<div id="footer2" align="center">
-  <a href="http://seis.sc.edu">
-    <img src="seislogo.gif" alt="Seismology at USC" title="USC"/>
-  </a>
-  <a href="http://www.iris.edu">
-    <img src="irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
-  </a>
+
 </div>
-</div>
+
+#footer()
 </body>
 </html>

@@ -155,7 +155,6 @@ public class HKLatLonPlot extends HttpServlet {
                     + RevUtil.get(LATITUDE, req) + ", "
                     + RevUtil.get(LONGITUDE, req);
             JFreeChart chart = getChart(req, stationList, summary, titleString);
-            System.out.println(chart.getXYPlot().getClass().getName());
             OutputStream out = res.getOutputStream();
             BufferedImage image = chart.createBufferedImage(xdim, ydim);
             res.setContentType("image/png");
@@ -163,8 +162,6 @@ public class HKLatLonPlot extends HttpServlet {
             out.close();
         } catch(NotFound e) {
             OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
-            System.out.println("No HKStack found for id "
-                    + req.getParameter("rf"));
             writer.write("<html><body><p>No HK stack foundfor id "
                     + req.getParameter("rf") + "</p></body></html>");
             writer.flush();

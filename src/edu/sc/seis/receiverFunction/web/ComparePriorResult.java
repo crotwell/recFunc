@@ -91,9 +91,6 @@ public class ComparePriorResult extends StationList {
                     }
                     ArrayList resultList = (ArrayList)prior.get(station);
                     resultList.add(results[i]);
-                    System.out.println(" Compare: "
-                            + results[i].getStationCode() + "  vp="
-                            + results[i].formatVp());
                 } catch(NotFound e) {
                     // this station is in the prior result, but not in ears,
                     // skip...

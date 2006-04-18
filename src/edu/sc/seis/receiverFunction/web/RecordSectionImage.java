@@ -108,7 +108,6 @@ public class RecordSectionImage extends HttpServlet {
             OutputStream out = res.getOutputStream();
             RecordSectionDisplay disp;
             String recordSectionType = RevUtil.get("type", req, "dist");
-            System.out.println("Record Section TYpe = "+recordSectionType);
             if (recordSectionType.equals("dist")) {
                 disp = new RecordSectionDisplay();
             } else if (recordSectionType.equals("baz")) {

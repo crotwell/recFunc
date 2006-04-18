@@ -80,8 +80,6 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             output(sumStack, out, req, res);
         } catch(NotFound e) {
             OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
-            System.out.println("No HKStack found for "
-                    + req.getParameter("staCode"));
             writer.write("<html><body><p>No HK stack foundfor  "
                     + req.getParameter("staCode") + "</p></body></html>");
             writer.flush();

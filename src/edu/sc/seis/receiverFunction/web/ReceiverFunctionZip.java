@@ -122,7 +122,6 @@ public class ReceiverFunctionZip extends HttpServlet {
                 }
                 knownEntries.add(entryName);
                 ZipEntry entry = new ZipEntry(entryName);
-                System.out.println("Start new ZipEntry: " + entry);
                 zip.putNextEntry(entry);
                 LocalSeismogramImpl rfSeis = (LocalSeismogramImpl) (rfType == 0 ? cr.radial : cr.tansverse);
                 SacTimeSeries sac = FissuresToSac.getSAC(rfSeis,

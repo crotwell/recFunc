@@ -98,7 +98,6 @@ public class StationLatLonBox extends StationList {
                                                                              HKLatLonPlot.ydimDefault),
                                                               info,
                                                               req.getSession());
-            System.out.println("entity collection size = "+info.getEntityCollection().getEntityCount());
             context.put("plotname", filename);
             context.put("imagemap", ImageMapUtilities.getImageMap(filename,
                                                                   info));

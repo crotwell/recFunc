@@ -76,9 +76,6 @@ public class StationList extends Revlet {
 
     public String getVelocityTemplate(HttpServletRequest req) {
         String path = req.getServletPath();
-        System.out.println("path: " + path + "  " + req.getContextPath() + "  "
-                + req.getPathInfo() + "  " + req.getPathTranslated() + "  "
-                + req.getServletPath());
         if(path == null) {
             path = "";
         }

@@ -126,8 +126,6 @@ public class EarthquakeHKPlot extends HttpServlet {
             out.close();
         } catch(NotFound e) {
             OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
-            System.out.println("No HKStack found for id "
-                    + req.getParameter("rf"));
             writer.write("<html><body><p>No HK stack foundfor id "
                     + req.getParameter("rf") + "</p></body></html>");
             writer.flush();
@@ -180,7 +178,6 @@ class HKXYDataset extends AbstractXYDataset {
     }
 
     public int getItemCount(int series) {
-        System.out.println("getItemCount: " + items.size());
         return items.size();
     }
 

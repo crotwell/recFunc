@@ -64,6 +64,10 @@ $header
 <td class="odd">Baz</td>
 <td class="even">$sta.getBaz($eq)</td>
 </tr>
+<tr>
+<td class="odd">Ray Param</td>
+<td class="even">$rayparam</td>
+</tr>
 #if($stack)
 <tr>
 <td class="odd">Estimated Moho Depth</td>

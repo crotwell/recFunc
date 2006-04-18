@@ -92,19 +92,40 @@ public class QualityControl {
             String netArg = "";
             String staArg = "";
             boolean dbUpdate = false;
+            int rfbad = -1;
+            String rfBadReason = "manual";
             for(int i = 0; i < args.length; i++) {
                 if(args[i].equals("-net")) {
                     netArg = args[i + 1];
+                    i++;
                 } else if(args[i].equals("-sta")) {
                     staArg = args[i + 1];
+                    i++;
                 } else if(args[i].equals("-db")) {
                     dbUpdate = true;
+                } else if(args[i].equals("-rfbad")) {
+                    rfbad = Integer.parseInt(args[i+1]);
+                    rfBadReason = args[i+2];
+                    i+=2;
                 }
             }
-            logger.info("calc for station: " + netArg + "." + staArg);
-            JDBCStation jdbcStation = jdbcRecFunc.getJDBCChannel()
-                    .getStationTable();
+            JDBCStation jdbcStation = jdbcRecFunc.getJDBCChannel().getStationTable();
             JDBCRecFuncQC jdbcRecFuncQC = new JDBCRecFuncQC(conn);
+            if (rfbad != -1) {
+                // set single one bad
+                CachedResultPlusDbId resultWithDbId = jdbcRecFunc.get(rfbad);
+                CachedResult result = resultWithDbId.getCachedResult();
+                float tToR = control.transverseToRadial(result);
+                float pAmp = control.radialPAmp(result);
+                jdbcRecFuncQC.put(new RecFuncQCResult(resultWithDbId.getDbId(),
+                                                      false,
+                                                      true,
+                                                      tToR,
+                                                      pAmp,
+                                                      rfBadReason,
+                                                      ClockUtil.now().getTimestamp()));
+            }
+            logger.info("calc for station: " + netArg + "." + staArg);
             NetworkId[] nets = jdbcStation.getNetTable().getByCode(netArg);
             System.out.println("calc for "+nets.length+" nets");
             for(int i = 0; i < nets.length; i++) {

@@ -11,7 +11,7 @@ import edu.sc.seis.fissuresUtil.freq.Cmplx;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 16252 2006-02-23 21:02:03Z crotwell $
+ * @version $Id: IterDecon.java 16928 2006-04-18 20:09:38Z crotwell $
  */
 
 public class IterDecon {
@@ -188,7 +188,13 @@ public class IterDecon {
             NativeFFT.forward(forward);
         } else {
             // not on mac, so no altavec fft
-            Cmplx.four1Forward(forward);
+            float[] javaFFT = new float[forward.length*2];
+            for(int i = 0; i < forward.length; i++) {
+                javaFFT[2*i] = forward[i];
+            }
+            forward = shortenFFT(Cmplx.four1Forward(javaFFT));
+            // Cmplx fft does 2n values, but native does n using symmetry
+            
         }
         double df = 1/(forward.length * dt);
         double d_omega = 2*Math.PI*df;
@@ -214,11 +220,38 @@ public class IterDecon {
             NativeFFT.inverse(forward);
         } else {
             // not on mac, so no altavec fft
-            Cmplx.four1Inverse(forward);
+            float[] tmp = Cmplx.four1Inverse(lengthenFFT(forward));
+            forward = new float[tmp.length/2];
+            for(int i = 0; i < tmp.length/2; i++) {
+                forward[i] = tmp[2*i];
+            }
         }
         return forward;
     }
+    
+    public static float[] shortenFFT(float[] tmp) {
+        float[] forward = new float[tmp.length/2];
+        System.arraycopy(tmp, 0, forward, 0, forward.length);
+        forward[0] = tmp[0];
+        forward[1] = tmp[tmp.length/2];
+        return forward;
+    }
 
+    public static float[] lengthenFFT(float[] tmp) {
+        float[] out = new float[tmp.length*2];
+        for(int i = 1; i < tmp.length/2; i++) {
+            out[2*i] = tmp[2*i];
+            out[2*i+1] = tmp[2*i+1];
+            out[out.length-2*i] = tmp[2*i];
+            out[out.length-2*i+1] = -1*tmp[2*i+1];
+        }
+        out[0] = tmp[0];
+        out[1] = 0;
+        out[tmp.length] = tmp[1];
+        out[tmp.length+1]=0;
+        return out;
+    }
+    
     public static float[] phaseShift(float[] x, float shift, float dt) {
 
         float[] forward = new float[x.length];

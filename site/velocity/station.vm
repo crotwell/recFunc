@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>EARS - Station $net.getCode() $stacode</title>
-<link rel="stylesheet" type="text/css" href="style.css"/>
+<link rel="stylesheet" type="text/css" href="$!{staticFiles}style.css"/>
 <script src="sorttable.js" type="text/javascript"> </script>
 <script src="tableRuler.js" type="text/javascript"> </script>
 <script type="text/javascript">

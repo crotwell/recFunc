@@ -185,4 +185,17 @@ li {
        list-style: none;
        font-size: 18px;
 }
-    
+
+table.station_page1 {
+                    margin: 15px;
+                    }
+                
+td.bold {
+         text-align: right;
+         font-weight: bold;
+         padding-right: 10px;
+         }
+   
+td.data {
+         color: #666666;
+         }    

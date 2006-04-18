@@ -185,3 +185,16 @@ img.azPlot {
 #azplot {
          float: left;
          }
+
+             
+#eq_results td.bold {
+                     width: 250px;
+                     }
+                     
+#signal {
+         float: left;
+         }
+         
+#arrivals {
+           margin-top: 50px;
+           }

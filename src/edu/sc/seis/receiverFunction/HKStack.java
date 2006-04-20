@@ -416,7 +416,10 @@ public class HKStack implements Serializable {
     }
 
     public StackMaximum getGlobalMaximum() {
-        return getLocalMaxima(0, 1)[0];
+    	StackMaximum max = getLocalMaxima(0, 1)[0];
+    	peakH = max.getHValue();
+    	peakK = new Float(max.getKValue());
+    	return max;
     }
 
     public StackMaximum[] getLocalMaxima(QuantityImpl startH, int num) {

@@ -40,6 +40,11 @@ public class StackComplexity {
     }
 
     public HKStack getSyntheticForRayParam(StationResult staResult, float flatRP) {
+        for(int i = 0; i < cache.length; i++) {
+            if (cache[i] != null && cache[i].flatRP == flatRP && cache[i].staResult.equals(staResult)) {
+                return cache[i].synthStack;
+            }
+        }
         try {
         SimpleSynthReceiverFunction synth = new SimpleSynthReceiverFunction(staResult,
                                                                             samp,
@@ -67,6 +72,10 @@ public class StackComplexity {
                                          hkplot.getChannel(),
                                          RecFunc.getDefaultShift());
         synthStack.compact();
+        for(int i = cache.length-1; i>0; i--) {
+            cache[i] = cache[i-1];
+        }
+        cache[0] = new CachedStackComplexity(staResult, flatRP, synthStack);
         return synthStack;
         } catch (FissuresException e) {
             throw new RuntimeException("should never happen as synth data should always be good and convertible to floats", e);
@@ -113,6 +122,19 @@ public class StackComplexity {
                            diff,
                            real.getChannel());
     }
+    
+    class CachedStackComplexity {
+        public CachedStackComplexity(StationResult staResult2, float flatRP2, HKStack synthStack2) {
+            this.staResult = staResult2;
+            this.flatRP = flatRP2;
+            this.synthStack = synthStack2;
+        }
+        StationResult staResult;
+        float flatRP;
+        HKStack synthStack;
+    }
+    
+    CachedStackComplexity[] cache = new CachedStackComplexity[4];
 
     /**
      * s/deg for P for 60 deg distance

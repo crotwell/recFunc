@@ -8,6 +8,7 @@ import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.sac.FissuresToSac;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 // JUnitDoclet end import
@@ -174,7 +175,7 @@ public class IterDeconTest
         float timePs = h * (etaS - etaP);
         float timePpPs = h * (etaS + etaP);
         float timePsPs = h * (2 * etaS);
-        System.out.println("timePs="+timePs+"  timePpPs="+timePpPs+"  timePsPs="+timePsPs);
+        //System.out.println("timePs="+timePs+"  timePpPs="+timePpPs+"  timePsPs="+timePsPs);
 
         float[] numData   = new float[denomData.length];
         System.arraycopy(denomData, 0, numData, 0, denomData.length);
@@ -207,10 +208,6 @@ public class IterDeconTest
         float[] pred = result.getPredicted();
         int[] s = result.getShifts();
         float[] a = result.getAmps();
-
-        for (int i = 0; i < 5; i++) {
-            System.out.println("spike "+i+" "+s[i]+"  amp="+a[i]);
-        }
 
         assertEquals("fake data spike 0",  0, s[0]);
         assertEquals("fake data amp 0",    .33/delta,    a[0], 0.0001f);
@@ -348,7 +345,6 @@ public class IterDeconTest
     /** Gaussian filter of constant should do nothing.
      */
     public void testGaussianFilter() throws Exception {
-        // JUnitDoclet begin method phaseShift
         SacTimeSeries sac = new SacTimeSeries();
         DataInputStream in =
             new DataInputStream(this.getClass().getClassLoader().getResourceAsStream("edu/sc/seis/receiverFunction/gauss1024.sac"));
@@ -356,15 +352,54 @@ public class IterDeconTest
         float[] data = new float[sac.npts];
         data[100] = 1/sac.delta;
 
-        float[] out = iterdecon.gaussianFilter(data, 2.5f, sac.delta);
         float[] sacData = sac.y;
+        float[] out = iterdecon.gaussianFilter(data, 2.5f, sac.delta);
 
         ArrayAssert.assertEquals("gaussian filter", sacData, out, 0.001f);
 
-
-        // JUnitDoclet end method phaseShift
+        if(IterDecon.useNativeFFT) {
+            // test non-native as well
+            IterDecon.useNativeFFT = false;
+            out = iterdecon.gaussianFilter(data, 2.5f, sac.delta);
+            ArrayAssert.assertEquals("gaussian filter", sacData, out, 0.001f);
+            IterDecon.useNativeFFT = true;
+        }
+    }
+    
+    public void testNativeVsJavaFFT() {
+        float[] data = new float[1024];
+        data[100] = 1;
+        float[] nativeFFT = new float[data.length];
+        System.arraycopy(data, 0, nativeFFT, 0, data.length);
+        NativeFFT.forward(nativeFFT);
+        
+        float[] javaFFT = new float[data.length*2];
+        for(int i = 0; i < data.length; i++) {
+            javaFFT[2*i] = data[i];
+        }
+        javaFFT = Cmplx.four1Forward(javaFFT);
+        assertEquals(2*data.length, javaFFT.length);
+        javaFFT = IterDecon.shortenFFT(javaFFT);
+        assertEquals(nativeFFT.length, javaFFT.length);
+        ArrayAssert.assertEquals(nativeFFT, javaFFT, 0.0001f);
+        for(int i = 0; i < nativeFFT.length; i++) {
+            assertEquals(""+i, nativeFFT[i], javaFFT[i], 0.00001f);
+        }
     }
 
+    
+    public void testNativeVsJavaInverseFFT() {
+        float[] data = new float[32];
+        data[10] = 1;
+        float[] javaFFT = new float[data.length];
+        System.arraycopy(data, 0, javaFFT, 0, data.length);
+        javaFFT = IterDecon.shortenFFT(Cmplx.four1Forward(javaFFT));
+        float[] invJavaFFT = Cmplx.four1Inverse(IterDecon.lengthenFFT(javaFFT));
+        ArrayAssert.assertEquals(data, invJavaFFT, 0.00001f);
+        for(int i = 0; i < data.length; i++) {
+            assertEquals(""+i, data[i], invJavaFFT[i], 0.00001f);
+        }
+    }
     public void testGetMinIndex() {
         float[] data = { 3, 4, -5, 0, 4, 4, 0, -5, 4, 3};
         int index = IterDecon.getMinIndex(data);

@@ -57,6 +57,11 @@ public class JDBCRecFuncQC extends JDBCTable {
             }
         }
     }
+    
+    public int delete(int dbid) throws SQLException {
+        delete.setInt(1, dbid);
+        return delete.executeUpdate();
+    }
 
     public RecFuncQCResult extract(ResultSet rs) throws SQLException {
         return new RecFuncQCResult(rs.getInt("recFunc_id"),
@@ -68,5 +73,5 @@ public class JDBCRecFuncQC extends JDBCTable {
                                    rs.getTimestamp("insertTime"));
     }
 
-    PreparedStatement put, update, get;
+    PreparedStatement put, update, get, delete;
 }

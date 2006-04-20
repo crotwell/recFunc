@@ -596,4 +596,5 @@ recfuncQC.getToTestByStation=SELECT * FROM $tablename \
     WHERE net_code = ? \
     AND sta_code = ? \
     
+recfuncQC.delete=DELETE FROM $tablename WHERE recfunc_id = ?
 

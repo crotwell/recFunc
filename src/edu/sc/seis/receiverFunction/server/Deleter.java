@@ -19,6 +19,7 @@ public class Deleter {
     public Deleter(Connection conn) throws Exception {
         jdbcRecFunc = new JDBCRecFunc(conn, RecFuncCacheImpl.getDataLoc());
         jdbcHKStack = new JDBCHKStack(jdbcRecFunc);
+        jdbcRecFuncQC = new JDBCRecFuncQC(conn);
     }
 
     public void delete(int recfunc_id) throws SQLException, NotFound,
@@ -28,6 +29,7 @@ public class Deleter {
         } catch (NotFound e) {
             logger.warn("no hkstack found for recfunc="+recfunc_id);
         }
+        jdbcRecFuncQC.delete(recfunc_id);
         jdbcRecFunc.delete(recfunc_id);
     }
 
@@ -106,6 +108,8 @@ public class Deleter {
     }
 
     JDBCRecFunc jdbcRecFunc;
+    
+    JDBCRecFuncQC jdbcRecFuncQC;
 
     JDBCHKStack jdbcHKStack;
 

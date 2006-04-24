@@ -75,7 +75,7 @@ public class ReceiverFunctionZip extends HttpServlet {
         try {
             CachedResultPlusDbId[] result;
             synchronized(jdbcRecFunc.getConnection()) {
-                result = jdbcRecFunc.getByPercent(netDbId,
+                result = jdbcRecFunc.getSuccessful(netDbId,
                                                   staCode,
                                                   gaussianWidth,
                                                   minPercentMatch);

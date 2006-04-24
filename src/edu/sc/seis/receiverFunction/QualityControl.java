@@ -150,7 +150,7 @@ public class QualityControl {
                         int numGood = 0;
                         int netDbId = jdbcStation.getNetTable()
                                 .getDbId(station.my_network.get_id());
-                        CachedResultPlusDbId[] resultsWithDbId = jdbcRecFunc.getByPercent(netDbId,
+                        CachedResultPlusDbId[] resultsWithDbId = jdbcRecFunc.getSuccessful(netDbId,
                                                                           staCodes[j],
                                                                           2.5f,
                                                                           80f);

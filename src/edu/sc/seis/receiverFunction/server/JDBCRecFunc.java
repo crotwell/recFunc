@@ -603,19 +603,28 @@ public class JDBCRecFunc extends JDBCTable {
         return (CachedResultPlusDbId[])out.toArray(new CachedResultPlusDbId[0]);
     }
 
-    public CachedResultPlusDbId[] getByPercent(int netDbId,
+    public CachedResultPlusDbId[] getSuccessful(int netDbId,
+                                       String stationCode,
+                                       float gaussianWidth)
+            throws FileNotFoundException, FissuresException, NotFound,
+            IOException, SQLException {
+        return getSuccessful(netDbId, stationCode, gaussianWidth, 80f);
+    }
+
+    public CachedResultPlusDbId[] getSuccessful(int netDbId,
                                        String stationCode,
                                        float gaussianWidth,
                                        float percentMatch)
             throws FileNotFoundException, FissuresException, NotFound,
             IOException, SQLException {
         int index = 1;
-        getOriginByStationByPercent.setInt(index++, netDbId);
-        getOriginByStationByPercent.setString(index++, stationCode);
-        getOriginByStationByPercent.setFloat(index++, gaussianWidth);
-        getOriginByStationByPercent.setFloat(index++, percentMatch);
+        getSuccessfulOriginByStation.setInt(index++, netDbId);
+        getSuccessfulOriginByStation.setString(index++, stationCode);
+        getSuccessfulOriginByStation.setFloat(index++, gaussianWidth);
+        getSuccessfulOriginByStation.setFloat(index++, percentMatch);
+        ResultSet rs = getSuccessfulOriginByStation.executeQuery();
+        TimeOMatic.print("result set");
         ArrayList out = new ArrayList();
-        ResultSet rs = getOriginByStationByPercent.executeQuery();
         while(rs.next()) {
             out.add(extract(rs));
         }

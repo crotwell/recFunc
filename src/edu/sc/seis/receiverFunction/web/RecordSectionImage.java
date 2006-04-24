@@ -80,7 +80,7 @@ public class RecordSectionImage extends HttpServlet {
             float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
             CachedResultPlusDbId[] results;
             synchronized(jdbcRecFunc.getConnection()) {
-                results = jdbcRecFunc.getByPercent(netDbId,
+                results = jdbcRecFunc.getSuccessful(netDbId,
                                                               staCode,
                                                               gaussianWidth,
                                                               minPercentMatch);

@@ -99,7 +99,12 @@ window.onload=function(){
 </tr>
 #foreach( $marker in $markerList)
  <tr>
- <td class="odd"><a href="$marker.getRef().getURL()">$marker.getRef().getName()</a></td>
+ <td class="odd">
+ #if ($marker.getRef().getURL())
+ <a href="$marker.getRef().getURL()">$marker.getRef().getName()</a></td>
+ #else
+ $marker.getRef().getName()
+ #end
  <td class="even">$marker.formatH()</td>
  <td class="odd">$marker.formatVpVs()</td>
  <td class="even">$marker.formatVp()</td>

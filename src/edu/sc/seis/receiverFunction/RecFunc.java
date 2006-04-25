@@ -78,14 +78,28 @@ public class RecFunc {
             throw new NullPointerException("problem one seismogram component is null, "+foundChanCodes+" "+
                                                " "+(n != null)+" "+(e != null)+" "+(z != null));
         }
+        Channel nChan = null, eChan = null, zChan = null;
+        for(int i = 0; i < channel.length; i++) {
+            if (channel[i].get_id().channel_code.endsWith("N")) {
+                nChan = channel[i];
+            } else if (channel[i].get_id().channel_code.endsWith("E")) {
+                eChan = channel[i];
+            }if (channel[i].get_id().channel_code.endsWith("Z")) {
+                zChan = channel[i];
+            }
+        }
+        if (nChan == null || eChan == null || zChan == null) {
+            logger.error("problem one channel component is null ");
+            throw new NullPointerException("problem one channel component is null, "+
+                                           " "+(nChan != null)+" "+(eChan != null)+" "+(zChan != null));
+        }
 
-
-        Channel chan = channel[0];
-        Location staLoc = chan.my_site.my_station.my_location;
+        Location staLoc = zChan.my_site.my_station.my_location;
         Origin origin = event.get_preferred_origin();
         Location evtLoc = origin.my_location;
 
-        float[][] rotated = Rotate.rotateGCP(e, n, staLoc, evtLoc);
+        LocalSeismogramImpl[] rotSeis = Rotate.rotateGCP(e, eChan.an_orientation, n, nChan.an_orientation, staLoc, evtLoc, "T", "R");
+        float[][] rotated = { rotSeis[0].get_as_floats(), rotSeis[1].get_as_floats() };
 
         // check lengths, trim if needed???
         float[] zdata = z.get_as_floats();
@@ -101,9 +115,9 @@ public class RecFunc {
         SamplingImpl samp = SamplingImpl.createSamplingImpl(z.sampling_info);
         double period = samp.getPeriod().convertTo(UnitImpl.SECOND).getValue();
 
-        zdata = decon.makePowerTwo(zdata);
-        rotated[0] = decon.makePowerTwo(rotated[0]);
-        rotated[1] = decon.makePowerTwo(rotated[1]);
+        zdata = IterDecon.makePowerTwo(zdata);
+        rotated[0] = IterDecon.makePowerTwo(rotated[0]);
+        rotated[1] = IterDecon.makePowerTwo(rotated[1]);
 
         IterDeconResult ansRadial;
         IterDeconResult ansTangential;

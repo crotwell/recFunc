@@ -189,6 +189,12 @@ public class QualityControl {
                                 + decFormat.format(numGood * 100.0
                                         / resultsWithDbId.length)+"%");
                     }
+
+                    if (dbUpdate) {
+                        System.out.println("Update recfuncQC in database");
+                    } else {
+                        System.out.println("Database NOT updated");
+                    }
                 } catch(NotFound e) {
                     System.out.println("NotFound for :"
                             + NetworkIdUtil.toStringNoDates(nets[i]));

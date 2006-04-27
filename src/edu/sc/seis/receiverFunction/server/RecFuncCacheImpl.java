@@ -3,19 +3,27 @@ package edu.sc.seis.receiverFunction.server;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.UNKNOWN;
 import edu.iris.Fissures.IfEvent.EventAttr;
+import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
+import edu.iris.Fissures.event.EventAttrImpl;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.TimeInterval;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
-import edu.sc.seis.IfReceiverFunction.RecFuncCachePOA;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
+import edu.sc.seis.IfReceiverFunction.RecFuncCachePOA;
+import edu.sc.seis.IfReceiverFunction.RecFuncNotFound;
 import edu.sc.seis.IfReceiverFunction.SodConfigNotFound;
 import edu.sc.seis.TauP.TauModelException;
+import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
@@ -49,12 +57,22 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
 	public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,
 				                    ChannelId[] channel) {
 	    try {
+            ArrayList configs = new ArrayList();
 	        synchronized (jdbcRecFunc.getConnection()) {
-	            return jdbcRecFunc.getCachedConfigs(prefOrigin, channel);
+                CacheEvent[] similar = jdbcEventAccess.getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
+                                                                                       prefOrigin),
+                                                                        timeTol, positionTol);
+                for(int i = 0; i < similar.length; i++) {
+                    try {
+                        IterDeconConfig[] tmpConfigs = jdbcRecFunc.getCachedConfigs(similar[i].get_preferred_origin(), channel);
+                        for(int j = 0; j < tmpConfigs.length; j++) {
+                            configs.add(tmpConfigs[j]);
+                        }
+                    } catch(NotFound e) {
+                    }
+                }
+	            return (IterDeconConfig[])configs.toArray(new IterDeconConfig[0]);
 	        }
-        } catch(NotFound e) {
-            logger.info("NotFound: ", e);
-            return new IterDeconConfig[0];
         } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
             throw new org.omg.CORBA.UNKNOWN(e.toString(), 14, CompletionStatus.COMPLETED_MAYBE);
@@ -66,10 +84,20 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
      */
     public CachedResult get(Origin prefOrigin,
 						        ChannelId[] channel,
-								IterDeconConfig config) {
+								IterDeconConfig config) throws RecFuncNotFound {
         try {
             synchronized (jdbcRecFunc.getConnection()) {
-                return jdbcRecFunc.get(prefOrigin, channel, config).getCachedResult();
+                CacheEvent[] similar = jdbcEventAccess.getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
+                                                                                       prefOrigin),
+                                                                        timeTol, positionTol);
+                for(int i = 0; i < similar.length; i++) {
+                    try {
+                        CachedResult out = jdbcRecFunc.get(similar[i].get_preferred_origin(), channel, config).getCachedResult();
+                        if (out != null) { return out;}
+                    } catch(NotFound e) {
+                    }
+                }
+                throw new RecFuncNotFound();
             }
         } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
@@ -95,6 +123,19 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         try {
             Connection conn = jdbcRecFunc.getConnection();
             synchronized(conn) {
+                try {
+                    CacheEvent[] similar = jdbcEventAccess.getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
+                                                                                           prefOrigin),
+                                                                                           timeTol, positionTol);
+                    if (similar.length > 0) {
+                        // already an origin in the database, keep using existing origin
+                        prefOrigin = similar[0].get_preferred_origin();
+                    }
+                } catch (NotFound e) {
+                    // event not yet in db, so proceed as new
+                } catch(NoPreferredOrigin e) {
+                    // should never happen, just act as if new origin 
+                }
                 boolean autocommit = conn.getAutoCommit();
                 try {
                     if(autocommit) {
@@ -146,18 +187,27 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     }
     
     /**
-     *
+     * 
      */
     public boolean isCached(Origin prefOrigin,
                             ChannelId[] channel,
                             IterDeconConfig config) {
         try {
-            synchronized (jdbcRecFunc.getConnection()) {
-                int tmp = jdbcRecFunc.getDbId(prefOrigin, channel, config);
+            synchronized(jdbcRecFunc.getConnection()) {
+                CacheEvent[] similar = jdbcEventAccess.getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
+                                                                                       prefOrigin),
+                                                                        timeTol, positionTol);
+                for(int i = 0; i < similar.length; i++) {
+                    try {
+                        int tmp = jdbcRecFunc.getDbId(similar[i].get_preferred_origin(), channel, config);
+                        if (tmp != -1) {
+                            return true;
+                        }
+                    } catch(NotFound e) {
+                        return false;
+                    }
+                }
             }
-            return true;
-        } catch(NotFound e) {
-            return false;
         } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
         }
@@ -200,6 +250,10 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         return DATA_LOC;
     }
 
+    private TimeInterval timeTol = new TimeInterval(10, UnitImpl.SECOND);
+    
+    private QuantityImpl positionTol = new QuantityImpl(.5, UnitImpl.DEGREE);
+    
     private JDBCEventAccess jdbcEventAccess;
     
     private JDBCChannel jdbcChannel;

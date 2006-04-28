@@ -198,3 +198,8 @@ img.azPlot {
 #arrivals {
            margin-top: 50px;
            }
+           
+#percent_match {
+                color:#CC3300;
+                width: 500px;
+                }

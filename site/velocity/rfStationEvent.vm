@@ -77,8 +77,8 @@
 <td class="data">$sta.getBaz($eq)</td>
 </tr>
 <tr>
-<td class="odd">Ray Param</td>
-<td class="even">$rayparam</td>
+<td class="bold">Ray Param:</td>
+<td class="data">$rayparam</td>
 </tr>
 #if($stack)
 <tr>
@@ -102,14 +102,15 @@
 <td class="data">$stack.formatPoissonsRatio()</td>
 </tr>
 </table>
-
+</td></tr>
 
 
 #else
 
-<p>The percent match for this event was below the threshold and hence was not used in the summary stack.</p>
-#end
+<tr><tdcolspan="2"><p id="percent_match">*The percent match for this event was below the threshold and hence was not used in the summary stack.</p></td></tr>
+</table>
 </td></tr>
+#end
 <tr><td>
 <table class="station_page1">
 <tr>

@@ -29,6 +29,7 @@ import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.receiverFunction.QualityControl;
 import edu.sc.seis.sod.ConfigurationException;
 
 
@@ -48,6 +49,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         jdbcSodConfig = new JDBCSodConfig(conn);
         jdbcRecFunc = new JDBCRecFunc(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, DATA_LOC);
         jdbcHKStack = new JDBCHKStack(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
+        qualityControl = new QualityControl(conn);
     }
     
     Connection getConnection() {
@@ -153,12 +155,15 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                       transverseMatch,
                                                       transverseBump,
                                                       sodConfig_id);
-                    System.out.println("insert " + recFuncDbId
-                            + " with weights of 1/3 for gaussian="+config.gwidth+" for "+ChannelIdUtil.toStringNoDates(channels[0]));
-                    float weightPs = 1/3f;
-                    float weightPpPs = 1/3f;
-                    float weightPsPs = 1 - weightPs - weightPpPs;
-                    jdbcHKStack.calcAndStore(recFuncDbId, weightPs, weightPpPs, weightPsPs);
+                    CachedResultPlusDbId result = jdbcRecFunc.get(recFuncDbId);
+                    if (qualityControl.check(result)) {
+                        System.out.println("insert " + recFuncDbId
+                                           + " with weights of 1/3 for gaussian="+config.gwidth+" for "+ChannelIdUtil.toStringNoDates(channels[0]));
+                        float weightPs = 1/3f;
+                        float weightPpPs = 1/3f;
+                        float weightPsPs = 1 - weightPs - weightPpPs;
+                        jdbcHKStack.calcAndStore(recFuncDbId, weightPs, weightPpPs, weightPsPs);
+                    }
                     conn.commit();
                 } catch(Throwable e) {
                     conn.rollback();
@@ -264,6 +269,8 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     
     private JDBCSodConfig jdbcSodConfig;
 
+    private QualityControl qualityControl;
+    
     private static String DATA_LOC = "../Data";
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(RecFuncCacheImpl.class);

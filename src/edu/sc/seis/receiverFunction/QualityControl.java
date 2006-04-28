@@ -2,6 +2,7 @@ package edu.sc.seis.receiverFunction;
 
 import java.io.FileWriter;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,6 +38,10 @@ import edu.sc.seis.receiverFunction.server.StackSummary;
 
 public class QualityControl {
 
+    public QualityControl(Connection conn) throws SQLException {
+        jdbcRecFuncQC = new JDBCRecFuncQC(conn);
+    }
+    
     public float transverseToRadial(CachedResult result)
             throws FissuresException, TauModelException, PhaseNonExistent {
         LocalSeismogramImpl radial = (LocalSeismogramImpl)result.radial;
@@ -76,6 +81,35 @@ public class QualityControl {
 
     public void calcForStation(int netDbId, String staCode) {}
 
+    public boolean check(CachedResultPlusDbId resultWithDbId) throws FissuresException, TauModelException, PhaseNonExistent, SQLException {
+        CachedResult result = resultWithDbId.getCachedResult();
+        float tToR = transverseToRadial(result);
+        float pAmp = radialPAmp(result);
+        if(tToR > MAX_T_TO_R_RATIO || pAmp < MIN_P_TO_MAX_AMP_RATIO) {
+                jdbcRecFuncQC.put(new RecFuncQCResult(resultWithDbId.getDbId(),
+                                                      false,
+                                                      false,
+                                                      tToR,
+                                                      pAmp,
+                                                      "",
+                                                      ClockUtil.now().getTimestamp()));
+            
+            System.out.println(decFormat.format(result.radialMatch)
+                    + " "
+                    + StationIdUtil.toStringFormatDates(result.channels[0].my_site.my_station)
+                    + " origin="
+                    + result.prefOrigin.origin_time.date_time
+                    + "  T to R="
+                    + decFormat.format(tToR)
+                    + "  P amp=" + decFormat.format(pAmp));
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    JDBCRecFuncQC jdbcRecFuncQC;
+    
     public static void main(String[] args) {
         if(args.length == 0) {
             System.out.println("Usage: StackSummary -net netCode [ -sta staCode ]");
@@ -88,7 +122,7 @@ public class QualityControl {
             Connection conn = StackSummary.initDB(props);
             JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn,
                                                       RecFuncCacheImpl.getDataLoc());
-            QualityControl control = new QualityControl();
+            QualityControl control = new QualityControl(conn);
             String netArg = "";
             String staArg = "";
             boolean dbUpdate = false;
@@ -155,28 +189,7 @@ public class QualityControl {
                                                                           2.5f,
                                                                           80f);
                         for(int r = 0; r < resultsWithDbId.length; r++) {
-                            CachedResult result = resultsWithDbId[r].getCachedResult();
-                            float tToR = control.transverseToRadial(result);
-                            float pAmp = control.radialPAmp(result);
-                            if(tToR > MAX_T_TO_R_RATIO || pAmp < MIN_P_TO_MAX_AMP_RATIO) {
-                                if (dbUpdate) {
-                                    jdbcRecFuncQC.put(new RecFuncQCResult(resultsWithDbId[r].getDbId(),
-                                                                          false,
-                                                                          false,
-                                                                          tToR,
-                                                                          pAmp,
-                                                                          "",
-                                                                          ClockUtil.now().getTimestamp()));
-                                }
-                                System.out.println(decFormat.format(result.radialMatch)
-                                        + " "
-                                        + StationIdUtil.toStringFormatDates(station)
-                                        + " origin="
-                                        + result.prefOrigin.origin_time.date_time
-                                        + "  T to R="
-                                        + decFormat.format(tToR)
-                                        + "  P amp=" + decFormat.format(pAmp));
-                            } else {
+                            if (control.check(resultsWithDbId[r])) {
                                 numGood++;
                             }
                         }

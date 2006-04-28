@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>Stations for $eq</title>
-<link rel="stylesheet" type="text/css" href="$!{staticFiles}style.css"/>
+<link rel="stylesheet" type="text/css" href="$!{staticFiles}station_list_style.css"/>
 <script src="$!{staticFiles}sorttable.js" type="text/javascript"> </script>
 <script src="$!{staticFiles}tableRuler.js" type="text/javascript"> </script>
 <script type="text/javascript">
@@ -12,41 +12,41 @@ window.onload=function(){
 </script>
 </head>
 <body>
-	
+#header()	
 <div id="content">
+	<p id="breadcrumbs">You are here: <a href="$!{revBase}index.html">Home</a> > List of Events > <b>Stations for Event: $eq.region</b></p>	
+<h1>Stations for Event: $eq.region ($stationList.size() stations)</h1>
 
-$header
 
-<table>
+<table class="station_page1">
 <tr>
-<td class="odd">Earthquake location</td>
-<td class="even">$eq.region</td>
+<td class="bold">Earthquake location:</td>
+<td class="data">$eq.region</td>
 </tr>
 <tr>
-<td class="odd">Earthquake latitude/longitude</td>
-<td class="even">$eq.latitude/$eq.longitude</td>
+<td class="bold">Earthquake latitude/longitude:</td>
+<td class="data">$eq.latitude/$eq.longitude</td>
 </tr>
 <tr>
-<td class="odd">Earthquake time(UTC)</td>
-<td class="even">$eq.time</td>
+<td class="bold">Earthquake time(UTC):</td>
+<td class="data">$eq.time</td>
 </tr>
 <tr>
-<td class="odd">Earthquake Depth</td>
-<td class="even">$eq.depth</td>
+<td class="bold">Earthquake Depth:</td>
+<td class="data">$eq.depth</td>
 </tr>
 <tr>
-<td class="odd">Earthquake Magnitude</td>
-<td class="even">$eq.getAllMagnitudes()</td>
+<td class="bold">Earthquake Magnitude:</td>
+<td class="data">$eq.getAllMagnitudes()</td>
 </tr>
 <tr>
-<td class="odd">Earthquake Catalog/Contributor</td>
-<td class="even">$eq.getCatalog()/$eq.getContributor()</td>
+<td class="bold">Earthquake Catalog/Contributor:</td>
+<td class="data">$eq.getCatalog()/$eq.getContributor()</td>
 </tr>
 </table>
-<p>$stationList.size() stations.</p>
 	
 <p>Download as <a href="${revBase}eventReceiverFunction.zip/$eq.getURL()">ZIP file</a></p>
-<table class="ruler sortable" id="dumb">
+<table class="ruler sortable" id="dumb" cellpadding="0" cellspacing="0">
 <tr>
 	<td class="headodd">Network</td>
 	<td class="headodd initiallySorted ascending">Station</td>
@@ -58,7 +58,7 @@ $header
 <tr>
 	<td class="even">$sta.getNet().getCodeWithYear()</td>
 	<td class="odd"><a href="$!{revBase}stationEvent.html?rf=$recfunc.get($sta).getDbId()&gaussian=${gaussian}">$sta.getCode()</a></td>
-    <td class="even"><a href="$!{revBase}stationEvent.html?rf=$recfunc.get($sta).getDbId()&gaussian=${gaussian}">$sta.getName()</a></td>
+    <td class="even1"><a href="$!{revBase}stationEvent.html?rf=$recfunc.get($sta).getDbId()&gaussian=${gaussian}">$sta.getName()</a></td>
     <td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
 	<td class="even">$recfunc.get($sta).formatRadialMatch()</td>
 </tr>
@@ -66,14 +66,8 @@ $header
 </table>
 
 
-<div id="footer2" align="center">
-  <a href="http://seis.sc.edu">
-    <img src="$!{staticFiles}seislogo.gif" alt="Seismology at USC" title="USC"/>
-  </a>
-  <a href="http://www.iris.edu">
-    <img src="$!{staticFiles}irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
-  </a>
+
 </div>
-</div>
+#footer()
 </body>
 </html>

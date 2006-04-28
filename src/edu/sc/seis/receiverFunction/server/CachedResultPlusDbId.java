@@ -6,8 +6,16 @@ import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 
 
 public class CachedResultPlusDbId {
-    
+
+    public CachedResultPlusDbId(CachedResult cachedResult, int dbid) {
+        super();
+        // TODO Auto-generated constructor stub
+        this.cachedResult = cachedResult;
+        this.dbid = dbid;
+    }
+
     private CachedResult cachedResult;
+
     private int dbid;
     
     public CachedResult getCachedResult() {
@@ -17,14 +25,6 @@ public class CachedResultPlusDbId {
     public int getDbId() {
         return dbid;
     }
-
-    public CachedResultPlusDbId(CachedResult cachedResult, int dbid) {
-        super();
-        // TODO Auto-generated constructor stub
-        this.cachedResult = cachedResult;
-        this.dbid = dbid;
-    }
-    
     public CacheEvent getEvent() {
         return new CacheEvent(getCachedResult().event_attr, getCachedResult().prefOrigin);
     }

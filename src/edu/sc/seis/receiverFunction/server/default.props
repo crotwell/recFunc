@@ -581,11 +581,11 @@ recfuncQC.put=INSERT INTO $tablename ( \
 
 recfuncQC.update=UPDATE $tablename \
     SET keep = ? , \
-    SET manualOverride = ? , \
-    SET reason = ? , \
-    SET transRadialRatio = ? , \
-    SET pMaxAmpRatio = ? , \
-    SET insertTime = ? \
+        manualOverride = ? , \
+        reason = ? , \
+        transRadialRatio = ? , \
+        pMaxAmpRatio = ? , \
+        insertTime = ? \
     WHERE recFunc_id = ?
 
 recfuncQC.get=SELECT * FROM $tablename WHERE recFunc_id = ?

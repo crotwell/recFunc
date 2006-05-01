@@ -32,6 +32,27 @@ public class Deleter {
         jdbcRecFuncQC.delete(recfunc_id);
         jdbcRecFunc.delete(recfunc_id);
     }
+    
+    public void deleteOrigin(int originId) throws SQLException, NotFound, IOException {
+        String recFuncForOrigin = "SELECT recfunc_id FROM receiverfunction WHERE origin_id = ?";
+        PreparedStatement stmt = jdbcRecFunc.getConnection().prepareStatement(recFuncForOrigin);
+        stmt.setInt(1, originId);
+        ResultSet rs = stmt.executeQuery();
+        while(rs.next()) {
+            delete(rs.getInt(1));
+        }
+        String deleteEvent = "DELETE FROM eventAccess WHERE origin_id = ?";
+        stmt = jdbcRecFunc.getConnection().prepareStatement(deleteEvent);
+        stmt.setInt(1, originId);
+        int numChanged = stmt.executeUpdate();
+        System.out.println("Deleted "+numChanged+" from event");
+        
+        String deleteOrigin = "DELETE FROM origin WHERE origin_id = ?";
+        stmt = jdbcRecFunc.getConnection().prepareStatement(deleteOrigin);
+        stmt.setInt(1, originId);
+        numChanged = stmt.executeUpdate();
+        System.out.println("Deleted "+numChanged+" from origin");
+    }
 
     public void deleteOutsideChannelTimes(String netCode, String staCode) throws SQLException, NotFound, IOException {
         String outsideChanStmtStr = 
@@ -119,6 +140,7 @@ public class Deleter {
         String netArg = "";
         String staArg = "";
         int rfid = -1;
+        int originId = -1;
         boolean outsideChannel = false;
         boolean dupRFOrigin = false;
         for(int i = 0; i < args.length; i++) {
@@ -131,6 +153,9 @@ public class Deleter {
             } else if(args[i].equals("-rfid")) {
                 rfid = Integer.parseInt(args[i + 1]);
                 i++;
+            } else if(args[i].equals("-originid")) {
+                originId = Integer.parseInt(args[i+1]);
+                i++;
             } else if (args[i].equals("--outsideChannel")) {
                 outsideChannel = true;
             } else if (args[i].equals("--duplicateRFOrigin")) {
@@ -140,6 +165,8 @@ public class Deleter {
         Deleter deleter = new Deleter(conn);
         if(rfid > 0) {
             deleter.delete(rfid);
+        } else if (originId > 0) {
+            deleter.deleteOrigin(originId);
         } else if (outsideChannel && netArg.length()>0 && staArg.length()>0) {
             deleter.deleteOutsideChannelTimes(netArg, staArg);
         } else if (dupRFOrigin) {

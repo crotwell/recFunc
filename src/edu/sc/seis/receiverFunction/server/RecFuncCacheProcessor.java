@@ -49,12 +49,24 @@ import edu.sc.seis.sod.status.StringTreeLeaf;
 /**
  * @author crotwell Created on Sep 10, 2004
  */
-public class RecFuncCacheProcessor extends RecFuncProcessor implements
+public class RecFuncCacheProcessor implements
         WaveformVectorProcess {
 
     public RecFuncCacheProcessor(Element config) throws ConfigurationException,
             TauModelException {
-        super(config);
+        IterDeconConfig deconConfig = parseIterDeconConfig(config);
+        gwidth = deconConfig.gwidth;
+        maxBumps = deconConfig.maxBumps;
+        tol = deconConfig.tol;
+        Element phaseNameElement = SodUtil.getElement(config, "phaseName");
+        if (phaseNameElement != null) {
+            String phaseName = SodUtil.getNestedText(phaseNameElement);
+            if (phaseName.equals("P")) {
+                pWave = true;
+            } else {
+                pWave = false;
+            }
+        }
         Element dnsElement = SodUtil.getElement(config, "serverDNS");
         if(dnsElement != null) {
             dns = SodUtil.getNestedText(dnsElement);
@@ -71,6 +83,28 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
         FissuresNamingService fisName = CommonAccess.getCommonAccess()
                 .getFissuresNamingService();
         cache = new NSRecFuncCache(dns, serverName, fisName);
+    }
+    
+    public static IterDeconConfig parseIterDeconConfig(Element config) {
+        float gwidth = DEFAULT_GWIDTH;
+        int maxBumps = DEFAULT_MAXBUMPS;
+        float tol = DEFAULT_TOL;
+        Element gElement = SodUtil.getElement(config, "gaussianWidth");
+        if (gElement != null) {
+            String gwidthStr = SodUtil.getNestedText(gElement);
+            gwidth = Float.parseFloat(gwidthStr);
+        }
+        Element bumpsElement = SodUtil.getElement(config, "maxBumps");
+        if (bumpsElement != null) {
+            String bumpsStr = SodUtil.getNestedText(bumpsElement);
+            maxBumps = Integer.parseInt(bumpsStr);
+        }
+        Element toleranceElement = SodUtil.getElement(config, "tolerance");
+        if (toleranceElement != null) {
+            String toleranceStr = SodUtil.getNestedText(toleranceElement);
+            tol = Float.parseFloat(toleranceStr);
+        }
+        return new IterDeconConfig(gwidth, maxBumps, tol);
     }
 
     /**
@@ -199,6 +233,18 @@ public class RecFuncCacheProcessor extends RecFuncProcessor implements
         }
     }
 
+    public static float DEFAULT_GWIDTH = 2.5f;
+    public static int DEFAULT_MAXBUMPS = 400;
+    public static float DEFAULT_TOL = 0.001f;
+    
+    protected float gwidth;
+
+    protected float tol;
+    
+    protected int maxBumps;
+    
+    protected boolean pWave = true;
+    
     String dns = "edu/sc/seis";
 
     String serverName = "Ears";

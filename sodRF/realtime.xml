@@ -198,11 +198,7 @@
         </embeddedEventVector>
         <externalWaveformVectorProcess>
             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
-            <fileType>sac</fileType>
-            <dataDirectory>RT_recfunc</dataDirectory>
-            <eventDirLabel>
-                <originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/>
-            </eventDirLabel>
+            <workingDir>RT_recfunc</workingDir>
             <gaussianWidth>2.5</gaussianWidth>
         </externalWaveformVectorProcess>
         <printlineSeismogramProcess/>

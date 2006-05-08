@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.UNKNOWN;
+import edu.iris.Fissures.TimeRange;
 import edu.iris.Fissures.IfEvent.EventAttr;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
@@ -13,6 +14,7 @@ import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.iris.Fissures.event.EventAttrImpl;
+import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
@@ -31,84 +33,103 @@ import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.receiverFunction.QualityControl;
 import edu.sc.seis.sod.ConfigurationException;
-
+import edu.sc.seis.sod.subsetter.channel.ChannelEffectiveTimeOverlap;
 
 /**
- * @author crotwell
- * Created on Sep 9, 2004
+ * @author crotwell Created on Sep 9, 2004
  */
 public class RecFuncCacheImpl extends RecFuncCachePOA {
-    
-    public RecFuncCacheImpl(String databaseURL, String dataloc) throws IOException, SQLException, ConfigurationException, TauModelException, Exception {
+
+    public RecFuncCacheImpl(String databaseURL, String dataloc)
+            throws IOException, SQLException, ConfigurationException,
+            TauModelException, Exception {
         ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(databaseURL);
         DATA_LOC = dataloc;
         Connection conn = ConnMgr.createConnection();
         jdbcEventAccess = new JDBCEventAccess(conn);
-        jdbcChannel  = new JDBCChannel(conn);
+        jdbcChannel = new JDBCChannel(conn);
         jdbcSodConfig = new JDBCSodConfig(conn);
-        jdbcRecFunc = new JDBCRecFunc(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, DATA_LOC);
-        jdbcHKStack = new JDBCHKStack(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
+        jdbcRecFunc = new JDBCRecFunc(conn,
+                                      jdbcEventAccess,
+                                      jdbcChannel,
+                                      jdbcSodConfig,
+                                      DATA_LOC);
+        jdbcHKStack = new JDBCHKStack(conn,
+                                      jdbcEventAccess,
+                                      jdbcChannel,
+                                      jdbcSodConfig,
+                                      jdbcRecFunc);
         qualityControl = new QualityControl(conn);
     }
-    
+
     Connection getConnection() {
         return jdbcRecFunc.getConnection();
     }
-    
-	public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,
-				                    ChannelId[] channel) {
-	    try {
+
+    public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,
+                                              ChannelId[] channel) {
+        try {
             ArrayList configs = new ArrayList();
-	        synchronized (jdbcRecFunc.getConnection()) {
+            synchronized(jdbcRecFunc.getConnection()) {
                 CacheEvent[] similar = jdbcEventAccess.getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
                                                                                        prefOrigin),
-                                                                        timeTol, positionTol);
+                                                                        timeTol,
+                                                                        positionTol);
                 for(int i = 0; i < similar.length; i++) {
                     try {
-                        IterDeconConfig[] tmpConfigs = jdbcRecFunc.getCachedConfigs(similar[i].get_preferred_origin(), channel);
+                        IterDeconConfig[] tmpConfigs = jdbcRecFunc.getCachedConfigs(similar[i].get_preferred_origin(),
+                                                                                    channel);
                         for(int j = 0; j < tmpConfigs.length; j++) {
                             configs.add(tmpConfigs[j]);
                         }
-                    } catch(NotFound e) {
-                    }
+                    } catch(NotFound e) {}
                 }
-	            return (IterDeconConfig[])configs.toArray(new IterDeconConfig[0]);
-	        }
+                return (IterDeconConfig[])configs.toArray(new IterDeconConfig[0]);
+            }
         } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
-            throw new org.omg.CORBA.UNKNOWN(e.toString(), 14, CompletionStatus.COMPLETED_MAYBE);
+            throw new org.omg.CORBA.UNKNOWN(e.toString(),
+                                            14,
+                                            CompletionStatus.COMPLETED_MAYBE);
         }
-	}
-	
+    }
+
     /**
-     *
+     * 
      */
     public CachedResult get(Origin prefOrigin,
-						        ChannelId[] channel,
-								IterDeconConfig config) throws RecFuncNotFound {
+                            ChannelId[] channel,
+                            IterDeconConfig config) throws RecFuncNotFound {
         try {
-            synchronized (jdbcRecFunc.getConnection()) {
+            synchronized(jdbcRecFunc.getConnection()) {
                 CacheEvent[] similar = jdbcEventAccess.getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
                                                                                        prefOrigin),
-                                                                        timeTol, positionTol);
+                                                                        timeTol,
+                                                                        positionTol);
                 for(int i = 0; i < similar.length; i++) {
                     try {
-                        CachedResult out = jdbcRecFunc.get(similar[i].get_preferred_origin(), channel, config).getCachedResult();
-                        if (out != null) { return out;}
-                    } catch(NotFound e) {
-                    }
+                        CachedResult out = jdbcRecFunc.get(similar[i].get_preferred_origin(),
+                                                           channel,
+                                                           config)
+                                .getCachedResult();
+                        if(out != null) {
+                            return out;
+                        }
+                    } catch(NotFound e) {}
                 }
                 throw new RecFuncNotFound();
             }
         } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
-            throw new org.omg.CORBA.UNKNOWN(e.toString(), 13, CompletionStatus.COMPLETED_MAYBE);
+            throw new org.omg.CORBA.UNKNOWN(e.toString(),
+                                            13,
+                                            CompletionStatus.COMPLETED_MAYBE);
         }
     }
-    
+
     /**
-     *
+     * 
      */
     public void insert(Origin prefOrigin,
                        EventAttr eventAttr,
@@ -128,15 +149,17 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                 try {
                     CacheEvent[] similar = jdbcEventAccess.getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
                                                                                            prefOrigin),
-                                                                                           timeTol, positionTol);
-                    if (similar.length > 0) {
-                        // already an origin in the database, keep using existing origin
+                                                                            timeTol,
+                                                                            positionTol);
+                    if(similar.length > 0) {
+                        // already an origin in the database, keep using
+                        // existing origin
                         prefOrigin = similar[0].get_preferred_origin();
                     }
-                } catch (NotFound e) {
+                } catch(NotFound e) {
                     // event not yet in db, so proceed as new
                 } catch(NoPreferredOrigin e) {
-                    // should never happen, just act as if new origin 
+                    // should never happen, just act as if new origin
                 }
                 boolean autocommit = conn.getAutoCommit();
                 try {
@@ -156,13 +179,18 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                       transverseBump,
                                                       sodConfig_id);
                     CachedResultPlusDbId result = jdbcRecFunc.get(recFuncDbId);
-                    if (qualityControl.check(result)) {
+                    if(qualityControl.check(result)) {
                         System.out.println("insert " + recFuncDbId
-                                           + " with weights of 1/3 for gaussian="+config.gwidth+" for "+ChannelIdUtil.toStringNoDates(channels[0]));
-                        float weightPs = 1/3f;
-                        float weightPpPs = 1/3f;
+                                + " with weights of 1/3 for gaussian="
+                                + config.gwidth + " for "
+                                + ChannelIdUtil.toStringNoDates(channels[0]));
+                        float weightPs = 1 / 3f;
+                        float weightPpPs = 1 / 3f;
                         float weightPsPs = 1 - weightPs - weightPpPs;
-                        jdbcHKStack.calcAndStore(recFuncDbId, weightPs, weightPpPs, weightPsPs);
+                        jdbcHKStack.calcAndStore(recFuncDbId,
+                                                 weightPs,
+                                                 weightPpPs,
+                                                 weightPsPs);
                     }
                     conn.commit();
                 } catch(Throwable e) {
@@ -190,7 +218,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                               CompletionStatus.COMPLETED_MAYBE);
         }
     }
-    
+
     /**
      * 
      */
@@ -201,24 +229,70 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
             synchronized(jdbcRecFunc.getConnection()) {
                 CacheEvent[] similar = jdbcEventAccess.getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
                                                                                        prefOrigin),
-                                                                        timeTol, positionTol);
-                for(int i = 0; i < similar.length; i++) {
-                    try {
-                        int tmp = jdbcRecFunc.getDbId(similar[i].get_preferred_origin(), channel, config);
-                        if (tmp != -1) {
-                            return true;
+                                                                        timeTol,
+                                                                        positionTol);
+                MicroSecondDate oTime = new MicroSecondDate(prefOrigin.origin_time);
+                Channel[] similarCodeChan;
+                try {
+                    similarCodeChan = jdbcRecFunc.getJDBCChannel()
+                        .getByCode(channel[0].network_id,
+                                   channel[0].station_code,
+                                   channel[0].site_code,
+                                   channel[0].channel_code);
+                } catch (NotFound e) {
+                    // no similar channels, so assume not in db yet
+                    return false;
+                }
+                ArrayList overlapChan = new ArrayList();
+                for(int c = 0; c < similarCodeChan.length; c++) {
+                    if(oTime.after(new MicroSecondDate(similarCodeChan[c].effective_time.start_time))
+                            && oTime.before(new MicroSecondDate(similarCodeChan[c].effective_time.end_time))) {
+                        // overlaps
+                        overlapChan.add(similarCodeChan[c]);
+                    }
+                }
+                Channel[] similarChan = (Channel[])overlapChan.toArray(new Channel[0]);
+                for(int c = 0; c < similarChan.length; c++) {
+                    ChannelId[] threeComp = new ChannelId[3];
+                    if(ChannelIdUtil.areEqual(similarChan[c].get_id(),
+                                              channel[0])) {
+                        threeComp = channel;
+                    } else {
+                        // not same, so have to find other 2 components
+                        threeComp[0] = similarChan[c].get_id();
+                        ChannelId[] tmpChans = jdbcRecFunc.getJDBCChannel()
+                                .getAllChannelIdsForSiteDbId(jdbcRecFunc.getJDBCChannel()
+                                        .getSiteTable()
+                                        .getDBId(similarChan[c].my_site.get_id(),
+                                                 similarChan[c].my_site.my_station));
+                        if (tmpChans.length == 3) {
+                            // found them
+                            threeComp = tmpChans;
+                        } else {
+                            //
+                            throw new RuntimeException("more than 3 chans per site "+ChannelIdUtil.toString(similarChan[c].get_id()));
                         }
-                    } catch(NotFound e) {
-                        return false;
+                    }
+                    for(int i = 0; i < similar.length; i++) {
+                        try {
+                            int tmp = jdbcRecFunc.getDbId(similar[i].get_preferred_origin(),
+                                                          threeComp,
+                                                          config);
+                            if(tmp != -1) {
+                                return true;
+                            }
+                        } catch(NotFound e) {
+                            // try next similar
+                        }
                     }
                 }
             }
+            return false;
         } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
         }
         return false;
     }
-
 
     public int insertSodConfig(String config) {
         try {
@@ -228,9 +302,11 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         } catch(SQLException e) {
             GlobalExceptionHandler.handle(e);
             throw new UNKNOWN(e.getMessage(), 7, CompletionStatus.COMPLETED_NO);
-        } catch (Throwable t) {
+        } catch(Throwable t) {
             GlobalExceptionHandler.handle(t);
-            throw new UNKNOWN(t.getMessage(), 10, CompletionStatus.COMPLETED_MAYBE);
+            throw new UNKNOWN(t.getMessage(),
+                              10,
+                              CompletionStatus.COMPLETED_MAYBE);
         }
     }
 
@@ -245,33 +321,35 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         } catch(NotFound e) {
             GlobalExceptionHandler.handle(e);
             throw new UNKNOWN(e.getMessage(), 9, CompletionStatus.COMPLETED_NO);
-        } catch (Throwable t) {
+        } catch(Throwable t) {
             GlobalExceptionHandler.handle(t);
-            throw new UNKNOWN(t.getMessage(), 11, CompletionStatus.COMPLETED_MAYBE);
+            throw new UNKNOWN(t.getMessage(),
+                              11,
+                              CompletionStatus.COMPLETED_MAYBE);
         }
     }
-    
+
     public static String getDataLoc() {
         return DATA_LOC;
     }
 
     private TimeInterval timeTol = new TimeInterval(10, UnitImpl.SECOND);
-    
+
     private QuantityImpl positionTol = new QuantityImpl(.5, UnitImpl.DEGREE);
-    
+
     private JDBCEventAccess jdbcEventAccess;
-    
+
     private JDBCChannel jdbcChannel;
-    
+
     private JDBCRecFunc jdbcRecFunc;
-    
+
     private JDBCHKStack jdbcHKStack;
-    
+
     private JDBCSodConfig jdbcSodConfig;
 
     private QualityControl qualityControl;
-    
+
     private static String DATA_LOC = "../Data";
-    
+
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(RecFuncCacheImpl.class);
 }

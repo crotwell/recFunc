@@ -293,6 +293,9 @@ hksummary.get=SELECT * from $tablename JOIN netchan ON (chanz_id = chan_id ) \
                    JOIN stackComplexity ON (${tablename}.hksummary_id = stackComplexity.hksummary_id) \
                    WHERE ${tablename}.hksummary_id = ?
                    
+hksummary.deleteStmt=DELETE from $tablename \
+                   WHERE ${tablename}.hksummary_id = ?
+                   
 hksummary.update=UPDATE $tablename SET chanA_id = ? , \
                    chanB_id = ? , \
                    chanZ_id = ? , \
@@ -529,6 +532,9 @@ stackComplexity.update=UPDATE $tablename \
                    crust2diff = ? \
 				WHERE hksummary_id = ? 
 				
+stackComplexity.deleteStmt=DELETE from $tablename \
+                   WHERE ${tablename}.hksummary_id = ?
+                   
 amplitude.create=CREATE TABLE $tablename ( \
     hkstack_id int, \
     recFunc_id int, \

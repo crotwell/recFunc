@@ -76,6 +76,11 @@ public class JDBCStackComplexity extends JDBCTable {
         }
         throw new NotFound();
     }
+
+    public int delete(int hksummary_id) throws SQLException {
+        deleteStmt.setInt(1, hksummary_id);
+        return deleteStmt.executeUpdate();
+    }
     
     public static StackComplexityResult extract(ResultSet rs, int hksummary_id) throws SQLException {
         StackComplexityResult out = new StackComplexityResult(
@@ -95,7 +100,8 @@ public class JDBCStackComplexity extends JDBCTable {
         rs.getFloat("crust2diff"));
         return out;
     }
-	PreparedStatement put, get, update;
+    
+	PreparedStatement put, get, update, deleteStmt;
 
 	private JDBCSummaryHKStack jdbcSummaryHKStack;
 }

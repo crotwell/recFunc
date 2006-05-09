@@ -100,6 +100,11 @@ public class JDBCSummaryHKStack extends JDBCTable {
         }
     }
 
+    public int delete(int hksummary_id) throws SQLException {
+        deleteStmt.setInt(1, hksummary_id);
+        return deleteStmt.executeUpdate();
+    }
+    
     int populateStmt(PreparedStatement stmt, int index, SumHKStack summary)
             throws SQLException, NotFound, IOException {
         stmt.setInt(index++, jdbcHKStack.getJDBCChannel()
@@ -313,7 +318,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
     JDBCSequence hksummarySeq;
 
     PreparedStatement uncalculated, get, put, update, getForStation,
-            getAllWithoutData, getAll;
+            getAllWithoutData, getAll, deleteStmt;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCSummaryHKStack.class);
 }

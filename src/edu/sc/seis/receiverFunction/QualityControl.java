@@ -102,9 +102,9 @@ public class QualityControl {
                     + "  T to R="
                     + decFormat.format(tToR)
                     + "  P amp=" + decFormat.format(pAmp));
-            return true;
-        } else {
             return false;
+        } else {
+            return true;
         }
     }
     

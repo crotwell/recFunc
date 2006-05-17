@@ -31,13 +31,13 @@ def makeMap(dataFile, outFilename, proj='M5.5i', region='-126/-114/30/50', shift
 	baseGmtArgs = baseGmtArgs + ' -O '
 
     # makecpt -I -T25/50/1 -Cno_green > no_green_25_50
-    gmt = os.popen('grdimage ../crust2_180.grd -T -Cno_green_25_50 ' +baseGmtArgs+ out, 'w')
+    gmt = os.popen('grdimage ../crust2_180.grd -T -Cno_green_25_50.cpt ' +baseGmtArgs+ out, 'w')
     gmt.close()
 
     gmt= os.popen('pscoast ' +baseGmtArgs+' -Dh -Na -W '+out, 'w')
     gmt.close()
 
-    gmt= os.popen('psxy '+baseGmtArgs+' -St.2i -Cno_green_25_50 -W'+out, 'w')
+    gmt= os.popen('psxy '+baseGmtArgs+' -St.2i -Cno_green_25_50.cpt -W'+out, 'w')
     results = csv.reader(open(dataFile, 'r'))
     mean = 0.0
     numMean = 0
@@ -57,7 +57,7 @@ def makeMap(dataFile, outFilename, proj='M5.5i', region='-126/-114/30/50', shift
     gmt.close()
     mean = mean / numMean
     print 'mean='+str(mean)+' numMean='+str(numMean)
-    gmt = os.popen('psscale -D6i/7i/5i/.5i -Cno_green_25_50 -B5 -P -O -K '+out, 'w')
+    gmt = os.popen('psscale -D6i/7i/5i/.5i -Cno_green_25_50.cpt -B5 -P -O -K '+out, 'w')
     gmt.close()
 
     baseGmtArgs = baseGmtArgs.replace('-K', '')
@@ -99,7 +99,7 @@ def makeLonVsThickBoxes(dataFile, outfilePrefix, minLat, maxLat, incLat):
 		continue
 	    thick = row[5].replace(' km','') 
 	    stalat = float(row[2])
-	    print "%s.%s %s" % (row[0],row[1],row[12])
+	    #print "%s.%s %s" % (row[0],row[1],row[12])
 	    if int(row[12]) >= 5 and stalat > lat and stalat < (lat+incLat):
 		gmt.write(row[3]+" "+thick+" 8 0 4 BL ."+row[0]+'.'+row[1]+"\n")
 	gmt.close()	
@@ -109,7 +109,7 @@ def makeLonVsThickBoxes(dataFile, outfilePrefix, minLat, maxLat, incLat):
 	ps2pdf(outFilename)
 	    
 def ps2pdf(outFilename):
-    ps2pdf = os.popen('ps2pdf '+outFilename)
+    ps2pdf = os.popen('pstopdf '+outFilename)
     ps2pdf.close()
     try:
 	os.remove(outFilename)

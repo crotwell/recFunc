@@ -11,6 +11,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import edu.iris.Fissures.Area;
+import edu.iris.Fissures.BoxArea;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.Orientation;
 import edu.iris.Fissures.IfEvent.EventAttr;
@@ -21,6 +23,9 @@ import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfParameterMgr.ParameterRef;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
 import edu.iris.Fissures.model.MicroSecondDate;
+import edu.iris.Fissures.model.PointDistanceAreaImpl;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
@@ -28,6 +33,7 @@ import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.iris.dmc.seedcodec.CodecException;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
+import edu.sc.seis.fissuresUtil.bag.AreaUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.JDBCSequence;
@@ -287,8 +293,9 @@ public class JDBCRecFunc extends JDBCTable {
         }
         throw new NotFound("No rec func entry found for dbid=" + dbid);
     }
-    
-    public void delete(int dbid) throws SQLException, NotFound, FileNotFoundException, IOException {
+
+    public void delete(int dbid) throws SQLException, NotFound,
+            FileNotFoundException, IOException {
         getByDbIdStmt.setInt(1, dbid);
         ResultSet rs = getByDbIdStmt.executeQuery();
         if(rs.next()) {
@@ -313,8 +320,8 @@ public class JDBCRecFunc extends JDBCTable {
             deleteStmt.setInt(1, dbid);
             try {
                 deleteStmt.executeUpdate();
-            } catch (SQLException e) {
-                logger.error("statement causeing error: "+deleteStmt);
+            } catch(SQLException e) {
+                logger.error("statement causeing error: " + deleteStmt);
                 throw e;
             }
             return;
@@ -334,8 +341,8 @@ public class JDBCRecFunc extends JDBCTable {
     }
 
     public CachedResultPlusDbId get(Origin prefOrigin,
-                            ChannelId[] channel,
-                            IterDeconConfig config) throws NotFound,
+                                    ChannelId[] channel,
+                                    IterDeconConfig config) throws NotFound,
             FileNotFoundException, IOException, SQLException, FissuresException {
         populateGetStmt(getStmt, prefOrigin, channel, config);
         ResultSet rs = getStmt.executeQuery();
@@ -351,6 +358,7 @@ public class JDBCRecFunc extends JDBCTable {
         CachedResult result = withDbId.getCachedResult();
         CacheEvent cacheEvent = new CacheEvent(result.event_attr,
                                                result.prefOrigin);
+        try {
         File stationDir = getDir(cacheEvent,
                                  result.channels[0],
                                  result.config.gwidth);
@@ -380,6 +388,10 @@ public class JDBCRecFunc extends JDBCTable {
         originals[2].channel_id = result.channels[2].get_id();
         result.original = originals;
         return withDbId;
+        } catch (FileNotFoundException e) {
+            logger.error("File not found for "+withDbId.getDbId(), e);
+            throw e;
+        }
     }
 
     public CachedResultPlusDbId extractWithoutSeismograms(ResultSet rs)
@@ -392,17 +404,16 @@ public class JDBCRecFunc extends JDBCTable {
         int guessIndex = 0;
         MicroSecondDate insertTime = null;
         // this is fragile as we assume that the first non-null inserttime is
-        // for the receiver function, but the table name is not available from 
+        // for the receiver function, but the table name is not available from
         // the metadata for the query, so no other way to find the correct one
-        while (guessIndex < guessInsertTimeIndex.length) {
+        while(guessIndex < guessInsertTimeIndex.length) {
             Timestamp t = rs.getTimestamp(guessInsertTimeIndex[guessIndex]);
-            if (t != null) {
+            if(t != null) {
                 insertTime = new MicroSecondDate(t);
                 break;
             }
             guessIndex++;
         }
-        
         CachedResult result = new CachedResult(origin,
                                                eventAttr,
                                                new IterDeconConfig(rs.getFloat("gwidth"),
@@ -458,9 +469,9 @@ public class JDBCRecFunc extends JDBCTable {
     }
 
     public CacheEvent[] getEvents(int netDbId,
-                                            String stationCode,
-                                            float gaussianWidth)
-            throws SQLException, NotFound {
+                                  String stationCode,
+                                  float gaussianWidth) throws SQLException,
+            NotFound {
         int index = 1;
         getOriginByStation.setInt(index++, netDbId);
         getOriginByStation.setString(index++, stationCode);
@@ -486,21 +497,23 @@ public class JDBCRecFunc extends JDBCTable {
         }
         return (CacheEvent[])out.toArray(new CacheEvent[0]);
     }
-    
 
-    /** on left join, there are two recfunc_id columns, 
-     one from receiver function that is right
-     and one from recfuncqc that might be null
-     find both index so we can find the non-null field
-     * @throws SQLException */
-    public static int[] getColNumbers(ResultSetMetaData rsmd, String name) throws SQLException {
+    /**
+     * on left join, there are two recfunc_id columns, one from receiver
+     * function that is right and one from recfuncqc that might be null find
+     * both index so we can find the non-null field
+     * 
+     * @throws SQLException
+     */
+    public static int[] getColNumbers(ResultSetMetaData rsmd, String name)
+            throws SQLException {
         int numCols = rsmd.getColumnCount();
         int[] guess = new int[0];
-        for(int col =1; col <= numCols; col++) {
-            if (rsmd.getColumnLabel(col).equalsIgnoreCase(name)) {
-                int[] guessTmp = new int[guess.length+1];
+        for(int col = 1; col <= numCols; col++) {
+            if(rsmd.getColumnLabel(col).equalsIgnoreCase(name)) {
+                int[] guessTmp = new int[guess.length + 1];
                 System.arraycopy(guess, 0, guessTmp, 0, guess.length);
-                guessTmp[guessTmp.length-1] = col;
+                guessTmp[guessTmp.length - 1] = col;
                 guess = guessTmp;
             }
         }
@@ -526,23 +539,27 @@ public class JDBCRecFunc extends JDBCTable {
             EventAttr attr = jdbcEventAttr.extract(rs);
             // TimeOMatic.print("attr");
             CacheEvent event = new CacheEvent(attr, o);
-            ParameterRef[] parms = o.parm_ids;
-            ParameterRef[] newParms = new ParameterRef[parms.length + 2];
-            System.arraycopy(parms, 0, newParms, 0, parms.length);
-            newParms[newParms.length - 2] = new ParameterRef("itr_match", ""
-                    + rs.getFloat("itr_match"));
-            newParms[newParms.length - 1] = new ParameterRef("recFunc_id", ""
-                    + getRecFuncId(rs));
-            o.parm_ids = newParms;
+            addToParms(o, rs.getFloat("itr_match"), getRecFuncId(rs));
             out.add(event);
         }
         return (CacheEvent[])out.toArray(new CacheEvent[0]);
     }
+    
+    public static void addToParms(Origin o, float itr_match, int recFunc_id) {
+        ParameterRef[] parms = o.parm_ids;
+        ParameterRef[] newParms = new ParameterRef[parms.length + 2];
+        System.arraycopy(parms, 0, newParms, 0, parms.length);
+        newParms[newParms.length - 2] = new ParameterRef("itr_match", ""
+                + itr_match);
+        newParms[newParms.length - 1] = new ParameterRef("recFunc_id", ""
+                + recFunc_id);
+        o.parm_ids = newParms;
+    }
 
     public CacheEvent[] getUnsuccessfulEvents(int netDbId,
-                                            String stationCode,
-                                            float gaussianWidth,
-                                            float minPercentMatch)
+                                              String stationCode,
+                                              float gaussianWidth,
+                                              float minPercentMatch)
             throws SQLException, NotFound {
         int index = 1;
         getUnsuccessfulOriginByStation.setInt(index++, netDbId);
@@ -550,7 +567,6 @@ public class JDBCRecFunc extends JDBCTable {
         getUnsuccessfulOriginByStation.setFloat(index++, gaussianWidth);
         getUnsuccessfulOriginByStation.setFloat(index++, minPercentMatch);
         ResultSet rs = getUnsuccessfulOriginByStation.executeQuery();
-        TimeOMatic.print("result set");
         ArrayList out = new ArrayList();
         while(rs.next()) {
             Origin o = jdbcOrigin.extract(rs);
@@ -567,15 +583,15 @@ public class JDBCRecFunc extends JDBCTable {
             newParms[newParms.length - 1] = new ParameterRef("recFunc_id", ""
                     + getRecFuncId(rs));
             String reason = rs.getString("reason");
-            if (reason == null || reason.length() == 0) {
+            if(reason == null || reason.length() == 0) {
                 float tToR = rs.getFloat("transradialratio");
                 float pAmp = rs.getFloat("pmaxampratio");
-                if (itrMatch < 80) {
+                if(itrMatch < 80) {
                     reason = "% match";
-                } else if (tToR > QualityControl.getMAX_T_TO_R_RATIO()) {
-                    reason = "large T ratio, "+tToR;
-                } else if (pAmp < QualityControl.getMIN_P_TO_MAX_AMP_RATIO()) {
-                    reason = "small P amp ratio, "+pAmp;
+                } else if(tToR > QualityControl.getMAX_T_TO_R_RATIO()) {
+                    reason = "large T ratio, " + tToR;
+                } else if(pAmp < QualityControl.getMIN_P_TO_MAX_AMP_RATIO()) {
+                    reason = "small P amp ratio, " + pAmp;
                 }
             }
             newParms[newParms.length - 3] = new ParameterRef("reason", reason);
@@ -584,8 +600,13 @@ public class JDBCRecFunc extends JDBCTable {
         }
         return (CacheEvent[])out.toArray(new CacheEvent[0]);
     }
-    
-    public CachedResultPlusDbId[] getStationsByEvent(CacheEvent event, float gaussianWidth, float minPercentMatch, boolean withSeismograms) throws SQLException, NotFound, FileNotFoundException, FissuresException, IOException {
+
+    public CachedResultPlusDbId[] getStationsByEvent(CacheEvent event,
+                                                     float gaussianWidth,
+                                                     float minPercentMatch,
+                                                     boolean withSeismograms)
+            throws SQLException, NotFound, FileNotFoundException,
+            FissuresException, IOException {
         int index = 1;
         getStationsByEventByPercent.setInt(index++, event.getDbId());
         getStationsByEventByPercent.setFloat(index++, gaussianWidth);
@@ -593,7 +614,7 @@ public class JDBCRecFunc extends JDBCTable {
         ResultSet rs = getStationsByEventByPercent.executeQuery();
         ArrayList out = new ArrayList();
         while(rs.next()) {
-            if (withSeismograms) {
+            if(withSeismograms) {
                 out.add(extract(rs));
             } else {
                 out.add(extractWithoutSeismograms(rs));
@@ -602,42 +623,83 @@ public class JDBCRecFunc extends JDBCTable {
         return (CachedResultPlusDbId[])out.toArray(new CachedResultPlusDbId[0]);
     }
 
+    /**
+     * Check if the given origin (or nearby origin) has already been calculated
+     * for a channel with the same network and codes.
+     */
+    public boolean exists(Origin origin, ChannelId chanz, IterDeconConfig config)
+            throws SQLException, NotFound {
+        int index = 1;
+        BoxArea box = AreaUtil.makeContainingBox(new PointDistanceAreaImpl(origin.my_location.latitude,
+                                                                            origin.my_location.longitude,
+                                                                            new QuantityImpl(0.0,
+                                                                                             UnitImpl.DEGREE),
+                                                                            new QuantityImpl(0.1,
+                                                                                             UnitImpl.DEGREE)));
+        originChanExists.setInt(index++, jdbcChannel.getNetworkTable()
+                .getDbId(chanz.network_id));
+        originChanExists.setString(index++, chanz.station_code);
+        originChanExists.setString(index++, chanz.site_code);
+        originChanExists.setString(index++, chanz.channel_code);
+        originChanExists.setFloat(index++, config.gwidth);
+        MicroSecondDate oTime = new MicroSecondDate(origin.origin_time);
+        originChanExists.setTimestamp(index++, oTime.subtract(ONE_SEC)
+                .getTimestamp());
+        originChanExists.setTimestamp(index++, oTime.add(ONE_SEC)
+                .getTimestamp());
+        originChanExists.setFloat(index++, box.min_latitude);
+        originChanExists.setFloat(index++, box.max_latitude);
+        originChanExists.setFloat(index++, box.min_longitude);
+        originChanExists.setFloat(index++, box.max_longitude);
+        originChanExists.setFloat(index++, box.min_longitude);
+        originChanExists.setFloat(index++, box.max_longitude);
+        originChanExists.setFloat(index++, box.min_longitude);
+        originChanExists.setFloat(index++, box.max_longitude);
+        originChanExists.setFloat(index++, box.min_longitude);
+        originChanExists.setFloat(index++, box.max_longitude);
+        ResultSet rs = originChanExists.executeQuery();
+        return rs.next();
+    }
+
+    public static TimeInterval ONE_SEC = new TimeInterval(1, UnitImpl.SECOND);
+
     public CachedResultPlusDbId[] getSuccessful(int netDbId,
-                                       String stationCode,
-                                       float gaussianWidth)
+                                                String stationCode,
+                                                float gaussianWidth)
             throws FileNotFoundException, FissuresException, NotFound,
             IOException, SQLException {
         return getSuccessful(netDbId, stationCode, gaussianWidth, 80f);
     }
 
     public CachedResultPlusDbId[] getSuccessful(int netDbId,
-                                       String stationCode,
-                                       float gaussianWidth,
-                                       float percentMatch)
+                                                String stationCode,
+                                                float gaussianWidth,
+                                                float percentMatch)
             throws FileNotFoundException, FissuresException, NotFound,
             IOException, SQLException {
         try {
-        int index = 1;
-        getSuccessfulOriginByStation.setInt(index++, netDbId);
-        getSuccessfulOriginByStation.setString(index++, stationCode);
-        getSuccessfulOriginByStation.setFloat(index++, gaussianWidth);
-        getSuccessfulOriginByStation.setFloat(index++, percentMatch);
-        ResultSet rs = getSuccessfulOriginByStation.executeQuery();
-        TimeOMatic.print("result set");
-        ArrayList out = new ArrayList();
-        while(rs.next()) {
-            out.add(extract(rs));
-        }
-        return (CachedResultPlusDbId[])out.toArray(new CachedResultPlusDbId[0]);
-        } catch (RuntimeException e) {
-            logger.error("error stmt="+getSuccessfulOriginByStation,e );
+            int index = 1;
+            getSuccessfulOriginByStation.setInt(index++, netDbId);
+            getSuccessfulOriginByStation.setString(index++, stationCode);
+            getSuccessfulOriginByStation.setFloat(index++, gaussianWidth);
+            getSuccessfulOriginByStation.setFloat(index++, percentMatch);
+            ResultSet rs = getSuccessfulOriginByStation.executeQuery();
+            TimeOMatic.print("result set");
+            ArrayList out = new ArrayList();
+            while(rs.next()) {
+                out.add(extract(rs));
+            }
+            return (CachedResultPlusDbId[])out.toArray(new CachedResultPlusDbId[0]);
+        } catch(RuntimeException e) {
+            logger.error("error stmt=" + getSuccessfulOriginByStation, e);
             throw e;
         }
     }
 
     protected int[] lastGuessRFIdIndex;
+
     protected WeakReference lastGuessRFIdResiltSet = new WeakReference(null);
-    
+
     protected int getRecFuncId(ResultSet rs) throws SQLException {
         int[] guessRFIDIndex;
         synchronized(this) {
@@ -658,7 +720,7 @@ public class JDBCRecFunc extends JDBCTable {
         }
         return recFuncId;
     }
-    
+
     protected int populateGetStmt(PreparedStatement stmt,
                                   Origin prefOrigin,
                                   ChannelId[] channels) throws SQLException,
@@ -772,17 +834,20 @@ public class JDBCRecFunc extends JDBCTable {
     private PreparedStatement putStmt, isCachedStmt, getConfigsStmt, getStmt,
             getByDbIdStmt, getOriginByStation, getOriginByStationByPercent,
             countOriginByStationByPercent, getStationsByEventByPercent,
-            deleteStmt, getSuccessfulOriginByStation, getUnsuccessfulOriginByStation;
+            deleteStmt, getSuccessfulOriginByStation,
+            getUnsuccessfulOriginByStation, originChanExists;
 
     private JDBCSequence receiverFunctionSeq;
-    
-    
+
     private class ChannelInCache {
+
         ChannelInCache(int dbid, Channel chan) {
             this.dbid = dbid;
             this.chan = chan;
         }
+
         int dbid;
+
         Channel chan;
     }
 

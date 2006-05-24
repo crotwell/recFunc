@@ -6,6 +6,7 @@
 package edu.sc.seis.receiverFunction;
 
 import java.awt.image.BufferedImage;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
@@ -287,6 +289,52 @@ public class SumHKStack {
         return new SumHKStack(minPercentMatch, smallestH, hkStack, -1, -1, numStacks);
     }
 
+    public StackComplexityResult calcStackComplexity() throws TauModelException {
+        StackComplexity complexity = new StackComplexity(getSum(),
+                                                         4096,
+                                                         getSum().getGaussianWidth());
+        StationResult model = new StationResult(getChannel().get_id().network_id,
+                                                getChannel().get_id().station_code,
+                                                getSum().getMaxValueH(getSmallestH()),
+                                                getSum().getMaxValueK(getSmallestH()),
+                                                getSum().getAlpha(),
+                                                null);
+        HKStack residual = getResidual();
+        float complex = getResidualPower();
+        float complex25 = getResidualPower(.25f);
+        float complex50 = getResidualPower(.50f);
+        float bestH = (float)getSum().getMaxValueH(getSmallestH())
+                .getValue(UnitImpl.KILOMETER);
+        float bestHStdDev = (float)getHStdDev().getValue(UnitImpl.KILOMETER);
+        float bestK = getSum().getMaxValueK(getSmallestH());
+        float bestKStdDev = (float)getKStdDev();
+        float bestVal = getSum().getMaxValue(getSmallestH());
+        float hkCorrelation = (float)getMixedVariance();
+        float nextH = (float)residual.getMaxValueH(getSmallestH())
+                .getValue(UnitImpl.KILOMETER);
+        float nextK = residual.getMaxValueK(getSmallestH());
+        float nextVal = residual.getMaxValue(getSmallestH());
+        StationResult crust2Result = HKStack.getCrust2()
+                .getStationResult(getChannel().my_site.my_station);
+        float crust2diff = bestH
+                - (float)crust2Result.getH().getValue(UnitImpl.KILOMETER);
+        setComplexityResult(new StackComplexityResult(getDbid(),
+                                         complex,
+                                         complex25,
+                                         complex50,
+                                         bestH,
+                                         bestHStdDev,
+                                         bestK,
+                                         bestKStdDev,
+                                         bestVal,
+                                         hkCorrelation,
+                                         nextH,
+                                         nextK,
+                                         nextVal,
+                                         crust2diff));
+        return getComplexityResult();
+    }
+    
     public double getHVariance() {
         return hVariance;
     }

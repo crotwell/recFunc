@@ -215,6 +215,7 @@ public class QualityControl {
                 }
             }
         } catch(Exception e) {
+            System.out.println("Problem, see log file: "+e.getMessage());
             GlobalExceptionHandler.handle(e);
         }
     }

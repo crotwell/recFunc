@@ -34,6 +34,7 @@ window.onload=function(){
 	<td class="headodd initiallySorted ascending">Station</td>
 	<td class="headodd">Name</td>
 	<td class="headodd num">Lat/Lon</td>
+	<td class="headodd num">Elevation</td>
 	<td class="headodd num">Est. Thick</td>
 	<td class="headodd num">StdDev</td>
 	<td class="headodd num">Est. Vp/Vs</td>

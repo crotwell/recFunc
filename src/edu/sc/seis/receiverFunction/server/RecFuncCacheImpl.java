@@ -226,67 +226,19 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                             ChannelId[] channel,
                             IterDeconConfig config) {
         try {
-            synchronized(jdbcRecFunc.getConnection()) {
-                CacheEvent[] similar = jdbcEventAccess.getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
-                                                                                       prefOrigin),
-                                                                        timeTol,
-                                                                        positionTol);
-                MicroSecondDate oTime = new MicroSecondDate(prefOrigin.origin_time);
-                Channel[] similarCodeChan;
-                try {
-                    similarCodeChan = jdbcRecFunc.getJDBCChannel()
-                        .getByCode(channel[0].network_id,
-                                   channel[0].station_code,
-                                   channel[0].site_code,
-                                   channel[0].channel_code);
-                } catch (NotFound e) {
-                    // no similar channels, so assume not in db yet
-                    return false;
-                }
-                ArrayList overlapChan = new ArrayList();
-                for(int c = 0; c < similarCodeChan.length; c++) {
-                    if(oTime.after(new MicroSecondDate(similarCodeChan[c].effective_time.start_time))
-                            && oTime.before(new MicroSecondDate(similarCodeChan[c].effective_time.end_time))) {
-                        // overlaps
-                        overlapChan.add(similarCodeChan[c]);
-                    }
-                }
-                Channel[] similarChan = (Channel[])overlapChan.toArray(new Channel[0]);
-                for(int c = 0; c < similarChan.length; c++) {
-                    ChannelId[] threeComp = new ChannelId[3];
-                    if(ChannelIdUtil.areEqual(similarChan[c].get_id(),
-                                              channel[0])) {
-                        threeComp = channel;
-                    } else {
-                        // not same, so have to find other 2 components
-                        threeComp[0] = similarChan[c].get_id();
-                        ChannelId[] tmpChans = jdbcRecFunc.getJDBCChannel()
-                                .getAllChannelIdsForSiteDbId(jdbcRecFunc.getJDBCChannel()
-                                        .getSiteTable()
-                                        .getDBId(similarChan[c].my_site.get_id(),
-                                                 similarChan[c].my_site.my_station));
-                        if (tmpChans.length == 3) {
-                            // found them
-                            threeComp = tmpChans;
-                        } else {
-                            //
-                            throw new RuntimeException("more than 3 chans per site "+ChannelIdUtil.toString(similarChan[c].get_id()));
-                        }
-                    }
-                    for(int i = 0; i < similar.length; i++) {
-                        try {
-                            int tmp = jdbcRecFunc.getDbId(similar[i].get_preferred_origin(),
-                                                          threeComp,
-                                                          config);
-                            if(tmp != -1) {
-                                return true;
-                            }
-                        } catch(NotFound e) {
-                            // try next similar
-                        }
-                    }
+            ChannelId chanz = null;
+            for(int i = 0; i < channel.length; i++) {
+                if (channel[i].channel_code.endsWith("Z")) {
+                    chanz = channel[i];
                 }
             }
+            if (chanz == null) {
+                throw new UNKNOWN("Can't find Z channel: ");
+            }
+            synchronized(jdbcRecFunc.getConnection()) {
+                return jdbcRecFunc.exists(prefOrigin, chanz, config);
+            }
+        } catch(NotFound e) {
             return false;
         } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);

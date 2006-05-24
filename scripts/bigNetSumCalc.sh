@@ -11,7 +11,7 @@ NULLNETS=""
 
 for net in $NULLNETS ; do
    echo $net
-   nice bin/stackCalc  -props ears_remote.prop -net $net 
-   nice bin/qualityControl  -props ears_remote.prop -db -net $net 
-   nice bin/sumStackCalc -props ears_remote.prop -net $net
+   nice bin/stackCalc      -p ears_remote.prop     -net $net 
+   nice bin/qualityControl -p ears_remote.prop -db -net $net 
+   nice bin/sumStackCalc   -p ears_remote.prop     -net $net
 done

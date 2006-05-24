@@ -32,7 +32,7 @@ cormorant.servers.ears.controller=edu.sc.seis.receiverFunction.server.RecFuncCac
 cormorant.servers.ears.name=Ears
 cormorant.servers.ears.dns=edu/sc/seis
 cormorant.servers.ears.databaseURL=jdbc:postgresql:ears
-cormorant.servers.ears.dataloc=../Ears/Data
+cormorant.servers.ears.dataloc=../Data
 
 #JacORB Props
 jacorb.connection.client.pending_reply_timeout=120000

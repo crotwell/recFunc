@@ -60,6 +60,28 @@ receiverFunction.getOriginByStation=SELECT * FROM network \
     AND station.sta_code = ? \
     AND gwidth = ?
 
+receiverFunction.originChanExists=SELECT recfunc_id FROM network \
+    JOIN station ON (network.net_id = station.net_id ) \
+    JOIN site ON (station.sta_id = site.sta_id ) \
+    JOIN channel ON (channel.site_id = site.site_id ) \
+	JOIN  receiverFunction ON (chanz_id = chan_id ) \
+	JOIN originview ON (receiverfunction.origin_id = originview.origin_id) \
+	WHERE network.net_id = ? \
+    AND sta_code = ? \
+    AND site_code = ? \
+    AND chan_code = ? \
+    AND gwidth = ? \
+    AND originview.time_stamp >= ? \
+    AND originview.time_stamp <= ? \
+    AND originview.loc_lat >= ? \
+    AND originview.loc_lat <= ? \
+    AND (( ? < ? \
+                        AND ? <= originview.loc_lon \
+                        AND originview.loc_lon <= ?) \
+    OR ( ? > ? \
+                        AND ( (originview.loc_lon <= ?) \
+                        OR (? <= originview.loc_lon)) ))
+
 receiverFunction.getSuccessfulOriginByStation=SELECT * FROM network \
     JOIN station ON (network.net_id = station.net_id ) \
     JOIN site ON (station.sta_id = site.sta_id ) \
@@ -342,15 +364,30 @@ hksummary.uncalculated=SELECT receiverFunction.recfunc_id FROM netchan \
                        AND receiverFunction.itr_match >= hksummary.minPercentMatch \
                        AND hksummary.minPercentMatch = ? \
                        
+hksummary.needRecalc=SELECT \
+	hksummary_id, hksummary.net_id, n.net_code, hksummary.sta_code, numEQ, a.countEQ \
+	FROM hksummary LEFT JOIN ( \
+		SELECT net_id, net_code, sta_code, count(*) as countEQ FROM netchan \
+    		JOIN  receiverFunction ON (chanz_id = chan_id ) \
+   		LEFT JOIN recfuncQC ON (receiverFunction.recfunc_id = recfuncQC.recfunc_id ) \
+    		WHERE \
+    		gwidth = 2.5 \
+    		AND itr_match >= 80 \
+    		AND (keep = true OR keep IS NULL) \
+    		GROUP BY net_id, net_code, sta_code) as a \
+	ON (hksummary.net_id = a.net_id AND hksummary.sta_code = a.sta_code) \
+	JOIN network AS n ON (hksummary.net_id = n.net_id) \
+	WHERE countEQ <> numEQ
+           
 hksummary.getForStation=SELECT * from netchan \
                    JOIN  $tablename  ON (chanz_id = chan_id ) \
                    JOIN stackComplexity ON (${tablename}.hksummary_id = stackComplexity.hksummary_id) \
                    WHERE netchan.net_id = ? \
-                   AND sta_code = ? \
+                   AND netchan.sta_code = ? \
                    AND gwidth = ? \
                    AND minPercentMatch = ?
 
-hksummary.getAllWithoutData=SELECT ${tablename}.hksummary_id AS hksummary_id, alpha, minpercentmatch, peakh, hvariance, peakk, kvariance, peakval, net_code, sta_code, chanz_id, \
+hksummary.getAllWithoutData=SELECT ${tablename}.hksummary_id AS hksummary_id, alpha, minpercentmatch, peakh, hvariance, peakk, kvariance, peakval, net_code, netchan.sta_code, chanz_id, \
 	minH, stepH, numH, minK, stepK, numK, weightPs, weightPpPs, weightPsPs, numeq, gwidth, complexity, complexity25, complexity50,bestH , \
                    bestHStdDev , \
                    bestK , \

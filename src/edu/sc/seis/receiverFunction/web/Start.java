@@ -69,6 +69,10 @@ public class Start {
                                               "edu.sc.seis.receiverFunction.web.Station",
                                               servletStrings,
                                               rootHandler);
+        RevUtil.populateJetty("/customStack",
+                              "edu.sc.seis.receiverFunction.web.CustomStack",
+                              servletStrings,
+                              rootHandler);
         RevUtil.populateJetty("/summaryHKStack.png",
                                               "edu.sc.seis.receiverFunction.web.SummaryHKStackImageServlet",
                                               servletStrings,

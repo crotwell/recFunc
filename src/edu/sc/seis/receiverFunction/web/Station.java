@@ -1,20 +1,30 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.Time;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.StationIdUtil;
+import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
@@ -78,26 +88,15 @@ public class Station extends Revlet {
     public synchronized RevletContext getContext(HttpServletRequest req,
                                                  HttpServletResponse res)
             throws Exception {
-        float gaussianWidth = RevUtil.getFloat("gaussian",
-                                               req,
-                                               Start.getDefaultGaussian());
-        float minPercentMatch = RevUtil.getFloat("minPercentMatch",
-                                                 req,
-                                                 Start.getDefaultMinPercentMatch());
         VelocityNetwork net = Start.getNetwork(req, jdbcChannel.getNetworkTable());
         // possible that there are multiple stations with the same code
         String staCode = req.getParameter("stacode");
         ArrayList stationList = getStationList(net.getDbId(), staCode);
         TimeOMatic.start();
-        CacheEvent[] events = jdbcRecFunc.getSuccessfulEvents(net.getDbId(),
-                                                              staCode,
-                                                              gaussianWidth, 
-                                                              80);
+        CacheEvent[] events = getWinnerEvents(req);
         TimeOMatic.print("successful events");
-        CacheEvent[] loserEvents = jdbcRecFunc.getUnsuccessfulEvents(net.getDbId(),
-                                                              staCode,
-                                                              gaussianWidth, 
-                                                              80);
+        CacheEvent[] loserEvents = getLoserEvents(req);
+        TimeOMatic.print("go losers");
         ArrayList eventList = new ArrayList();
         int numNinty = 0;
         int numEighty = 0;
@@ -112,6 +111,7 @@ public class Station extends Revlet {
                 }
             }
         }
+        TimeOMatic.print("numEighty");
         ArrayList eventLoserList = new ArrayList();
         for(int i = 0; i < loserEvents.length; i++) {
             VelocityEvent ve = new VelocityEvent(loserEvents[i]);
@@ -138,17 +138,21 @@ public class Station extends Revlet {
             markerList.add(results[i]);
         }
         TimeOMatic.print("other results");
-        RevletContext context = new RevletContext("station.vm",
+        String fileType = RevUtil.getFileType(req);
+        String vmFile = "station.vm";
+        if (fileType.equals(RevUtil.MIME_CSV) || fileType.equals(RevUtil.MIME_TEXT)) {
+            vmFile = "stationCSV.vm";
+        }
+        RevUtil.autoSetContentType(req, res);
+        RevletContext context = new RevletContext(vmFile,
                                                   Start.getDefaultContext());
         context.put("crust2Type", crust2Type);
         Revlet.loadStandardQueryParams(req, context);
         try {
-            int summaryDbId = jdbcSummaryHKStack.getDbIdForStation(net.get_id(),
-                                                                   staCode,
-                                                                   gaussianWidth,
-                                                                   minPercentMatch);
-            SumHKStack summary = jdbcSummaryHKStack.get(summaryDbId);
+            SumHKStack summary = getSummaryStack(req);
             context.put("summary", summary);
+            String sumHKPlot = makeHKPlot(summary, req.getSession());
+            context.put("sumHKPlot", sumHKPlot);
             StackMaximum[] localMaxima = summary.getSum()
                     .getLocalMaxima(smallestH, 5);
             for(int i = 0; i < localMaxima.length; i++) {
@@ -209,7 +213,64 @@ public class Station extends Revlet {
         }
         return stationList;
     }
+    
+    public SumHKStack getSummaryStack(HttpServletRequest req) throws SQLException, NotFound, IOException, TauModelException {
+        float gaussianWidth = RevUtil.getFloat("gaussian",
+                                               req,
+                                               Start.getDefaultGaussian());
+        float minPercentMatch = RevUtil.getFloat("minPercentMatch",
+                                                 req,
+                                                 Start.getDefaultMinPercentMatch());
+        VelocityNetwork net = Start.getNetwork(req, jdbcChannel.getNetworkTable());
+        String staCode = req.getParameter("stacode");
+        int summaryDbId = jdbcSummaryHKStack.getDbIdForStation(net.get_id(),
+                                                               staCode,
+                                                               gaussianWidth,
+                                                               minPercentMatch);
+        return jdbcSummaryHKStack.get(summaryDbId);
+    }
+    
+    public CacheEvent[] getWinnerEvents(HttpServletRequest req) throws SQLException, NotFound, FileNotFoundException, FissuresException, IOException {
+        float gaussianWidth = RevUtil.getFloat("gaussian",
+                                               req,
+                                               Start.getDefaultGaussian());
+        VelocityNetwork net = Start.getNetwork(req, jdbcChannel.getNetworkTable());
+        String staCode = req.getParameter("stacode");
+        return jdbcRecFunc.getSuccessfulEvents(net.getDbId(),
+                                               staCode,
+                                               gaussianWidth, 
+                                               80);
+    }
+    
+    public CacheEvent[] getLoserEvents(HttpServletRequest req) throws SQLException, NotFound {
+        float gaussianWidth = RevUtil.getFloat("gaussian",
+                                               req,
+                                               Start.getDefaultGaussian());
+        VelocityNetwork net = Start.getNetwork(req, jdbcChannel.getNetworkTable());
+        String staCode = req.getParameter("stacode");
+        return jdbcRecFunc.getUnsuccessfulEvents(net.getDbId(),
+                                          staCode,
+                                          gaussianWidth, 
+                                          80);
+    }
+    
+    public static String makeHKPlot(SumHKStack sumStack, HttpSession session) throws IOException {
+        String prefix = "sumHKPlot-";
+        File pngFile = File.createTempFile(prefix, ".png",  AzimuthPlot.getTempDir());
+        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(pngFile));
+        BufferedImage image = sumStack.createStackImage();
+        ImageIO.write(image, "png", out);
+        out.close();
+        if(session != null) {
+            JFreeChartServletUtilities.registerForDeletion(pngFile,
+                                                           session);
+        }
+        
+        return AzimuthPlot.makeDisplayFilename(pngFile.getName());
+    }
 
+    static File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    
     static final QuantityImpl TEN_KM = new QuantityImpl(10, UnitImpl.KILOMETER);
 
     transient static Crust2 crust2 = HKStack.getCrust2();

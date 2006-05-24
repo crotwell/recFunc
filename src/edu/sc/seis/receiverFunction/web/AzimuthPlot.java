@@ -11,13 +11,17 @@ import edu.sc.seis.sod.velocity.event.VelocityEvent;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 public class AzimuthPlot {
+    
+    public AzimuthPlot() {
+        
+    }
 
     public static String plot(VelocityStation station,
                               VelocityEvent[] events,
                               HttpSession session) throws InterruptedException,
             IOException {
         String prefix = "azplot-";
-        File psFile = File.createTempFile(prefix, ".ps", tempDir);
+        File psFile = File.createTempFile(prefix, ".ps", getTempDir());
         float staLat = station.my_location.latitude;
         // -JE proj has trouble at pole
         if (staLat == -90) {staLat = -89.999f;}
@@ -25,7 +29,7 @@ public class AzimuthPlot {
         String proj = "E" + station.getLongitude() + "/"
                 + staLat + "/5i";
         String region = "g";
-        PSCoastExecute.createMap(psFile, proj, region, "60g30", "220/220/220", false, 0, 0);
+        PSCoastExecute.createMap(psFile, proj, region, "60g30", "220/220/220", false, 0, .1f);
         double[][] data = new double[events.length][2];
         for(int i = 0; i < data.length; i++) {
             data[i][0] = events[i].getFloatLongitude().floatValue();
@@ -41,7 +45,7 @@ public class AzimuthPlot {
         String pngFilename = psFile.getName()
                 .substring(0, psFile.getName().indexOf(".ps"))
                 + ".png";
-        File pngFile = new File(tempDir, pngFilename);
+        File pngFile = new File( getTempDir(), pngFilename);
         ConvertExecute.convert(psFile,
                                pngFile,
                                "-antialias -rotate 90");
@@ -52,8 +56,23 @@ public class AzimuthPlot {
             JFreeChartServletUtilities.registerForDeletion(pngFile,
                                                       session);
         }
-        return pngFilename;
+        return makeDisplayFilename(pngFilename);
     }
-
-    static File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    
+    public static String makeDisplayFilename(String name) {
+        //return tempSubDir+"/"+name;
+        return name;
+    }
+    
+    public static File getTempDir() {
+        return tempDir;
+    }
+    
+    private static File tempDir;
+    public static final String tempSubDir = "earsTemp";
+    static {
+        //tempDir = new File(System.getProperty("java.io.tmpdir")+"/"+tempSubDir);
+        tempDir = new File(System.getProperty("java.io.tmpdir"));
+        tempDir.mkdirs();
+    }
 }

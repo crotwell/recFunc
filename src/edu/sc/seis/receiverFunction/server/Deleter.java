@@ -65,19 +65,28 @@ public class Deleter {
         numChanged = stmt.executeUpdate();
         System.out.println("Deleted " + numChanged + " from origin");
     }
+    
+    public void cleanDuplicateOrigin() {
+        String dupRF = "update receiverfunction set origin_id = ob.origin_id "+
+        "FROM originview AS oa  "+
+        "JOIN originview AS ob ON ( oa.depth_unit_id = ob.depth_unit_id "+
+        "    AND abs(oa.depth_value-ob.depth_value) < 0.0000000001  "+
+        "    AND oa.loc_lat = ob.loc_lat "+
+        "    AND oa.loc_lon = ob.loc_lon "+
+        "    AND oa.origin_time_id = ob.origin_time_id ) "+
+        "WHERE oa.origin_id < ob.origin_id AND reveiverfunction.origin_id = oa.origin_id";
+    }
 
-    public void deleteOutsideChannelTimes(String netCode, String staCode)
-            throws SQLException, NotFound, IOException {
+    public void deleteOutsideChannelTimes() throws SQLException, NotFound,
+            IOException {
         String outsideChanStmtStr = "select originview.time_stamp, originview.origin_id, recfunc_id , inserttime, chanz_id, chan_begin_time_stamp, chan_end_time_stamp "
                 + "from receiverfunction "
                 + "JOIN netchan ON (chanz_id = chan_id) "
                 + "JOIN originview ON (receiverfunction.origin_id = originview.origin_id) "
-                + "where net_code = ? AND sta_code = ? AND "
+                + "where "
                 + "(originview.time_stamp < chan_begin_time_stamp OR originview.time_stamp > chan_end_time_stamp)";
         PreparedStatement outsideChan = jdbcRecFunc.getConnection()
                 .prepareStatement(outsideChanStmtStr);
-        outsideChan.setString(1, netCode);
-        outsideChan.setString(2, staCode);
         ResultSet rs = outsideChan.executeQuery();
         ArrayList rfIdList = new ArrayList();
         while(rs.next()) {
@@ -92,16 +101,38 @@ public class Deleter {
     public void deleteRecFuncForDuplicateOrigins() throws SQLException,
             NotFound, IOException, FissuresException, TauModelException {
         String dupOrigins = "SELECT "
-                + "a.recfunc_id, b.recfunc_id, b.itr_match "
-                + "FROM receiverfunction AS a " + "JOIN receiverfunction AS b "
+                + "a.recfunc_id, b.recfunc_id, a.itr_match "
+                + "FROM receiverfunction AS a " 
+                + "JOIN receiverfunction AS b "
                 + "ON (a.origin_id = b.origin_id "
                 + "AND a.chanz_id = b.chanz_id "
-                + "AND a.recfunc_id < b.recfunc_id)" + " ORDER BY a.recfunc_id";
+                + "AND a.recfunc_id < b.recfunc_id)" 
+                + " ORDER BY a.recfunc_id, b.recfunc_id";
+        Statement stmt = jdbcRecFunc.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery(dupOrigins);
+        zap(rs);
+    }
+
+    public void deleteDuplicateByCode() throws Exception {
+        PreparedStatement stmt = jdbcHKStack.getConnection()
+                .prepareStatement("select ra.recfunc_id, rb.recfunc_id, ra.itr_match"
+                                  +" FROM receiverfunction AS ra "
+                        + " JOIN netchan AS na ON (ra.chanz_id = na.chan_id) "
+                        + " JOIN origin ON (ra.origin_id = origin.origin_id) "
+                        + " JOIN netchan AS nb ON (na.net_id = nb.net_id AND "
+                        + " na.sta_code = nb.sta_code AND na.site_code = nb.site_code AND na.chan_code = nb.chan_code) "
+                        + " JOIN receiverfunction as rb ON (rb.chanz_id = nb.chan_id AND rb.origin_id = origin.origin_id) "
+                        + " WHERE ra.recfunc_id < rb.recfunc_id"
+                        + " ORDER BY ra.recfunc_id, rb.recfunc_id");
+        ResultSet rs = stmt.executeQuery();
+        zap(rs);
+    }
+    
+    private void zap(ResultSet rs) throws SQLException,
+    NotFound, IOException, FissuresException, TauModelException {
         float weightPs = 1 / 3f;
         float weightPpPs = 1 / 3f;
         float weightPsPs = 1 - weightPs - weightPpPs;
-        Statement stmt = jdbcRecFunc.getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery(dupOrigins);
         int n = 0;
         int prevAId = 0;
         ArrayList otherDeletes = new ArrayList();
@@ -109,6 +140,7 @@ public class Deleter {
             n++;
             int a_id = rs.getInt(1);
             int b_id = rs.getInt(2);
+            float percentMatch = rs.getFloat(3);
             if(a_id == prevAId || otherDeletes.contains(new Integer(a_id))) {
                 // must have been more than 2, this one is already deleted
                 continue;
@@ -116,7 +148,7 @@ public class Deleter {
             System.out.println(n + " Delete rfid=" + a_id + "  keep rfid="
                     + b_id);
             delete(a_id);
-            if(rs.getFloat(3) >= 80) {
+            if(percentMatch >= 80) {
                 // deleting a removes AnalyticPlotData for b as well
                 // but only need to recalc hk for > 80% match
                 try {
@@ -144,42 +176,6 @@ public class Deleter {
         }
     }
 
-    public void cleanOverlappingChannels(String[] args) throws SQLException {
-        Initializer.init(args);
-        FissuresNamingService fisName = Initializer.getNS();
-        NetworkDCOperations netDC = new VestingNetworkDC("edu.iris.dmc",
-                                                         "IRIS_NetworkDC",
-                                                         fisName);
-        NetworkAccess[] nets = netDC.a_finder().retrieve_all();
-        String dupChannels = "select a.chan_id, b.chan_id, a.net_code, a.net_begin_time_stamp, a.sta_code, a.site_code, a.chan_code, "
-                + "a.chan_begin_time_stamp AS a_chan_begin_time_stamp, "
-                + "b.chan_begin_time_stamp AS b_chan_begin_time_stamp, "
-                + "a.chan_end_time_stamp AS a_chan_end_time_stamp, "
-                + "b.chan_end_time_stamp  AS b_chan_end_time_stamp "
-                + "FROM netchan AS a JOIN netchan AS b ON (a.net_code = b.net_code AND a.sta_code = b.sta_code AND a.site_code = b.site_code AND a.chan_code = b.chan_code AND a.chan_end_time_stamp > b.chan_begin_time_stamp AND a.chan_end_time_stamp < b.chan_end_time_stamp)";
-        Statement stmt = jdbcRecFunc.getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery(dupChannels);
-        while(rs.next()) {
-            ChannelId aChan = new ChannelId(new NetworkId(rs.getString("net_code"),
-                                                          new MicroSecondDate(rs.getTimestamp("net_begin_time_stamp")).getFissuresTime()),
-                                            rs.getString("sta_code"),
-                                            rs.getString("site_code"),
-                                            rs.getString("chan_code"),
-                                            new MicroSecondDate(rs.getTimestamp("a_chan_begin_time_stamp")).getFissuresTime());
-            ChannelId bChan = new ChannelId(new NetworkId(rs.getString("net_code"),
-                                                          new MicroSecondDate(rs.getTimestamp("net_begin_time_stamp")).getFissuresTime()),
-                                            rs.getString("sta_code"),
-                                            rs.getString("site_code"),
-                                            rs.getString("chan_code"),
-                                            new MicroSecondDate(rs.getTimestamp("b_chan_begin_time_stamp")).getFissuresTime());
-            NetworkAccess curNet;
-            for(int i = 0; i < nets.length; i++) {
-                if(NetworkIdUtil.areEqual(aChan.network_id,
-                                          nets[i].get_attributes().get_id())) {}
-            }
-        }
-    }
-
     public void deleteEmptySummary() throws Exception {
         PreparedStatement stmt = jdbcHKStack.getConnection()
                 .prepareStatement("select hksummary_id FROM"
@@ -203,7 +199,8 @@ public class Deleter {
             jdbcComplexity.delete(dbid);
             num += jdbcSum.delete(dbid);
         }
-        System.out.println("Deleted "+num+" summaries that no longer have >2 rf in the stack");
+        System.out.println("Deleted " + num
+                + " summaries that no longer have >2 rf in the stack");
     }
 
     JDBCRecFunc jdbcRecFunc;
@@ -219,8 +216,6 @@ public class Deleter {
         String staArg = "";
         int rfid = -1;
         int originId = -1;
-        boolean outsideChannel = false;
-        boolean dupRFOrigin = false;
         Deleter deleter = new Deleter(conn);
         for(int i = 0; i < args.length; i++) {
             if(args[i].equals("-net")) {
@@ -231,26 +226,21 @@ public class Deleter {
                 i++;
             } else if(args[i].equals("-rfid")) {
                 rfid = Integer.parseInt(args[i + 1]);
+                deleter.delete(rfid);
                 i++;
             } else if(args[i].equals("-originid")) {
                 originId = Integer.parseInt(args[i + 1]);
+                deleter.deleteOrigin(originId);
                 i++;
             } else if(args[i].equals("--outsideChannel")) {
-                outsideChannel = true;
+                deleter.deleteOutsideChannelTimes();
             } else if(args[i].equals("--duplicateRFOrigin")) {
-                dupRFOrigin = true;
+                deleter.deleteRecFuncForDuplicateOrigins();
+            } else if(args[i].equals("--duplicateByCode")) {
+                deleter.deleteDuplicateByCode();
             } else if(args[i].equals("--emptySummary")) {
                 deleter.deleteEmptySummary();
             }
-        }
-        if(rfid > 0) {
-            deleter.delete(rfid);
-        } else if(originId > 0) {
-            deleter.deleteOrigin(originId);
-        } else if(outsideChannel && netArg.length() > 0 && staArg.length() > 0) {
-            deleter.deleteOutsideChannelTimes(netArg, staArg);
-        } else if(dupRFOrigin) {
-            deleter.deleteRecFuncForDuplicateOrigins();
         }
         conn.close();
     }

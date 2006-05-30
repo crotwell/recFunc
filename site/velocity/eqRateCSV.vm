@@ -1,0 +1,6 @@
+# $net.getCodeWithYear() - $net.name
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, UnSuccessful, Name
+#foreach($sta in $stationList)
+	#set( $eqrate = $eqrates.get( $sta.getCode() ) )
+$sta.getCode(),$sta.getLatitude(),$sta.getLongitude(),$sta.getElevation(),$eqrate.formatSuccessPeriod().getValue(),$eqrate.formatEqPeriod().getValue(),$eqrate.getPeriodRatio(),$eqrate.getBegin(),$eqrate.getEnd(),$eqrate.getNumSucc(),$eqrate.getNumUnsucc(),$sta.getName()
+#end

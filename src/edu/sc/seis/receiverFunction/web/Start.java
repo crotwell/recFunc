@@ -159,6 +159,10 @@ public class Start {
                               "edu.sc.seis.receiverFunction.web.Crust2GridCompare",
                               servletStrings,
                               rootHandler);
+        RevUtil.populateJetty("/eqrate",
+                              "edu.sc.seis.receiverFunction.web.EQRateCalc",
+                              servletStrings,
+                              rootHandler);
         // jfreechart image servlet 
         RevUtil.populateJetty("/DisplayChart",
                               "org.jfree.chart.servlet.DisplayChart",

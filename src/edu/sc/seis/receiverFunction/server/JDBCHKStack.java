@@ -72,7 +72,7 @@ public class JDBCHKStack extends JDBCTable {
 		dataDir = new File(RecFuncCacheImpl.getDataLoc());
 		dataDir.mkdirs();
 		eventFormatter = new EventFormatter(true);
-		getForStation.setFetchSize(25);
+		getForStation.setFetchSize(50);
 		getForStation.setFetchDirection(ResultSet.FETCH_FORWARD);
 	}
 
@@ -90,13 +90,23 @@ public class JDBCHKStack extends JDBCTable {
 
 	public int put(CachedResultPlusDbId recfuncResult, HKStack stack)
 			throws SQLException, IOException {
+        return put(recfuncResult, stack, true);
+    }
+
+    public int put(CachedResultPlusDbId recfuncResult, HKStack stack, boolean forceDeleteAnalyticData)
+            throws SQLException, IOException {
 		int hkstack_id = hkstackSeq.next();
 		CachedResult rfResult = recfuncResult.getCachedResult();
 		File datadir = jdbcRecFunc.getDir(recfuncResult.getEvent(),
 				rfResult.channels[0], rfResult.config.gwidth);
 		File analyticData = new File(datadir, ANALYTIC_DATA);
 		if (analyticData.exists()) {
+            if (forceDeleteAnalyticData) {
+                logger.warn("Analytic data already exists, deleteing: "+analyticData);
+                analyticData.delete();
+            } else {
 			throw new IOException(analyticData + " already exists...");
+            }
 		}
 		DataOutputStream out = new DataOutputStream(new BufferedOutputStream(
 				new FileOutputStream(analyticData)));

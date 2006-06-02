@@ -453,7 +453,7 @@ public class JDBCRecFunc extends JDBCTable {
         return (IterDeconConfig[])out.toArray(new IterDeconConfig[0]);
     }
 
-    public int countSeccessfulEvents(int netDbId,
+    public int countSuccessfulEvents(int netDbId,
                                      String stationCode,
                                      float gaussianWidth,
                                      float minPercentMatch)
@@ -468,6 +468,21 @@ public class JDBCRecFunc extends JDBCTable {
         return rs.getInt(1);
     }
 
+
+    public int countUnsuccessfulEvents(int netDbId,
+                                     String stationCode,
+                                     float gaussianWidth,
+                                     float minPercentMatch)
+            throws SQLException, NotFound {
+        int index = 1;
+        countUnsuccessfulByStationByPercent.setInt(index++, netDbId);
+        countUnsuccessfulByStationByPercent.setString(index++, stationCode);
+        countUnsuccessfulByStationByPercent.setFloat(index++, gaussianWidth);
+        countUnsuccessfulByStationByPercent.setFloat(index++, minPercentMatch);
+        ResultSet rs = countUnsuccessfulByStationByPercent.executeQuery();
+        rs.next();
+        return rs.getInt(1);
+    }
     public CacheEvent[] getEvents(int netDbId,
                                   String stationCode,
                                   float gaussianWidth) throws SQLException,
@@ -835,7 +850,8 @@ public class JDBCRecFunc extends JDBCTable {
             getByDbIdStmt, getOriginByStation, getOriginByStationByPercent,
             countOriginByStationByPercent, getStationsByEventByPercent,
             deleteStmt, getSuccessfulOriginByStation,
-            getUnsuccessfulOriginByStation, originChanExists;
+            getUnsuccessfulOriginByStation, originChanExists,
+            countUnsuccessfulByStationByPercent;
 
     private JDBCSequence receiverFunctionSeq;
 

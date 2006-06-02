@@ -41,7 +41,7 @@ window.onload=function(){
 	<td class="headodd num">Begin</td>
 	<td class="headodd num">End</td>
 	<td class="headodd num">Successful</td>
-	<td class="headodd num">UnSuccessful</td>
+	<td class="headodd num">Total EQ</td>
 </tr>
 #foreach($sta in $stationList)
 <tr>
@@ -56,7 +56,7 @@ window.onload=function(){
 	<td class="odd">$eqrate.getBegin()</td>
 	<td class="even">$eqrate.getEnd()</td>
 	<td class="odd">$eqrate.getNumSucc()</td>
-	<td class="even">$eqrate.getNumUnsucc()</td>
+	<td class="even">$eqrate.getNumTotal()</td>
 </tr>
 #end
 </table>

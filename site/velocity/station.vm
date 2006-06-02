@@ -132,8 +132,10 @@ window.onload=function(){
 
 
 <h2>Events Used in the Stack</h2>
+($eventList.size() events)
 #eventTable($eventList false)
-<h2>Losers</h2>
+<h2>Losers</h2> 
+($eventLoserList.size() events)
 #eventTable($eventLoserList true)
 
 

@@ -1,5 +1,5 @@
 # XC94 - Puget Sound BB Array
-# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, UnSuccessful, Name
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
 KITS,47.71,-122.67,76 m,Infinity,104.66150848765433,0.0,AD 1994.02.21 00:22:16.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,3,Kitsap Peninsula
 BAIN,47.70,-122.56,46 m,Infinity,39.265625,0.0,AD 1994.02.20 20:59:59.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,8,Bainbridge Island	
 REDM,47.71,-122.15,15 m,Infinity,35.90906378600823,0.0,AD 1994.02.11 19:38:31.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,9,Redmond

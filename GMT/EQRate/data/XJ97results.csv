@@ -1,5 +1,5 @@
 # XJ97 - Sierran Paradox 
-# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, UnSuccessful, Name
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
 SLC,36.52,-117.72,1918 m,35.42703009259259,17.713515046296294,0.5,AD 1997.07.07 20:45:22.000 GMT,AD 1997.12.31 23:59:59.000 GMT,5,10,San Lucas Canyon
 WHP,36.59,-118.22,2388 m,52.49055266203703,20.99622106481481,0.4,AD 1997.06.05 00:54:24.000 GMT,AD 1997.12.31 23:59:59.000 GMT,4,10,Whitney Portal
 ARC2,36.01,-118.33,2597 m,Infinity,16.31243767806268,0.0,AD 1997.06.02 22:31:09.000 GMT,AD 1997.12.31 23:59:59.000 GMT,0,13,Arch 2

@@ -1,5 +1,5 @@
 # XL94 - Southern Seirra - Death Valley
-# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, UnSuccessful, Name
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
 HFEB,36.36,-117.08,1650 m,22.89217427248677,7.6307247574955905,0.33333334,AD 1994.07.24 18:06:52.000 GMT,AD 1994.12.31 23:59:59.000 GMT,7,21,Harrisburg Flat east 11
 HF00,36.36,-117.14,1526 m,27.70256448412698,8.431215277777778,0.3043478,AD 1994.06.21 01:58:08.000 GMT,AD 1994.12.31 23:59:59.000 GMT,7,23,Harrisburg Flat 00
 HFN7,36.39,-117.14,1516 m,64.65498456790124,16.16374614197531,0.25,AD 1994.06.21 00:50:27.000 GMT,AD 1994.12.31 23:59:59.000 GMT,3,12,Harrisburg Flat north 7

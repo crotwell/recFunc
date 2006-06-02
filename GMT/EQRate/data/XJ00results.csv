@@ -1,5 +1,5 @@
 # XJ00 - Eastern Snake River Plain Experiment
-# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, UnSuccessful, Name
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
 BLM,43.41,-116.34,848 m,Infinity,158.2805787037037,0.0,AD 2001.07.26 17:15:57.000 GMT,AD 2001.12.31 23:59:59.000 GMT,0,1,Big Lousy Mess
 NST,42.91,-113.98,1311 m,48.36642676767677,9.500548115079365,0.19642857,AD 2000.07.17 23:15:47.000 GMT,AD 2001.12.31 23:59:59.000 GMT,11,56,North Senter
 MHO,43.06,-115.99,880 m,Infinity,171.86224537037035,0.0,AD 2001.07.13 03:18:21.000 GMT,AD 2001.12.31 23:59:59.000 GMT,0,1,Mountain Home

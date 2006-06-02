@@ -1,5 +1,5 @@
 # YA98 - Coso Passive Short Period Arrays
-# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, UnSuccessful, Name
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
 CCPE4,36.07,-117.79,1.5 km,Infinity,45.02865625,0.0,AD 1999.10.08 17:07:20.000 GMT,AD 2000.12.31 23:59:59.000 GMT,0,10,Cactus Peak E4
 CCPE2,36.07,-117.80,1.4 km,225.61247685185185,75.20415895061728,0.33333334,AD 1999.10.07 18:36:03.000 GMT,AD 2000.12.31 23:59:59.000 GMT,2,6,Cactus Peak E2
 CCPE5,36.06,-117.79,1.5 km,Infinity,451.2882986111111,0.0,AD 1999.10.07 17:04:50.000 GMT,AD 2000.12.31 23:59:59.000 GMT,0,1,Cactus Peak E5

@@ -1,5 +1,5 @@
 # XF94 - Penninsular Ranges, California
-# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, UnSuccessful, Name
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
 LGNA,32.84,-116.41,5667 m,44.8,7.724137931034481,0.1724138,AD 1994.03.25 00:00:00.000 GMT,AD 1994.11.04 00:00:00.000 GMT,5,29,Laguna Mountain Observatory, San Diego Co., Calif.
 ALPN,32.87,-116.75,2693 m,45.0,12.5,0.2777778,AD 1994.03.24 00:00:00.000 GMT,AD 1994.11.04 00:00:00.000 GMT,5,18,Alpine, Alpine, Calif.
 BWLW,32.84,-116.23,964 m,225.0,16.07142857142857,0.071428575,AD 1994.03.24 00:00:00.000 GMT,AD 1994.11.04 00:00:00.000 GMT,1,14,Bow Willow Campground, Anza Borrego State Park, Ca

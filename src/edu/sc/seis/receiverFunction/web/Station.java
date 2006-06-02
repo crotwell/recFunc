@@ -1,52 +1,42 @@
 package edu.sc.seis.receiverFunction.web;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import edu.iris.Fissures.FissuresException;
-import edu.iris.Fissures.Time;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
-import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
-import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.HKStack;
-import edu.sc.seis.receiverFunction.Marker;
 import edu.sc.seis.receiverFunction.StackMaximum;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.JDBCStationResult;
 import edu.sc.seis.receiverFunction.compare.JDBCStationResultRef;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
-import edu.sc.seis.receiverFunction.compare.WilsonRistra;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
-import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
-import edu.sc.seis.receiverFunction.server.StackSummary;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
@@ -179,6 +169,7 @@ public class Station extends Revlet {
             context.put("timePsPs", timePsPs);
         } catch(NotFound e) {
             // no summary, oh well...
+            logger.warn("Got a not found: ", e);
         }
         TimeOMatic.print("summary and local maxima");
         String azPlotname = AzimuthPlot.plot((VelocityStation)stationList.get(0),
@@ -313,4 +304,6 @@ public class Station extends Revlet {
     JDBCSodConfig jdbcSodConfig;
 
     JDBCStationResult jdbcStationResult;
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Station.class);
 }

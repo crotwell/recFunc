@@ -11,7 +11,11 @@ NULLNETS=""
 
 for net in $NULLNETS ; do
    echo $net
+   rm -rf log_$net logs
+   mkdir log_$net
+   ln -s log_$net logs
    nice bin/stackCalc      -p ears_remote.prop     -net $net 
    nice bin/qualityControl -p ears_remote.prop -db -net $net 
    nice bin/sumStackCalc   -p ears_remote.prop     -net $net
+   rm logs
 done

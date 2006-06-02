@@ -45,6 +45,10 @@ public class EQRateStation {
     public int getNumUnsucc() {
         return numUnsucc;
     }
+
+    public int getNumTotal() {
+        return numUnsucc+numSucc;
+    }
     
     public Station getSta() {
         return sta;
@@ -61,7 +65,7 @@ public class EQRateStation {
     }
     
     public QuantityImpl eqPeriod() {
-       return getEndOrNow().subtract(getBegin()).divideBy(getNumSucc()+getNumUnsucc()).convertTo(UnitImpl.DAY);
+       return getEndOrNow().subtract(getBegin()).divideBy(getNumTotal()).convertTo(UnitImpl.DAY);
     }
     
     public QuantityImpl formatEqPeriod() {
@@ -72,6 +76,10 @@ public class EQRateStation {
     
     public float getPeriodRatio() {
         return (float)((QuantityImpl)eqPeriod().divideBy(successPeriod())).getValue(DAY_PER_DAY);
+    }
+    
+    public String formatPeriodRatio() {
+        return format.format(getPeriodRatio());
     }
     
     public String toString() {

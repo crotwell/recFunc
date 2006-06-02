@@ -74,7 +74,7 @@ public class Deleter {
         "    AND oa.loc_lat = ob.loc_lat "+
         "    AND oa.loc_lon = ob.loc_lon "+
         "    AND oa.origin_time_id = ob.origin_time_id ) "+
-        "WHERE oa.origin_id < ob.origin_id AND reveiverfunction.origin_id = oa.origin_id";
+        "WHERE oa.origin_id < ob.origin_id AND receiverfunction.origin_id = oa.origin_id";
     }
 
     public void deleteOutsideChannelTimes() throws SQLException, NotFound,

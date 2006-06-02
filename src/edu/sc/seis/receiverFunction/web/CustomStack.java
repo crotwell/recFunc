@@ -37,6 +37,9 @@ public class CustomStack extends Station {
 
     public SumHKStack getSummaryStack(HttpServletRequest req) throws SQLException, NotFound, IOException, TauModelException {
         int[] dbids = parseDbIds(req);
+        if (dbids.length == 0) {
+            throw new RuntimeException("No dbids found in query params");
+        }
         HKStack[] plots = new HKStack[dbids.length];
         for(int i = 0; i < dbids.length; i++) {
             plots[i] = jdbcHKStack.get(dbids[i]);
@@ -75,7 +78,7 @@ public class CustomStack extends Station {
                                                         ",");
         ArrayList idArray = new ArrayList();
         while(tokenizer.hasMoreTokens()) {
-            idArray.add(Integer.valueOf(tokenizer.nextToken()));
+            idArray.add(Integer.valueOf(tokenizer.nextToken().trim()));
         }
         int[] ids = new int[idArray.size()];
         Iterator it = idArray.iterator();

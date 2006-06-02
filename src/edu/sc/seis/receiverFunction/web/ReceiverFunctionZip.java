@@ -38,6 +38,7 @@ import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.velocity.event.VelocityEvent;
+import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 
@@ -65,26 +66,34 @@ public class ReceiverFunctionZip extends HttpServlet {
                                                   RecFuncCacheImpl.getDataLoc());
     }
     
-    protected synchronized void doGet(HttpServletRequest req, HttpServletResponse res)
+    protected synchronized void doGet(HttpServletRequest req,
+                                      HttpServletResponse res)
             throws ServletException, FileNotFoundException, IOException {
-        int netDbId = RevUtil.getInt("netdbid", req);
-        String staCode = req.getParameter("stacode");
-
-        float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
-        float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         try {
+            VelocityNetwork net = Start.getNetwork(req,
+                                                   jdbcRecFunc.getJDBCChannel()
+                                                           .getStationTable()
+                                                           .getNetTable());
+            String staCode = req.getParameter("stacode");
+            float gaussianWidth = RevUtil.getFloat("gaussian",
+                                                   req,
+                                                   Start.getDefaultGaussian());
+            float minPercentMatch = RevUtil.getFloat("minPercentMatch",
+                                                     req,
+                                                     Start.getDefaultMinPercentMatch());
             CachedResultPlusDbId[] result;
             synchronized(jdbcRecFunc.getConnection()) {
-                result = jdbcRecFunc.getSuccessful(netDbId,
-                                                  staCode,
-                                                  gaussianWidth,
-                                                  minPercentMatch);
+                result = jdbcRecFunc.getSuccessful(net.getDbId(),
+                                                   staCode,
+                                                   gaussianWidth,
+                                                   minPercentMatch);
             }
             String netCode = "";
-            if (result.length != 0) {
+            if(result.length != 0) {
                 netCode = result[0].getCachedResult().channels[0].my_site.my_station.my_network.get_code();
             }
-            res.addHeader("Content-Disposition", "inline; filename="+"ears_"+netCode+"_"+staCode+".zip");
+            res.addHeader("Content-Disposition", "inline; filename=" + "ears_"
+                    + netCode + "_" + staCode + ".zip");
             processResults(result, req, res);
         } catch(EOFException e) {
             // client has closed the connection, so not much we can do...

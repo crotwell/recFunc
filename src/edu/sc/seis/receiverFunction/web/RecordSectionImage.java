@@ -73,7 +73,10 @@ public class RecordSectionImage extends HttpServlet {
     protected synchronized void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         try {
-            int netDbId = RevUtil.getInt("netdbid", req);
+            VelocityNetwork net = Start.getNetwork(req, jdbcHKStack.getJDBCChannel()
+                                                   .getStationTable()
+                                                   .getNetTable());
+            int netDbId = net.getDbId();
             String staCode = RevUtil.get("stacode", req);
 
             float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());

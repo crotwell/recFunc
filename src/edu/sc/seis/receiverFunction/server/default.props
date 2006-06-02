@@ -132,10 +132,24 @@ receiverFunction.countOriginByStationByPercent=SELECT count(*) FROM  \
     JOIN site ON (station.sta_id = site.sta_id ) \
     JOIN channel ON (channel.site_id = site.site_id ) \
     JOIN  receiverFunction ON (chanz_id = chan_id ) \
+    LEFT JOIN recfuncQC ON (receiverFunction.recfunc_id = recfuncQC.recfunc_id ) \
     WHERE net_id = ? \
     AND sta_code = ? \
     AND gwidth = ? \
-    AND itr_match >= ?
+    AND itr_match >= ? \
+    AND (keep = true OR keep IS NULL)
+    
+
+receiverFunction.countUnsuccessfulByStationByPercent=SELECT count(*) FROM  \
+    station \
+    JOIN site ON (station.sta_id = site.sta_id ) \
+    JOIN channel ON (channel.site_id = site.site_id ) \
+    JOIN  receiverFunction ON (chanz_id = chan_id ) \
+    LEFT JOIN recfuncQC ON (receiverFunction.recfunc_id = recfuncQC.recfunc_id ) \
+    WHERE net_id = ? \
+    AND sta_code = ? \
+    AND gwidth = ? \
+    AND (keep = FALSE OR itr_match <= ?)
     
 receiverFunction.getOriginByStationByPercent=SELECT * FROM netchan \
     JOIN  receiverfunction ON (chanz_id = chan_id ) \
@@ -246,7 +260,7 @@ hkstack.getForStation=SELECT * FROM network \
                    WHERE net_code = ? \
                    AND sta_code = ? \
                    AND gwidth = ? \
-                   AND percentMatch > ? \
+                   AND itr_match >= ? \
                    AND (keep = true OR keep IS NULL)
 
 hksummary.create=CREATE TABLE $tablename ( \
@@ -641,3 +655,4 @@ recfuncQC.getToTestByStation=SELECT * FROM $tablename \
     
 recfuncQC.delete=DELETE FROM $tablename WHERE recfunc_id = ?
 
+recfuncQC.index_recfunc_id=CREATE INDEX recfuncqc_recfunc_id_idx ON recfuncQC (recfunc_id)

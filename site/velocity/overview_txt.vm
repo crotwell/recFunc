@@ -1,4 +1,5 @@
-# "Net", "Station", "Lat", "Lon", "Est. Thick", "StdDev", "Est. Vp/Vs", "StdDev", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Complexity"
+#Results for all stations in EARS
+#Net,Station,Lat,Long,Elev,Est.Thick,StdDev,Est.Vp/Vs,StdDev,AssumedVp,Vs,PoissonsRatio,NumEQ,Complexity
 #foreach($sta in $stationList)
-$sta.getNet().getCodeWithYear(),$sta.getCode(),$sta.getLatitude(),$sta.getLongitude(),$fissures.formatQuantity($!summary.get($sta).getSum().getMaxValueH()),$fissures.formatQuantity($!summary.get($sta).getHStdDev()),$!summary.get($sta).getSum().getMaxValueK(),$!summary.get($sta).formatKStdDev(),$fissures.formatQuantity($!summary.get($sta).getSum().getAlpha()),$fissures.formatQuantity($!summary.get($sta).getSum().getVs()),$!summary.get($sta).getSum().getPoissonsRatio(),$!summary.get($sta).numEQ,$!summary.get($sta).formatComplexityResidual()
+$sta.getNet().getCodeWithYear(),$sta.getCode(),$sta.getLatitude(),$sta.getLongitude(),$sta.getElevation(),$!summary.get($sta).getSum().formatMaxValueH(),$fissures.formatQuantity($!summary.get($sta).getHStdDev()),$!summary.get($sta).getSum().formatMaxValueK(),$!summary.get($sta).formatKStdDev(),$!summary.get($sta).getSum().formatAlpha(),$!summary.get($sta).getSum().formatVs(),$!summary.get($sta).getSum().formatPoissonsRatio(),$!summary.get($sta).numEQ,$!summary.get($sta).formatComplexityResidual()
 #end

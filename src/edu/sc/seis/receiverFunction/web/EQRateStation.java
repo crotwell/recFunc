@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.QuantityImpl;
-import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
@@ -64,6 +63,11 @@ public class EQRateStation {
         return q;
     }
     
+    public String formatSuccessPeriodValue() {
+        QuantityImpl q = successPeriod();
+        return format.format(q.value);
+    }
+    
     public QuantityImpl eqPeriod() {
        return getEndOrNow().subtract(getBegin()).divideBy(getNumTotal()).convertTo(UnitImpl.DAY);
     }
@@ -74,12 +78,18 @@ public class EQRateStation {
         return q;
     }
     
+    public String formatEqPeriodValue() {
+        QuantityImpl q = eqPeriod();
+        return format.format(q.value);
+    }
+    
     public float getPeriodRatio() {
-        return (float)((QuantityImpl)eqPeriod().divideBy(successPeriod())).getValue(DAY_PER_DAY);
+        if (getNumTotal() == 0) {return 0;}
+        return 100*(float)getNumSucc()/(float)getNumTotal();
     }
     
     public String formatPeriodRatio() {
-        return format.format(getPeriodRatio());
+        return twoformat.format(getPeriodRatio());
     }
     
     public String toString() {
@@ -87,6 +97,7 @@ public class EQRateStation {
     }
     
     static DecimalFormat format = new DecimalFormat("#.0");
+    static DecimalFormat twoformat = new DecimalFormat("#.00");
     
     static UnitImpl DAY_PER_DAY = UnitImpl.divide(UnitImpl.DAY, UnitImpl.DAY);
 }

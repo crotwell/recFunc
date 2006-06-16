@@ -75,6 +75,10 @@
             <startTime>20050101T00:00:00.001Z</startTime>
             <endTime>20201231T23:59:59.999Z</endTime>
         </stationEffectiveTimeOverlap>
+        <siteOR>
+            <siteCode>  </siteCode>
+            <siteCode>00</siteCode>
+        </siteOR>
         <channelAND>
             <!-- Accept any channel with B band code -->
             <channelOR>

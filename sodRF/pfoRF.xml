@@ -100,7 +100,11 @@ xmlns:xlink="http://www.w3.org/1999/xlink/"
         </networkOR>
 
         <stationCode>PFO</stationCode>
-        
+       
+        <siteOR>
+            <siteCode>  </siteCode>
+            <siteCode>00</siteCode>
+        </siteOR> 
         <channelAND>
             <!-- Accept any channel with B band code -->
             <channelOR>

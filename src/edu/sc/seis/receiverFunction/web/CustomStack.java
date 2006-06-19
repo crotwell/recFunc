@@ -40,6 +40,7 @@ public class CustomStack extends Station {
         if (dbids.length == 0) {
             throw new RuntimeException("No dbids found in query params");
         }
+        boolean doBootstrap = RevUtil.getBoolean("bootstrap", req, false);
         HKStack[] plots = new HKStack[dbids.length];
         for(int i = 0; i < dbids.length; i++) {
             plots[i] = jdbcHKStack.get(dbids[i]);
@@ -49,7 +50,7 @@ public class CustomStack extends Station {
                                              plots[0].getChannel(),
                                              80,
                                              HKStack.getDefaultSmallestH(),
-                                             false,
+                                             doBootstrap,
                                              true);
         sumStack.calcStackComplexity();
         return sumStack;

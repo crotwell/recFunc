@@ -15,9 +15,6 @@
   <a href="http://www.iris.edu">
     <img src="${revBase}images/irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
   </a>
-   <a href="http://www.earthscope.org">
-    <img src="${revBase}images/earthscope_logo.png" alt="Earthscope" title="Earthscope"/>
-  </a>
 </div>
 #end
 

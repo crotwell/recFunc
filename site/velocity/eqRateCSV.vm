@@ -2,5 +2,5 @@
 # Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
 #foreach($sta in $stationList)
 	#set( $eqrate = $eqrates.get( $sta.getCode() ) )
-$sta.getCode(),$sta.getLatitude(),$sta.getLongitude(),$sta.getElevation(),$eqrate.formatSuccessPeriodValue(),$eqrate.formatEqPeriodValue(),$eqrate.formatPeriodRatio(),$eqrate.getBegin(),$eqrate.getEnd(),$eqrate.getNumSucc(),$eqrate.getNumTotal(),$sta.getCSVName(),$sta.getClass()
+$sta.getCode(),$sta.getLatitude(),$sta.getLongitude(),$sta.getElevation(),$eqrate.formatSuccessPeriodValue(),$eqrate.formatEqPeriodValue(),$eqrate.formatPeriodRatio(),$eqrate.getBegin(),$eqrate.getEnd(),$eqrate.getNumSucc(),$eqrate.getNumTotal(),$sta.getCSVName()
 #end

@@ -50,7 +50,8 @@ public class SumHKStack {
                       float minPercentMatch,
                       QuantityImpl smallestH,
                       boolean doBootstrap,
-                      boolean usePhaseWeight) {
+                      boolean usePhaseWeight,
+                      int bootstrapIterations) {
         this.individuals = individuals;
         this.minPercentMatch = minPercentMatch;
         this.channel = chan;
@@ -80,7 +81,7 @@ public class SumHKStack {
                         minPercentMatch,
                         usePhaseWeight);
         if(doBootstrap) {
-            calcVarianceBootstrap(usePhaseWeight);
+            calcVarianceBootstrap(usePhaseWeight, bootstrapIterations);
         } else {
             hVariance = -1;
             kVariance = -1;
@@ -371,7 +372,7 @@ public class SumHKStack {
         return smallestH;
     }
 
-    protected void calcVarianceBootstrap(boolean usePhaseWeight) {
+    protected void calcVarianceBootstrap(boolean usePhaseWeight, int bootstrapIterations) {
         HKStack temp = individuals[0];
         Random random = new Random();
         double[] hErrors = new double[bootstrapIterations];
@@ -578,7 +579,7 @@ public class SumHKStack {
         return vpvsFormat.format(getComplexityResidual());
     }
     
-    protected int bootstrapIterations = 100;
+    protected int defaultbootstrapIterations = 100;
 
     protected Channel channel;
 

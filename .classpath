@@ -8,9 +8,9 @@
 	<classpathentry kind="var" path="MAVEN_REPO/geeMac/jars/geeMac-1.3.jar"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/recFunc/jars/recFuncIDL-1.0beta.jar"/>
 	<classpathentry sourcepath="/MAVEN_REPO/jfreechart/jars/jfreechart-1.0.0-src.zip" kind="var" path="MAVEN_REPO/jfreechart/jars/jfreechart-1.0.0.jar"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/cormorant"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-cli/jars/commons-cli-1.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jfreechart/jars/jcommon-1.0.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/winkle"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/cormorant1"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

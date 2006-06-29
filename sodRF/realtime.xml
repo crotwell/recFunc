@@ -8,17 +8,17 @@
             <unit>WEEK</unit>
         </eventQueryIncrement>
         <eventLag>
-            <value>1</value>
+            <value>5</value>
             <unit>WEEK</unit>
         </eventLag>
         <eventRefreshInterval>
-            <value>6</value>
+            <value>9</value>
             <unit>MINUTE</unit>
         </eventRefreshInterval>
         <waveformWorkerThreads>2</waveformWorkerThreads>
         <maxRetryDelay>
-            <value>16</value>
-            <unit>DAY</unit>
+            <value>6</value>
+            <unit>WEEK</unit>
         </maxRetryDelay>
         <statusPages>FALSE</statusPages>
     </properties>

@@ -348,12 +348,9 @@ public class JDBCHKStack extends JDBCTable {
 				recFunc.getCachedResult().config.gwidth);
 		File analyticData = new File(datadir, ANALYTIC_DATA);
 		HKStack out;
-		if (analyticData.canRead()) {
-			// 3 arrays, 2 floats per entry, numH x numK, 4 bytes per float
-			int expectedSize = 3*2*4*numH*numK;
-			if (analyticData.length() != expectedSize) {
-				throw new IOException("File size is incorrect file="+analyticData.length()+" expected="+expectedSize+"  "+analyticData);
-			}
+        // 3 arrays, 2 floats per entry, numH x numK, 4 bytes per float
+        int expectedSize = 3*2*4*numH*numK;
+		if (analyticData.canRead() && analyticData.length() == expectedSize) {
 			try {
 			DataInputStream in = new DataInputStream(new BufferedInputStream(
 					new FileInputStream(analyticData)));
@@ -387,6 +384,10 @@ public class JDBCHKStack extends JDBCTable {
 				throw e;
 			}
 		} else {
+
+            if (analyticData.length() != expectedSize) {
+                analyticData.delete();
+            }
 			int rfdbid = recFunc.getDbId();
 			float weightPs = rs.getFloat("weightPs");
 			float weightPpPs = rs.getFloat("weightPpPs");
@@ -396,7 +397,7 @@ public class JDBCHKStack extends JDBCTable {
 			Connection deleteConn = ConnMgr.createConnection();
 			JDBCHKStack deleteStack;
 			try {
-				deleteStack = new JDBCHKStack(new JDBCRecFunc(conn, RecFuncCacheImpl.getDataLoc()));
+				deleteStack = new JDBCHKStack(new JDBCRecFunc(deleteConn, RecFuncCacheImpl.getDataLoc()));
 				deleteStack.deleteForRecFuncId(rfdbid);
 				try {
 					out = deleteStack.calc(rfdbid, weightPs, weightPpPs, weightPsPs, true);

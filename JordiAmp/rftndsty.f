@@ -37,11 +37,11 @@ C
 c      DATA vp1/6.5/, vs1/3.7530/, rh1/2.85/, vp2/8.1/, vs2/4.6760/, 
 c     &     rh2/3.362/, vp0/6.5/, vs0/3.7530/
 C Aki and Richards values
-      DATA vp1/6.0/, vs1/3.50/, rh1/3.00/, vp2/7.0/, vs2/4.20/, 
-     &     rh2/4.00/, vp0/6.0/, vs0/3.50/
+      DATA vp1/6.391/, vs1/3.236/, rh1/2.70/, vp2/8.0/, vs2/4.50/, 
+     &     rh2/3.20/, vp0/6.391/, vs0/3.236/
 C hpc
       REAL*4 a1, a2, a3, a4
-      rayp = 0.03
+      rayp = 0.0503
       print *, vp1, vs1, rh1
       print *, vp2, vs2, rh2
       print *, rayp
@@ -112,10 +112,10 @@ C
       a4=rpz0*(rsr0-zsz0)*PS0*SS-a2*(PP0*PS2+PS0*SP2+PS*SP0*PP2/PP)
      &                                   +rpz0*(rsr0-zsz0)*PP0*PS2*PS/PP
 C
-      print *,a1, a2, a3, a4
-      print *, rsr0, zsz0, rpz0
-      print *, PP0, PS0, SP0
-      print *, PP, PS
-      print *, PP2, PS2, SP2, SS
-      print *, c1, c2
+      print *, "a1, a2, a3, a4", a1, a2, a3, a4
+      print *, "rsr0, zsz0, rpz0", rsr0, zsz0, rpz0
+      print *, "PP0, PS0, SP0", PP0, PS0, SP0
+      print *, "PP, PS", PP, PS
+      print *, "PP2, PS2, SP2, SS ", PP2, PS2, SP2, SS
+      print *, "c1, c2",c1, c2
       END

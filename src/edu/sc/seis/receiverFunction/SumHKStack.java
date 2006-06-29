@@ -50,6 +50,15 @@ public class SumHKStack {
                       float minPercentMatch,
                       QuantityImpl smallestH,
                       boolean doBootstrap,
+                      boolean usePhaseWeight) {
+        this(individuals, chan, minPercentMatch, smallestH, doBootstrap, usePhaseWeight, DEFAULT_BOOTSTRAP_ITERATONS);
+    }
+
+    public SumHKStack(HKStack[] individuals,
+                      Channel chan,
+                      float minPercentMatch,
+                      QuantityImpl smallestH,
+                      boolean doBootstrap,
                       boolean usePhaseWeight,
                       int bootstrapIterations) {
         this.individuals = individuals;
@@ -578,8 +587,6 @@ public class SumHKStack {
     public String formatComplexityResidual() {
         return vpvsFormat.format(getComplexityResidual());
     }
-    
-    protected int defaultbootstrapIterations = 100;
 
     protected Channel channel;
 
@@ -602,6 +609,8 @@ public class SumHKStack {
     protected double mixedVariance;
     
     protected int dbid = -1;
+    
+    public static int DEFAULT_BOOTSTRAP_ITERATONS = 100;
     
     protected StackComplexityResult complexityResult = null;
 

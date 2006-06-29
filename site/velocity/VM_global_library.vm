@@ -15,7 +15,73 @@
   <a href="http://www.iris.edu">
     <img src="${revBase}images/irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
   </a>
+  <br/>
+  EARS is supported by the EarthScope Program, NSF grant #EAR0346113.
 </div>
+#end
+
+#macro(mungeEmail)
+	<script type='text/javascript'>
+// <!-- 1360572810
+// This script is (C) Copyright 2004 Jim Tucek
+// Leave these comments alone!  For more info, visit
+// www.jracademy.com/~jtucek/email/ 
+
+function cast(needle,file,beast) {
+needle += ' ';
+var center = needle.length;
+var whine = 0;
+var waist = '';
+for(var credibility = 0; credibility < center; credibility++) {
+whine = 0;
+while(needle.charCodeAt(credibility) != 32) {
+whine = whine * 10;
+whine = whine + needle.charCodeAt(credibility)-48;
+credibility++;
+}
+waist += String.fromCharCode(plead(whine,file,beast));
+}
+parent.location = 'm'+'a'+'i'+'l'+'t'+'o'+':'+waist;
+}
+
+function dig(stomach,tremor,people) {
+stomach += ' ';
+var humanity = stomach.length;
+var language = 0;
+for(var law = 0; law < humanity; law++) {
+language = 0;
+while(stomach.charCodeAt(law) != 32) {
+language = language * 10;
+language = language + stomach.charCodeAt(law)-48;
+law++;
+}
+//document.write('&');
+//document.write('#');
+//document.write(plead(language,tremor,people));
+document.write(String.fromCharCode(plead(language,tremor,people)));
+}
+}
+
+function plead(moon,way,doctor) {
+if (doctor % 2 == 0) {
+mortality = 1;
+for(var opportunity = 1; opportunity <= doctor/2; opportunity++) {
+ship = (moon*moon) % way;
+mortality = (ship*mortality) % way;
+}
+} else {
+mortality = moon;
+for(var somethingawful = 1; somethingawful <= doctor/2; somethingawful++) {
+ship = (moon*moon) % way;
+mortality = (ship*mortality) % way;
+}
+}
+return mortality;
+}
+// -->
+</script>
+
+Email me at <a href='javascript:cast("9788 22995 16192 3189 474 3189 9788 6277 3189 18835 3189 2120 18835 9788 5654 5426",26167,17227)' onMouseOver="self.status=''; return true;" onMouseOut="self.status=' '; return true;"><script type='text/javascript'>dig("9788 22995 16192 3189 474 3189 9788 6277 3189 18835 3189 2120 18835 9788 5654 5426",26167,17227)</script></a> 
 #end
 
 #macro(eventTable $list $isLoser) 

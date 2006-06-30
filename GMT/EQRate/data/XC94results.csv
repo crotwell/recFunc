@@ -1,17 +1,17 @@
 # XC94 - Puget Sound BB Array
 # Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
-KITS,47.71,-122.67,76 m,Infinity,104.66150848765433,0.0,AD 1994.02.21 00:22:16.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,3,Kitsap Peninsula
-BAIN,47.70,-122.56,46 m,Infinity,39.265625,0.0,AD 1994.02.20 20:59:59.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,8,Bainbridge Island	
-REDM,47.71,-122.15,15 m,Infinity,35.90906378600823,0.0,AD 1994.02.11 19:38:31.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,9,Redmond
-TOAN,47.71,-122.82,55 m,Infinity,40.87393229166666,0.0,AD 1994.02.08 00:12:17.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,8,Toandos Peninsula
-BANG,47.70,-122.72,110 m,Infinity,44.10331349206349,0.0,AD 1994.02.26 06:38:35.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,7,Naval Station Bangor
-DOSE,47.71,-122.93,158 m,65.4340300925926,32.7170150462963,0.5,AD 1994.02.07 19:54:58.000 GMT,AD 1994.12.31 23:59:59.000 GMT,5,10,Dosewallips River, east
-SEAW,47.70,-122.37,75 m,Infinity,161.03079282407404,0.0,AD 1994.02.12 22:31:18.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,2,Seattle West
-STIL,47.70,-121.91,116 m,64.58128009259259,21.52709336419753,0.33333334,AD 1994.02.12 02:14:46.000 GMT,AD 1994.12.31 23:59:59.000 GMT,5,15,Stillwater Hill
-SEAE,47.70,-122.27,0.0 m,Infinity,109.3685185185185,0.0,AD 1994.02.06 21:27:59.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,3,Seattle, east
-NOVE,47.70,-122.02,170 m,321.0295254629629,45.861360780423276,0.14285715,AD 1994.02.13 23:17:28.000 GMT,AD 1994.12.31 23:59:59.000 GMT,1,7,Novelty Hill
-FAYB,47.71,-122.51,0.0 m,Infinity,66.16141203703704,0.0,AD 1994.02.04 04:37:49.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,5,Fay Bainbridge State Park
-DOSW,47.74,-123.02,182 m,55.16902391975309,25.46262642450142,0.46153846,AD 1994.02.03 23:39:37.000 GMT,AD 1994.12.31 23:59:59.000 GMT,6,13,Dosewallips River, west 
-KEYP,47.69,-122.62,42 m,Infinity,105.69109953703702,0.0,AD 1994.02.17 22:14:26.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,3,Keyport
-TOTE,47.72,-121.80,250 m,64.60666898148148,20.189584056712963,0.3125,AD 1994.02.11 23:11:58.000 GMT,AD 1994.12.31 23:59:59.000 GMT,5,16,Tolt Weyerhauser
-SEAL,47.71,-122.89,24 m,75.8005179398148,30.320207175925923,0.4,AD 1994.03.03 19:09:00.000 GMT,AD 1994.12.31 23:59:59.000 GMT,4,10,Seal Rock Campground
+KITS,47.71,-122.67,76 m,?,104.7,.00,AD 1994.02.21 00:22:16.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,3,Kitsap Peninsula,class edu.sc.seis.sod.velocity.network.VelocityStation
+BAIN,47.70,-122.56,46 m,?,39.3,.00,AD 1994.02.20 20:59:59.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,8,Bainbridge Island	,class edu.sc.seis.sod.velocity.network.VelocityStation
+REDM,47.71,-122.15,15 m,?,35.9,.00,AD 1994.02.11 19:38:31.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,9,Redmond,class edu.sc.seis.sod.velocity.network.VelocityStation
+TOAN,47.71,-122.82,55 m,?,40.9,.00,AD 1994.02.08 00:12:17.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,8,Toandos Peninsula,class edu.sc.seis.sod.velocity.network.VelocityStation
+BANG,47.70,-122.72,110 m,?,44.1,.00,AD 1994.02.26 06:38:35.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,7,Naval Station Bangor,class edu.sc.seis.sod.velocity.network.VelocityStation
+DOSE,47.71,-122.93,158 m,65.4,32.7,50.00,AD 1994.02.07 19:54:58.000 GMT,AD 1994.12.31 23:59:59.000 GMT,5,10,Dosewallips River east,class edu.sc.seis.sod.velocity.network.VelocityStation
+SEAW,47.70,-122.37,75 m,?,161.0,.00,AD 1994.02.12 22:31:18.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,2,Seattle West,class edu.sc.seis.sod.velocity.network.VelocityStation
+STIL,47.70,-121.91,116 m,64.6,21.5,33.33,AD 1994.02.12 02:14:46.000 GMT,AD 1994.12.31 23:59:59.000 GMT,5,15,Stillwater Hill,class edu.sc.seis.sod.velocity.network.VelocityStation
+SEAE,47.70,-122.27,0.0 m,?,109.4,.00,AD 1994.02.06 21:27:59.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,3,Seattle east,class edu.sc.seis.sod.velocity.network.VelocityStation
+NOVE,47.70,-122.02,170 m,321.0,45.9,14.29,AD 1994.02.13 23:17:28.000 GMT,AD 1994.12.31 23:59:59.000 GMT,1,7,Novelty Hill,class edu.sc.seis.sod.velocity.network.VelocityStation
+FAYB,47.71,-122.51,0.0 m,?,66.2,.00,AD 1994.02.04 04:37:49.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,5,Fay Bainbridge State Park,class edu.sc.seis.sod.velocity.network.VelocityStation
+DOSW,47.74,-123.02,182 m,55.2,25.5,46.15,AD 1994.02.03 23:39:37.000 GMT,AD 1994.12.31 23:59:59.000 GMT,6,13,Dosewallips River west ,class edu.sc.seis.sod.velocity.network.VelocityStation
+KEYP,47.69,-122.62,42 m,?,105.7,.00,AD 1994.02.17 22:14:26.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,3,Keyport,class edu.sc.seis.sod.velocity.network.VelocityStation
+TOTE,47.72,-121.80,250 m,64.6,20.2,31.25,AD 1994.02.11 23:11:58.000 GMT,AD 1994.12.31 23:59:59.000 GMT,5,16,Tolt Weyerhauser,class edu.sc.seis.sod.velocity.network.VelocityStation
+SEAL,47.71,-122.89,24 m,75.8,30.3,40.00,AD 1994.03.03 19:09:00.000 GMT,AD 1994.12.31 23:59:59.000 GMT,4,10,Seal Rock Campground,class edu.sc.seis.sod.velocity.network.VelocityStation

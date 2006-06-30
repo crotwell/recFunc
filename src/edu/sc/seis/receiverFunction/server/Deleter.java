@@ -212,13 +212,21 @@ public class Deleter {
 
     public void deleteIfMissingSacFile() throws Exception {
         System.out.println("in deleteIfMissingSacFile");
+        File dataDir = new File(jdbcRecFunc.getDataDirectory());
+        if(!(dataDir.exists() && dataDir.canRead() && dataDir.canWrite())) {
+            logger.fatal("Problem with dataDir=" + dataDir + "  "
+                    + dataDir.exists() + " " + dataDir.canRead() + " "
+                    + dataDir.canWrite());
+            return;
+        }
         Connection queryConn = ConnMgr.createConnection();
+        JDBCRecFunc queryRecFunc = new JDBCRecFunc(queryConn, jdbcRecFunc.getDataDirectory());
         Statement stmt = queryConn.createStatement();
-        ResultSet rs = stmt.executeQuery("select * from receiverFunction order by recfunc_id");
+        ResultSet rs = stmt.executeQuery("select * from receiverFunction where recfunc_id > 71484 order by recfunc_id");
         HashSet deletedChans = new HashSet();
         HashSet deletedNets = new HashSet();
         while(rs.next()) {
-            CachedResultPlusDbId withDbId = jdbcRecFunc.extractWithoutSeismograms(rs);
+            CachedResultPlusDbId withDbId = queryRecFunc.extractWithoutSeismograms(rs);
             CachedResult result = withDbId.getCachedResult();
             CacheEvent cacheEvent = new CacheEvent(result.event_attr,
                                                    result.prefOrigin);
@@ -228,8 +236,8 @@ public class Deleter {
             if(!(new File(stationDir, rs.getString("recfuncITR")).exists()
                     && new File(stationDir, rs.getString("recfuncITT")).exists()
                     && new File(stationDir, rs.getString("seisA")).exists()
-                    && new File(stationDir, rs.getString("seisB")).exists() && new File(stationDir,
-                                                                                        rs.getString("seisZ")).exists())) {
+                    && new File(stationDir, rs.getString("seisB")).exists() 
+                    && new File(stationDir, rs.getString("seisZ")).exists())) {
                 try {
                     System.out.println("Missing sac file: rfid="
                             + withDbId.getDbId()

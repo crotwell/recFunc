@@ -36,6 +36,7 @@ import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.fissuresUtil.bag.AreaUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
+import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.JDBCSequence;
 import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
@@ -307,15 +308,17 @@ public class JDBCRecFunc extends JDBCTable {
                                      result.channels[0],
                                      result.config.gwidth);
             File f = new File(stationDir, rs.getString("recfuncITR"));
-            f.delete();
+            if (f.exists()) {f.delete();}
             f = new File(stationDir, rs.getString("recfuncITT"));
-            f.delete();
+            if (f.exists()) {f.delete();}
             f = new File(stationDir, rs.getString("seisa"));
-            f.delete();
+            if (f.exists()) {f.delete();}
             f = new File(stationDir, rs.getString("seisb"));
-            f.delete();
+            if (f.exists()) {f.delete();}
             f = new File(stationDir, rs.getString("seisz"));
-            f.delete();
+            if (f.exists()) {f.delete();}
+            f = new File(stationDir, JDBCHKStack.ANALYTIC_DATA);
+            if (f.exists()) {f.delete();}
             rs.close();
             deleteStmt.setInt(1, dbid);
             try {
@@ -363,7 +366,6 @@ public class JDBCRecFunc extends JDBCTable {
                                  result.channels[0],
                                  result.config.gwidth);
         SacTimeSeries itrSAC = new SacTimeSeries();
-        File f = new File(stationDir, rs.getString("recfuncITR"));
         itrSAC.read(new File(stationDir, rs.getString("recfuncITR")));
         LocalSeismogramImpl itrSeis = SacToFissures.getSeismogram(itrSAC);
         itrSeis.y_unit = UnitImpl.DIMENSONLESS;
@@ -828,6 +830,9 @@ public class JDBCRecFunc extends JDBCTable {
         return jdbcEventAttr;
     }
 
+    public String getDataDirectory() {
+        return dataDirectory;
+    }
     private String dataDirectory;
 
     private File dataDir = null;
@@ -868,4 +873,5 @@ public class JDBCRecFunc extends JDBCTable {
     }
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCRecFunc.class);
+
 }

@@ -29,7 +29,7 @@ def makeMagVsDist(outFilename, dataFile):
 #	gmt.write("%f %s\n" % (distaz.getDelta(), row[7]))
 #    gmt.close()
 
-    gmt = os.popen('psxyz -R30/100/5/9/1/1000 -P -JX6.5 -Jz2.5i -So0.3ib1 -Ggray -W0.5p  -E150/50 -B10/1/20:"Num Eq for Dist, Mag":WSneZ'+out, 'w')
+    gmt = os.popen('psxyz -R30/100/5/9/1/1000 -P -JX6.5 -JZ2.5i -So0.3ib1 -Ggray -W0.5p  -E150/50 -B10/1/20:"Num Eq for Dist, Mag":WSneZ'+out, 'w')
     for key in distMagBin:
 	gmt.write("%s %i\n" % (key, distMagBin[key]))
     gmt.close()

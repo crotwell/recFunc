@@ -181,8 +181,9 @@ public class StackSummary {
                           QuantityImpl smallestH,
                           boolean doBootstrap,
                           boolean usePhaseWeight) throws FissuresException, NotFound, IOException, SQLException {
-        logger.info("in sum for " + netCode + "." + staCode);
         ArrayList individualHK = jdbcHKStack.getForStation(netCode, staCode, gaussianWidth, percentMatch, true);
+        logger.info("in sum for " + netCode + "." + staCode+" numeq="+individualHK.size());
+        System.out.println("in sum for " + netCode + "." + staCode+" numeq="+individualHK.size());
         // if there is only 1 eq that matches, then we can't really do a stack
         if(individualHK.size() > 1) {
             HKStack temp = (HKStack)individualHK.get(0);

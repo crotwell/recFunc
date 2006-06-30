@@ -11,7 +11,7 @@
 <div id="content">
 	#set($net = $sta.net)
 
-	<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <a href="networkList.html">Network List</a> > <a href="stationList.html?netcode=$sta.getNet().getCode()&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name Stations List</a>
+	<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <a href="networkList.html">Network List</a> > <a href="stationList.html?netcode=$sta.getNet().getCodeWithYear()&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name Stations List</a>
 		> <a href="station.html?netcode=$sta.getNet().getCodeWithYear()&stacode=$sta.getCode()&gaussian=${gaussian}">Station $sta.getCode() $sta.getName()</a> > <b>Earthquake Result Viewer</b></p>	
 	
 	<h1>$sta.getCode() $sta.getName() - Earthquake Result Viewer</h1>

@@ -1,5 +1,6 @@
 package edu.sc.seis.receiverFunction.server;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
@@ -8,19 +9,26 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
 import edu.iris.Fissures.FissuresException;
+import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfNetwork.NetworkAccess;
 import edu.iris.Fissures.IfNetwork.NetworkDC;
 import edu.iris.Fissures.IfNetwork.NetworkDCOperations;
 import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.model.MicroSecondDate;
+import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.NetworkIdUtil;
+import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.cache.BulletproofVestFactory;
+import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.cache.VestingNetworkDC;
+import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.namingService.FissuresNamingService;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
@@ -65,16 +73,16 @@ public class Deleter {
         numChanged = stmt.executeUpdate();
         System.out.println("Deleted " + numChanged + " from origin");
     }
-    
+
     public void cleanDuplicateOrigin() {
-        String dupRF = "update receiverfunction set origin_id = ob.origin_id "+
-        "FROM originview AS oa  "+
-        "JOIN originview AS ob ON ( oa.depth_unit_id = ob.depth_unit_id "+
-        "    AND abs(oa.depth_value-ob.depth_value) < 0.0000000001  "+
-        "    AND oa.loc_lat = ob.loc_lat "+
-        "    AND oa.loc_lon = ob.loc_lon "+
-        "    AND oa.origin_time_id = ob.origin_time_id ) "+
-        "WHERE oa.origin_id < ob.origin_id AND receiverfunction.origin_id = oa.origin_id";
+        String dupRF = "update receiverfunction set origin_id = ob.origin_id "
+                + "FROM originview AS oa  "
+                + "JOIN originview AS ob ON ( oa.depth_unit_id = ob.depth_unit_id "
+                + "    AND abs(oa.depth_value-ob.depth_value) < 0.0000000001  "
+                + "    AND oa.loc_lat = ob.loc_lat "
+                + "    AND oa.loc_lon = ob.loc_lon "
+                + "    AND oa.origin_time_id = ob.origin_time_id ) "
+                + "WHERE oa.origin_id < ob.origin_id AND receiverfunction.origin_id = oa.origin_id";
     }
 
     public void deleteOutsideChannelTimes() throws SQLException, NotFound,
@@ -102,11 +110,10 @@ public class Deleter {
             NotFound, IOException, FissuresException, TauModelException {
         String dupOrigins = "SELECT "
                 + "a.recfunc_id, b.recfunc_id, a.itr_match "
-                + "FROM receiverfunction AS a " 
-                + "JOIN receiverfunction AS b "
+                + "FROM receiverfunction AS a " + "JOIN receiverfunction AS b "
                 + "ON (a.origin_id = b.origin_id "
                 + "AND a.chanz_id = b.chanz_id "
-                + "AND a.recfunc_id < b.recfunc_id)" 
+                + "AND a.recfunc_id < b.recfunc_id)"
                 + " ORDER BY a.recfunc_id, b.recfunc_id";
         Statement stmt = jdbcRecFunc.getConnection().createStatement();
         ResultSet rs = stmt.executeQuery(dupOrigins);
@@ -116,7 +123,7 @@ public class Deleter {
     public void deleteDuplicateByCode() throws Exception {
         PreparedStatement stmt = jdbcHKStack.getConnection()
                 .prepareStatement("select ra.recfunc_id, rb.recfunc_id, ra.itr_match"
-                                  +" FROM receiverfunction AS ra "
+                        + " FROM receiverfunction AS ra "
                         + " JOIN netchan AS na ON (ra.chanz_id = na.chan_id) "
                         + " JOIN origin ON (ra.origin_id = origin.origin_id) "
                         + " JOIN netchan AS nb ON (na.net_id = nb.net_id AND "
@@ -127,9 +134,9 @@ public class Deleter {
         ResultSet rs = stmt.executeQuery();
         zap(rs);
     }
-    
-    private void zap(ResultSet rs) throws SQLException,
-    NotFound, IOException, FissuresException, TauModelException {
+
+    private void zap(ResultSet rs) throws SQLException, NotFound, IOException,
+            FissuresException, TauModelException {
         float weightPs = 1 / 3f;
         float weightPpPs = 1 / 3f;
         float weightPsPs = 1 - weightPs - weightPpPs;
@@ -203,6 +210,76 @@ public class Deleter {
                 + " summaries that no longer have >2 rf in the stack");
     }
 
+    public void deleteIfMissingSacFile() throws Exception {
+        System.out.println("in deleteIfMissingSacFile");
+        Connection queryConn = ConnMgr.createConnection();
+        Statement stmt = queryConn.createStatement();
+        ResultSet rs = stmt.executeQuery("select * from receiverFunction order by recfunc_id");
+        HashSet deletedChans = new HashSet();
+        HashSet deletedNets = new HashSet();
+        while(rs.next()) {
+            CachedResultPlusDbId withDbId = jdbcRecFunc.extractWithoutSeismograms(rs);
+            CachedResult result = withDbId.getCachedResult();
+            CacheEvent cacheEvent = new CacheEvent(result.event_attr,
+                                                   result.prefOrigin);
+            File stationDir = jdbcRecFunc.getDir(cacheEvent,
+                                                 result.channels[0],
+                                                 result.config.gwidth);
+            if(!(new File(stationDir, rs.getString("recfuncITR")).exists()
+                    && new File(stationDir, rs.getString("recfuncITT")).exists()
+                    && new File(stationDir, rs.getString("seisA")).exists()
+                    && new File(stationDir, rs.getString("seisB")).exists() && new File(stationDir,
+                                                                                        rs.getString("seisZ")).exists())) {
+                try {
+                    System.out.println("Missing sac file: rfid="
+                            + withDbId.getDbId()
+                            + " "
+                            + new File(stationDir, rs.getString("recfuncITR")).exists()
+                            + new File(stationDir, rs.getString("recfuncITT")).exists()
+                            + new File(stationDir, rs.getString("seisA")).exists()
+                            + new File(stationDir, rs.getString("seisB")).exists()
+                            + new File(stationDir, rs.getString("seisZ")).exists());
+                    delete(withDbId.getDbId());
+                    queryConn.commit();
+                    if(stationDir.listFiles().length == 0) {
+                        File parent = stationDir.getParentFile();
+                        System.out.println("deleting " + stationDir);
+                        stationDir.delete();
+                        while(parent.listFiles().length == 0) {
+                            System.out.println("deleting " + parent);
+                            parent.delete();
+                            parent = parent.getParentFile();
+                        }
+                    } else {
+                        System.out.println("stationdir " + stationDir
+                                + " is not empty");
+                    }
+                    deletedChans.add(ChannelIdUtil.toStringNoDates(result.channels[0]));
+                    deletedNets.add(NetworkIdUtil.toStringNoDates(result.channels[0].my_site.my_station.my_network.get_id()));
+                } catch(Exception e1) {
+                    throw new RuntimeException("Should not happen", e1);
+                }
+            } else {
+                System.out.println("OK rfid=" + withDbId.getDbId());
+            }
+        }
+        queryConn.close();
+        ArrayList sorter = new ArrayList(deletedChans);
+        Collections.sort(sorter);
+        Iterator it = sorter.iterator();
+        System.out.println("Chans_________________");
+        while(it.hasNext()) {
+            System.out.println(it.next());
+        }
+        System.out.println("Nets_________________");
+        sorter = new ArrayList(deletedNets);
+        Collections.sort(sorter);
+        it = sorter.iterator();
+        while(it.hasNext()) {
+            System.out.println(it.next());
+        }
+    }
+
     JDBCRecFunc jdbcRecFunc;
 
     JDBCRecFuncQC jdbcRecFuncQC;
@@ -240,6 +317,10 @@ public class Deleter {
                 deleter.deleteDuplicateByCode();
             } else if(args[i].equals("--emptySummary")) {
                 deleter.deleteEmptySummary();
+            } else if(args[i].equals("--missingFile")) {
+                deleter.deleteIfMissingSacFile();
+            } else {
+                System.err.println("Dont't understand " + args[i]);
             }
         }
         conn.close();

@@ -1,24 +1,24 @@
 <?xml version="1.0" ?>
 <sod xmlns:xlink="http://www.w3.org/1999/xlink/">
     <properties>
-        <runName>RealTime RecFunc</runName>
+        <runName>SNEP RecFunc</runName>
         <statusBase>status</statusBase>
         <eventQueryIncrement>
             <value>1</value>
             <unit>WEEK</unit>
         </eventQueryIncrement>
         <eventLag>
-            <value>1</value>
+            <value>5</value>
             <unit>WEEK</unit>
         </eventLag>
         <eventRefreshInterval>
-            <value>6</value>
+            <value>9</value>
             <unit>MINUTE</unit>
         </eventRefreshInterval>
         <waveformWorkerThreads>2</waveformWorkerThreads>
         <maxRetryDelay>
-            <value>1</value>
-            <unit>DAY</unit>
+            <value>6</value>
+            <unit>WEEK</unit>
         </maxRetryDelay>
         <statusPages>FALSE</statusPages>
     </properties>
@@ -102,22 +102,38 @@
             <eventVectorAND>
                 <externalEventVectorSubsetter>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                    <dns>edu/sc/seis/internal</dns>
+                    <name>SNEP</name>
+                    <gaussianWidth>10</gaussianWidth>
+                </externalEventVectorSubsetter>
+                <externalEventVectorSubsetter>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                    <dns>edu/sc/seis/internal</dns>
+                    <name>SNEP</name>
                     <gaussianWidth>5</gaussianWidth>
                 </externalEventVectorSubsetter>
                 <externalEventVectorSubsetter>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                    <dns>edu/sc/seis/internal</dns>
+                    <name>SNEP</name>
                     <gaussianWidth>2.5</gaussianWidth>
                 </externalEventVectorSubsetter>
                 <externalEventVectorSubsetter>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                    <dns>edu/sc/seis/internal</dns>
+                    <name>SNEP</name>
                     <gaussianWidth>1.0</gaussianWidth>
                 </externalEventVectorSubsetter>
                 <externalEventVectorSubsetter>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                    <dns>edu/sc/seis/internal</dns>
+                    <name>SNEP</name>
                     <gaussianWidth>0.7</gaussianWidth>
                 </externalEventVectorSubsetter>
                 <externalEventVectorSubsetter>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                    <dns>edu/sc/seis/internal</dns>
+                    <name>SNEP</name>
                     <gaussianWidth>0.4</gaussianWidth>
                 </externalEventVectorSubsetter>
             </eventVectorAND>
@@ -206,12 +222,41 @@
                     <eventVectorNOT>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                            <dns>edu/sc/seis/internal</dns>
+                            <name>SNEP</name>
+                            <gaussianWidth>10</gaussianWidth>
+                        </externalEventVectorSubsetter>
+                    </eventVectorNOT>
+                </embeddedEventVector>
+                <externalWaveformVectorProcess>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
+                    <dns>edu/sc/seis/internal</dns>
+                    <name>SNEP</name>
+                    <fileType>sac</fileType>
+                    <dataDirectory>RT_recfunc</dataDirectory>
+                    <eventDirLabel>
+                        <originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/>
+                    </eventDirLabel>
+                    <gaussianWidth>10</gaussianWidth>
+                </externalWaveformVectorProcess>
+            </waveformVectorFork>
+        </waveformVectorAlwaysSuccess>
+        <waveformVectorAlwaysSuccess>
+            <waveformVectorFork>
+                <embeddedEventVector>
+                    <eventVectorNOT>
+                        <externalEventVectorSubsetter>
+                            <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                            <dns>edu/sc/seis/internal</dns>
+                            <name>SNEP</name>
                             <gaussianWidth>5</gaussianWidth>
                         </externalEventVectorSubsetter>
                     </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
+                    <dns>edu/sc/seis/internal</dns>
+                    <name>SNEP</name>
                     <fileType>sac</fileType>
                     <dataDirectory>RT_recfunc</dataDirectory>
                     <eventDirLabel>
@@ -227,12 +272,16 @@
                     <eventVectorNOT>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                            <dns>edu/sc/seis/internal</dns>
+                            <name>SNEP</name>
                             <gaussianWidth>2.5</gaussianWidth>
                         </externalEventVectorSubsetter>
                     </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
+                    <dns>edu/sc/seis/internal</dns>
+                    <name>SNEP</name>
                     <fileType>sac</fileType>
                     <dataDirectory>RT_recfunc</dataDirectory>
                     <eventDirLabel>
@@ -248,12 +297,16 @@
                     <eventVectorNOT>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                            <dns>edu/sc/seis/internal</dns>
+                            <name>SNEP</name>
                             <gaussianWidth>1</gaussianWidth>
                         </externalEventVectorSubsetter>
                     </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
+                    <dns>edu/sc/seis/internal</dns>
+                    <name>SNEP</name>
                     <fileType>sac</fileType>
                     <dataDirectory>RT_recfunc</dataDirectory>
                     <eventDirLabel>
@@ -269,12 +322,16 @@
                     <eventVectorNOT>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                            <dns>edu/sc/seis/internal</dns>
+                            <name>SNEP</name>
                             <gaussianWidth>0.7</gaussianWidth>
                         </externalEventVectorSubsetter>
                     </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
+                    <dns>edu/sc/seis/internal</dns>
+                    <name>SNEP</name>
                     <fileType>sac</fileType>
                     <dataDirectory>RT_recfunc</dataDirectory>
                     <eventDirLabel>
@@ -290,12 +347,16 @@
                     <eventVectorNOT>
                         <externalEventVectorSubsetter>
                             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                            <dns>edu/sc/seis/internal</dns>
+                            <name>SNEP</name>
                             <gaussianWidth>0.4</gaussianWidth>
                         </externalEventVectorSubsetter>
                     </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
+                    <dns>edu/sc/seis/internal</dns>
+                    <name>SNEP</name>
                     <fileType>sac</fileType>
                     <dataDirectory>RT_recfunc</dataDirectory>
                     <eventDirLabel>

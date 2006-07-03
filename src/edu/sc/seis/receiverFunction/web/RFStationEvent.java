@@ -75,7 +75,11 @@ public class RFStationEvent extends Revlet {
                 resultPlusDbId = new CachedResultPlusDbId(SyntheticFactory.getCachedResult(), -1);
             } else {
                 int rfid = RevUtil.getInt("rf", req);
-                resultPlusDbId = hkStack.getJDBCRecFunc().get(rfid);
+                try {
+                    resultPlusDbId = hkStack.getJDBCRecFunc().get(rfid);
+                } catch (NotFound ee) {
+                    return handleNotFound(res);
+                }
             }
             CachedResult result = resultPlusDbId.getCachedResult();
             CacheEvent eq = new CacheEvent(result.event_attr, result.prefOrigin);
@@ -123,7 +127,6 @@ public class RFStationEvent extends Revlet {
             Revlet.loadStandardQueryParams(req, context);
             return context;
         } catch(Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

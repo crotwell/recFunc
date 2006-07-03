@@ -101,32 +101,32 @@
             <eventVectorAND>
                 <externalEventVectorSubsetter>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                    <serverName>brazil</serverName>
-                    <serverDNS>edu/sc/seis/internal</serverDNS>
+                    <name>brazil</name>
+                    <dns>edu/sc/seis/internal</dns>
                     <gaussianWidth>5</gaussianWidth>
                 </externalEventVectorSubsetter>
                 <externalEventVectorSubsetter>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                    <serverName>brazil</serverName>
-                    <serverDNS>edu/sc/seis/internal</serverDNS>
+                    <name>brazil</name>
+                    <dns>edu/sc/seis/internal</dns>
                     <gaussianWidth>2.5</gaussianWidth>
                 </externalEventVectorSubsetter>
                 <externalEventVectorSubsetter>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                    <serverName>brazil</serverName>
-                    <serverDNS>edu/sc/seis/internal</serverDNS>
+                    <name>brazil</name>
+                    <dns>edu/sc/seis/internal</dns>
                     <gaussianWidth>1.0</gaussianWidth>
                 </externalEventVectorSubsetter>
                 <externalEventVectorSubsetter>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                    <serverName>brazil</serverName>
-                    <serverDNS>edu/sc/seis/internal</serverDNS>
+                    <name>brazil</name>
+                    <dns>edu/sc/seis/internal</dns>
                     <gaussianWidth>0.7</gaussianWidth>
                 </externalEventVectorSubsetter>
                 <externalEventVectorSubsetter>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                    <serverName>brazil</serverName>
-                    <serverDNS>edu/sc/seis/internal</serverDNS>
+                    <name>brazil</name>
+                    <dns>edu/sc/seis/internal</dns>
                     <gaussianWidth>0.4</gaussianWidth>
                 </externalEventVectorSubsetter>
             </eventVectorAND>
@@ -217,16 +217,16 @@
                     <eventVectorNOT>
                     <externalEventVectorSubsetter>
                         <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                        <serverName>brazil</serverName>
-                        <serverDNS>edu/sc/seis/internal</serverDNS>
+                        <name>brazil</name>
+                        <dns>edu/sc/seis/internal</dns>
                         <gaussianWidth>5</gaussianWidth>
                     </externalEventVectorSubsetter>
                     </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
-                    <serverName>brazil</serverName>
-                    <serverDNS>edu/sc/seis/internal</serverDNS>
+                    <name>brazil</name>
+                    <dns>edu/sc/seis/internal</dns>
                     <fileType>sac</fileType>
                     <dataDirectory>RT_recfunc</dataDirectory>
                     <eventDirLabel>
@@ -242,16 +242,16 @@
                     <eventVectorNOT>
                     <externalEventVectorSubsetter>
                         <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                        <serverName>brazil</serverName>
-                        <serverDNS>edu/sc/seis/internal</serverDNS>
+                        <name>brazil</name>
+                        <dns>edu/sc/seis/internal</dns>
                         <gaussianWidth>2.5</gaussianWidth>
                     </externalEventVectorSubsetter>
                     </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
-                    <serverName>brazil</serverName>
-                    <serverDNS>edu/sc/seis/internal</serverDNS>
+                    <name>brazil</name>
+                    <dns>edu/sc/seis/internal</dns>
                     <fileType>sac</fileType>
                     <dataDirectory>RT_recfunc</dataDirectory>
                     <eventDirLabel>
@@ -267,16 +267,16 @@
                     <eventVectorNOT>
                     <externalEventVectorSubsetter>
                         <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                        <serverName>brazil</serverName>
-                        <serverDNS>edu/sc/seis/internal</serverDNS>
+                        <name>brazil</name>
+                        <dns>edu/sc/seis/internal</dns>
                         <gaussianWidth>1</gaussianWidth>
                     </externalEventVectorSubsetter>
                     </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
-                    <serverName>brazil</serverName>
-                    <serverDNS>edu/sc/seis/internal</serverDNS>
+                    <name>brazil</name>
+                    <dns>edu/sc/seis/internal</dns>
                     <fileType>sac</fileType>
                     <dataDirectory>RT_recfunc</dataDirectory>
                     <eventDirLabel>
@@ -292,16 +292,16 @@
                     <eventVectorNOT>
                     <externalEventVectorSubsetter>
                         <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                        <serverName>brazil</serverName>
-                        <serverDNS>edu/sc/seis/internal</serverDNS>
+                        <name>brazil</name>
+                        <dns>edu/sc/seis/internal</dns>
                         <gaussianWidth>0.7</gaussianWidth>
                     </externalEventVectorSubsetter>
                     </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
-                    <serverName>brazil</serverName>
-                    <serverDNS>edu/sc/seis/internal</serverDNS>
+                    <name>brazil</name>
+                    <dns>edu/sc/seis/internal</dns>
                     <fileType>sac</fileType>
                     <dataDirectory>RT_recfunc</dataDirectory>
                     <eventDirLabel>
@@ -317,16 +317,16 @@
                     <eventVectorNOT>
                     <externalEventVectorSubsetter>
                         <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                        <serverName>brazil</serverName>
-                        <serverDNS>edu/sc/seis/internal</serverDNS>
+                        <name>brazil</name>
+                        <dns>edu/sc/seis/internal</dns>
                         <gaussianWidth>0.4</gaussianWidth>
                     </externalEventVectorSubsetter>
                     </eventVectorNOT>
                 </embeddedEventVector>
                 <externalWaveformVectorProcess>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
-                    <serverName>brazil</serverName>
-                    <serverDNS>edu/sc/seis/internal</serverDNS>
+                    <name>brazil</name>
+                    <dns>edu/sc/seis/internal</dns>
                     <fileType>sac</fileType>
                     <dataDirectory>RT_recfunc</dataDirectory>
                     <eventDirLabel>

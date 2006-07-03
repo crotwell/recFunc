@@ -20,7 +20,7 @@
 </div>
 #end
 
-#macro(mungeEmail)
+#macro(earsEmail)
 	<script type='text/javascript'>
 // <!-- 1360572810
 // This script is (C) Copyright 2004 Jim Tucek
@@ -81,7 +81,7 @@ return mortality;
 // -->
 </script>
 
-Email me at <a href='javascript:cast("9788 22995 16192 3189 474 3189 9788 6277 3189 18835 3189 2120 18835 9788 5654 5426",26167,17227)' onMouseOver="self.status=''; return true;" onMouseOut="self.status=' '; return true;"><script type='text/javascript'>dig("9788 22995 16192 3189 474 3189 9788 6277 3189 18835 3189 2120 18835 9788 5654 5426",26167,17227)</script></a> 
+<a href='javascript:cast("9788 22995 16192 3189 474 3189 9788 6277 3189 18835 3189 2120 18835 9788 5654 5426",26167,17227)' onMouseOver="self.status=''; return true;" onMouseOut="self.status=' '; return true;"><script type='text/javascript'>dig("9788 22995 16192 3189 474 3189 9788 6277 3189 18835 3189 2120 18835 9788 5654 5426",26167,17227)</script></a> 
 #end
 
 #macro(eventTable $list $isLoser) 

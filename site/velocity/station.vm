@@ -100,11 +100,7 @@ window.onload=function(){
 #foreach( $marker in $markerList)
  <tr>
  <td class="odd">
- #if ($marker.getRef().getURL())
- <a href="$marker.getRef().getURL()">$marker.getRef().getName()</a></td>
- #else
- $marker.getRef().getName()
- #end
+ <a href="comparePriorResult.html?name=$marker.getRef().getName()">$marker.getRef().getName()</a></td>
  <td class="even">$marker.formatH()</td>
  <td class="odd">$marker.formatVpVs()</td>
  <td class="even">$marker.formatVp()</td>

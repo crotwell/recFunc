@@ -78,7 +78,12 @@ public class Station extends Revlet {
     public synchronized RevletContext getContext(HttpServletRequest req,
                                                  HttpServletResponse res)
             throws Exception {
-        VelocityNetwork net = Start.getNetwork(req, jdbcChannel.getNetworkTable());
+        VelocityNetwork net;
+        try {
+            net = Start.getNetwork(req, jdbcChannel.getNetworkTable());
+        } catch (NotFound e) {
+            return handleNotFound(res);
+        }
         // possible that there are multiple stations with the same code
         String staCode = req.getParameter("stacode");
         ArrayList stationList = getStationList(net.getDbId(), staCode);

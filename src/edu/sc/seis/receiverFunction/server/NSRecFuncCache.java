@@ -53,7 +53,7 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
                     recFuncCache = RecFuncCacheHelper.narrow(namingService.resolve(serverDNS, interfaceName, serverName));
                 } catch (Throwable t) {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(1000);
                     } catch(InterruptedException e) {
                         // oh well
                     }

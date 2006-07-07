@@ -35,6 +35,8 @@ window.onload=function(){
 #end
 </table>
 
+<p>If you have prior results that you would like to see included here, please email
+#earsEmail().</p>	
 
 </div>
 #footer()

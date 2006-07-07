@@ -27,6 +27,7 @@ import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.ProxyEventAccessOperations;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
+import edu.sc.seis.fissuresUtil.display.configuration.DOMHelper;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.namingService.FissuresNamingService;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
@@ -67,14 +68,8 @@ public class RecFuncCacheProcessor implements
                 pWave = false;
             }
         }
-        Element dnsElement = SodUtil.getElement(config, "serverDNS");
-        if(dnsElement != null) {
-            dns = SodUtil.getNestedText(dnsElement);
-        }
-        Element serverElement = SodUtil.getElement(config, "serverName");
-        if(serverElement != null) {
-            serverName = SodUtil.getNestedText(serverElement);
-        }
+        String dns = DOMHelper.extractText(config, "dns", "edu/sc/seis");
+        String serverName = DOMHelper.extractText(config, "name", "Ears");
         String modelName = "prem";
         taup = TauPUtil.getTauPUtil(modelName);
         recFunc = new RecFunc(taup,

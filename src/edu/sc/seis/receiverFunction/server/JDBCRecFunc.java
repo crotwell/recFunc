@@ -11,6 +11,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import org.omg.CORBA.UNKNOWN;
 import edu.iris.Fissures.Area;
 import edu.iris.Fissures.BoxArea;
 import edu.iris.Fissures.FissuresException;
@@ -142,16 +143,23 @@ public class JDBCRecFunc extends JDBCTable {
         int eventAttrDbId = -1;
         File stationDir = getDir(cacheEvent, channels[0], config.gwidth);
         boolean dirsCreated = stationDir.mkdirs();
-        if ( ! dirsCreated) {
+        if(!dirsCreated) {
             // try once more just for kicks...
-            dirsCreated = stationDir.mkdirs();
-            if ( ! dirsCreated) {
+            for(int i = 0; i < 10 && !dirsCreated; i++) {
+                try {
+                    Thread.sleep(1000*i);
+                } catch(InterruptedException e) {}
+                dirsCreated = stationDir.mkdirs();
+            }
+            if(!dirsCreated) {
                 File tmpDir = stationDir;
-                while ( ! tmpDir.getParentFile().exists()) {
+                while(tmpDir.getParentFile() != null
+                        && !tmpDir.getParentFile().exists()) {
                     tmpDir = tmpDir.getParentFile();
                 }
-                logger.error("mkdirs seemed to fail on this directory: "+tmpDir);
-                throw new IOException("Unable to create directory");
+                logger.error("mkdirs seemed to fail on this directory: "
+                        + tmpDir);
+                throw new UNKNOWN("Unable to create directory");
             }
         }
         try {
@@ -320,17 +328,29 @@ public class JDBCRecFunc extends JDBCTable {
                                      result.channels[0],
                                      result.config.gwidth);
             File f = new File(stationDir, rs.getString("recfuncITR"));
-            if (f.exists()) {f.delete();}
+            if(f.exists()) {
+                f.delete();
+            }
             f = new File(stationDir, rs.getString("recfuncITT"));
-            if (f.exists()) {f.delete();}
+            if(f.exists()) {
+                f.delete();
+            }
             f = new File(stationDir, rs.getString("seisa"));
-            if (f.exists()) {f.delete();}
+            if(f.exists()) {
+                f.delete();
+            }
             f = new File(stationDir, rs.getString("seisb"));
-            if (f.exists()) {f.delete();}
+            if(f.exists()) {
+                f.delete();
+            }
             f = new File(stationDir, rs.getString("seisz"));
-            if (f.exists()) {f.delete();}
+            if(f.exists()) {
+                f.delete();
+            }
             f = new File(stationDir, JDBCHKStack.ANALYTIC_DATA);
-            if (f.exists()) {f.delete();}
+            if(f.exists()) {
+                f.delete();
+            }
             rs.close();
             deleteStmt.setInt(1, dbid);
             try {
@@ -374,36 +394,36 @@ public class JDBCRecFunc extends JDBCTable {
         CacheEvent cacheEvent = new CacheEvent(result.event_attr,
                                                result.prefOrigin);
         try {
-        File stationDir = getDir(cacheEvent,
-                                 result.channels[0],
-                                 result.config.gwidth);
-        SacTimeSeries itrSAC = new SacTimeSeries();
-        itrSAC.read(new File(stationDir, rs.getString("recfuncITR")));
-        LocalSeismogramImpl itrSeis = SacToFissures.getSeismogram(itrSAC);
-        itrSeis.y_unit = UnitImpl.DIMENSONLESS;
-        result.radial = itrSeis;
-        SacTimeSeries ittSAC = new SacTimeSeries();
-        ittSAC.read(new File(stationDir, rs.getString("recfuncITT")));
-        LocalSeismogramImpl ittSeis = SacToFissures.getSeismogram(ittSAC);
-        ittSeis.y_unit = UnitImpl.DIMENSONLESS;
-        result.tansverse = ittSeis;
-        LocalSeismogramImpl[] originals = new LocalSeismogramImpl[3];
-        SacTimeSeries SACa = new SacTimeSeries();
-        SACa.read(new File(stationDir, rs.getString("seisA")));
-        originals[0] = SacToFissures.getSeismogram(SACa);
-        originals[0].channel_id = result.channels[0].get_id();
-        SacTimeSeries SACb = new SacTimeSeries();
-        SACb.read(new File(stationDir, rs.getString("seisB")));
-        originals[1] = SacToFissures.getSeismogram(SACb);
-        originals[1].channel_id = result.channels[1].get_id();
-        SacTimeSeries SACz = new SacTimeSeries();
-        SACz.read(new File(stationDir, rs.getString("seisZ")));
-        originals[2] = SacToFissures.getSeismogram(SACz);
-        originals[2].channel_id = result.channels[2].get_id();
-        result.original = originals;
-        return withDbId;
-        } catch (FileNotFoundException e) {
-            logger.error("File not found for "+withDbId.getDbId(), e);
+            File stationDir = getDir(cacheEvent,
+                                     result.channels[0],
+                                     result.config.gwidth);
+            SacTimeSeries itrSAC = new SacTimeSeries();
+            itrSAC.read(new File(stationDir, rs.getString("recfuncITR")));
+            LocalSeismogramImpl itrSeis = SacToFissures.getSeismogram(itrSAC);
+            itrSeis.y_unit = UnitImpl.DIMENSONLESS;
+            result.radial = itrSeis;
+            SacTimeSeries ittSAC = new SacTimeSeries();
+            ittSAC.read(new File(stationDir, rs.getString("recfuncITT")));
+            LocalSeismogramImpl ittSeis = SacToFissures.getSeismogram(ittSAC);
+            ittSeis.y_unit = UnitImpl.DIMENSONLESS;
+            result.tansverse = ittSeis;
+            LocalSeismogramImpl[] originals = new LocalSeismogramImpl[3];
+            SacTimeSeries SACa = new SacTimeSeries();
+            SACa.read(new File(stationDir, rs.getString("seisA")));
+            originals[0] = SacToFissures.getSeismogram(SACa);
+            originals[0].channel_id = result.channels[0].get_id();
+            SacTimeSeries SACb = new SacTimeSeries();
+            SACb.read(new File(stationDir, rs.getString("seisB")));
+            originals[1] = SacToFissures.getSeismogram(SACb);
+            originals[1].channel_id = result.channels[1].get_id();
+            SacTimeSeries SACz = new SacTimeSeries();
+            SACz.read(new File(stationDir, rs.getString("seisZ")));
+            originals[2] = SacToFissures.getSeismogram(SACz);
+            originals[2].channel_id = result.channels[2].get_id();
+            result.original = originals;
+            return withDbId;
+        } catch(FileNotFoundException e) {
+            logger.error("File not found for " + withDbId.getDbId(), e);
             throw e;
         }
     }
@@ -482,11 +502,10 @@ public class JDBCRecFunc extends JDBCTable {
         return rs.getInt(1);
     }
 
-
     public int countUnsuccessfulEvents(int netDbId,
-                                     String stationCode,
-                                     float gaussianWidth,
-                                     float minPercentMatch)
+                                       String stationCode,
+                                       float gaussianWidth,
+                                       float minPercentMatch)
             throws SQLException, NotFound {
         int index = 1;
         countUnsuccessfulByStationByPercent.setInt(index++, netDbId);
@@ -497,6 +516,7 @@ public class JDBCRecFunc extends JDBCTable {
         rs.next();
         return rs.getInt(1);
     }
+
     public CacheEvent[] getEvents(int netDbId,
                                   String stationCode,
                                   float gaussianWidth) throws SQLException,
@@ -573,7 +593,7 @@ public class JDBCRecFunc extends JDBCTable {
         }
         return (CacheEvent[])out.toArray(new CacheEvent[0]);
     }
-    
+
     public static void addToParms(Origin o, float itr_match, int recFunc_id) {
         ParameterRef[] parms = o.parm_ids;
         ParameterRef[] newParms = new ParameterRef[parms.length + 2];
@@ -660,11 +680,11 @@ public class JDBCRecFunc extends JDBCTable {
             throws SQLException, NotFound {
         int index = 1;
         BoxArea box = AreaUtil.makeContainingBox(new PointDistanceAreaImpl(origin.my_location.latitude,
-                                                                            origin.my_location.longitude,
-                                                                            new QuantityImpl(0.0,
-                                                                                             UnitImpl.DEGREE),
-                                                                            new QuantityImpl(0.1,
-                                                                                             UnitImpl.DEGREE)));
+                                                                           origin.my_location.longitude,
+                                                                           new QuantityImpl(0.0,
+                                                                                            UnitImpl.DEGREE),
+                                                                           new QuantityImpl(0.1,
+                                                                                            UnitImpl.DEGREE)));
         originChanExists.setInt(index++, jdbcChannel.getNetworkTable()
                 .getDbId(chanz.network_id));
         originChanExists.setString(index++, chanz.station_code);
@@ -845,6 +865,7 @@ public class JDBCRecFunc extends JDBCTable {
     public String getDataDirectory() {
         return dataDirectory;
     }
+
     private String dataDirectory;
 
     private File dataDir = null;
@@ -885,5 +906,4 @@ public class JDBCRecFunc extends JDBCTable {
     }
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCRecFunc.class);
-
 }

@@ -140,6 +140,20 @@ public class JDBCRecFunc extends JDBCTable {
         CacheEvent cacheEvent = new CacheEvent(eventAttr, prefOrigin);
         int originDbId = -1;
         int eventAttrDbId = -1;
+        File stationDir = getDir(cacheEvent, channels[0], config.gwidth);
+        boolean dirsCreated = stationDir.mkdirs();
+        if ( ! dirsCreated) {
+            // try once more just for kicks...
+            dirsCreated = stationDir.mkdirs();
+            if ( ! dirsCreated) {
+                File tmpDir = stationDir;
+                while ( ! tmpDir.getParentFile().exists()) {
+                    tmpDir = tmpDir.getParentFile();
+                }
+                logger.error("mkdirs seemed to fail on this directory: "+tmpDir);
+                throw new IOException("Unable to create directory");
+            }
+        }
         try {
             int eventAccessDbId = jdbcEventAccess.put(cacheEvent, "", "", "");
             try {
@@ -155,8 +169,6 @@ public class JDBCRecFunc extends JDBCTable {
             for(int i = 0; i < channels.length; i++) {
                 channelDbId[i] = jdbcChannel.put(channels[i]);
             }
-            File stationDir = getDir(cacheEvent, channels[0], config.gwidth);
-            stationDir.mkdirs();
             File[] seisFile = new File[original.length];
             for(int i = 0; i < original.length; i++) {
                 seisFile[i] = URLDataSetSeismogram.saveAs((LocalSeismogramImpl)original[i],

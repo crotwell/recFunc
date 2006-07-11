@@ -24,6 +24,10 @@ public class SumHKStackAsXYZ extends SummaryHKStackImageServlet {
     }
 
     void output(SumHKStack sumStack, OutputStream out, HttpServletRequest req, HttpServletResponse res) throws IOException {
+        doXYZOutput(sumStack, out, req, res);
+    }
+    
+    public static void doXYZOutput(SumHKStack sumStack, OutputStream out, HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("text/plain");
         OutputStreamWriter writer = new OutputStreamWriter(out);
         float[][] stack = sumStack.getSum().getStack();

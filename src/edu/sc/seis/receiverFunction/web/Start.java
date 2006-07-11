@@ -143,10 +143,18 @@ public class Start {
                                               "edu.sc.seis.receiverFunction.web.ComplexityResidualImage",
                                               servletStrings,
                                               rootHandler);
+        RevUtil.populateJetty("/complexResidualAsXYZ.txt",
+                              "edu.sc.seis.receiverFunction.web.ComplexResidualAsXYZ",
+                              servletStrings,
+                              rootHandler);
         RevUtil.populateJetty("/synthHKImage.png",
                               "edu.sc.seis.receiverFunction.web.SynthHKImage",
                               servletStrings,
                               rootHandler);
+        RevUtil.populateJetty("/synthHKAsXYZ.txt",
+                              "edu.sc.seis.receiverFunction.web.SynthHKAsXYZ",
+                              servletStrings,
+                              rootHandler);        
         RevUtil.populateJetty("/crust2TypeStats.html",
                               "edu.sc.seis.receiverFunction.web.Crust2TypeStats",
                               servletStrings,

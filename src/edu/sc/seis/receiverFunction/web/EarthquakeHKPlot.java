@@ -1,6 +1,7 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.awt.image.BufferedImage;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -128,6 +129,9 @@ public class EarthquakeHKPlot extends HttpServlet {
             writer.write("<html><body><p>No HK stack foundfor id "
                     + req.getParameter("rf") + "</p></body></html>");
             writer.flush();
+        } catch(EOFException e) {
+            // usually means remote client has closed connection
+            // nothing to be done...
         } catch(Exception e) {
             Revlet.sendToGlobalExceptionHandler(req, e);
             throw new RuntimeException(e);

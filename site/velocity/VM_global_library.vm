@@ -7,19 +7,6 @@
 
 #end
 
-#macro(footer)
-<div id="footer">
-  <a href="http://seis.sc.edu">
-    <img src="${revBase}images/seislogo.png" alt="Seismology at USC" title="USC"/>
-  </a>
-  <a href="http://www.iris.edu">
-    <img src="${revBase}images/irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
-  </a>
-  <br/>
-  EARS is supported by the EarthScope Program, NSF grant #EAR0346113.
-</div>
-#end
-
 #macro(earsEmail)
 	<script type='text/javascript'>
 // <!-- 1360572810
@@ -82,6 +69,21 @@ return mortality;
 </script>
 
 <a href='javascript:cast("9788 22995 16192 3189 474 3189 9788 6277 3189 18835 3189 2120 18835 9788 5654 5426",26167,17227)' onMouseOver="self.status=''; return true;" onMouseOut="self.status=' '; return true;"><script type='text/javascript'>dig("9788 22995 16192 3189 474 3189 9788 6277 3189 18835 3189 2120 18835 9788 5654 5426",26167,17227)</script></a> 
+#end
+
+#macro(footer)
+<div id="footer">
+  <a href="http://seis.sc.edu">
+    <img src="${revBase}images/seislogo.png" alt="Seismology at USC" title="USC"/>
+  </a>
+  <a href="http://www.iris.edu">
+    <img src="${revBase}images/irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
+  </a>
+  <br/>
+  EARS is supported by the EarthScope Program, NSF grant #EAR0346113.
+  <br/>
+  Please send any comments or questions to #earsEmail()
+</div>
 #end
 
 #macro(eventTable $list $isLoser) 

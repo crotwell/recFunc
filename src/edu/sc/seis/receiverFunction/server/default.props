@@ -378,20 +378,52 @@ hksummary.uncalculated=SELECT receiverFunction.recfunc_id FROM netchan \
                        AND receiverFunction.itr_match >= hksummary.minPercentMatch \
                        AND hksummary.minPercentMatch = ? \
                        
-hksummary.needRecalc=SELECT \
-	hksummary_id, hksummary.net_id, n.net_code, hksummary.sta_code, numEQ, a.countEQ \
-	FROM hksummary LEFT JOIN ( \
-		SELECT net_id, net_code, sta_code, count(*) as countEQ FROM netchan \
-    		JOIN  receiverFunction ON (chanz_id = chan_id ) \
-   		LEFT JOIN recfuncQC ON (receiverFunction.recfunc_id = recfuncQC.recfunc_id ) \
-    		WHERE \
-    		gwidth = 2.5 \
-    		AND itr_match >= 80 \
-    		AND (keep = true OR keep IS NULL) \
-    		GROUP BY net_id, net_code, sta_code) as a \
-	ON (hksummary.net_id = a.net_id AND hksummary.sta_code = a.sta_code) \
-	JOIN network AS n ON (hksummary.net_id = n.net_id) \
-	WHERE countEQ <> numEQ
+hksummary.needRecalc=SELECT hk.net_id, hk.net_code, hk.sta_code, loc.loc_lat, loc.loc_lon, hk.hkstack, se.successfulEvents, sum.numeq as summary FROM ( \
+SELECT network.net_id, network.net_code, station.sta_code, hksummary.numeq FROM network \
+   JOIN station ON (network.net_id = station.net_id ) \
+   JOIN site ON (station.sta_id = site.sta_id ) \
+   JOIN channel ON (channel.site_id = site.site_id ) \
+   JOIN hksummary ON (hksummary.chanz_id = channel.chan_id ) \
+   WHERE \
+   gwidth = ? \
+) AS sum RIGHT JOIN ( \
+SELECT network.net_id, network.net_code, station.sta_code, count(*) AS hkstack FROM network  \
+   JOIN station ON (network.net_id = station.net_id )  \
+   JOIN site ON (station.sta_id = site.sta_id )  \
+   JOIN channel ON (channel.site_id = site.site_id )  \
+   JOIN  receiverFunction ON (chanz_id = chan_id )  \
+   LEFT JOIN recfuncQC ON (receiverFunction.recfunc_id = recfuncQC.recfunc_id )  \
+   JOIN hkStack ON (hkstack.recfunc_id = receiverFunction.recfunc_id )  \
+   WHERE  \
+   gwidth = ? \
+   AND itr_match >= ?  \
+   AND (keep = true OR keep IS NULL) \
+   GROUP BY network.net_id, network.net_code, station.sta_code \
+) AS hk ON (hk.net_id = sum.net_id AND hk.sta_code = sum.sta_code) JOIN ( \
+SELECT network.net_id, network.net_code, station.sta_code, count(*) AS successfulEvents FROM network  \
+    JOIN station ON (network.net_id = station.net_id )  \
+    JOIN site ON (station.sta_id = site.sta_id )  \
+    JOIN channel ON (channel.site_id = site.site_id )  \
+    JOIN  receiverFunction ON (chanz_id = chan_id )  \
+   LEFT JOIN recfuncQC ON (receiverFunction.recfunc_id = recfuncQC.recfunc_id )  \
+    JOIN origin ON (receiverfunction.origin_id = origin.origin_id)  \
+    JOIN eventattr ON (receiverfunction.eventattr_id = eventattr.eventattr_id)  \
+    JOIN catalog ON (origin.origin_catalog_id = catalog.catalog_id)  \
+    JOIN contributor ON (catalog_contributor_id = contributor.contributor_id)  \
+    WHERE  \
+    gwidth = ?  \
+    AND itr_match >= ?  \
+    AND (keep = true OR keep IS NULL) \
+   GROUP BY network.net_id, network.net_code, station.sta_code \
+) AS se ON (hk.net_id = se.net_id AND hk.sta_code = se.sta_code) \
+JOIN (SELECT network.net_id, station.sta_code, location.loc_lat, location.loc_lon  \
+   FROM network \
+   JOIN station ON (network.net_id = station.net_id ) \
+   JOIN location ON (station.loc_id = location.loc_id) \
+) AS loc ON (hk.net_id = loc.net_id AND hk.sta_code = loc.sta_code) \
+WHERE hk.hkstack != se.successfulEvents OR hk.hkstack != sum.numeq OR se.successfulEvents != sum.numeq \
+ORDER BY net_code, sta_code
+
            
 hksummary.getForStation=SELECT * from netchan \
                    JOIN  $tablename  ON (chanz_id = chan_id ) \

@@ -161,7 +161,8 @@ public class Station extends Revlet {
                                                  localMaxima[i].getHValue(),
                                                  localMaxima[i].getKValue(),
                                                  summary.getSum().getAlpha(),
-                                                 earsStaRef));
+                                                 earsStaRef,
+                                                 "amp="+localMaxima[i].getMaxValue()));
             }
             TimeInterval timePs = summary.getSum().getTimePs();
             timePs.setFormat(FissuresFormatter.getDepthFormat());

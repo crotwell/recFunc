@@ -304,6 +304,7 @@ public class StackSummary {
         boolean bootstrap = true;
         boolean usePhaseWeight = true;
         boolean complexityOnly = false;
+        boolean neededOnly = false;
         String netArg = "";
         String staArg = "";
         for(int i = 0; i < args.length; i++) {
@@ -319,13 +320,26 @@ public class StackSummary {
                 complexityOnly = true;
             } else if(args[i].equals("--nobootstrap")) {
                 bootstrap = false;
+            } else if(args[i].equals("--needRecalc")) {
+                neededOnly = true;
             }
         }
         if (complexityOnly) {
             summary.calcComplexity();
             return;
         }
-        if(staArg.equals("")) {
+        if(neededOnly) {
+            Station[] stations = summary.getJdbcSummary().getStationsNeedingUpdate(gaussianWidth,
+                                                                                     minPercentMatch);
+            for(int i = 0; i < stations.length; i++) {
+                summary.createSummary(stations[i].get_id(),
+                                      gaussianWidth,
+                                      minPercentMatch,
+                                      HKStack.getBestSmallestH(stations[i], HKStack.getDefaultSmallestH()),
+                                      bootstrap,
+                                      usePhaseWeight);
+            }
+        } else if(staArg.equals("")) {
             summary.createSummary(netArg,
                                   gaussianWidth,
                                   minPercentMatch,
@@ -360,7 +374,7 @@ public class StackSummary {
 
     public static void main(String[] args) {
         if(args.length == 0) {
-            System.out.println("Usage: StackSummary -net netCode [ -sta staCode ]");
+            System.out.println("Usage: StackSummary -net netCode [ -sta staCode ] or --needRecalc");
             return;
         }
         Connection conn = null;

@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.IfNetwork.Station;
+import edu.iris.Fissures.IfNetwork.StationId;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
@@ -19,6 +21,7 @@ import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.JDBCSequence;
 import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
@@ -312,13 +315,39 @@ public class JDBCSummaryHKStack extends JDBCTable {
         HKSummaryIterator iter = new HKSummaryIterator(rs, this, autoCommit);
         return iter;
     }
+    
+    public Station[] getStationsNeedingUpdate(float gaussianWidth, float minPercentMatch) throws SQLException {
+        int index=1;
+        needRecalc.setFloat(index++, gaussianWidth);
+        needRecalc.setFloat(index++, gaussianWidth);
+        needRecalc.setFloat(index++, minPercentMatch);
+        needRecalc.setFloat(index++, gaussianWidth);
+        needRecalc.setFloat(index++, minPercentMatch);
+        ResultSet rs = needRecalc.executeQuery();
+        ArrayList out = new ArrayList();
+        JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel().getStationTable();
+        while(rs.next()) {
+            int net_id = rs.getInt("net_id");
+            String staCode = rs.getString("sta_code");
+            try {
+                int[] sta_id = jdbcStation.getDBIds(net_id, staCode);
+                if (sta_id.length > 0) {
+                    out.add(jdbcStation.get(sta_id[0]));
+                }
+            } catch(NotFound e) {
+                // should never happen
+                logger.warn("cant find for "+net_id+" "+staCode+", skipping", e);
+            }
+        }
+        return (Station[])out.toArray(new Station[0]);
+    }
 
     JDBCHKStack jdbcHKStack;
 
     JDBCSequence hksummarySeq;
 
     PreparedStatement uncalculated, get, put, update, getForStation,
-            getAllWithoutData, getAll, deleteStmt;
+            getAllWithoutData, getAll, deleteStmt, needRecalc;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JDBCSummaryHKStack.class);
 }

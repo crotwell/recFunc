@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -129,6 +130,14 @@ public class EarthquakeHKPlot extends HttpServlet {
             writer.write("<html><body><p>No HK stack foundfor id "
                     + req.getParameter("rf") + "</p></body></html>");
             writer.flush();
+        } catch(IIOException e) {
+            if (e.getCause() instanceof EOFException) {
+                // usually means remote client has closed connection
+                // nothing to be done...
+            } else {
+                logger.debug("Got IIOException, cause is a "+e.getCause().getClass());
+                throw e;
+            }
         } catch(EOFException e) {
             // usually means remote client has closed connection
             // nothing to be done...
@@ -145,6 +154,8 @@ public class EarthquakeHKPlot extends HttpServlet {
     int xdimDefault = 600;
 
     int ydimDefault = 600;
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(EarthquakeHKPlot.class);
 }
 
 class HKMax {

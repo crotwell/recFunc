@@ -628,7 +628,7 @@ public class SumHKStack {
     StationResult calcBest(HKStack sum) {
         StackMaximum[] localMaxima = sum.getLocalMaxima(smallestH, 5);
         for(int i = 0; i < localMaxima.length; i++) {
-            if(-1 != inAnalystReject(localMaxima[i].getHValue(),
+            if(-1 == inAnalystReject(localMaxima[i].getHValue(),
                                   localMaxima[i].getKValue(),
                                   rejects)) {
                 String extra = "amp=" + localMaxima[i].getMaxValue();
@@ -637,7 +637,7 @@ public class SumHKStack {
             }
         }
         // this is bad
-        return null;
+        throw new RuntimeException("didn't find good maxima in top 5 local max");
     }
 
     public StationResult makeStationResult(StackMaximum max,
@@ -669,6 +669,9 @@ public class SumHKStack {
     }
 
     public StationResult getBest() {
+        if (best == null) {
+            logger.error("best is null", new NullPointerException());
+        }
         return best;
     }
     

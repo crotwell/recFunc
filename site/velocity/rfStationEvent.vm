@@ -60,6 +60,10 @@
 <td class="bold">Lat/Lon:</td>
 <td class="data">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
 </tr>
+<tr>
+<td class="bold">Elevation:</td>
+<td class="data">$sta.getElevation()</td>
+</tr>
 </table>
 	</td></tr>
 	<tr><td>

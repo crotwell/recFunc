@@ -19,6 +19,7 @@ import edu.iris.dmc.seedcodec.CodecException;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
+import edu.sc.seis.TauP.TauP_SetSac;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.bag.Rotate;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
@@ -150,6 +151,7 @@ public class ReceiverFunctionZip extends HttpServlet {
                 // convert radian per sec ray param into km per sec
                 float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
                         .getRadiusOfEarth());
+                TauP_SetSac.setSacTHeader(sac, TauP_SetSac.A_HEADER, arrivals[0]); 
                 sac.user2 = kmRayParam;
                 sac.kuser2 = "rayparam";
                 sac.writeHeader(dos);

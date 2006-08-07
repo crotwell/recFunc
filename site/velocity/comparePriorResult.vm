@@ -1,41 +1,3 @@
-#macro( tablerow $items )
-    #set( $row = "" )
-    #set( $td = "$tdodd" )
-	#foreach( $i in $items)
-		#set( $row = "${row}${td}${i}${tdend}" )
-		#if($td == $tdodd) 
-		    #set( $td = "$tdeven")
-		#else
-		    #set( $td = "$tdodd")
-		#end
-	#end
-${tr}$row${trend}
-#end
-#macro( tablehead $items )
-    #set( $row = "" )
-    #set( $td = "$tdhead" )
-	#foreach( $i in $items)
-		#set( $row = "${row}${td}${i}${tdend}" )
-	#end
-${tr}$row${trend}
-#end
-#macro( link $href $name )
-#if ( !$viewType || $viewType == "html" )
-<a href="$href">$name</a>
-#else
-$name
-#end
-#end
-
-#set( $tdhead = '<td class="headodd">' )
-#set( $tdeven = '<td class="even">' )
-#set( $tdodd = '<td class="odd">' )
-#set( $tdend = '</td>' )
-#set( $tr = '<tr>' )
-#set( $th = '<th>' )
-#set( $trend = "</tr>" )
-#set( $thend = "</th>" )
-
 <html>
 <head>
 <title>Comparison with Prior Result $name</title>
@@ -70,19 +32,57 @@ window.onload=function(){
 
 <p>View results as <a href="comparePriorResult.txt?$req.getQueryString()">text</a></p>
 
-<table class="ruler sortable" id="dumb" cellpadding="0" cellspacing="0">
-<th><td colspan="3"/><td class="headodd" colspan="9">EARS</td><td class="headodd" colspan="6">$name</td></th>
-
-#set( $items = [ "Net", "Station", "Name", "Lat/Lon", "Est. Thick", "StdDev", "Est. Vp/Vs", "StdDev", "Assumed Vp", "Vs", "Poissons Ratio", "Num EQ", "Complexity", "Thick", "Vp/Vs", "Vp", "Vs", "Poissons Ratio", "H diff", "Extras" ] )
-#tablehead( $items )
-
+<table cellpadding="0" cellspacing="0" class="ruler sortable" id="dumb">
+<th>
+	<td colspan="3"/>
+	<td class="headodd" colspan="9">EARS</td>
+	<td class="headodd" colspan="6">$name</td>
+</th>
+<tr>
+	<td class="headodd initiallySorted ascending">Station</td>
+	<td class="headodd">Name</td>
+	<td class="headodd num">Lat/Lon</td>
+	<td class="headodd num">Elevation</td>
+	<td class="headodd num">Est. Thick</td>
+	<td class="headodd num">StdDev</td>
+	<td class="headodd num">Est. Vp/Vs</td>
+	<td class="headodd num">StdDev</td>
+	<td class="headodd num">Assumed Vp</td>
+	<td class="headodd num">Vs</td>
+	<td class="headodd num">Poissons Ratio</td>
+	<td class="headodd num">Num EQ</td>
+	<td class="headodd num">Complexity</td>
+	<td class="headodd num">Thick</td>
+	<td class="headodd num">Vp/Vs</td>
+	<td class="headodd num">Vp</td>
+	<td class="headodd num">Vs</td>
+	<td class="headodd num">Poissons Ratio</td>
+	<td class="headodd num">H diff</td>
+	<td class="headodd num">Extras</td>
+</tr>
 #foreach($sta in $stationList)
-#set( $staurl = "station.html?netdbid=$sta.getNet().getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}" )
-#set( $stalink = "#link( $staurl $sta.getName() )" )
-#foreach($priorR in $prior.get($sta))
-#set( $items = [ "$sta.getNet().getCodeWithYear()", "$sta.getCode()", $stalink, "$sta.getLatitude()/$sta.getLongitude()", "$!summary.get($sta).getSum().formatMaxValueH()", "$fissures.formatQuantity($!summary.get($sta).getHStdDev())", "$!summary.get($sta).getSum().formatMaxValueK()", "$!summary.get($sta).formatKStdDev()", "$!summary.get($sta).getSum().formatAlpha()", "$!summary.get($sta).getSum().formatVs()", "$!summary.get($sta).getSum().formatPoissonsRatio()", "$!summary.get($sta).numEQ", "$!summary.get($sta).formatComplexityResidual()", "$!priorR.formatH()", "$!priorR.formatVpVs()", "$!priorR.formatVp()", "$!priorR.formatVs()", "$!priorR.formatPoissonsRatio()", "$!hDiffMap.get($priorR)", "$!priorR.formatExtras()" ] )
-#tablerow( $items )
-#end
+<tr>
+	<td class="odd"><a href="station.html?netdbid=$net.getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getCode()</a></td>
+    <td class="stat_name"><a href="station.html?netdbid=$net.getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getName()</a></td>
+    <td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
+	<td class="even">$sta.getElevation()</td>
+    <td class="odd">$!summary.get($sta).getBest().formatH()</td>
+    <td class="even">$!summary.get($sta).getBest().formatHStdDev()</td>
+    <td class="odd">$!summary.get($sta).getBest().formatVpVs()</td>
+    <td class="even">$!summary.get($sta).getBest().formatKStdDev()</td>
+    <td class="odd">$!summary.get($sta).getBest().formatVp()</td>
+    <td class="even">$!summary.get($sta).getBest().formatVs()</td>
+    <td class="odd">$!summary.get($sta).getBest().formatPoissonsRatio()</td>
+    <td class="even">$!summary.get($sta).numEQ</td>
+    <td class="odd">$!summary.get($sta).formatComplexityResidual()</td>
+    <td class="odd">$!priorR.formatH()</td>
+    <td class="odd">$!priorR.formatVpVs()</td>
+    <td class="odd">$!priorR.formatVp()</td>
+    <td class="odd">$!priorR.formatVs()</td>
+    <td class="odd">$!priorR.formatPoissonsRatio()</td>
+    <td class="odd">$!hDiffMap.get($priorR)</td>
+    <td class="odd">$!priorR.formatExtras()</td>
+</tr>
 #end
 </table>
 

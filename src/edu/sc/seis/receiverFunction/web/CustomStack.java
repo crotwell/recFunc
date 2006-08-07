@@ -20,6 +20,7 @@ import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.StackComplexity;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.server.CachedResultPlusDbId;
+import edu.sc.seis.receiverFunction.server.HKBox;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
@@ -46,12 +47,17 @@ public class CustomStack extends Station {
             plots[i] = jdbcHKStack.get(dbids[i]);
             plots[i].compact();
         }
+        int netDbId = Start.getNetwork(req, jdbcChannel.getNetworkTable()).getDbId();
+        HKBox[] rejects = jdbcRejectMax.getForStation(netDbId,
+                                                      req.getParameter("stacode"));
+        
         SumHKStack sumStack = new SumHKStack(plots,
                                              plots[0].getChannel(),
                                              80,
                                              HKStack.getDefaultSmallestH(),
                                              doBootstrap,
-                                             true);
+                                             true,
+                                             rejects);
         sumStack.calcStackComplexity();
         return sumStack;
     }

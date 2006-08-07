@@ -101,8 +101,8 @@ return mortality;
 <td class="headodd num">Reason</td>
 #end
 </tr>
-#set( $maxValueH = $!summary.getSum().getMaxValueH().getValue() )
-#set( $maxValueK = $!summary.getSum().getMaxValueK() )
+#set( $maxValueH = $!summary.getBest().getH().getValue() )
+#set( $maxValueK = $!summary.getBest().getVpVs() )
 #foreach($eq in $list)
 <tr>
 <td class="odd">$eq.getParam("itr_match")</td>
@@ -124,10 +124,51 @@ return mortality;
 
 #macro(eventCSVTable $list $isLoser) 
 Radial Match,Distance,Baz,FERegion,Time,Lat,Lon,Depth,Magnitude,Reason,RecFunc_id
-#set( $maxValueH = $!summary.getSum().getMaxValueH().getValue() )
-#set( $maxValueK = $!summary.getSum().getMaxValueK() )
 #foreach($eq in $list)
 #set( $recFunc_id = $eq.getParam("recFunc_id") )
 $eq.getParam("itr_match"),$sta.getDistanceDeg($eq),$sta.getBaz($eq),$eq.getRegion(),$eq.getTime(),$eq.getLatitude(),$eq.getLongitude(),$eq.getDepth(),$eq.getAllMagnitudes(),$!eq.getParam("reason"),$recFunc_id
 #end
+#end
+
+#macro(stationListCSV $stationList $summary)
+#foreach($sta in $stationList)
+$sta.getNet().getCodeWithYear(),$sta.getCode(),$sta.getLatitude(),$sta.getLongitude(),$sta.getElevation(),$!summary.get($sta).getBest().formatH(),$!summary.get($sta).getBest.formatHStdDev(),$!summary.get($sta).getBest().formatVpVs(),$!summary.get($sta).getBest().formatKStdDev(),$!summary.get($sta).getBest().formatVp(),$!summary.get($sta).getBest().formatVs(),$!summary.get($sta).getBest().formatPoissonsRatio(),$!summary.get($sta).numEQ,$!summary.get($sta).formatComplexityResidual()
+#end
+#end
+
+#macro(stationListHTML $stationList $summary)
+<table cellpadding="0" cellspacing="0" class="ruler sortable" id="dumb">
+<tr>
+	<td class="headodd initiallySorted ascending">Station</td>
+	<td class="headodd">Name</td>
+	<td class="headodd num">Lat/Lon</td>
+	<td class="headodd num">Elevation</td>
+	<td class="headodd num">Est. Thick</td>
+	<td class="headodd num">StdDev</td>
+	<td class="headodd num">Est. Vp/Vs</td>
+	<td class="headodd num">StdDev</td>
+	<td class="headodd num">Assumed Vp</td>
+	<td class="headodd num">Vs</td>
+	<td class="headodd num">Poissons Ratio</td>
+	<td class="headodd num">Num EQ</td>
+	<td class="headodd num">Complexity</td>
+</tr>
+#foreach($sta in $stationList)
+<tr>
+	<td class="odd"><a href="station.html?netdbid=$net.getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getCode()</a></td>
+    <td class="stat_name"><a href="station.html?netdbid=$net.getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getName()</a></td>
+    <td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
+	<td class="even">$sta.getElevation()</td>
+    <td class="odd">$!summary.get($sta).getBest().formatH()</td>
+    <td class="even">$!summary.get($sta).getBest().formatHStdDev()</td>
+    <td class="odd">$!summary.get($sta).getBest().formatVpVs()</td>
+    <td class="even">$!summary.get($sta).getBest().formatKStdDev()</td>
+    <td class="odd">$!summary.get($sta).getBest().formatVp()</td>
+    <td class="even">$!summary.get($sta).getBest().formatVs()</td>
+    <td class="odd">$!summary.get($sta).getBest().formatPoissonsRatio()</td>
+    <td class="even">$!summary.get($sta).numEQ</td>
+    <td class="odd">$!summary.get($sta).formatComplexityResidual()</td>
+</tr>
+#end
+</table>
 #end

@@ -10,14 +10,14 @@ $sta.getCode(),$sta.getName(),$sta.getLatitude(),$sta.getLongitude(),$fissures.f
 #end
 
 Crust2 Type: $crust2Type
-Thickness Estimate: $fissures.formatDepth($!summary.getSum().getMaxValueH())
-Thickness StdDev: $fissures.formatQuantity($!summary.getHStdDev())
-Vp/Vs Estimate: $!summary.getSum().getMaxValueK()
-Vp/Vs StdDev: $!summary.formatKStdDev()
-Vs Estimate: $fissures.formatQuantity($!summary.getSum().getVs())
-Poisson's Ratio: $!summary.getSum().formatPoissonsRatio()
-Peak Value: $!summary.getSum().formatMaxValue()
-Assumed Vp: $fissures.formatQuantity($!summary.getSum().getAlpha())
+Thickness Estimate: $!summary.getBest().formatH()
+Thickness StdDev: $summary.getBest().formatHStdDev()
+Vp/Vs Estimate: $!summary.getBest().formatVpVs()
+Vp/Vs StdDev: $!summary.getBest().formatKStdDev()
+Vs Estimate: $!summary.getBest().formatVs()
+Poisson's Ratio: $!summary.getBest().formatPoissonsRatio()
+Peak Value: $!summary.getBest().formatAmp()
+Assumed Vp: $!summary.getBest().formatVs()
 Ps Weight: $!summary.getSum().getWeightPs()
 PpPs Weight: $!summary.getSum().getWeightPpPs()
 PsPs Weight: $!summary.getSum().getWeightPsPs()

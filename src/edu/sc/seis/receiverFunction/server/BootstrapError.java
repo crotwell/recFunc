@@ -85,12 +85,17 @@ public class BootstrapError extends StackSummary {
         // if there is only 1 eq that matches, then we can't really do a stack
         if(individualHK.size() > 1) {
             HKStack temp = (HKStack)individualHK.get(0);
+            int netDbId = jdbcHKStack.getJDBCChannel().getStationTable().getBestNetworkDbId(netCode, staCode);
+            HKBox[] rejects = jdbcRejectMax.getForStation(netDbId,
+                                                          staCode);
+            
             SumHKStack sumStack = new SumHKStack((HKStack[])individualHK.toArray(new HKStack[0]),
                                                  temp.getChannel(),
                                                  percentMatch,
                                                  smallestH,
                                                  true,
-                                                 true);
+                                                 true,
+                                                 rejects);
             HKError hkError = new HKError(individualHK, 100, percentMatch, smallestH);
             TimeOMatic.print("sum for " + netCode + "." + staCode);
             return sumStack;
@@ -119,7 +124,7 @@ public class BootstrapError extends StackSummary {
         HKError(ArrayList stacks,
                 int iterations,
                 float percentMatch,
-                QuantityImpl smallestH) {
+                QuantityImpl smallestH) throws SQLException, NotFound {
             this.iterations = iterations;
             HKStack temp = (HKStack)stacks.get(0);
             Random random = new Random();
@@ -131,12 +136,17 @@ public class BootstrapError extends StackSummary {
                 for(int j = 0; j < stacks.size(); j++) {
                     sample.add(stacks.get(randomInt(stacks.size())));
                 }
+                int netDbId = jdbcHKStack.getJDBCChannel().getNetworkTable().getDbId(temp.getChannelId().network_id);
+                HKBox[] rejects = jdbcRejectMax.getForStation(netDbId,
+                                                              temp.getChannelId().station_code);
+                
                 SumHKStack sumStack = new SumHKStack((HKStack[])sample.toArray(new HKStack[0]),
                                                      temp.getChannel(),
                                                      percentMatch,
                                                      smallestH,
                                                      false,
-                                                     true);
+                                                     true,
+                                                     rejects);
                 hErrors[i] = sumStack.getSum()
                         .getMaxValueH()
                         .getValue(UnitImpl.KILOMETER);

@@ -361,6 +361,44 @@ public class HKStack implements Serializable {
         this.peakVal = peakVal;
     }
 
+
+    public HKStack(QuantityImpl alpha,
+                   float p,
+                   float gwidth,
+                   float percentMatch,
+                   QuantityImpl minH,
+                   QuantityImpl stepH,
+                   int numH,
+                   float minK,
+                   float stepK,
+                   int numK,
+                   float weightPs,
+                   float weightPpPs,
+                   float weightPsPs,
+                   float[][] stack,
+                   QuantityImpl peakH,
+                   Float peakK,
+                   Float peakVal,
+                   Channel chan) {
+        this(alpha,
+             p,
+             gwidth,
+             percentMatch,
+             minH,
+             stepH,
+             numH,
+             minK,
+             stepK,
+             numK,
+             weightPs,
+             weightPpPs,
+             weightPsPs,
+             stack,
+             chan);
+        this.peakH = peakH;
+        this.peakK = peakK;
+        this.peakVal = peakVal;
+    }
     /**
      * returns the x and y indices for the max value in the stack. The min x
      * value is in index 0 and the y in index 1. The max x value is in 2 and the

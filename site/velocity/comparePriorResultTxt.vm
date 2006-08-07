@@ -1,7 +1,7 @@
-,,,,,EARS,,,,,,,,, $name,,,,
-Net,Station,Name,Lat,Lon,Est. Thick,StdDev,Est. Vp/Vs,StdDev,Assumed Vp,Vs,Poissons Ratio,Num EQ,Complexity,Thick,Vp/Vs,Vp,Vs,Poissons Ratio,Diff H,Extras
+,,,,,EARS,,,,,,,,,, $name,,,,
+Net,Station,Name,Lat,Lon,Elevation,Est. Thick,StdDev,Est. Vp/Vs,StdDev,Assumed Vp,Vs,Poissons Ratio,Num EQ,Complexity,Thick,Vp/Vs,Vp,Vs,Poissons Ratio,Diff H,Extras
 #foreach($sta in $stationList)##
 #foreach($priorR in $prior.get($sta))
-$sta.getNet().getCodeWithYear(),$sta.getCode(),$name,$sta.getLatitude(),$sta.getLongitude(),$!summary.get($sta).getSum().formatMaxValueH(),$fissures.formatQuantity($!summary.get($sta).getHStdDev()),$!summary.get($sta).getSum().formatMaxValueK(),$!summary.get($sta).formatKStdDev(),$!summary.get($sta).getSum().formatAlpha(),$!summary.get($sta).getSum().formatVs(),$!summary.get($sta).getSum().formatPoissonsRatio(),$!summary.get($sta).numEQ,$!summary.get($sta).formatComplexityResidual(),$!priorR.formatH(),$!priorR.formatVpVs(),$!priorR.formatVp(),$!priorR.formatVs(),$!priorR.formatPoissonsRatio(),$!hDiffMap.get($priorR),$!priorR.formatExtras()
+$sta.getNet().getCodeWithYear(),$sta.getCode(),$name,$sta.getLatitude(),$sta.getLongitude(),$sta.getElevation(),$!summary.get($sta).getBest().formatH(),$!summary.get($sta).getBest().formatHStdDev(),$!summary.get($sta).getBest().formatVpVs(),$!summary.get($sta).getBest().formatKStdDev(),$!summary.get($sta).getBest().formatVp(),$!summary.get($sta).getBest().formatVs(),$!summary.get($sta).getBest().formatPoissonsRatio(),$!summary.get($sta).numEQ,$!summary.get($sta).formatComplexityResidual(),$!priorR.formatH(),$!priorR.formatVpVs(),$!priorR.formatVp(),$!priorR.formatVs(),$!priorR.formatPoissonsRatio(),$!hDiffMap.get($priorR),$!priorR.formatExtras()
 #end
 #end

@@ -688,3 +688,32 @@ recfuncQC.getToTestByStation=SELECT * FROM $tablename \
 recfuncQC.delete=DELETE FROM $tablename WHERE recfunc_id = ?
 
 recfuncQC.index_recfunc_id=CREATE INDEX recfuncqc_recfunc_id_idx ON recfuncQC (recfunc_id)
+
+rejectedMaxima.create=CREATE TABLE $tablename ( \
+    rejectedmaximum_id int, \
+    net_id int, \
+    sta_code varchar, \
+    hmin real, \
+    hmax real, \
+    kmin real, \
+    kmax real, \
+    reason varchar, \
+    insertTime timestamp, \
+    FOREIGN KEY (net_id) \
+    REFERENCES network (net_id) \
+	)
+
+rejectedMaxima.put=INSERT INTO $tablename ( \
+    rejectedmaximum_id, \
+    net_id, \
+    sta_code, \
+    hMin, \
+    hMax, \
+    kMin, \
+    kMax, \
+    reason, \
+    insertTime \
+    ) VALUES ( ?, ?, ?, ?, ?,  ?, ?, ?, ? )
+
+rejectedMaxima.getForStation=SELECT * from $tablename \
+    WHERE net_id = ? AND sta_code = ?

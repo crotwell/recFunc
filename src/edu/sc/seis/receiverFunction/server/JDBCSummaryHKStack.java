@@ -21,6 +21,8 @@ import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.JDBCSequence;
 import edu.sc.seis.fissuresUtil.database.JDBCTable;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
 import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.fissuresUtil.database.util.TableSetup;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
@@ -28,6 +30,7 @@ import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
+import edu.sc.seis.receiverFunction.compare.StationResult;
 
 /**
  * @author crotwell Created on Mar 1, 2005
@@ -38,6 +41,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
         // super("hksummaryTMP", jdbcHKStack.getConnection());
         super("hksummary", jdbcHKStack.getConnection());
         this.jdbcHKStack = jdbcHKStack;
+        this.jdbcRejectedMax = new JDBCRejectedMaxima(jdbcHKStack.getConnection());
         hksummarySeq = new JDBCSequence(conn, getTableName() + "Seq");
         TableSetup.setup(getTableName(),
                          conn,
@@ -107,7 +111,7 @@ public class JDBCSummaryHKStack extends JDBCTable {
         deleteStmt.setInt(1, hksummary_id);
         return deleteStmt.executeUpdate();
     }
-    
+
     int populateStmt(PreparedStatement stmt, int index, SumHKStack summary)
             throws SQLException, NotFound, IOException {
         stmt.setInt(index++, jdbcHKStack.getJDBCChannel()
@@ -132,12 +136,12 @@ public class JDBCSummaryHKStack extends JDBCTable {
         stmt.setFloat(index++, summary.getSum().getMinK());
         stmt.setFloat(index++, summary.getSum().getStepK());
         stmt.setInt(index++, summary.getSum().getNumK());
-        stmt.setFloat(index++, (float)summary.getSum()
-                .getMaxValueH()
+        stmt.setFloat(index++, (float)summary.getBest()
+                .getH()
                 .convertTo(UnitImpl.KILOMETER)
                 .getValue());
-        stmt.setFloat(index++, summary.getSum().getMaxValueK());
-        stmt.setFloat(index++, summary.getSum().getMaxValue());
+        stmt.setFloat(index++, summary.getBest().getVpVs());
+        stmt.setFloat(index++, summary.getBest().getAmp());
         stmt.setFloat(index++, summary.getSum().getWeightPs());
         stmt.setFloat(index++, summary.getSum().getWeightPpPs());
         stmt.setFloat(index++, summary.getSum().getWeightPsPs());
@@ -191,6 +195,10 @@ public class JDBCSummaryHKStack extends JDBCTable {
                                 rs.getFloat("weightPpPs"),
                                 rs.getFloat("weightPsPs"),
                                 data,
+                                new QuantityImpl(rs.getFloat("peakH"),
+                                                 UnitImpl.KILOMETER),
+                                new Float(rs.getFloat("peakK")),
+                                new Float(rs.getFloat("peakVal")),
                                 chan);
         } else {
             stack = new HKStack(new QuantityImpl(rs.getFloat("alpha"),
@@ -221,9 +229,16 @@ public class JDBCSummaryHKStack extends JDBCTable {
                                         stack,
                                         rs.getFloat("hVariance"),
                                         rs.getFloat("kVariance"),
-                                        rs.getInt("numEQ"));
+                                        rs.getInt("numEQ"),
+                                        jdbcRejectedMax.getForStation(jdbcHKStack.getJDBCChannel()
+                                                                              .getNetworkTable()
+                                                                              .getDbId(chan.get_id().network_id),
+                                                                      chan.get_id().station_code));
         sum.setDbid(rs.getInt("hksummary_id"));
         sum.setComplexityResult(JDBCStackComplexity.extract(rs, sum.getDbid()));
+        if (withData) {
+            sum.recalcBest();
+        }
         return sum;
     }
 
@@ -315,9 +330,11 @@ public class JDBCSummaryHKStack extends JDBCTable {
         HKSummaryIterator iter = new HKSummaryIterator(rs, this, autoCommit);
         return iter;
     }
-    
-    public Station[] getStationsNeedingUpdate(float gaussianWidth, float minPercentMatch) throws SQLException {
-        int index=1;
+
+    public Station[] getStationsNeedingUpdate(float gaussianWidth,
+                                              float minPercentMatch)
+            throws SQLException {
+        int index = 1;
         needRecalc.setFloat(index++, gaussianWidth);
         needRecalc.setFloat(index++, gaussianWidth);
         needRecalc.setFloat(index++, minPercentMatch);
@@ -325,24 +342,28 @@ public class JDBCSummaryHKStack extends JDBCTable {
         needRecalc.setFloat(index++, minPercentMatch);
         ResultSet rs = needRecalc.executeQuery();
         ArrayList out = new ArrayList();
-        JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel().getStationTable();
+        JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel()
+                .getStationTable();
         while(rs.next()) {
             int net_id = rs.getInt("net_id");
             String staCode = rs.getString("sta_code");
             try {
                 int[] sta_id = jdbcStation.getDBIds(net_id, staCode);
-                if (sta_id.length > 0) {
+                if(sta_id.length > 0) {
                     out.add(jdbcStation.get(sta_id[0]));
                 }
             } catch(NotFound e) {
                 // should never happen
-                logger.warn("cant find for "+net_id+" "+staCode+", skipping", e);
+                logger.warn("cant find for " + net_id + " " + staCode
+                        + ", skipping", e);
             }
         }
         return (Station[])out.toArray(new Station[0]);
     }
 
     JDBCHKStack jdbcHKStack;
+
+    JDBCRejectedMaxima jdbcRejectedMax;
 
     JDBCSequence hksummarySeq;
 

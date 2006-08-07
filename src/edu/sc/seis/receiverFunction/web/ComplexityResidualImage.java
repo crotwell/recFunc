@@ -13,19 +13,18 @@ import edu.sc.seis.receiverFunction.HKStackImage;
 import edu.sc.seis.receiverFunction.StackComplexity;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.server.HKBox;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
-
 /**
- * @author crotwell
- * Created on Oct 21, 2005
+ * @author crotwell Created on Oct 21, 2005
  */
 public class ComplexityResidualImage extends SummaryHKStackImageServlet {
 
-
-    public ComplexityResidualImage() throws SQLException, ConfigurationException, Exception {
+    public ComplexityResidualImage() throws SQLException,
+            ConfigurationException, Exception {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -36,9 +35,16 @@ public class ComplexityResidualImage extends SummaryHKStackImageServlet {
         SumHKStack stack = super.getSumStack(req, net, staCode);
         lastStackMax = stack.getSum().getMaxValue();
         SumHKStack synth = SynthHKImage.getSynthStack(stack, req, net, staCode);
-        return new SumHKStack(stack.getMinPercentMatch(), stack.getSmallestH(), StackComplexity.getResidual(stack.getSum(), synth.getSum()), -1, -1, stack.getNumEQ());
+        return new SumHKStack(stack.getMinPercentMatch(),
+                              stack.getSmallestH(),
+                              StackComplexity.getResidual(stack.getSum(),
+                                                          synth.getSum()),
+                              -1,
+                              -1,
+                              stack.getNumEQ(),
+                              new HKBox[0]);
     }
-    
+
     void output(SumHKStack sumStack,
                 OutputStream out,
                 HttpServletRequest req,
@@ -51,8 +57,8 @@ public class ComplexityResidualImage extends SummaryHKStackImageServlet {
         ImageIO.write(image, "png", out);
         out.close();
     }
-    
+
     private float lastStackMax;
-    
+
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ComplexityResidualImage.class);
 }

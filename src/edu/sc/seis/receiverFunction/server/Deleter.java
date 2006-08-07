@@ -51,6 +51,10 @@ public class Deleter {
         jdbcRecFuncQC.delete(recfunc_id);
         jdbcRecFunc.delete(recfunc_id);
     }
+    
+    public void deleteChannel(int chanA, int chanB, int chanZ) {
+        String recFuncForChans ;
+    }
 
     public void deleteOrigin(int originId) throws SQLException, NotFound,
             IOException {

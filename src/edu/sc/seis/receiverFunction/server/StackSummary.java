@@ -63,6 +63,7 @@ public class StackSummary {
         jdbcHKStack = new JDBCHKStack(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
         jdbcSummary = new JDBCSummaryHKStack(jdbcHKStack);
         jdbcStackComplexity = new JDBCStackComplexity(jdbcSummary);
+        jdbcRejectMax = new JDBCRejectedMaxima(conn);
     }
 
     public void createSummary(String net,
@@ -182,6 +183,9 @@ public class StackSummary {
                           boolean doBootstrap,
                           boolean usePhaseWeight) throws FissuresException, NotFound, IOException, SQLException {
         ArrayList individualHK = jdbcHKStack.getForStation(netCode, staCode, gaussianWidth, percentMatch, true);
+        int netDbId = jdbcHKStack.getJDBCChannel().getStationTable().getBestNetworkDbId(netCode, staCode);
+        HKBox[] rejects = jdbcRejectMax.getForStation(netDbId,
+                                                      staCode);
         logger.info("in sum for " + netCode + "." + staCode+" numeq="+individualHK.size());
         System.out.println("in sum for " + netCode + "." + staCode+" numeq="+individualHK.size());
         // if there is only 1 eq that matches, then we can't really do a stack
@@ -192,7 +196,8 @@ public class StackSummary {
                                                  percentMatch,
                                                  smallestH,
                                                  doBootstrap,
-                                                 usePhaseWeight);
+                                                 usePhaseWeight,
+                                                 rejects);
             TimeOMatic.print("sum for " + netCode + "." + staCode);
             return sumStack;
         } else {
@@ -286,7 +291,9 @@ public class StackSummary {
     JDBCSummaryHKStack jdbcSummary;
 
     private JDBCStackComplexity jdbcStackComplexity;
-
+    
+    JDBCRejectedMaxima jdbcRejectMax;
+    
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StackSummary.class);
 
     public static Connection initDB(Properties props) throws IOException, SQLException {

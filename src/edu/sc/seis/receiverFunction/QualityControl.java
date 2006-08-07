@@ -32,6 +32,7 @@ import edu.sc.seis.receiverFunction.server.CachedResultPlusDbId;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCRecFuncQC;
+import edu.sc.seis.receiverFunction.server.JDBCRejectedMaxima;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.receiverFunction.server.RecFuncQCResult;
 import edu.sc.seis.receiverFunction.server.StackSummary;
@@ -127,6 +128,7 @@ public class QualityControl {
             String staArg = "";
             boolean dbUpdate = false;
             int rfbad = -1;
+            float hMin=-1,hMax=-1, kMin=-1, kMax=-1;
             String rfBadReason = "manual";
             for(int i = 0; i < args.length; i++) {
                 if(args[i].equals("-net")) {
@@ -141,11 +143,36 @@ public class QualityControl {
                     rfbad = Integer.parseInt(args[i+1]);
                     rfBadReason = args[i+2];
                     i+=2;
+                } else if(args[i].equals("-hkbad")) {
+                    hMin = Float.parseFloat(args[i+1]);
+                    hMax = Float.parseFloat(args[i+2]);
+                    kMin = Float.parseFloat(args[i+3]);
+                    kMax = Float.parseFloat(args[i+4]);
+                    rfBadReason = args[i+5];
+                    i+=5;
                 }
             }
             JDBCStation jdbcStation = jdbcRecFunc.getJDBCChannel().getStationTable();
             JDBCRecFuncQC jdbcRecFuncQC = new JDBCRecFuncQC(conn);
-            if (rfbad != -1) {
+            if (hMin!= -1) {
+                JDBCRejectedMaxima jdbcReject = new JDBCRejectedMaxima(conn);
+                NetworkId[] nets = jdbcStation.getNetTable().getByCode(netArg);
+                int netDbId = -1;
+                for(int i = 0; i < nets.length; i++) {
+                    StationId[] staIds = jdbcStation.getAllStationIds(nets[i]);
+                    for(int j = 0; j < staIds.length; j++) {
+                        if (staIds[j].station_code.equals(staArg)) {
+                            netDbId = jdbcStation.getNetTable().getDbId(staIds[j].network_id);
+                            break;
+                        }
+                    }
+                }
+                if (netDbId == -1 || netArg.equals("") || staArg.equals("")) {
+                    throw new NotFound(netArg+" "+staArg);
+                }
+                jdbcReject.put(netDbId, staArg, hMin, hMax, kMin, kMax, rfBadReason);
+                return;
+            } else if (rfbad != -1) {
                 // set single one bad
                 CachedResultPlusDbId resultWithDbId = jdbcRecFunc.get(rfbad);
                 CachedResult result = resultWithDbId.getCachedResult();

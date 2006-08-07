@@ -73,12 +73,16 @@ public class AzimuthStackSummary extends StackSummary {
             // stack
             if(sectorHK.size() > 1) {
                 HKStack temp = (HKStack)sectorHK.get(0);
+                int netDbId = jdbcHKStack.getJDBCChannel().getStationTable().getBestNetworkDbId(netCode, staCode);
+                HKBox[] rejects = jdbcRejectMax.getForStation(netDbId,
+                                                              staCode);
                 SumHKStack sumStack = new SumHKStack((HKStack[])sectorHK.toArray(new HKStack[0]),
                                                      temp.getChannel(),
                                                      percentMatch,
                                                      smallestH,
                                                      doBootstrap,
-                                                     usePhaseWeight);
+                                                     usePhaseWeight,
+                                                     rejects);
                 TimeOMatic.print("sum for " + netCode + "." + staCode);
                 AzimuthSumHKStack azStack = new AzimuthSumHKStack(sumStack, center, width);
                 out.add(azStack);

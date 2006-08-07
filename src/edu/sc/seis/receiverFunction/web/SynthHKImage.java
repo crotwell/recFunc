@@ -18,6 +18,7 @@ import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.StackComplexity;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.server.HKBox;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
@@ -57,7 +58,7 @@ public class SynthHKImage extends SummaryHKStackImageServlet {
             individuals.add(hk);
         }
         HKStack[] stacks = (HKStack[])individuals.toArray(new HKStack[0]);
-        SumHKStack distStack =  new SumHKStack(stacks, stacks[0].getChannel(), -1, stack.getSmallestH(), false, true);
+        SumHKStack distStack =  new SumHKStack(stacks, stacks[0].getChannel(), -1, stack.getSmallestH(), false, true, new HKBox[0]);
         return distStack;   
     }
 

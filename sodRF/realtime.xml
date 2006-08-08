@@ -8,7 +8,7 @@
             <unit>WEEK</unit>
         </eventQueryIncrement>
         <eventLag>
-            <value>5</value>
+            <value>8</value>
             <unit>WEEK</unit>
         </eventLag>
         <eventRefreshInterval>

@@ -422,6 +422,7 @@ JOIN (SELECT network.net_id, station.sta_code, location.loc_lat, location.loc_lo
    JOIN location ON (station.loc_id = location.loc_id) \
 ) AS loc ON (hk.net_id = loc.net_id AND hk.sta_code = loc.sta_code) \
 WHERE hk.hkstack != se.successfulEvents OR hk.hkstack != sum.numeq OR se.successfulEvents != sum.numeq \
+ OR sum.numeq IS NULL \
 ORDER BY net_code, sta_code
 
            

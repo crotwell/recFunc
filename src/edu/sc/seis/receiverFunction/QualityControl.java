@@ -36,6 +36,8 @@ import edu.sc.seis.receiverFunction.server.JDBCRejectedMaxima;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.receiverFunction.server.RecFuncQCResult;
 import edu.sc.seis.receiverFunction.server.StackSummary;
+import edu.sc.seis.receiverFunction.web.Start;
+import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
 public class QualityControl {
 
@@ -156,21 +158,11 @@ public class QualityControl {
             JDBCRecFuncQC jdbcRecFuncQC = new JDBCRecFuncQC(conn);
             if (hMin!= -1) {
                 JDBCRejectedMaxima jdbcReject = new JDBCRejectedMaxima(conn);
-                NetworkId[] nets = jdbcStation.getNetTable().getByCode(netArg);
-                int netDbId = -1;
-                for(int i = 0; i < nets.length; i++) {
-                    StationId[] staIds = jdbcStation.getAllStationIds(nets[i]);
-                    for(int j = 0; j < staIds.length; j++) {
-                        if (staIds[j].station_code.equals(staArg)) {
-                            netDbId = jdbcStation.getNetTable().getDbId(staIds[j].network_id);
-                            break;
-                        }
-                    }
-                }
-                if (netDbId == -1 || netArg.equals("") || staArg.equals("")) {
+                if (netArg.equals("") || staArg.equals("")) {
                     throw new NotFound(netArg+" "+staArg);
                 }
-                jdbcReject.put(netDbId, staArg, hMin, hMax, kMin, kMax, rfBadReason);
+                VelocityNetwork net = Start.getNetwork(netArg, jdbcStation.getNetTable());
+                jdbcReject.put(net.getDbId(), staArg, hMin, hMax, kMin, kMax, rfBadReason);
                 return;
             } else if (rfbad != -1) {
                 // set single one bad

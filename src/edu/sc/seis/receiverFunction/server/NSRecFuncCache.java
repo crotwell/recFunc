@@ -43,6 +43,9 @@ public class NSRecFuncCache implements RecFuncCacheOperations {
     }
     
     public synchronized void reset() {
+        if(recFuncCache != null){
+            ((org.omg.CORBA.Object)recFuncCache)._release();
+        }
         recFuncCache = null;
     }
     

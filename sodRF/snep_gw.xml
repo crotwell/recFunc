@@ -213,6 +213,15 @@
             <numPoles>2</numPoles>
             <filterType>NONCAUSAL</filterType>
         </filter>
+        <waveformVectorAlwaysSuccess>
+<seismogramAND>
+            <seismogramSampling>
+                <min>40</min>
+                <interval><unit>SECOND</unit><value>1</value></interval>
+            </seismogramSampling>
+            <decimate>2</decimate>
+</seismogramAND>
+        </waveformVectorAlwaysSuccess>
         <externalWaveformVectorProcess>
             <classname>edu.sc.seis.receiverFunction.crust2.Crust2Process</classname>
         </externalWaveformVectorProcess>

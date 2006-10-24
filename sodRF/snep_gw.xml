@@ -60,7 +60,7 @@
     <networkArm>
         <networkFinder>
             <name>SNEP</name>
-            <dns>edu/sc/seis/internal</dns>
+            <dns>edu/sc/seis</dns>
             <!-- recheck channels after some time -->
             <refreshInterval>
                 <unit>DAY</unit>
@@ -152,7 +152,7 @@
         </phaseRequest>
         <fixedDataCenter>
             <name>SNEP</name>
-            <dns>edu/sc/seis/internal</dns>
+            <dns>edu/sc/seis</dns>
         </fixedDataCenter>
         <ORAvailableDataWrapper>
             <someCoverage/>

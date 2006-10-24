@@ -478,7 +478,7 @@ public class JDBCHKStack extends JDBCTable {
 		JDBCChannel jdbcChannel = new JDBCChannel(conn);
 		JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
 		JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcEventAccess,
-				jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.getDataLoc());
+				jdbcChannel, jdbcSodConfig, props.getProperty("cormorant.servers.ears.dataloc", RecFuncCacheImpl.getDataLoc()));
 		JDBCHKStack jdbcHKStack = new JDBCHKStack(conn, jdbcEventAccess,
 				jdbcChannel, jdbcSodConfig, jdbcRecFunc);
 		String netCode = "";

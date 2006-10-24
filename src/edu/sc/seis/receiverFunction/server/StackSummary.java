@@ -50,7 +50,7 @@ import edu.sc.seis.sod.status.FissuresFormatter;
  */
 public class StackSummary {
 
-    public StackSummary(Connection conn) throws IOException, SQLException, ConfigurationException, TauModelException,
+    public StackSummary(Connection conn, Properties props) throws IOException, SQLException, ConfigurationException, TauModelException,
             Exception {
         JDBCEventAccess jdbcEventAccess = new JDBCEventAccess(conn);
         JDBCChannel jdbcChannel = new JDBCChannel(conn);
@@ -59,7 +59,7 @@ public class StackSummary {
                                                   jdbcEventAccess,
                                                   jdbcChannel,
                                                   jdbcSodConfig,
-                                                  RecFuncCacheImpl.getDataLoc());
+                                                  props.getProperty("cormorant.servers.ears.dataloc", RecFuncCacheImpl.getDataLoc()));
         jdbcHKStack = new JDBCHKStack(conn, jdbcEventAccess, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
         jdbcSummary = new JDBCSummaryHKStack(jdbcHKStack);
         jdbcStackComplexity = new JDBCStackComplexity(jdbcSummary);
@@ -390,7 +390,7 @@ public class StackSummary {
             TimeOMatic.start();
             Properties props = loadProps(args);
             conn = initDB(props);
-            StackSummary summary = new StackSummary(conn);
+            StackSummary summary = new StackSummary(conn, props);
             parseArgsAndRun(args, summary);
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);

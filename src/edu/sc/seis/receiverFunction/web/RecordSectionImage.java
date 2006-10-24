@@ -14,6 +14,8 @@ import edu.iris.Fissures.AuditInfo;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
+import edu.iris.Fissures.model.TimeInterval;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
@@ -24,6 +26,7 @@ import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.display.BackAzimuthDisplay;
+import edu.sc.seis.fissuresUtil.display.MicroSecondTimeRange;
 import edu.sc.seis.fissuresUtil.display.RecordSectionDisplay;
 import edu.sc.seis.fissuresUtil.display.registrar.PhaseAlignedTimeConfig;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
@@ -81,6 +84,14 @@ public class RecordSectionImage extends HttpServlet {
 
             float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
             float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
+            TimeInterval prePhase = new TimeInterval(RevUtil.getFloat("prePhase",
+                                                                      req,
+                                                                      10),
+                                                     UnitImpl.SECOND);
+            TimeInterval window = new TimeInterval(RevUtil.getFloat("window",
+                                                                    req,
+                                                                    120),
+                                                   UnitImpl.SECOND);
             CachedResultPlusDbId[] results;
             synchronized(jdbcRecFunc.getConnection()) {
                 results = jdbcRecFunc.getSuccessful(netDbId,
@@ -119,8 +130,17 @@ public class RecordSectionImage extends HttpServlet {
                 throw new RuntimeException("Unknown type: "+recordSectionType);
             }
             disp.setMinSeisPixelHeight(RevUtil.getInt("minSeisHeight",req, 80));
-            disp.setTimeConfig(new PhaseAlignedTimeConfig("ttp"));
+            PhaseAlignedTimeConfig timeConfig = new PhaseAlignedTimeConfig("ttp");
+            disp.setTimeConfig(timeConfig);
             disp.add(itrDSS);
+            MicroSecondTimeRange mstr = disp.getTimeConfig().getTime();
+            disp.getTimeConfig()
+                    .shaleTime(prePhase.divideBy(mstr.getInterval())
+                                       .getValue(SEC_PER_SEC),
+                               1);
+            disp.getTimeConfig().shaleTime(0,
+                                           window.divideBy(mstr.getInterval())
+                                                   .getValue(SEC_PER_SEC));
             disp.outputToPNG(out, dim);
             out.close();
         } catch(Throwable e) {
@@ -161,5 +181,8 @@ public class RecordSectionImage extends HttpServlet {
 
     public static int ydimDefault = 800;
 
+    private static final UnitImpl SEC_PER_SEC = UnitImpl.divide(UnitImpl.SECOND,
+                                                                UnitImpl.SECOND);
+    
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(RecordSectionImage.class);
 }

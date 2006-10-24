@@ -144,12 +144,14 @@ public class JDBCRecFunc extends JDBCTable {
         File stationDir = getDir(cacheEvent, channels[0], config.gwidth);
         boolean dirsCreated = stationDir.mkdirs();
         if(!dirsCreated) {
+            logger.debug("initial mkdirs returned false: "+dirsCreated+"  "+stationDir.exists());
             // try once more just for kicks...
             for(int i = 0; i < 10 && !dirsCreated; i++) {
                 try {
                     Thread.sleep(1000*i);
                 } catch(InterruptedException e) {}
                 dirsCreated = stationDir.mkdirs();
+                logger.debug(i+" mkdirs returned false: "+dirsCreated+"  "+stationDir.exists());
             }
             if(!dirsCreated) {
                 File tmpDir = stationDir;

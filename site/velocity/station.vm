@@ -90,8 +90,8 @@ window.onload=function(){
  <tr>
  <td class="odd">EARS</td>
  <td class="even">$!summary.getBest().formatH()</td>
- <td class="odd">$!summary.getBest().formatK()</td>
- <td class="even">$!summary.getBest().formatVp())</td>
+ <td class="odd">$!summary.getBest().formatVpVs()</td>
+ <td class="even">$!summary.getBest().formatVp()</td>
  <td class="odd">$!summary.getBest().formatVs()</td>
  <td class="even">$!summary.getBest().formatPoissonsRatio()</td>
  <td class="odd"></td>

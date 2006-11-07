@@ -21,7 +21,7 @@ def makeHVsLon(outFilename, dataFile):
     rows = []
     for row in results:
 	rows.append(row)
-    gmt= os.popen('psxy -B2WESn -P -JX6i/-6i -R-94/-70/25/60 -Sp.1i -G0/0/255 -K '+out, 'w')
+    gmt= os.popen('psxy -B2WESn -P -JX6i/-6i -R-94/-70/24/51 -Sp.08i -G0/0/255 -K '+out, 'w')
     for row in rows:
 	gmt.write("%s %s\n" % (row[4], row[5]))
     gmt.close()
@@ -32,8 +32,8 @@ def makeHVsLon(outFilename, dataFile):
     gmt= os.popen('pstext -P -JX -R -O -W'+out, 'w')
     for row in rows:
 	thick = row[5].replace(' km','')
-	gmt.write(row[4]+"  "+ thick+" 12 90 4 BL ."+row[0]+'.'+row[1]+"\n")
-	print(row[4]+"  "+ thick+" 12 90 4  BL ."+row[0]+'.'+row[1]+"\n")
+	thick = '29'
+	gmt.write(row[4]+"  "+ thick+" 12 90 4 BL "+row[0]+'.'+row[1]+"\n")
     gmt.close()
 
 makeHVsLon('momaH.ps', 'moma.csv')

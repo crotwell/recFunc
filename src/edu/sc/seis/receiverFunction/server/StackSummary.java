@@ -314,6 +314,18 @@ public class StackSummary {
         boolean neededOnly = false;
         String netArg = "";
         String staArg = "";
+
+        for(int i = 0; i < args.length; i++) {
+            if (args[i].equals("--help")) {
+                System.out.println("Usage:");
+                System.out.println(" [ -net network [-sta station]] | -all | --needRecalc");
+                System.out.println("-g gaussian");
+                System.out.println("--complexity");
+                System.out.println("--nobootstrap");
+                System.out.println();
+                return;
+            }
+        }
         for(int i = 0; i < args.length; i++) {
             if(args[i].equals("-net")) {
                 netArg = args[i + 1];
@@ -358,10 +370,12 @@ public class StackSummary {
             JDBCStation jdbcStation = summary.jdbcHKStack.getJDBCChannel().getStationTable();
             NetworkId[] nets = jdbcStation.getNetTable().getByCode(netArg);
             int sta_dbid = -1;
+            boolean foundNet = false;
             for(int i = 0; i < nets.length; i++) {
                 try {
                     int[] tmp = jdbcStation.getDBIds(nets[i], staArg);
                     if(tmp.length > 0) {
+                        foundNet = true;
                         sta_dbid = tmp[0];
                         Station station = jdbcStation.get(sta_dbid);
                         summary.createSummary(station.get_id(),
@@ -375,6 +389,9 @@ public class StackSummary {
                     System.out.println("NotFound for :" + NetworkIdUtil.toStringNoDates(nets[i]));
                     // go to next network
                 }
+            }
+            if (! foundNet) {
+                System.out.println("Warning: didn't find net for "+netArg);
             }
         }
     }

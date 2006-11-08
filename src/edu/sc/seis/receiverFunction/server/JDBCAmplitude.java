@@ -29,10 +29,11 @@ import edu.sc.seis.receiverFunction.web.Start;
 
 public class JDBCAmplitude extends JDBCTable {
 
-    public JDBCAmplitude(Connection conn) throws Exception {
+    public JDBCAmplitude(Connection conn, Properties props) throws Exception {
         super("amplitude", conn);
-        jdbcHKStack = new StackSummary(getConnection()).getJDBCHKStack();
-        jdbcSumHKStack = new StackSummary(getConnection()).getJdbcSummary();
+        StackSummary sum = new StackSummary(getConnection(), props);
+        jdbcHKStack = sum.getJDBCHKStack();
+        jdbcSumHKStack = sum.getJdbcSummary();
         TableSetup.setup(this,
                         "edu/sc/seis/receiverFunction/server/default.props");
     }
@@ -157,7 +158,7 @@ public class JDBCAmplitude extends JDBCTable {
         }
         System.out.println("Calc for "+netArg+" "+staArg);
         Properties props = StackSummary.loadProps(args);
-        JDBCAmplitude amp = new JDBCAmplitude(StackSummary.initDB(props));
+        JDBCAmplitude amp = new JDBCAmplitude(StackSummary.initDB(props), props);
         amp.calcAll(netArg, staArg);
     }
 }

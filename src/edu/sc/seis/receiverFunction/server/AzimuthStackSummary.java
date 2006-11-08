@@ -22,9 +22,9 @@ import edu.sc.seis.sod.ConfigurationException;
 
 public class AzimuthStackSummary extends StackSummary {
 
-    public AzimuthStackSummary(Connection conn) throws IOException, SQLException, ConfigurationException,
+    public AzimuthStackSummary(Connection conn, Properties props) throws IOException, SQLException, ConfigurationException,
             TauModelException, Exception {
-        super(conn);
+        super(conn, props);
         jdbcAz = new JDBCAzimuthSummaryHKStack(jdbcSummary);
     }
 
@@ -99,7 +99,7 @@ public class AzimuthStackSummary extends StackSummary {
         try {
             Properties props = loadProps(args);
             Connection conn = initDB(props);
-            AzimuthStackSummary summary = new AzimuthStackSummary(conn);
+            AzimuthStackSummary summary = new AzimuthStackSummary(conn, props);
             parseArgsAndRun(args, summary);
         } catch(Exception e) {
             logger.error(e);

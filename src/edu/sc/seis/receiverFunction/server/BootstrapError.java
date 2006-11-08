@@ -30,9 +30,9 @@ public class BootstrapError extends StackSummary {
     /**
      *
      */
-    public BootstrapError(Connection conn) throws IOException, SQLException,
+    public BootstrapError(Connection conn, Properties props) throws IOException, SQLException,
             ConfigurationException, TauModelException, Exception {
-        super(conn);
+        super(conn, props);
     }
 
     public SumHKStack createSummary(StationId station,
@@ -112,7 +112,7 @@ public class BootstrapError extends StackSummary {
         try {
             Properties props = loadProps(args);
             Connection conn = initDB(props);
-            StackSummary summary = new BootstrapError(conn);
+            StackSummary summary = new BootstrapError(conn, props);
             parseArgsAndRun(args, summary);
         } catch(Exception e) {
             logger.error(e);

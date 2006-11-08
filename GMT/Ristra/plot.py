@@ -20,8 +20,9 @@ def makeHVsLon(outFilename, dataFile):
     row = results.next()
     rows = []
     for row in results:
-	rows.append(row)
-    gmt= os.popen('psxy -B2WESn -P -JX6i/-6i -R-111.0/-102.7/24/51 -Sp.08i -G0/0/255 -K '+out, 'w')
+	if (int(row[12]) > 5):
+	    rows.append(row)
+    gmt= os.popen('psxy -B2WESn -P -JX6i/-6i -R-111.0/-102.7/24/61 -Sp.08i -G0/0/255 -K '+out, 'w')
     for row in rows:
 	gmt.write("%s %s\n" % (row[4], row[5]))
     gmt.close()
@@ -32,9 +33,9 @@ def makeHVsLon(outFilename, dataFile):
     gmt= os.popen('pstext -P -JX -R -O -W'+out, 'w')
     for row in rows:
 	thick = row[5].replace(' km','')
-	thick = '29'
+	thick = '30'
 	gmt.write(row[4]+"  "+ thick+" 12 90 4 BL "+row[0]+'.'+row[1]+"\n")
     gmt.close()
 
-makeHVsLon('ristraH.ps', 'ristra.csv')
-ps2pdf('ristraH.ps') 
+makeHVsLon('ristraH_5.ps', 'ristra.csv')
+ps2pdf('ristraH_5.ps') 

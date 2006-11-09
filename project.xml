@@ -13,8 +13,8 @@
     <inceptionYear>2002</inceptionYear>
     <package>edu.sc.seis.receiverFunction</package>
     <gumpRepositoryId>${pom.artifactId}</gumpRepositoryId>
-    <description> Caclulation of seismic receiver functions based on the time-domain iterative
-        deconvolution method of Ammon. </description>
+    <description> Caclulation of seismic receiver functions based on the time-domain iterative deconvolution method of
+        Ammon. </description>
     <shortDescription>Caclulation of receiver functions.</shortDescription>
     <url>http://www.seis.sc.edu/software/${pom.artifactId}</url>
     <siteAddress>roo.seis.sc.edu</siteAddress>
@@ -52,11 +52,15 @@
         </developer>
     </developers>
     <dependencies>
-    <dependency>
-      <artifactId>seisFile</artifactId>
-      <groupId>seisFile</groupId>
-      <version>1.0.1</version>
-    </dependency>
+        <dependency>
+            <id>JSAP</id>
+            <version>2.1</version>
+        </dependency>
+        <dependency>
+            <artifactId>seisFile</artifactId>
+            <groupId>seisFile</groupId>
+            <version>1.0.1</version>
+        </dependency>
         <dependency>
             <groupId>jfreechart</groupId>
             <artifactId>jcommon</artifactId>
@@ -119,7 +123,7 @@
         <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
-<!--
+            <!--
             <version>7.4.1-jdbc3</version>
 -->
             <version>8.0-312.jdbc3</version>

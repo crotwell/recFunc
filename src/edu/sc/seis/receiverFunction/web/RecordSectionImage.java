@@ -1,6 +1,7 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.awt.Dimension;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
@@ -143,6 +144,8 @@ public class RecordSectionImage extends HttpServlet {
                                                    .getValue(SEC_PER_SEC));
             disp.outputToPNG(out, dim);
             out.close();
+        } catch(EOFException e) {
+            // silently eat these as they just mean remote user has closed connection
         } catch(Throwable e) {
             Revlet.sendToGlobalExceptionHandler(req, e);
             throw new ServletException(e);

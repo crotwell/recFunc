@@ -29,11 +29,32 @@ def makeHVsLon(outFilename, dataFile):
     for row in rows:
 	gmt.write("%s %s\n" % (row[4], row[14]))
     gmt.close()
-    gmt= os.popen('pstext -P -JX -R -O -W'+out, 'w')
+    gmt= os.popen('pstext -P -JX -R -O -K -W'+out, 'w')
     for row in rows:
 	thick = row[5].replace(' km','')
 	thick = '29'
-	gmt.write(row[4]+"  "+ thick+" 12 90 4 BL "+row[0]+'.'+row[1]+"\n")
+	print(row[4]+"  "+ thick+" 12 90 4 ML "+row[0]+'.'+row[1])
+	gmt.write(row[4]+"  "+ thick+" 12 90 4 ML "+row[0]+'.'+row[1]+"\n")
+    gmt.close()
+    print 'aaaaaa'
+    # plot stations without a moma result in array
+    # also do pstext from array to get all stations
+    results = csv.reader(open('moma_nocomp.csv', 'r'), dialect=dialect)
+    row = results.next()
+    row = results.next()
+    rows = []
+    for row in results:
+	rows.append(row)
+    gmt= os.popen('pstext -P -JX -R -O -K -W'+out, 'w')
+    for row in rows:
+	thick = row[5].replace(' km','')
+	thick = '29'
+	print(row[3]+"  "+ thick+" 12 90 4 ML "+row[0]+'.'+row[1])
+	gmt.write(row[3]+"  "+ thick+" 12 90 4 ML "+row[0]+'.'+row[1]+"\n")
+    gmt.close()
+    gmt= os.popen('psxy -P -JX -R -Sp.08i -G255/0/255 -O '+out, 'w')
+    for row in rows:
+	gmt.write("%s %s\n" % (row[3], row[5]))
     gmt.close()
 
 makeHVsLon('momaH.ps', 'moma.csv')

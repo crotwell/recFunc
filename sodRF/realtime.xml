@@ -193,10 +193,10 @@
             <seismogramAND>
                 <seismogramSampling>
                     <min>100</min>
-                    <timeInterval>
+                    <interval>
                         <unit>SECOND</unit>
                         <value>1</value>
-                    </timeInterval>
+                    </interval>
                 </seismogramSampling>
                 <decimate>5</decimate>
             </seismogramAND>
@@ -205,10 +205,10 @@
             <seismogramAND>
                 <seismogramSampling>
                     <min>50</min>
-                    <timeInterval>
+                    <interval>
                         <unit>SECOND</unit>
                         <value>1</value>
-                    </timeInterval>
+                    </interval>
                 </seismogramSampling>
                 <decimate>2</decimate>
             </seismogramAND>

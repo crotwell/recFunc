@@ -1,9 +1,12 @@
 #!/bin/bash
 
-curl -m 900 -o moma.csv.new 'http://www.seis.sc.edu/ears/comparePriorResult.txt?name=MOMA&gaussian=2.5'
-mv moma.csv.new moma.csv
+for G in 2.5 1.0 0.7 0.4
+do
+ curl -m 900 -o moma${G}.csv.new 'http://www.seis.sc.edu/ears/comparePriorResult.txt?name=MOMA&gaussian='${G}
+ mv moma${G}.csv.new moma${G}.csv
 
-curl -m 900 -o moma_nocomp.csv.new 'http://www.seis.sc.edu/ears/stationList.txt?netdbid=48&gaussian=2.5'
-mv moma_nocomp.csv.new moma_nocomp.csv
+ curl -m 900 -o moma${G}_nocomp.csv.new 'http://www.seis.sc.edu/ears/stationList.txt?netdbid=48&gaussian='${G}
+ mv moma${G}_nocomp.csv.new moma${G}_nocomp.csv
 
+done
 

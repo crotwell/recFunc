@@ -159,6 +159,7 @@ public class SeismogramImage extends HttpServlet {
                 dss[0].getDataSet().addDataSetSeismogram(synthDSS,
                                                          new AuditInfo[0]);
                 disp.get(dss[0]).add(new DataSetSeismogram[] {synthDSS});
+                disp.get(dss[1]).add(new DataSetSeismogram[] {synthDSS});
                 logger.debug(" max amp data: "
                         + new Statistics(((MemoryDataSetSeismogram)dss[0]).getCache()[0].get_as_floats()).max());
                 logger.debug("max amp synth: "

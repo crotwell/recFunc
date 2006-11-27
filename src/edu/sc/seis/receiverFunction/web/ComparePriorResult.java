@@ -46,6 +46,9 @@ public class ComparePriorResult extends StationList {
         }
         HashMap prior = new HashMap();
         context.put("prior", prior);
+        HashMap hDiffMap = new HashMap();
+        context.put("hDiffMap", hDiffMap);
+        
         StationResult[] results;
         if(name.equals("crust2.0") || name.equals("Crust2.0")) {
             Station[] allsta = jdbcChannel.getStationTable().getAllStations();

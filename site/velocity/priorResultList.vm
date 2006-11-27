@@ -1,9 +1,9 @@
 <html>
 <head>
 <title>EARS - Prior Results List</title>
-<link rel="stylesheet" type="text/css" href="station_list_style.css"/>
-<script src="sorttable.js" type="text/javascript"> </script>
-<script src="tableRuler.js" type="text/javascript"> </script>
+<link rel="stylesheet" type="text/css" href="$!{staticFiles}station_list_style.css"/>
+<script src="$!{staticFiles}sorttable.js" type="text/javascript"> </script>
+<script src="$!{staticFiles}tableRuler.js" type="text/javascript"> </script>
 <script type="text/javascript">
 window.onload=function(){
         tableruler();

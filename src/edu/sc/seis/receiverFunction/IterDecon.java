@@ -11,7 +11,7 @@ import edu.sc.seis.fissuresUtil.freq.Cmplx;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 16928 2006-04-18 20:09:38Z crotwell $
+ * @version $Id: IterDecon.java 18535 2006-11-27 21:24:25Z crotwell $
  */
 
 public class IterDecon {
@@ -68,7 +68,12 @@ public class IterDecon {
             amps[bump] = corr[shifts[bump]]/dt; // why normalize by dt here?
 
             predicted = buildDecon(amps, shifts, g.length, gwidthFactor, dt);
-            float[] predConvolve = NativeFFT.convolve(predicted, denominator, dt);
+            float[] predConvolve;
+            if (useNativeFFT) {
+                predConvolve = NativeFFT.convolve(predicted, denominator, dt);
+            } else {
+                predConvolve = Cmplx.convolve(predicted, denominator, dt);
+            }
 
             residual = getResidual(f, predConvolve);
             float residualPower = power(residual);
@@ -100,7 +105,12 @@ public class IterDecon {
     public static float[] correlateNorm(float[] fdata, float[] gdata) {
         float zeroLag = power(gdata);
 
-        float[] corr = NativeFFT.correlate(fdata, gdata);
+        float[] corr;
+        if (useNativeFFT) {
+            corr = NativeFFT.correlate(fdata, gdata);
+        } else {
+            corr = Cmplx.correlate(fdata, gdata);
+        }
 
         float temp =1 / zeroLag;
         for (int i=0; i<corr.length; i++) {
@@ -182,20 +192,7 @@ public class IterDecon {
         if (gwidthFactor == 0) {
             return x;
         }
-        float[] forward = new float[x.length];
-        System.arraycopy(x, 0, forward, 0, x.length);
-        if(useNativeFFT) {
-            NativeFFT.forward(forward);
-        } else {
-            // not on mac, so no altavec fft
-            float[] javaFFT = new float[forward.length*2];
-            for(int i = 0; i < forward.length; i++) {
-                javaFFT[2*i] = forward[i];
-            }
-            forward = shortenFFT(Cmplx.four1Forward(javaFFT));
-            // Cmplx fft does 2n values, but native does n using symmetry
-            
-        }
+        float[] forward = forwardFFT(x);
         double df = 1/(forward.length * dt);
         double d_omega = 2*Math.PI*df;
         double gwidth = 4*gwidthFactor*gwidthFactor;
@@ -215,17 +212,7 @@ public class IterDecon {
             forward[j] *= gauss;
             forward[j+1] *= gauss;
         }
-
-        if(useNativeFFT) {
-            NativeFFT.inverse(forward);
-        } else {
-            // not on mac, so no altavec fft
-            float[] tmp = Cmplx.four1Inverse(lengthenFFT(forward));
-            forward = new float[tmp.length/2];
-            for(int i = 0; i < tmp.length/2; i++) {
-                forward[i] = tmp[2*i];
-            }
-        }
+        forward = inverseFFT(forward);
         return forward;
     }
     
@@ -254,9 +241,8 @@ public class IterDecon {
     
     public static float[] phaseShift(float[] x, float shift, float dt) {
 
-        float[] forward = new float[x.length];
-        System.arraycopy(x, 0, forward, 0, x.length);
-        NativeFFT.forward(forward);
+        float[] forward;
+        forward = forwardFFT(x);
 
         double df = 1/(forward.length * dt);
         double d_omega = 2*Math.PI*df;
@@ -278,8 +264,42 @@ public class IterDecon {
             forward[j+1] = (float)(a*d+b*c);
         }
 
-        NativeFFT.inverse(forward);
+        forward = inverseFFT(forward);
         return forward;
+    }
+    
+    public static float[] forwardFFT(float[] x) {
+        float[] forward = new float[x.length];
+        System.arraycopy(x, 0, forward, 0, x.length);
+        if(useNativeFFT) {
+            NativeFFT.forward(forward);
+        } else {
+            // not on mac, so no altavec fft
+            float[] javaFFT = new float[forward.length*2];
+            for(int i = 0; i < forward.length; i++) {
+                javaFFT[2*i] = forward[i];
+            }
+            forward = shortenFFT(Cmplx.four1Forward(javaFFT));
+            // Cmplx fft does 2n values, but native does n using symmetry
+            
+        }
+        return forward;
+    }
+    
+    public static float[] inverseFFT(float[] x) {
+        float[] inverse = new float[x.length];
+        System.arraycopy(x, 0, inverse, 0, x.length);
+        if(useNativeFFT) {
+            NativeFFT.inverse(inverse);
+        } else {
+            // not on mac, so no altavec fft
+            float[] tmp = Cmplx.four1Inverse(lengthenFFT(inverse));
+            inverse = new float[tmp.length/2];
+            for(int i = 0; i < tmp.length/2; i++) {
+                inverse[i] = tmp[2*i];
+            }
+        }
+        return inverse;
     }
 
     public static float[] makePowerTwo(float[] data) {

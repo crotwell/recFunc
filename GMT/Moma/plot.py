@@ -20,10 +20,10 @@ def plotGaussH(outFilename, gauss, color='0/0/0'):
     rows = []
     for row in results:
 	rows.append(row)
-    gmt= os.popen('psxy -P -JX -R -G'+color+' -O -K '+out, 'w')
-    for row in rows:
-	gmt.write("%s %s\n" % (row[4], row[5]))
-    gmt.close()
+#    gmt= os.popen('psxy -P -JX -R -G'+color+' -O -K '+out, 'w')
+#    for row in rows:
+#	gmt.write("%s %s\n" % (row[4], row[5]))
+#    gmt.close()
     gmt= os.popen('psxy -P -JX -R -Sc.08i -G'+color+' -O -K '+out, 'w')
     for row in rows:
 	gmt.write("%s %s\n" % (row[4], row[5]))

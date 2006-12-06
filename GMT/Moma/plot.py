@@ -20,6 +20,10 @@ def plotGaussH(outFilename, gauss, color='0/0/0'):
     rows = []
     for row in results:
 	rows.append(row)
+    gmt= os.popen('psxy -P -JX -R -G'+color+' -O -K '+out, 'w')
+    for row in rows:
+	gmt.write("%s %s\n" % (row[4], row[5]))
+    gmt.close()
     gmt= os.popen('psxy -P -JX -R -Sc.08i -G'+color+' -O -K '+out, 'w')
     for row in rows:
 	gmt.write("%s %s\n" % (row[4], row[5]))
@@ -45,9 +49,10 @@ def plotGaussH(outFilename, gauss, color='0/0/0'):
 	rows.append(row)
     gmt= os.popen('pstext -P -JX -R -O -K -W'+out, 'w')
     for row in rows:
-	thick = row[5].replace(' km','')
-	thick = '25'
-	gmt.write(row[3]+"  "+ thick+" 12 90 4 ML "+row[0]+'.'+row[1]+"\n")
+	if (row[1] != 'MO18'):
+	    thick = row[5].replace(' km','')
+	    thick = '25'
+	    gmt.write(row[3]+"  "+ thick+" 12 90 4 ML "+row[0]+'.'+row[1]+"\n")
     gmt.close()
     gmt= os.popen('psxy -P -JX -R -Sc.08i -G'+color+' -O -K '+out, 'w')
     for row in rows:
@@ -72,15 +77,15 @@ def makeHVsLon(outFilename):
 
     plotGaussH(outFilename, '2.5', '0/0/0')
     plotGaussH(outFilename, '1.0', '0/0/255')
-    plotGaussH(outFilename, '0.7', '0/255/0')
-    plotGaussH(outFilename, '0.4', '0/255/255')
+#    plotGaussH(outFilename, '0.7', '0/255/0')
+#    plotGaussH(outFilename, '0.4', '0/255/255')
     gmt= os.popen('psxy -P -JX -R -O -K -Y2 '+out, 'w')
     gmt.close()
     legend(outFilename, '21', 't.1i', '255/0/0', 'Moma')
     legend(outFilename, '21.75', 'c.08i', '0/0/0', '2.5')
     legend(outFilename, '22.5', 'c.08i', '0/0/255', '1.0')
-    legend(outFilename, '23.25', 'c.08i', '0/255/0', '0.7')
-    legend(outFilename, '24', 'c.08i', '0/255/255', '0.4')
+#    legend(outFilename, '23.25', 'c.08i', '0/255/0', '0.7')
+#    legend(outFilename, '24', 'c.08i', '0/255/255', '0.4')
 
     gmt= os.popen('psxy -P -JX -R -O '+out, 'w')
     gmt.close()

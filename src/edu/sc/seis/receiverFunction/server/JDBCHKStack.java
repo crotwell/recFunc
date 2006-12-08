@@ -251,10 +251,16 @@ public class JDBCHKStack extends JDBCTable {
 				true);
 	}
 
-	HKStack calc(int recFuncDbId, float weightPs, float weightPpPs,
-			float weightPsPs, boolean save) throws TauModelException,
-			FileNotFoundException, FissuresException, NotFound, IOException,
-			SQLException {
+    public HKStack calc(int recFuncDbId, boolean save) throws TauModelException,
+            FileNotFoundException, FissuresException, NotFound, IOException,
+            SQLException {
+        return calc(recFuncDbId, DEFAULT_WEIGHT_Ps, DEFAULT_WEIGHT_PpPs, DEFAULT_WEIGHT_PsPs, save);
+    }
+    
+    public HKStack calc(int recFuncDbId, float weightPs, float weightPpPs,
+                        float weightPsPs, boolean save) throws TauModelException,
+                        FileNotFoundException, FissuresException, NotFound, IOException,
+                        SQLException {
 		CachedResultPlusDbId cachedResult = jdbcRecFunc.get(recFuncDbId);
 		HKStack stack = HKStack.create(cachedResult.getCachedResult(),
 				weightPs, weightPpPs, weightPsPs);
@@ -455,11 +461,8 @@ public class JDBCHKStack extends JDBCTable {
 		try {
 			System.out.println("calc for percent match > " + minPercentMatch
 					+ " with weights of 1/3");
-			float weightPs = 1 / 3f;
-			float weightPpPs = 1 / 3f;
-			float weightPsPs = 1 - weightPs - weightPpPs;
-			calcAndSave(args, minPercentMatch, true, false, weightPs,
-					weightPpPs, weightPsPs);
+			calcAndSave(args, minPercentMatch, true, false, DEFAULT_WEIGHT_Ps,
+					DEFAULT_WEIGHT_PpPs, DEFAULT_WEIGHT_PsPs);
 		} catch (Exception e) {
 			GlobalExceptionHandler.handle(e);
 		}
@@ -558,4 +561,8 @@ public class JDBCHKStack extends JDBCTable {
 	}
 
 	Crust2 crust2;
+    
+    public static final float DEFAULT_WEIGHT_Ps = 1 / 3f;
+    public static final float DEFAULT_WEIGHT_PpPs = 1 / 3f;
+    public static final float DEFAULT_WEIGHT_PsPs = 1 - DEFAULT_WEIGHT_Ps - DEFAULT_WEIGHT_PpPs;
 }

@@ -112,6 +112,7 @@ public class SeismogramImage extends HttpServlet {
             disp.setTimeConfig(relTime);
             DataSetSeismogram[] dss = getDSS(result);
             disp.add(dss);
+            disp.get(dss[1]).add(new DataSetSeismogram[] {dss[0]});
             MemoryDataSetSeismogram synthDSS = null;
             if(RevUtil.get("H", req, null) != null
                     && !RevUtil.get("H", req, null).equals("$maxValueH")
@@ -159,7 +160,6 @@ public class SeismogramImage extends HttpServlet {
                 dss[0].getDataSet().addDataSetSeismogram(synthDSS,
                                                          new AuditInfo[0]);
                 disp.get(dss[0]).add(new DataSetSeismogram[] {synthDSS});
-                disp.get(dss[1]).add(new DataSetSeismogram[] {synthDSS});
                 logger.debug(" max amp data: "
                         + new Statistics(((MemoryDataSetSeismogram)dss[0]).getCache()[0].get_as_floats()).max());
                 logger.debug("max amp synth: "

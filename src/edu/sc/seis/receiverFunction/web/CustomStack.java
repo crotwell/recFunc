@@ -36,17 +36,21 @@ public class CustomStack extends Station {
         super();
     }
 
-    public SumHKStack getSummaryStack(HttpServletRequest req) throws SQLException, NotFound, IOException, TauModelException {
+    public SumHKStack getSummaryStack(HttpServletRequest req) throws SQLException, NotFound, IOException, TauModelException, FissuresException {
         int[] dbids = parseDbIds(req);
         if (dbids.length == 0) {
             throw new RuntimeException("No dbids found in query params");
         }
-        boolean doBootstrap = RevUtil.getBoolean("bootstrap", req, false);
         HKStack[] plots = new HKStack[dbids.length];
         for(int i = 0; i < dbids.length; i++) {
+            try {
             plots[i] = jdbcHKStack.get(dbids[i]);
+            } catch (NotFound n) {
+                plots[i] = jdbcHKStack.calc(dbids[i], true);
+            }
             plots[i].compact();
         }
+        boolean doBootstrap = RevUtil.getBoolean("bootstrap", req, false);
         int netDbId = Start.getNetwork(req, jdbcChannel.getNetworkTable()).getDbId();
         HKBox[] rejects = jdbcRejectMax.getForStation(netDbId,
                                                       req.getParameter("stacode"));

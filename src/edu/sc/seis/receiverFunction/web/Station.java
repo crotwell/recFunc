@@ -227,7 +227,7 @@ public class Station extends Revlet {
     }
 
     public SumHKStack getSummaryStack(HttpServletRequest req)
-            throws SQLException, NotFound, IOException, TauModelException {
+            throws SQLException, NotFound, IOException, TauModelException, FissuresException {
         float gaussianWidth = RevUtil.getFloat("gaussian",
                                                req,
                                                Start.getDefaultGaussian());

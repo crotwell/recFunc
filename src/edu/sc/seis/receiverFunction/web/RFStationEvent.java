@@ -123,13 +123,15 @@ public class RFStationEvent extends Revlet {
             RevUtil.copy("H", req, vContext);
             RevUtil.copy("vpvs", req, vContext);
             
-            RevletContext context = new RevletContext("rfStationEvent.vm", vContext);
+            RevletContext context = new RevletContext(velocityFile, vContext);
             Revlet.loadStandardQueryParams(req, context);
             return context;
         } catch(Exception e) {
             throw new RuntimeException(e);
         }
     }
+    
+    protected String velocityFile = "rfStationEvent.vm";
 
     private SimplePhaseStoN ston;
     

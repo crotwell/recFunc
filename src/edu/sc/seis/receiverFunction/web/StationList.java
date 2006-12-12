@@ -178,7 +178,7 @@ public class StationList extends Revlet {
                 }
             } catch(NotFound e) {
                 // oh well, skip this station
-                logger.warn("not found for " + sta.getNetCode() + "."
+                logger.warn("not found " + sta.getNetCode() + "."
                         + sta.get_code());
             }
         }

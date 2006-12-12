@@ -23,6 +23,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYZDataset;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.receiverFunction.HKStackImage;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
@@ -122,7 +123,7 @@ public class HKLatLonPlot extends HttpServlet {
         }
         GMTColorPalette colorPallete;
         try {
-            BufferedReader buf = new BufferedReader(new FileReader("/seis/local/External/GMT4.0/share/cpt/GMT_seis.cpt"));
+            BufferedReader buf = new BufferedReader(new FileReader(HKStackImage.getCPTFile()));
             colorPallete = GMTColorPalette.load(buf).renormalize(minZ, maxZ, Color.BLACK, Color.MAGENTA, Color.CYAN);
             buf.close();
         } catch (IOException e) {

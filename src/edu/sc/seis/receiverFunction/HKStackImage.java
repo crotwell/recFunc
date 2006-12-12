@@ -31,7 +31,7 @@ public class HKStackImage extends JComponent {
     }
 
     HKStackImage(HKStack stack, String phase, int smallestHindex) {
-        CPT_FILE = System.getProperty("gmt.cpt_file", CPT_FILE);
+        CPT_FILE = getCPTFile();
         this.stack = stack;
         this.smallestHindex = smallestHindex;
         if (phase.equals("all")) {
@@ -153,7 +153,13 @@ public class HKStackImage extends JComponent {
         this.colorMapMin = colorMapMin;
     }
     
-    String CPT_FILE = "/seis/local/External/GMT/share/cpt/GMT_wysiwyg.cpt";
+    public static String getCPTFile() {
+        return System.getProperty("gmt.cpt_file", DEFAULT_CPT_FILE);
+    }
+    
+    String CPT_FILE;
+    
+    static final String DEFAULT_CPT_FILE = "/seis/local/External/GMT/share/cpt/GMT_wysiwyg.cpt";
     
     GMTColorPalette colorPallete;
     

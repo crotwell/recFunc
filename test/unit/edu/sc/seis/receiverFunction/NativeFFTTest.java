@@ -44,6 +44,35 @@ public class NativeFFTTest extends TestCase {
             assertEquals("imag i="+i, (float)cData[i].imag(), nativeData[2*i+1], 0.001f);
         }
     }
+    
+    public void testVsCmplxCorrelate() {
+        float[] fdata = new float[128];
+        float[] gdata = new float[128];
+        fdata[5]=1;
+        fdata[6]=2;
+        fdata[10]=10;
+        gdata[43]=7;
+        gdata[44]=13;
+        gdata[50]=20;
+        float[] nativecorr = NativeFFT.correlate(fdata, gdata);
+        float[] cmplxcorr = Cmplx.correlate(fdata, gdata);
+        ArrayAssert.assertEquals(nativecorr, cmplxcorr, 0.001f);
+    }
+    
+    public void testVsCmplxConvolve() {
+        float[] fdata = new float[128];
+        float[] gdata = new float[128];
+        fdata[5]=1;
+        fdata[6]=2;
+        fdata[10]=10;
+        gdata[43]=7;
+        gdata[44]=13;
+        gdata[50]=20;
+        float delta = 0.5f;
+        float[] nativecorr = NativeFFT.convolve(fdata, gdata, delta);
+        float[] cmplxcorr = Cmplx.convolve(fdata, gdata, delta);
+        ArrayAssert.assertEquals(nativecorr, cmplxcorr, 0.001f);
+    }
 
     public void testRoundTrip() {
 

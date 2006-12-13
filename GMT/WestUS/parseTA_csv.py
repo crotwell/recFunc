@@ -174,7 +174,7 @@ mapCleanUp(outFilename)
 makeMap('TAresult.csv', outFilename, 'M6i','-124/-114/32/49', onlyOneNet='TA' , minEQ=5)
 ps2pdf( outFilename)
 
-makeBigMap('allWestCoast.csv', 'mapAll.ps', 'M6i','-124/-114/32/49' )
+makeBigMap('allWestCoast.csv', 'mapAll.ps', 'M4i','-125/-112/32/50' )
 ps2pdf('mapAll.ps')
 
 #makeLonVsThickBoxes('allWestCoast.csv', 'lonBox_', 32, 49, 1, minEQ=5)

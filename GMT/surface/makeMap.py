@@ -160,38 +160,42 @@ def makeGridMap(dataFile, outFilename, proj='M5.0i', region='-126/-114/30/50', m
     gmt.close() 
     gmt=os.popen('pscoast -O -K -R'+region+' -J'+proj+'  -Di -Na -W4  '+extras+' '+out, 'w')
     gmt.close()
-    gmt=os.popen('psxy -O -K -R'+region+' -J'+proj+' -W2 -St0.2i '+extras+' '+out, 'w')
-    gmt.write('-118.17 37.5\n-120.39 38.03\n')
-    gmt.close()
-    gmt=os.popen('pstext -O -K -R'+region+' -J'+proj+'  '+extras+' '+out, 'w')
-    gmt.write('-118.0 37.5 12 0 4 LM TA.S08C\n-120.22 38.03 12 0 4 LM BK.CMB\n')
-    gmt.close()
-    gmt=os.popen("gmtset  LABEL_FONT_SIZE=12")
+    showCMB=False
+    if showCMB:
+	gmt=os.popen('psxy -O -K -R'+region+' -J'+proj+' -W2 -St0.2i '+extras+' '+out, 'w')
+	gmt.write('-118.17 37.5\n-120.39 38.03\n')
+	gmt.close()
+	gmt=os.popen('pstext -O -K -R'+region+' -J'+proj+'  '+extras+' '+out, 'w')
+	gmt.write('-118.0 37.5 12 0 4 LM TA.S08C\n-120.22 38.03 12 0 4 LM BK.CMB\n')
+	gmt.close()
+    gmt=os.popen("gmtset  LABEL_FONT_SIZE 12")
     gmt.close()
     gmt=os.popen('psscale -B5/:"(km)": -D.25i/1.0i/1.5i/.2i -C%s -O %s' % (cpt, out), 'w')
     gmt.close()
     ps2pdf(outFilename)
 
 
-gmtset = os.popen('gmtset OUTPUT_DEGREE_FORMAT=-ddd PLOT_DEGREE_FORMAT=-ddd')
+gmtset = os.popen('gmtset OUTPUT_DEGREE_FORMAT -ddd PLOT_DEGREE_FORMAT -ddd')
 gmtset.close()
+
+minEQ=10
 
 #trangleMap('allWestCoast.csv', 'allWestCoast.ps', extras='-P')
 #trangleMap('allUS.csv', 'allUS.ps', region='-126/-65/23/50', proj='M10i')
 
 #maskLargeTriangles('allUS.csv_block', 'allUS.csv_triangles', 'allUS.xy_mask')
 #makeGridMap('allUS.csv', 'allUSGrid.ps', region='-126/-65/23/50', proj='M10i')
-makeGridMap('allWestCoast.csv', 'allWestCoastGrid.ps', proj='M4.0i', region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=5, mask=0.75)
+makeGridMap('allWestCoast.csv', 'allWestCoastGrid.ps', proj='M4.0i', region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=0.75)
 
 # different masks
 proj='M3.0i'
-#makeGridMap('allWestCoast.csv', 'mask0.25.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=5, mask=0.25)
-#makeGridMap('allWestCoast.csv', 'mask0.5.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=5, mask=0.5)
-makeGridMap('allWestCoast.csv', 'mask.75.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=5, mask=0.75)
-#makeGridMap('allWestCoast.csv', 'mask1.0.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=5, mask=1.0)
-#makeGridMap('allWestCoast.csv', 'mask2.0.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=5, mask=2.0)
+#makeGridMap('allWestCoast.csv', 'mask0.25.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=0.25)
+#makeGridMap('allWestCoast.csv', 'mask0.5.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=0.5)
+#makeGridMap('allWestCoast.csv', 'mask0.75.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=0.75)
+#makeGridMap('allWestCoast.csv', 'mask1.0.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=1.0)
+#makeGridMap('allWestCoast.csv', 'mask2.0.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=2.0)
 
 
-#makeGridMap('allWestCoast.csv', 'allWestCoastVpVs.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='.1', columns=[3,2,7], minEQ=5, cpt='no_green_vpvs.cpt')
+#makeGridMap('allWestCoast.csv', 'allWestCoastVpVs.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='.1', columns=[3,2,7], minEQ=minEQ, cpt='no_green_vpvs.cpt')
 
-#makeGridMap('allUS.csv', 'allUSGrid.ps', proj='M7.5i', region='-126/-66/25/50', extras='', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=5)
+#makeGridMap('allUS.csv', 'allUSGrid.ps', proj='M7.5i', region='-126/-66/25/50', extras='', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ)

@@ -42,7 +42,7 @@ def makeBigMap(dataFile, outFilename, proj='M5.5i', region='-126/-114/30/50', sh
 
 def makeMap(dataFile, outFilename, proj='M5.5i', region='-126/-114/30/50', shift='', extra='', vpvs=False, minEQ=0, backgroundGRD='/data/GMT/Grid/Crust2/thickness_180.grd', cptFile='no_green_25_50.cpt', onlyOneNet='', labelSta=False):
     out = ' >> '+outFilename
-    gmt = os.popen('gmtset BASEMAP_TYPE=plain')
+    gmt = os.popen('gmtset BASEMAP_TYPE plain')
     gmt.close()
     baseGmtArgs = '-J'+proj+' -R'+region+' -P -K '+extra
     print 'baseGmtArgs='+baseGmtArgs
@@ -166,7 +166,7 @@ def ps2pdf(outFilename):
     except OSError:
 	pass
 	
-gmtset = os.popen('gmtset OUTPUT_DEGREE_FORMAT=-ddd PLOT_DEGREE_FORMAT=-ddd')
+gmtset = os.popen('gmtset OUTPUT_DEGREE_FORMAT -ddd PLOT_DEGREE_FORMAT -ddd')
 gmtset.close()
 
 outFilename = 'mapTA.ps'
@@ -174,7 +174,7 @@ mapCleanUp(outFilename)
 makeMap('TAresult.csv', outFilename, 'M6i','-124/-114/32/49', onlyOneNet='TA' , minEQ=5)
 ps2pdf( outFilename)
 
-makeBigMap('allWestCoast.csv', 'mapAll.ps', 'M4i','-125/-112/32/50' )
+makeBigMap('allWestCoast.csv', 'mapAll.ps', 'M4i','-125/-112/32/50', minEQ=10 )
 ps2pdf('mapAll.ps')
 
 #makeLonVsThickBoxes('allWestCoast.csv', 'lonBox_', 32, 49, 1, minEQ=5)

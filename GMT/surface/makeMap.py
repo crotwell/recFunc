@@ -25,7 +25,7 @@ def mapCleanUp(outFilename):
 def readData(dataFile, gmt, columns=[3,2,5], infinityVal=-1,
 	     minLat=-90.0, maxLat=90.0, minLon=-180.0, maxLon=180.0, 
 	     minEQ=0, sep=' ',  lineEnd='', region=None, 
-	     excludeFile='stationsToIgnore.txt'):
+	     excludeFile='stationsToIgnore.txt', maxComplexity=1.0):
     if region is not None:
         latlon = region.split('/')
         minLat=float(latlon[2])
@@ -48,7 +48,7 @@ def readData(dataFile, gmt, columns=[3,2,5], infinityVal=-1,
         lon = float(row[3])
         if (lat < minLat or lat > maxLat or lon < minLon or lon > maxLon):
             continue
-        if (int(row[12]) < minEQ):
+        if int(row[12]) < minEQ or float(row[13]) > maxComplexity:
             continue
 	if (row[0]+' '+row[1] in excludes):
 	    continue
@@ -73,11 +73,11 @@ def readData(dataFile, gmt, columns=[3,2,5], infinityVal=-1,
             #print '%s mean[%i]=%f num=%f' % (dataFile, col, mean[col], num[col])
             pass
 
-def blockMean(dataFile, outFilename, region='-126/-114/30/50', minEQ=0, blockSize='0.5', columns=[3,2,5], extras=''):
+def blockMean(dataFile, outFilename, region='-126/-114/30/50', minEQ=0, blockSize='0.5', columns=[3,2,5], extras='', maxComplexity=1):
     mapCleanUp(outFilename)
     out = ' >> '+outFilename
     gmt=os.popen('blockmean -R'+region+' -I'+blockSize+' '+extras+' '+out, 'w')
-    readData(dataFile, gmt, region=region, minEQ=minEQ, columns=columns)
+    readData(dataFile, gmt, region=region, minEQ=minEQ, columns=columns, maxComplexity=maxComplexity)
     gmt.close()
 
 def maskLargeTriangles(dataFile, triangleFile, outFilename):
@@ -135,14 +135,14 @@ def trangleMap(dataFile, outFilename, proj='M5.0i', region='-126/-114/30/50', mi
     gmt.close()
     ps2pdf(outFilename)
 
-def makeGridMap(dataFile, outFilename, proj='M5.0i', region='-126/-114/30/50', minEQ=0, extras='', blockSize='0.5', contour='5', columns=[3,2,5], cpt='no_green_25_50.cpt', mask=0.75):
+def makeGridMap(dataFile, outFilename, proj='M5.0i', region='-126/-114/30/50', minEQ=0, extras='', blockSize='0.5', contour='5', columns=[3,2,5], cpt='no_green_25_50.cpt', mask=0.75, maxComplexity=1):
     annotate=2*float(contour)
     mapCleanUp(outFilename)
     out = ' >> '+outFilename
     blockDataFile = dataFile+"_block"
     surfaceGrid = dataFile+"_grid"
     mapCleanUp(blockDataFile)
-    blockMean(dataFile, blockDataFile, region=region, minEQ=minEQ, blockSize=blockSize, columns=columns)
+    blockMean(dataFile, blockDataFile, region=region, minEQ=minEQ, blockSize=blockSize, columns=columns,  maxComplexity=maxComplexity)
     mapCleanUp(outFilename)
     gmt=os.popen('surface '+blockDataFile+' -R'+region+' -T.35 -I'+blockSize+' -G'+surfaceGrid, 'w')
     gmt.close()
@@ -185,7 +185,7 @@ minEQ=10
 
 #maskLargeTriangles('allUS.csv_block', 'allUS.csv_triangles', 'allUS.xy_mask')
 #makeGridMap('allUS.csv', 'allUSGrid.ps', region='-126/-65/23/50', proj='M10i')
-makeGridMap('allWestCoast.csv', 'allWestCoastGrid.ps', proj='M4.0i', region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=0.75)
+makeGridMap('allWestCoast.csv', 'allWestCoastGrid.ps', proj='M4.0i', region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=0.75,  maxComplexity=.7)
 
 # different masks
 proj='M3.0i'
@@ -195,6 +195,12 @@ proj='M3.0i'
 #makeGridMap('allWestCoast.csv', 'mask1.0.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=1.0)
 #makeGridMap('allWestCoast.csv', 'mask2.0.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=2.0)
 
+# different maxComplexity
+mask=.3
+makeGridMap('allWestCoast.csv', 'allWestCoastGrid_c25.ps', proj='M4.0i', region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=mask,  maxComplexity=.25)
+makeGridMap('allWestCoast.csv', 'allWestCoastGrid_c50.ps', proj='M4.0i', region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=mask,  maxComplexity=.5)
+makeGridMap('allWestCoast.csv', 'allWestCoastGrid_c75.ps', proj='M4.0i', region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=mask,  maxComplexity=.75)
+makeGridMap('allWestCoast.csv', 'allWestCoastGrid_c100.ps', proj='M4.0i', region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='2.5', columns=[3,2,5], minEQ=minEQ, mask=mask,  maxComplexity=1.0)
 
 #makeGridMap('allWestCoast.csv', 'allWestCoastVpVs.ps', proj=proj, region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='.1', columns=[3,2,7], minEQ=minEQ, cpt='no_green_vpvs.cpt')
 

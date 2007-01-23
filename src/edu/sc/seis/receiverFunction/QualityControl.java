@@ -152,13 +152,12 @@ public class QualityControl {
         FlaggedOption props = new FlaggedOption("props")
         .setShortFlag('p')
         .setLongFlag("props");
-        jsap.registerParameter(net);
+        jsap.registerParameter(props);
         Switch help = new Switch("help")
         .setLongFlag("help")
         .setShortFlag('h');
         jsap.registerParameter(help);
         return jsap;
-        
     }
     
     public static void main(String[] args) throws JSAPException {

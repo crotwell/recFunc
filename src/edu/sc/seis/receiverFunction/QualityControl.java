@@ -147,15 +147,15 @@ public class QualityControl {
         .setLongFlag("db")
         .setShortFlag(JSAP.NO_SHORTFLAG);
         jsap.registerParameter(useDB);
+        Switch help = new Switch("help")
+        .setLongFlag("help")
+        .setShortFlag('h');
+        jsap.registerParameter(help);
         return jsap;
     }
     
     public static void main(String[] args) throws JSAPException {
         JSAP jsap = setUpArgParser();
-        if(args.length == 0) {
-            System.out.println(jsap.getHelp());
-            return;
-        }
         try {
             TimeOMatic.setWriter(new FileWriter("netTimes.txt"));
             TimeOMatic.start();
@@ -171,7 +171,7 @@ public class QualityControl {
             float hMin = -1, hMax = -1, kMin = -1, kMax = -1;
             
             JSAPResult argResult = jsap.parse(args);
-            if (! argResult.success()) {
+            if (args.length == 0 || argResult.getBoolean("help") || ! argResult.success()) {
             	for (java.util.Iterator errs = argResult.getErrorMessageIterator();errs.hasNext();) {
             		System.err.println("Error: " + errs.next());
             	}

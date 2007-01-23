@@ -202,11 +202,11 @@ public class QualityControl {
             String reason = argResult.getString("reason");
             rfbad = argResult.getInt("rfbad", -1);
             if (argResult.contains("hkbad")) {
-                String[] hkbadList = argResult.getStringArray("hkbad");
-                hMin = Float.parseFloat(hkbadList[0]);
-                hMax = Float.parseFloat(hkbadList[1]);
-                kMin = Float.parseFloat(hkbadList[2]);
-                kMax = Float.parseFloat(hkbadList[3]);
+                float[] hkbadList = argResult.getFloatArray("hkbad");
+                hMin = hkbadList[0];
+                hMax = hkbadList[1];
+                kMin = hkbadList[2];
+                kMax = hkbadList[3];
             }
             JDBCStation jdbcStation = jdbcRecFunc.getJDBCChannel()
                     .getStationTable();

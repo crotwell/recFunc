@@ -200,7 +200,7 @@ public class QualityControl {
             staArg = argResult.getString("sta", "");
             dbUpdate = argResult.getBoolean("db");
             String reason = argResult.getString("reason");
-            rfbad = argResult.getInt("rfbad");
+            rfbad = argResult.getInt("rfbad", -1);
             if (argResult.contains("hkbad")) {
                 String[] hkbadList = argResult.getStringArray("hkbad");
                 hMin = Float.parseFloat(hkbadList[0]);
@@ -226,7 +226,7 @@ public class QualityControl {
                                kMax,
                                reason);
                 return;
-            } else if(rfbad != -1) {
+            } else if(argResult.contains("rfbad") && rfbad != -1) {
                 // set single one bad
                 CachedResultPlusDbId resultWithDbId = jdbcRecFunc.get(rfbad);
                 CachedResult result = resultWithDbId.getCachedResult();

@@ -158,6 +158,7 @@ public class QualityControl {
         .setShortFlag('h');
         jsap.registerParameter(help);
         return jsap;
+        
     }
     
     public static void main(String[] args) throws JSAPException {

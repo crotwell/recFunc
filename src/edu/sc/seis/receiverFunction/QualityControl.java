@@ -121,26 +121,31 @@ public class QualityControl {
         JSAP jsap = new JSAP();
         Parameter hkbad = new FlaggedOption("hkbad").setList(true)
                 .setListSeparator(',')
+                .setRequired(false)
                 .setStringParser(JSAP.FLOAT_PARSER)
                 .setShortFlag(JSAP.NO_SHORTFLAG)
                 .setLongFlag("hkbad")
                 .setHelp("hMin,hMax,kMin,kMax");
         jsap.registerParameter(hkbad);
         FlaggedOption net = new FlaggedOption("net")
+        .setRequired(false)
         .setShortFlag('n')
         .setLongFlag("net");
         jsap.registerParameter(net);
         FlaggedOption sta = new FlaggedOption("sta")
+        .setRequired(false)
         .setShortFlag('s')
         .setLongFlag("sta");
         jsap.registerParameter(sta);
 
         FlaggedOption rfbad = new FlaggedOption("rfbad")
+        .setRequired(false)
         .setShortFlag(JSAP.NO_SHORTFLAG)
         .setLongFlag("rfbad")
         .setStringParser(JSAP.INTEGER_PARSER);
         jsap.registerParameter(rfbad);
         FlaggedOption reason = new FlaggedOption("reason")
+        .setRequired(false)
         .setDefault("manual")
         .setShortFlag('r')
         .setLongFlag("reason");
@@ -150,6 +155,7 @@ public class QualityControl {
         .setShortFlag(JSAP.NO_SHORTFLAG);
         jsap.registerParameter(useDB);
         FlaggedOption props = new FlaggedOption("props")
+        .setRequired(true)
         .setShortFlag('p')
         .setLongFlag("props");
         jsap.registerParameter(props);

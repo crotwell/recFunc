@@ -11,6 +11,7 @@ import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
+import com.martiansoftware.jsap.Parameter;
 import com.martiansoftware.jsap.Switch;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.NetworkId;
@@ -118,11 +119,12 @@ public class QualityControl {
 
     static JSAP setUpArgParser() throws JSAPException {
         JSAP jsap = new JSAP();
-        FlaggedOption hkbad = new FlaggedOption("hkbad").setList(true)
+        Parameter hkbad = new FlaggedOption("hkbad").setList(true)
                 .setListSeparator(',')
                 .setStringParser(JSAP.FLOAT_PARSER)
                 .setShortFlag(JSAP.NO_SHORTFLAG)
-                .setLongFlag("hkbad");
+                .setLongFlag("hkbad")
+                .setHelp("hMin,hMax,kMin,kMax");
         jsap.registerParameter(hkbad);
         FlaggedOption net = new FlaggedOption("net")
         .setShortFlag('n')
@@ -147,6 +149,10 @@ public class QualityControl {
         .setLongFlag("db")
         .setShortFlag(JSAP.NO_SHORTFLAG);
         jsap.registerParameter(useDB);
+        FlaggedOption props = new FlaggedOption("props")
+        .setShortFlag('p')
+        .setLongFlag("props");
+        jsap.registerParameter(net);
         Switch help = new Switch("help")
         .setLongFlag("help")
         .setShortFlag('h');

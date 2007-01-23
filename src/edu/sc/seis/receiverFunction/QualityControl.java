@@ -171,6 +171,19 @@ public class QualityControl {
             float hMin = -1, hMax = -1, kMin = -1, kMax = -1;
             
             JSAPResult argResult = jsap.parse(args);
+            if (! argResult.success()) {
+            	for (java.util.Iterator errs = argResult.getErrorMessageIterator();errs.hasNext();) {
+            		System.err.println("Error: " + errs.next());
+            	}
+            	System.err.println();
+            	System.err.println("Usage: java "
+            			+ control.getClass().getName());
+            	System.err.println("                "
+            			+ jsap.getUsage());
+            	System.err.println();
+            	System.err.println(jsap.getHelp());
+            	System.exit(1);
+            }
             netArg = argResult.getString("net", "");
             staArg = argResult.getString("sta", "");
             dbUpdate = argResult.getBoolean("db");

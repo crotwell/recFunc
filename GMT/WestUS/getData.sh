@@ -3,7 +3,7 @@ curl -m 900  -o allWestCoast.csv.new 'http://www.seis.sc.edu/ears/stationLatLonB
 rm  allWestCoast.csv
 mv  allWestCoast.csv.new  allWestCoast.csv
 
-curl -m 900 -o TAresult.csv.new 'http://www.seis.sc.edu/ears_dev/stationList.txt?netdbid=62&gaussian=2.5'
+curl -m 900 -o TAresult.csv.new 'http://www.seis.sc.edu/ears/stationList.txt?netdbid=62&gaussian=2.5'
 
 rm TAresult.csv
 mv TAresult.csv.new TAresult.csv

@@ -1,16 +1,9 @@
 #! /usr/bin/python
 
-import csv, os, time
+import csv, os, time, sys
 
-def mapCleanUp(outFilename):
-    try:
-	os.remove(outFilename)
-    except OSError:
-	pass
-    try:
-	os.remove(outFilename.replace('.ps', '.pdf'))
-    except OSError:
-	pass
+sys.path.append('../surface')
+import ears
 
 def etopo(outFilename, proj='M5.5i', region='-126/-114/30/50', shift='', extra='', cptFile='/seis/local/External/GMT/share/cpt/GMT_topo.cpt'):
     out = ' >> '+outFilename
@@ -34,13 +27,13 @@ def crust2(outFilename, proj='M5.5i', region='-126/-114/30/50', shift='', extra=
 
     
 
-def makeBigMap(dataFile, outFilename, proj='M5.5i', region='-126/-114/30/50', shift='', extra='', minEQ=0, backgroundGRD='/data/GMT/Grid/Crust2/thickness_180.grd', cptFile='no_green_25_50.cpt'):
-    mapCleanUp(outFilename)
-    makeMap(dataFile, outFilename, proj, region, shift, extra, minEQ=minEQ, backgroundGRD=backgroundGRD, cptFile=cptFile)
-    ps2pdf(outFilename)
+def makeBigMap(dataFile, outFilename, proj='M5.5i', region='-126/-114/30/50', shift='', extra='', minEQ=0, backgroundGRD='/data/GMT/Grid/Crust2/thickness_180.grd', cptFile='no_green_25_50.cpt', maxComplexity=1, labelSta=False):
+    ears.mapCleanUp(outFilename)
+    makeMap(dataFile, outFilename, proj, region, shift, extra, minEQ=minEQ, backgroundGRD=backgroundGRD, cptFile=cptFile, maxComplexity=maxComplexity, labelSta=labelSta)
+    ears.ps2pdf(outFilename)
     print outFilename
 
-def makeMap(dataFile, outFilename, proj='M5.5i', region='-126/-114/30/50', shift='', extra='', vpvs=False, minEQ=0, backgroundGRD='/data/GMT/Grid/Crust2/thickness_180.grd', cptFile='no_green_25_50.cpt', onlyOneNet='', labelSta=False):
+def makeMap(dataFile, outFilename, proj='M5.5i', region='-126/-114/30/50', shift='', extra='', vpvs=False, minEQ=0, backgroundGRD='/data/GMT/Grid/Crust2/thickness_180.grd', cptFile='no_green_25_50.cpt', onlyOneNet='', labelSta=False, maxComplexity=1):
     out = ' >> '+outFilename
     gmt = os.popen('gmtset BASEMAP_TYPE plain')
     gmt.close()
@@ -59,28 +52,10 @@ def makeMap(dataFile, outFilename, proj='M5.5i', region='-126/-114/30/50', shift
     gmt.close()
 
     gmt= os.popen('psxy '+baseGmtArgs+' -St.2i -C'+cptFile+' -W'+out, 'w')
-    results = csv.reader(open(dataFile, 'r'))
-    mean = 0.0
-    numMean = 0
-    for row in results: 
-	if row[0].startswith('#'):
-	    continue
-	if onlyOneNet != '' and onlyOneNet != row[0]:
-	    continue
-	thick = row[5].replace(' km','')
-	if (thick != '' and  thick != '...' and float(thick) > 50):
-	    #print row[0]+' '+ row[1]+" "+ row[3]+"  "+ row[2]+"  "+row[5]
-	    pass
-	if thick != '' and  thick != '...' and int(row[12]) >= minEQ:
-	    mean = mean +float(thick)
-	    numMean = numMean+1
-	    gmt.write(row[3]+"  "+ row[2]+"  "+thick+"\n")
-	elif onlyOneNet != '':
-	    gmt.write(row[3]+"  "+ row[2]+"  NaN\n")
+    ears.readData(dataFile, gmt, region=region, minEQ=minEQ, columns=[3,2,5], maxComplexity=maxComplexity, excludeFile='../surface/stationsToIgnore.txt')
     gmt.close()
-    mean = mean / numMean
-    print 'mean='+str(mean)+' numMean='+str(numMean)
-    gmt = os.popen('psscale -D6i/7i/5i/.5i -C'+cptFile+' -B5 -P -O -K '+out, 'w')
+    
+    gmt=os.popen('psscale -B5/:"(km)": -D.25i/1.0i/1.5i/.2i -C%s -O -K %s' % (cptFile, out), 'w')
     gmt.close()
 #label
     if labelSta:
@@ -95,10 +70,7 @@ def makeMap(dataFile, outFilename, proj='M5.5i', region='-126/-114/30/50', shift
            gmt.write(row[3]+"  "+ row[2]+" 8 0 4 BL ."+row[0]+'.'+row[1]+"\n") 
        gmt.close()
 
-    baseGmtArgs = baseGmtArgs.replace('-K', '')
-    gmt= os.popen('psxy '+baseGmtArgs+' -St.003i -G255 '+out, 'w')
-    gmt.write("0  -90\n")
-    gmt.close()
+    ears.psfinish(outFilename)
 
 
 def makeLonVsThickBoxes(dataFile, outfilePrefix, minLat, maxLat, incLat, minEQ=0, backgroundGRD='/data/GMT/Grid/Crust2/thickness_180.grd', cptFile='no_green_25_50.cpt', mapLabelSta=False, onlyOneNet=''):
@@ -156,26 +128,17 @@ def makeLonVsThickBoxes(dataFile, outfilePrefix, minLat, maxLat, incLat, minEQ=0
 	mapRegion='-124/-114/'+str(lat)+'/'+str(lat+incLat)
 	makeMap(dataFile, outFilename, 'M6i', mapRegion,'-Y6.5i','-O', minEQ=minEQ, labelSta=mapLabelSta, onlyOneNet=onlyOneNet)
 	ps2pdf(outFilename)
-	    
-def ps2pdf(outFilename):
-    ps2pdf = os.popen('pstopdf '+outFilename)
-    ps2pdf.close()
-    try:
-	#os.remove(outFilename)
-	pass
-    except OSError:
-	pass
+
 	
-gmtset = os.popen('gmtset OUTPUT_DEGREE_FORMAT -ddd PLOT_DEGREE_FORMAT -ddd')
-gmtset.close()
+ears.gmtUseNegDegree()
 
-outFilename = 'mapTA.ps'
-mapCleanUp(outFilename)
-makeMap('TAresult.csv', outFilename, 'M6i','-124/-114/32/49', onlyOneNet='TA' , minEQ=5)
-ps2pdf( outFilename)
+#outFilename = 'mapTA.ps'
+#ears.mapCleanUp(outFilename)
+#makeMap('TAresult.csv', outFilename, 'M6i','-124/-114/32/49', onlyOneNet='TA' , minEQ=5)
+#ears.ps2pdf( outFilename)
 
-makeBigMap('allWestCoast.csv', 'mapAll.ps', 'M4i','-125/-112/32/50', minEQ=10 )
-ps2pdf('mapAll.ps')
+makeBigMap('allWestCoast.csv', 'mapAll.ps', 'M4i','-126/-115/32/50', minEQ=10, maxComplexity=.75 ,labelSta=True)
+ears.ps2pdf('mapAll.ps')
 
 #makeLonVsThickBoxes('allWestCoast.csv', 'lonBox_', 32, 49, 1, minEQ=5)
 

@@ -1,3 +1,31 @@
+import os, csv
+
+def gmtUseNegDegree():
+    gmtset = os.popen('gmtset OUTPUT_DEGREE_FORMAT -ddd PLOT_DEGREE_FORMAT -ddd')
+    gmtset.close()
+
+def ps2pdf(outFilename):
+    ps2pdf = os.popen('pstopdf '+outFilename)
+    ps2pdf.close()
+    try:
+        #os.remove(outFilename)
+        pass
+    except OSError:
+        pass
+
+def mapCleanUp(outFilename):
+    try:
+	os.remove(outFilename)
+    except OSError:
+	pass
+    try:
+	os.remove(outFilename.replace('.ps', '.pdf'))
+    except OSError:
+	pass
+
+def psfinish(outFilename):
+    gmt= os.popen('psxy -JM1 -R0/1/0/1 -St.003i -G255 -O >> '+outFilename, 'w')
+    gmt.close()
 
 def readData(dataFile, gmt, columns=[3,2,5], infinityVal=-1,
 	     minLat=-90.0, maxLat=90.0, minLon=-180.0, maxLon=180.0, 
@@ -11,10 +39,11 @@ def readData(dataFile, gmt, columns=[3,2,5], infinityVal=-1,
         maxLon=float(latlon[1])
     print 'reading %s minLat=%s, maxLat=%s, minLon=%s, maxLon=%s, minEQ=%s' % (dataFile, minLat, maxLat, minLon, maxLon, minEQ)
     excludes=[]
-    for line in open(excludeFile, 'r'):
-	row = line.split()
-	if (len(row) >1):
-	    excludes.append(row[0]+' '+row[1])
+    if os.path.exists(excludeFile):
+	for line in open(excludeFile, 'r'):
+	    row = line.split()
+	    if (len(row) >1):
+		excludes.append(row[0]+' '+row[1])
     results = csv.reader(open(dataFile, 'r'))
     mean=[0,0,0,0,0,0,0,0,0,0,0,0,0]
     num=[0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -23,9 +52,11 @@ def readData(dataFile, gmt, columns=[3,2,5], infinityVal=-1,
             continue
         lat = float(row[2])
         lon = float(row[3])
+	if row[12] == '':
+	    continue
         if (lat < minLat or lat > maxLat or lon < minLon or lon > maxLon):
             continue
-        if int(row[12]) < minEQ and float(row[13]) > maxComplexity:
+        if int(row[12]) < minEQ or float(row[13]) > maxComplexity:
             continue
 	if (row[0]+' '+row[1] in excludes):
 	    continue

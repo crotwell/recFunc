@@ -23,8 +23,14 @@ def mapCleanUp(outFilename):
     except OSError:
 	pass
 
-def psfinish(outFilename):
-    gmt= os.popen('psxy -JM1 -R0/1/0/1 -St.003i -G255 -O >> '+outFilename, 'w')
+def psfinish(outFilename, extras=''):
+    gmt= os.popen('psxy -JM1 -R0/1/0/1 -St.003i -G255 -O '+extras+' >> '+outFilename, 'w')
+    gmt.close()
+
+
+def psstart(outFilename, extras=''):
+    mapCleanUp(outFilename)
+    gmt= os.popen('psxy -JM1 -R0/1/0/1 -St.003i -G255 -K '+extras+' > '+outFilename, 'w')
     gmt.close()
 
 def readData(dataFile, gmt, columns=[3,2,5], infinityVal=-1,
@@ -69,14 +75,7 @@ def readData(dataFile, gmt, columns=[3,2,5], infinityVal=-1,
             if row[col] == 'Infinity' or row[col] == '?':
                 row[col] = infinityVal 
             else:
-        #       mean[col] = mean[col] + float(row[col])
                 num[col] = num[col]+1
             gmt.write(row[col]+sep)
             line = line + row[col]+' '
         gmt.write(lineEnd+'\n')
-#       print(line)
-    for col in columns:
-        if num[col] != 0:
-           # mean[col] = mean[col]/num[col]
-            #print '%s mean[%i]=%f num=%f' % (dataFile, col, mean[col], num[col])
-            pass

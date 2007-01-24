@@ -53,45 +53,68 @@ def trangleMap(dataFile, outFilename, proj='M5.0i', region='-126/-114/30/50', mi
     baseGmtArgs = '-J'+proj+' -R'+region+' -K '
     triangleFile = dataFile+'_triangles'
     ears.mapCleanUp(triangleFile)
-    gmt= os.popen('triangulate '+blockDataFile+' > '+triangleFile, 'w')
-    gmt.close()
+    os.popen('triangulate '+blockDataFile+' > '+triangleFile, 'w').close()
     triangleSegments = dataFile+'_triangleSeg'
     ears.mapCleanUp(triangleSegments)
-    gmt= os.popen('triangulate -M '+blockDataFile+' > '+triangleSegments, 'w')
-    gmt.close()
-    gmt=os.popen('pscontour '+blockDataFile+' -K -R'+region+' -J'+proj+' -B2f1WSNe -I -Cno_green_25_50.cpt  '+extras+' '+out, 'w')
-    gmt.close()
-#    gmt=os.popen('psxy -O -K -R'+region+' -J'+proj+' -B2f1WSNe -M '+triangleSegments+' -W0.5p  '+extras+' '+out, 'w')
-#    gmt.close()
-    gmt=os.popen('pscoast -O -R'+region+' -J'+proj+'  -Di -Na -W4  '+extras+' '+out, 'w')
-    gmt.close()
+    os.popen('triangulate -M '+blockDataFile+' > '+triangleSegments, 'w').close()
+    os.popen('pscontour '+blockDataFile+' -K -R'+region+' -J'+proj+' -B2f1WSNe -I -Cno_green_25_50.cpt  '+extras+' '+out, 'w').close()
+#    os.popen('psxy -O -K -R'+region+' -J'+proj+' -B2f1WSNe -M '+triangleSegments+' -W0.5p  '+extras+' '+out, 'w').close()
+    os.popen('pscoast -O -R'+region+' -J'+proj+'  -Di -Na -W4  '+extras+' '+out, 'w').close()
     ears.ps2pdf(outFilename)
 
 def makeGridMap(dataFile, outFilename, proj='M5.0i', region='-126/-114/30/50', minEQ=0, extras='', blockSize='0.5', contour='5', columns=[3,2,5], cpt='no_green_25_50.cpt', mask=0.75, maxComplexity=1):
+    ears.psstart(outFilename, extras=extras)
     annotate=2*float(contour)
-    ears.mapCleanUp(outFilename)
     out = ' >> '+outFilename
     blockDataFile = dataFile+"_block"
     surfaceGrid = dataFile+"_grid"
     ears.mapCleanUp(blockDataFile)
     blockMean(dataFile, blockDataFile, region=region, minEQ=minEQ, blockSize=blockSize, columns=columns,  maxComplexity=maxComplexity)
-    ears.mapCleanUp(outFilename)
-    gmt=os.popen('surface '+blockDataFile+' -R'+region+' -T.35 -I'+blockSize+' -G'+surfaceGrid, 'w')
-    gmt.close()
-    gmt=os.popen('psmask  -I%s -J%s -R%s -S%s -K %s %s' % (blockSize, proj, region, mask, extras, out), 'w')
+    os.popen('surface '+blockDataFile+' -R'+region+' -T.35 -I'+blockSize+' -G'+surfaceGrid, 'w').close()
+    gmt=os.popen('psmask  -I%s -J%s -R%s -S%s -O -K %s %s' % (blockSize, proj, region, mask, extras, out), 'w')
     ears.readData(dataFile, gmt, region=region, minEQ=minEQ, maxComplexity=maxComplexity)
     gmt.close()
-    gmt=os.popen('grdimage %s -J%s -C%s  -S4 -K -O %s %s' % (surfaceGrid, proj, cpt, extras, out), 'w')
+    os.popen('grdimage %s -J%s -C%s  -S4 -K -O %s %s' % (surfaceGrid, proj, cpt, extras, out), 'w').close()
+    os.popen('grdcontour %s -J%s -B4f2WSne -C%s -A%s -G3i/10 -S4 -K -O %s %s' % (surfaceGrid, proj, contour, annotate, extras, out), 'w').close()
+    os.popen('psmask -C -O -K %s' % (out), 'w').close()
+    coastLabelsScale(outFilename, proj=proj, region=region, extras=extras, cpt=cpt)
+
+    ears.psfinish(outFilename)
+    ears.ps2pdf(outFilename)
+
+def makeXYMap(dataFile, outFilename, proj='M5.0i', region='-126/-114/30/50', minEQ=0, extras='', columns=[3,2,5], cpt='no_green_25_50.cpt', maxComplexity=1, labelSta=False):
+    out = ' >> '+outFilename  
+    baseGmtArgs = '-J'+proj+' -R'+region+' -K '+extras
+    os.popen('gmtset BASEMAP_TYPE plain', 'w').close()
+    ears.psstart(outFilename, extras=extras)
+    baseGmtArgs = baseGmtArgs + ' -O '
+    os.popen('psbasemap '+baseGmtArgs+' -B2  '+out, 'w').close()
+    coastLabelsScale(outFilename, proj=proj, region=region, extras=extras, cpt=cpt)
+    gmt= os.popen('psxy '+baseGmtArgs+' -St.2i -C'+cpt+' -W'+out, 'w')
+    ears.readData(dataFile, gmt, region=region, minEQ=minEQ, maxComplexity=maxComplexity)
     gmt.close()
-    gmt=os.popen('grdcontour %s -J%s -B4f2WSne -C%s -A%s -G3i/10 -S4 -K -O %s %s' % (surfaceGrid, proj, contour, annotate, extras, out), 'w')
-    gmt.close()
-    gmt=os.popen('psmask -C -O -K %s' % (out), 'w')
-    gmt.close()
-    gmt.close()
-    gmt=os.popen('pscoast -R'+region+' -B2f2WSne -J -O -K -Sgray -W0.25p '+extras+out, 'w')
-    gmt.close() 
-    gmt=os.popen('pscoast -O -K -R'+region+' -J'+proj+'  -Di -Na -W4  '+extras+' '+out, 'w')
-    gmt.close()
+    if labelSta:
+       gmt= os.popen('pstext '+baseGmtArgs+'  -W'+out, 'w')
+       results = csv.reader(open(dataFile, 'r'))
+       for row in results: 
+           if row[0].startswith('#'):
+               continue
+           if onlyOneNet != '' and onlyOneNet != row[0]:
+               continue
+	   if int(row[12]) < minEQ or float(row[13]) > maxComplexity:
+	       continue
+           thick = row[5].replace(' km','')
+           gmt.write(row[3]+"  "+ row[2]+" 8 0 4 BL ."+row[0]+'.'+row[1]+"\n") 
+       gmt.close()
+
+    ears.psfinish(outFilename)
+    ears.ps2pdf(outFilename)
+
+def coastLabelsScale(outFilename, proj='M5.0i', region='-126/-114/30/50', extras='', cpt='no_green_25_50.cpt'):
+    out = ' >> '+outFilename
+    os.popen('pscoast -R'+region+' -B2f2WSne -J -O -K -Sgray -W0.25p '+extras+out, 'w').close() 
+    os.popen('pscoast -O -K -R'+region+' -J'+proj+'  -Di -Na -W4  '+extras+' '+out, 'w').close()
+
     showCMB=False
     if showCMB:
 	gmt=os.popen('psxy -O -K -R'+region+' -J'+proj+' -W2 -St0.2i '+extras+' '+out, 'w')
@@ -100,11 +123,8 @@ def makeGridMap(dataFile, outFilename, proj='M5.0i', region='-126/-114/30/50', m
 	gmt=os.popen('pstext -O -K -R'+region+' -J'+proj+'  '+extras+' '+out, 'w')
 	gmt.write('-118.0 37.5 12 0 4 LM TA.S08C\n-120.22 38.03 12 0 4 LM BK.CMB\n')
 	gmt.close()
-    gmt=os.popen("gmtset  LABEL_FONT_SIZE 12")
-    gmt.close()
-    gmt=os.popen('psscale -B5/:"(km)": -D.25i/1.0i/1.5i/.2i -C%s -O %s' % (cpt, out), 'w')
-    gmt.close()
-    ears.ps2pdf(outFilename)
+    os.popen("gmtset  LABEL_FONT_SIZE 12").close()
+    os.popen('psscale -B5/:"(km)": -D.25i/1.0i/1.5i/.2i -C%s -O -K %s' % (cpt, out), 'w').close()
 
 ears.gmtUseNegDegree()
 minEQ=5
@@ -114,7 +134,10 @@ minEQ=5
 
 #maskLargeTriangles('allUS.csv_block', 'allUS.csv_triangles', 'allUS.xy_mask')
 #makeGridMap('allUS.csv', 'allUSGrid.ps', region='-126/-65/23/50', proj='M10i')
+
+
 makeGridMap('allWestCoast.csv', 'allWestCoastGrid.ps', proj='M4.0i', region='-126/-115/32/50', extras='-P', blockSize='0.25', contour='5', columns=[3,2,5], minEQ=minEQ, mask=0.75,  maxComplexity=.75)
+makeXYMap('allWestCoast.csv', 'allWestCoastXY.ps', proj='M4.0i', region='-126/-115/32/50', extras='-P', columns=[3,2,5], minEQ=minEQ,  maxComplexity=.75)
 
 # different masks
 proj='M3.0i'

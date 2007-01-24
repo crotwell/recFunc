@@ -232,6 +232,7 @@ public class Start {
             knownGaussians.add(new Float(0.7f));
             knownGaussians.add(new Float(0.4f));
         } else {
+            knownGaussians.add(new Float(1.0f));
             knownGaussians.add(new Float(2.5f));
         }
         context.put("knownGaussians", knownGaussians);

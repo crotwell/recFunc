@@ -23,6 +23,7 @@ import edu.sc.seis.receiverFunction.server.CachedResultPlusDbId;
 import edu.sc.seis.receiverFunction.server.HKBox;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
+import edu.sc.seis.receiverFunction.server.JDBCRejectedMaxima;
 import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
@@ -37,7 +38,11 @@ public class CustomStack extends Station {
     }
 
     public SumHKStack getSummaryStack(HttpServletRequest req) throws SQLException, NotFound, IOException, TauModelException, FissuresException {
-        int[] dbids = parseDbIds(req);
+    	return calcCustomStack(req, jdbcHKStack, jdbcRejectMax);
+    }
+    
+    public static SumHKStack calcCustomStack(HttpServletRequest req, JDBCHKStack jdbcHKStack, JDBCRejectedMaxima jdbcRejectMax) throws SQLException, NotFound, IOException, TauModelException, FissuresException {
+    	int[] dbids = parseDbIds(req);
         if (dbids.length == 0) {
             throw new RuntimeException("No dbids found in query params");
         }
@@ -51,7 +56,7 @@ public class CustomStack extends Station {
             plots[i].compact();
         }
         boolean doBootstrap = RevUtil.getBoolean("bootstrap", req, false);
-        int netDbId = Start.getNetwork(req, jdbcChannel.getNetworkTable()).getDbId();
+        int netDbId = Start.getNetwork(req, jdbcHKStack.getJDBCChannel().getNetworkTable()).getDbId();
         HKBox[] rejects = jdbcRejectMax.getForStation(netDbId,
                                                       req.getParameter("stacode"));
         
@@ -83,7 +88,7 @@ public class CustomStack extends Station {
         
     }
     
-    int[] parseDbIds(HttpServletRequest req) {
+    static int[] parseDbIds(HttpServletRequest req) {
         String dbidStr = RevUtil.get("recfunc_id", req);
         StringTokenizer tokenizer = new StringTokenizer(dbidStr, 
                                                         ",");

@@ -5,8 +5,9 @@ def gmtUseNegDegree():
     gmtset.close()
 
 def ps2pdf(outFilename):
-    ps2pdf = os.popen('pstopdf '+outFilename)
-    ps2pdf.close()
+    epsFilename=outFilename.replace('.ps','.eps')
+    run('eps2eps %s %s'%(outFilename, epsFilename)) 
+    run('epstopdf '+epsFilename)
     try:
         #os.remove(outFilename)
         pass
@@ -32,6 +33,12 @@ def psstart(outFilename, extras=''):
     mapCleanUp(outFilename)
     gmt= os.popen('psxy -JM1 -R0/1/0/1 -St.003i -G255 -K '+extras+' > '+outFilename, 'w')
     gmt.close()
+
+def psShift(outFilename, xshift, yshift):
+    gmt=os.popen(('psxy -X%f -Y%f -JX -R -O -K >> %s')%(xshift, yshift, outFilename), 'w').close()
+
+def run(cmd):
+    os.popen(cmd, 'w').close()
 
 def readData(dataFile, gmt, columns=[3,2,5], infinityVal=-1,
 	     minLat=-90.0, maxLat=90.0, minLon=-180.0, maxLon=180.0, 

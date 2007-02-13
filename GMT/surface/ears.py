@@ -74,15 +74,18 @@ def readData(dataFile, gmt, columns=[3,2,5], infinityVal=-1,
 	if (row[0]+' '+row[1] in excludes):
 	    continue
         line = ''
-        for col in columns:
-            if row[col].endswith(' km/s'):
-		row[col] = row[col].replace(' km/s','')
-            if row[col].endswith(' km'):
-		row[col] = row[col].replace(' km','')
-            if row[col] == 'Infinity' or row[col] == '?':
-                row[col] = infinityVal 
-            else:
-                num[col] = num[col]+1
-            gmt.write(row[col]+sep)
-            line = line + row[col]+' '
-        gmt.write(lineEnd+'\n')
+	if not callable(columns):
+	    for col in columns:
+		if row[col].endswith(' km/s'):
+		    row[col] = row[col].replace(' km/s','')
+		if row[col].endswith(' km'):
+		    row[col] = row[col].replace(' km','')
+		if row[col] == 'Infinity' or row[col] == '?':
+		    row[col] = infinityVal 
+		else:
+		    num[col] = num[col]+1
+		gmt.write(row[col]+sep)
+		line = line + row[col]+' '
+	    gmt.write(lineEnd+'\n')
+	else:
+	    gmt.write(columns(row))

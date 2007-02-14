@@ -92,7 +92,7 @@ public class StackSummary {
         TimeOMatic.print("Time for network: "+net);
     }
 
-    public void createSummary(StationId station,
+    public SumHKStack createSummary(StationId station,
                               float gaussianWidth,
                               float minPercentMatch,
                               QuantityImpl smallestH,
@@ -122,6 +122,7 @@ public class StackSummary {
             sumStack.setDbid(dbid);
             calcComplexity(sumStack);
         }
+        return sumStack;
     }
     
     public void calcComplexity() throws SQLException, NotFound, IOException, FissuresException, TauModelException {
@@ -309,6 +310,7 @@ public class StackSummary {
         float gaussianWidth = 2.5f;
         float minPercentMatch = 80f;
         boolean bootstrap = true;
+        boolean bootstrapXY=false;
         boolean usePhaseWeight = true;
         boolean complexityOnly = false;
         boolean neededOnly = false;
@@ -316,12 +318,13 @@ public class StackSummary {
         String staArg = "";
 
         for(int i = 0; i < args.length; i++) {
-            if (args[i].equals("--help")) {
+            if (args[i].equals("--help") || args[i].equals("-h")) {
                 System.out.println("Usage:");
                 System.out.println(" [ -net network [-sta station]] | -all | --needRecalc");
                 System.out.println("-g gaussian");
                 System.out.println("--complexity");
                 System.out.println("--nobootstrap");
+                System.out.println("--bootstrapXY");
                 System.out.println();
                 return;
             }
@@ -341,6 +344,8 @@ public class StackSummary {
                 bootstrap = false;
             } else if(args[i].equals("--needRecalc")) {
                 neededOnly = true;
+            } else if(args[i].equals("--bootstrapXY")) {
+                bootstrapXY = true;
             }
         }
         if (complexityOnly) {
@@ -348,6 +353,7 @@ public class StackSummary {
             return;
         }
         if(neededOnly) {
+            System.out.println("needed only");
             Station[] stations = summary.getJdbcSummary().getStationsNeedingUpdate(gaussianWidth,
                                                                                      minPercentMatch);
             for(int i = 0; i < stations.length; i++) {
@@ -359,6 +365,7 @@ public class StackSummary {
                                       usePhaseWeight);
             }
         } else if(staArg.equals("")) {
+            System.out.println("net arg "+netArg);
             summary.createSummary(netArg,
                                   gaussianWidth,
                                   minPercentMatch,
@@ -366,6 +373,7 @@ public class StackSummary {
                                   bootstrap,
                                   usePhaseWeight);
         } else {
+            System.out.println("calc for staion "+netArg+" "+staArg);
             logger.info("calc for station");
             JDBCStation jdbcStation = summary.jdbcHKStack.getJDBCChannel().getStationTable();
             NetworkId[] nets = jdbcStation.getNetTable().getByCode(netArg);
@@ -378,12 +386,21 @@ public class StackSummary {
                         foundNet = true;
                         sta_dbid = tmp[0];
                         Station station = jdbcStation.get(sta_dbid);
-                        summary.createSummary(station.get_id(),
+                        SumHKStack sum = summary.createSummary(station.get_id(),
                                               gaussianWidth,
                                               minPercentMatch,
                                               HKStack.getBestSmallestH(station, HKStack.getDefaultSmallestH()),
                                               bootstrap,
                                               usePhaseWeight);
+                        if (bootstrapXY) {
+                            double[] h=sum.getHBootstrap();
+                            double[] k=sum.getKBootstrap();
+                            System.out.println("k stddev="+sum.getKStdDev());
+                            System.out.println("h stddev="+sum.getHStdDev());
+                            for(int j = 0; j < h.length; j++) {
+                                System.out.println(k[j]+" "+h[j]);
+                            }
+                        }
                     }
                 } catch(NotFound e) {
                     System.out.println("NotFound for :" + NetworkIdUtil.toStringNoDates(nets[i]));
@@ -394,6 +411,7 @@ public class StackSummary {
                 System.out.println("Warning: didn't find net for "+netArg);
             }
         }
+        System.out.println("Done.");
     }
 
     public static void main(String[] args) {

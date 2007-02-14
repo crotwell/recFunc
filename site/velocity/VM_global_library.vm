@@ -126,13 +126,13 @@ return mortality;
 Radial Match,Distance,Baz,FERegion,Time,Lat,Lon,Depth,Magnitude,Reason,RecFunc_id
 #foreach($eq in $list)
 #set( $recFunc_id = $eq.getParam("recFunc_id") )
-$eq.getParam("itr_match"),$sta.getDistanceDeg($eq),$sta.getBaz($eq),$eq.getRegion(),$eq.getTime(),$eq.getLatitude(),$eq.getLongitude(),$eq.getDepth(),$eq.getAllMagnitudes(),$!eq.getParam("reason"),$recFunc_id
+$eq.getParam("itr_match"),$sta.getDistanceDeg($eq),$sta.getBaz($eq),$eq.getRegion(),$eq.getTime(),$eq.getLatitude(),$eq.getLongitude(),$eq.getDepth(),$eq.getAllMagnitudes(' '),$!eq.getParam("reason"),$recFunc_id
 #end
 #end
 
 #macro(stationListCSV $stationList $summary)
 #foreach($sta in $stationList)
-$sta.getNet().getCodeWithYear(),$sta.getCode(),$sta.getLatitude(),$sta.getLongitude(),$sta.getElevation(),$!summary.get($sta).getBest().formatH(),$!summary.get($sta).getBest.formatHStdDev(),$!summary.get($sta).getBest().formatVpVs(),$!summary.get($sta).getBest().formatKStdDev(),$!summary.get($sta).getBest().formatVp(),$!summary.get($sta).getBest().formatVs(),$!summary.get($sta).getBest().formatPoissonsRatio(),$!summary.get($sta).numEQ,$!summary.get($sta).formatComplexityResidual()
+$sta.getNet().getCodeWithYear(),$sta.getCode(),$sta.getLatitude(),$sta.getLongitude(),$sta.getElevation(),$!summary.get($sta).getBest().formatH(),$!summary.get($sta).getBest().formatHStdDev(),$!summary.get($sta).getBest().formatVpVs(),$!summary.get($sta).getBest().formatKStdDev(),$!summary.get($sta).getBest().formatVp(),$!summary.get($sta).getBest().formatVs(),$!summary.get($sta).getBest().formatPoissonsRatio(),$!summary.get($sta).numEQ,$!summary.get($sta).formatComplexityResidual()
 #end
 #end
 

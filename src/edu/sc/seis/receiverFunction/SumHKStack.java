@@ -452,6 +452,8 @@ public class SumHKStack {
                 + " h stddev=" + getHStdDev() + "  k stddev=" + getKStdDev());
         best.setHStdDev(getHStdDev());
         best.setKStdDev((float)getKStdDev());
+        hBootstrap = hErrors;
+        kBootstrap = kErrors;
     }
 
     protected int randomInt(int top) {
@@ -679,6 +681,12 @@ public class SumHKStack {
         best = calcBest(sum);
     }
 
+    public double[] getHBootstrap(){
+        return hBootstrap;
+    }
+    public double[] getKBootstrap() {
+        return kBootstrap;
+    }
     protected Channel channel;
 
     protected HKStack[] individuals;
@@ -694,8 +702,12 @@ public class SumHKStack {
     protected double maxVariance;
 
     protected double hVariance;
+    
+    protected double[] hBootstrap;
 
     protected double kVariance;
+    
+    protected double[] kBootstrap;
 
     protected StationResult best;
 

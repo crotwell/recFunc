@@ -17,9 +17,9 @@
         Ammon. </description>
     <shortDescription>Caclulation of receiver functions.</shortDescription>
     <url>http://www.seis.sc.edu/software/${pom.artifactId}</url>
-    <siteAddress>roo.seis.sc.edu</siteAddress>
-    <siteDirectory>/Library/WebServer/software/${pom.artifactId}</siteDirectory>
-    <distributionDirectory>/Library/WebServer/software/mavenRepository</distributionDirectory>
+    <siteAddress>hopalong.seis.sc.edu</siteAddress>
+    <siteDirectory>/var/www/html/software/${pom.artifactId}</siteDirectory>
+    <distributionDirectory>/var/www/html/software/mavenRepository</distributionDirectory>
     <repository>
         <url>http://roo.seis.sc.edu/fisheye/viewrep/seis/trunk/${pom.artifactId}</url>
     </repository>

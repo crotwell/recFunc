@@ -58,8 +58,6 @@ def readData(dataFile, gmt, columns=[3,2,5], infinityVal=-1,
 	    if (len(row) >1):
 		excludes.append(row[0]+' '+row[1])
     results = csv.reader(open(dataFile, 'r'))
-    mean=[0,0,0,0,0,0,0,0,0,0,0,0,0]
-    num=[0,0,0,0,0,0,0,0,0,0,0,0,0]
     for row in results:
         if row[0].startswith('#'):
             continue
@@ -82,8 +80,6 @@ def readData(dataFile, gmt, columns=[3,2,5], infinityVal=-1,
 		    row[col] = row[col].replace(' km','')
 		if row[col] == 'Infinity' or row[col] == '?':
 		    row[col] = infinityVal 
-		else:
-		    num[col] = num[col]+1
 		gmt.write(row[col]+sep)
 		line = line + row[col]+' '
 	    gmt.write(lineEnd+'\n')

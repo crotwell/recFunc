@@ -65,6 +65,7 @@ public class Overview extends StationList {
 		if (data == null
 				|| loadtime.subtract(ClockUtil.now()).greaterThan(CACHE_TIME)) {
 			data = new HashMap();
+			loadtime = ClockUtil.now();
 			try {
 				ArrayList summaryList = jdbcSumHKStack.getAllWithoutData();
 				for (Iterator iter = summaryList.iterator(); iter.hasNext();) {

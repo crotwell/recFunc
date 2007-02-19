@@ -76,7 +76,7 @@ def makeGridMap(dataFile, outFilename, proj='M5.0i', region='-126/-114/30/50', m
     gmt.close()
     os.popen('grdimage %s -J%s -C%s  -S4 -K -O %s %s' % (surfaceGrid, proj, cpt, extras, out), 'w').close()
     os.popen('psmask -C -O -K %s' % (out), 'w').close()
-    os.popen('grdcontour %s -J%s -B4f2WSne -C%s -A%s -G3i/10 -S4 -K -O %s %s' % (surfaceGrid, proj, contour, annotate, extras, out), 'w').close()
+#    os.popen('grdcontour %s -J%s -B4f2WSne -C%s -A%s -G3i/10 -S4 -K -O %s %s' % (surfaceGrid, proj, contour, annotate, extras, out), 'w').close()
     coastLabelsScale(outFilename, proj=proj, region=region, extras=extras, cpt=cpt)
 
     ears.psfinish(outFilename)

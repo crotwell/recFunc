@@ -1,15 +1,8 @@
 #! /usr/bin/python
 
-import csv, os
-
-def ps2pdf(outFilename):
-    os.popen('eps2eps '+outFilename+' '+outFilename.replace('.ps','.eps')).close()
-    os.popen('epstopdf '+outFilename.replace('.ps','.eps')).close()
-    try:
-#	os.remove(outFilename)
-	pass
-    except OSError:
-	pass
+import csv, os, sys
+sys.path.append('../surface')
+import ears
 
 def plotGaussH(outFilename, gauss, color='0/0/0'):
     out = ' >> '+outFilename
@@ -27,7 +20,6 @@ def plotGaussH(outFilename, gauss, color='0/0/0'):
 #    gmt.close()
     gmt= os.popen('psxy -P -JX -R -Sc.08i -G'+color+' -O -K '+out, 'w')
     for row in rows:
-        print "row %s %s\n" % (row[4], row[6].replace(' km',''))
 	gmt.write("%s %s\n" % (row[4], row[6].replace(' km','')))
     gmt.close()
     gmt= os.popen('psxy -P -JX -R -St.1i -G255/0/0 -O -K '+out, 'w')
@@ -74,17 +66,16 @@ def makeHVsLon(outFilename):
     out = ' >> '+outFilename
     gmt= os.popen('psxy -B2WESn -P -JX6i/-6i -R-94/-70/25/51 -K '+out, 'w')
     gmt.close()
-    print 'aaaaaa'
 
     plotGaussH(outFilename, '2.5', '0/0/0')
-    plotGaussH(outFilename, '1.0', '0/0/255')
+    plotGaussH(outFilename, '1.0', '0/255/0')
 #    plotGaussH(outFilename, '0.7', '0/255/0')
 #    plotGaussH(outFilename, '0.4', '0/255/255')
 #    gmt= os.popen('psxy -P -JX -R -O -K -Y2 '+out, 'w')
 #    gmt.close()
     legend(outFilename, '26', 't.1i', '255/0/0', 'MOMA')
     legend(outFilename, '26.75', 'c.08i', '0/0/0', 'Gauss 2.5')
-    legend(outFilename, '27.5', 'c.08i', '0/0/255', 'Gauss 1.0')
+    legend(outFilename, '27.5', 'c.08i', '0/255/0', 'Gauss 1.0')
 #    legend(outFilename, '28.25', 'c.08i', '0/255/0', 'Gauss 0.7')
 #    legend(outFilename, '29', 'c.08i', '0/255/255', 'Gauss 0.4')
 
@@ -93,4 +84,4 @@ def makeHVsLon(outFilename):
     
 
 makeHVsLon('momaH.ps')
-ps2pdf('momaH.ps') 
+ears.ps2pdf('momaH.ps') 

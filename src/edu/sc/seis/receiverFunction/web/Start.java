@@ -147,6 +147,10 @@ public class Start {
                               "edu.sc.seis.receiverFunction.web.RecordSectionImage",
                               servletStrings,
                               rootHandler);
+        RevUtil.populateJetty("/analyticPhase.txt",
+                              "edu.sc.seis.receiverFunction.web.AnalyticPhaseAsText",
+                              servletStrings,
+                              rootHandler);
         RevUtil.populateJetty("/complexityResidualImage.png",
                               "edu.sc.seis.receiverFunction.web.ComplexityResidualImage",
                               servletStrings,
@@ -254,7 +258,13 @@ public class Start {
         if(netDbId != -1) {
             return new VelocityNetwork(jdbcNetwork.get(netDbId), netDbId);
         }
-        String netCode = RevUtil.get("netcode", req);
+        String netCode;
+        // also check for netCode to keep google happy
+        if (RevUtil.get("netCode", req, null) != null) {
+            netCode = RevUtil.get("netCode", req);
+        } else {
+            netCode = RevUtil.get("netcode", req);
+        }
         return getNetwork(netCode, jdbcNetwork);
     }
 

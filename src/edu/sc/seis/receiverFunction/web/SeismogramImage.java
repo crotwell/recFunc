@@ -65,15 +65,7 @@ public class SeismogramImage extends HttpServlet {
      */
     public SeismogramImage() throws SQLException, ConfigurationException,
             Exception {
-        Connection conn = ConnMgr.createConnection();
-        JDBCEventAccess jdbcEvent = new JDBCEventAccess(conn);
-        JDBCChannel jdbcChannel = new JDBCChannel(conn);
-        JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
-        jdbcRecFunc = new JDBCRecFunc(conn,
-                                      jdbcEvent,
-                                      jdbcChannel,
-                                      jdbcSodConfig,
-                                      RecFuncCacheImpl.getDataLoc());
+        jdbcRecFunc = new JDBCRecFunc(ConnMgr.createConnection(), RecFuncCacheImpl.getDataLoc());
     }
 
     public synchronized void doGet(HttpServletRequest req,

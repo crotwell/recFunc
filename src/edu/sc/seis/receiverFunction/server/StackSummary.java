@@ -395,6 +395,8 @@ public class StackSummary {
                         if (bootstrapXY) {
                             double[] h=sum.getHBootstrap();
                             double[] k=sum.getKBootstrap();
+                            System.out.println("max h="+sum.getBest().formatH());
+                            System.out.println("max k="+sum.getBest().formatVpVs());
                             System.out.println("k stddev="+sum.getKStdDev());
                             System.out.println("h stddev="+sum.getHStdDev());
                             for(int j = 0; j < h.length; j++) {

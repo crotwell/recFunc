@@ -75,14 +75,12 @@ public class StationList extends Revlet {
     }
 
     public String getVelocityTemplate(HttpServletRequest req) {
-        String path = req.getServletPath();
-        if(path == null) {
-            path = "";
-        }
-        if(path.endsWith(".html")) {
-            return "stationList.vm";
-        } else {
+        String fileType = RevUtil.getFileType(req);
+        if(fileType.equals(RevUtil.MIME_CSV)
+                || fileType.equals(RevUtil.MIME_TEXT)) {
             return "stationListTxt.vm";
+        } else {
+            return "stationList.vm";
         }
     }
 

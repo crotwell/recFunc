@@ -27,7 +27,12 @@ public class StationsNearBy extends StationList {
     }
     
     public String getVelocityTemplate(HttpServletRequest req) {
-        return "stationsNearBy.vm";
+        String fileType = RevUtil.getFileType(req);
+        if (fileType.equals(RevUtil.MIME_HTML)) {
+            return "stationsNearBy.vm";
+        } else {
+            return super.getVelocityTemplate(req);
+        }
     }
     
     public ArrayList getStations(HttpServletRequest req, RevletContext context) throws SQLException,

@@ -99,8 +99,8 @@ public class TestIterDecon {
 
     private static void setOSFileExtras(String name) {
        try {
-            Class fmClass = Class.forName("com.apple.eio.FileManager");
-            com.apple.eio.FileManager.setFileCreator(name, GEE_CREATOR_CODE);
+            //Class fmClass = Class.forName("com.apple.eio.FileManager");
+            //com.apple.eio.FileManager.setFileCreator(name, GEE_CREATOR_CODE);
         } catch (Exception e) {
 
        } // end of try-catch

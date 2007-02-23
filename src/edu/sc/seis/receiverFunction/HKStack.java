@@ -1042,7 +1042,7 @@ public class HKStack implements Serializable {
     }
 
     /** gets the amp at the given time offset from the start of the seismogram. */
-    float getAmp(LocalSeismogramImpl seis, TimeInterval time)
+    public static float getAmp(LocalSeismogramImpl seis, TimeInterval time)
             throws FissuresException {
         float sampOffset = getDataIndex(seis, time);
         int offset = (int)Math.floor(sampOffset);

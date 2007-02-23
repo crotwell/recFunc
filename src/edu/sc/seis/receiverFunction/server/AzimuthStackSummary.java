@@ -28,7 +28,7 @@ public class AzimuthStackSummary extends StackSummary {
         jdbcAz = new JDBCAzimuthSummaryHKStack(jdbcSummary);
     }
 
-    public void createSummary(StationId station,
+    public SumHKStack createSummary(StationId station,
                               float gaussianWidth,
                               float minPercentMatch,
                               QuantityImpl smallestH,
@@ -49,6 +49,10 @@ public class AzimuthStackSummary extends StackSummary {
                 jdbcAz.put(azimuthSum[i]);
             }
         }
+        // bad code, but isn't needed
+        // fix later
+        // famous last words...
+        return null;
     }
 
     public AzimuthSumHKStack[] azimuthSum(String netCode,

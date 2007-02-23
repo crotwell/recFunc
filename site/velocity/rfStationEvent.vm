@@ -30,7 +30,7 @@
 </tr>
 <tr>
 <td class="bold">Earthquake time(UTC):</td>
-<td class="data">$eq.time</td>
+<td class="data">$eq.getTime("yyyy/MM/dd (DDD) HH:mm:ss z")</td>
 </tr>
 <tr>
 <td class="bold">Earthquake Depth:</td>

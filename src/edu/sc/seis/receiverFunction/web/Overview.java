@@ -87,5 +87,5 @@ public class Overview extends StationList {
 
 	MicroSecondDate loadtime;
 
-	TimeInterval CACHE_TIME = new TimeInterval(24, UnitImpl.HOUR);
+	public static TimeInterval CACHE_TIME = new TimeInterval(24, UnitImpl.HOUR);
 }

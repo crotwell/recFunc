@@ -9,12 +9,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import edu.iris.Fissures.IfNetwork.Station;
+import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.JDBCStationResult;
 import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.compare.StationResultRef;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.RevletContext;
@@ -33,12 +36,16 @@ public class ComparePriorResult extends StationList {
         jdbcStationResult = new JDBCStationResult(jdbcChannel.getNetworkTable());
         crust2 = new Crust2();
     }
+    
+    public static String getReqName(HttpServletRequest req) {
+        return RevUtil.get("name", req, "crust2.0");
+    }
 
-    public ArrayList getStations(HttpServletRequest req, RevletContext context)
+    public synchronized ArrayList getStations(HttpServletRequest req, RevletContext context)
             throws SQLException, NotFound {
         TimeOMatic.start();
         ArrayList stations = new ArrayList();
-        String name = RevUtil.get("name", req, "crust2.0");
+        String name = getReqName(req);
         context.put("name", name);
         float hDiff = RevUtil.getFloat("hDiff", req, -1);
         if(hDiff != -1) {
@@ -48,11 +55,25 @@ public class ComparePriorResult extends StationList {
         context.put("prior", prior);
         HashMap hDiffMap = new HashMap();
         context.put("hDiffMap", hDiffMap);
-        
+
+        if(name.equals("crust2.0") || name.equals("Crust2.0")) {
+            context.put("ref", Crust2.getReference());
+        } else {
+            StationResultRef[] refs = jdbcStationResult.getJDBCStationResultRef().getByName(name);
+            if (refs.length != 0) {
+                context.put("ref", refs[0]);
+            }
+        }
+        if (cache.containsKey(name)) {
+            TimedCacheItem cachedItem = (TimedCacheItem)cache.get(name);
+            if (cachedItem.stations != null && ClockUtil.now().subtract(cachedItem.when).lessThan(Overview.CACHE_TIME)) {
+                context.put("prior", cachedItem.prior);
+                return cachedItem.stations;
+            }
+        }
         StationResult[] results;
         if(name.equals("crust2.0") || name.equals("Crust2.0")) {
             Station[] allsta = jdbcChannel.getStationTable().getAllStations();
-            context.put("ref", Crust2.getReference());
             for(int i = 0; i < allsta.length; i++) {
                 VelocityStation station = new VelocityStation(allsta[i],
                                                               jdbcChannel.getStationTable()
@@ -64,9 +85,6 @@ public class ComparePriorResult extends StationList {
             }
         } else {
             results = jdbcStationResult.getAll(name);
-            if(results.length != 0) {
-                context.put("ref", results[0].getRef());
-            }
             for(int i = 0; i < results.length; i++) {
                 try {
                     int[] dbids = jdbcChannel.getStationTable()
@@ -100,15 +118,24 @@ public class ComparePriorResult extends StationList {
                 }
             }
         }
+        TimedCacheItem item = new TimedCacheItem(ClockUtil.now(), name, stations, null, prior); 
+        cache.put(name, item);
         TimeOMatic.print("getStations");
         return stations;
     }
 
-    public HashMap getSummaries(ArrayList stationList,
+    public synchronized HashMap getSummaries(ArrayList stationList,
                                 RevletContext context,
                                 HttpServletRequest req) throws SQLException,
             IOException {
         TimeOMatic.start();
+        String name = getReqName(req);
+        if (cache.containsKey(name)) {
+            TimedCacheItem cachedItem = (TimedCacheItem)cache.get(name);
+            if (cachedItem.summaries != null && ClockUtil.now().subtract(cachedItem.when).lessThan(Overview.CACHE_TIME)) {
+                return cachedItem.summaries;
+            }
+        }
         // clean station/prior results if they agree within hDiff km
         HashMap summary = super.getSummaries(stationList, context, req);
         cleanSummaries(stationList, summary);
@@ -151,6 +178,11 @@ public class ComparePriorResult extends StationList {
                 prior.remove(station);
             }
         }
+        if (cache.containsKey(name)) {
+            TimedCacheItem cachedItem = (TimedCacheItem)cache.get(name);
+            cachedItem.summaries = summary;
+            cache.put(name, cachedItem);
+        }
         TimeOMatic.print("getSummaries");
         return summary;
     }
@@ -158,12 +190,28 @@ public class ComparePriorResult extends StationList {
     public String getVelocityTemplate(HttpServletRequest req) {
         return "comparePriorResult.vm";
     }
+    
+    private HashMap cache = new HashMap();
 
     static Crust2 crust2 = null;
 
     JDBCStationResult jdbcStationResult;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ComparePriorResult.class);
+}
+
+class TimedCacheItem {
+    MicroSecondDate when;
+    String name;
+    ArrayList stations;
+    HashMap summaries, prior;
+    public TimedCacheItem(MicroSecondDate when, String name, ArrayList stations, HashMap summaries, HashMap prior) {
+        this.when = when;
+        this.name = name;
+        this.stations = stations;
+        this.summaries = summaries;
+        this.prior = prior;
+    }
 }
 
 class StationAlpha implements Comparator {

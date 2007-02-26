@@ -216,6 +216,10 @@ public class JDBCStationResult extends JDBCTable {
         }
         conn.close();
     }
+    
+    public JDBCStationResultRef getJDBCStationResultRef() {
+        return jdbcStationResultRef;
+    }
 
     PreparedStatement put, get, getAllForName;
 

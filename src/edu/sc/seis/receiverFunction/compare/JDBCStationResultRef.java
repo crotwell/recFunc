@@ -70,7 +70,7 @@ public class JDBCStationResultRef extends JDBCTable {
     
     JDBCSequence seq;
     
-    PreparedStatement put, getDbId, getAll;
+    PreparedStatement put, getDbId, getAll, getAllForName;
 
     public StationResultRef[] getAll() throws SQLException {
         ResultSet rs = getAll.executeQuery();
@@ -80,4 +80,16 @@ public class JDBCStationResultRef extends JDBCTable {
         }
         return (StationResultRef[])out.toArray(new StationResultRef[0]);
     }
+
+    public StationResultRef[] getByName(String name) throws SQLException {
+        getAllForName.setString(1, name);
+        ResultSet rs = getAllForName.executeQuery();
+        ArrayList out = new ArrayList();
+        while(rs.next()) {
+            out.add(extract(rs));
+        }
+        return (StationResultRef[])out.toArray(new StationResultRef[0]);
+    }
+    
+    
 }

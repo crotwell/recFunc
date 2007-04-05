@@ -1,5 +1,6 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -52,6 +53,8 @@ public class CustomStackAsXYZ  extends HttpServlet {
             SumHKStack sumStack = CustomStack.calcCustomStack(req, jdbcHKStack, jdbcRejectMax);
             OutputStream out = res.getOutputStream();
             SumHKStackAsXYZ.doXYZOutput(sumStack, out, req, res);
+        } catch(EOFException e) {
+            // oh well...
         } catch(NotFound e) {
             OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
             writer.write("<html><body><p>No HK stack foundfor  "

@@ -4,6 +4,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.SocketException;
 import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,10 +39,12 @@ public class SumHKStackAsXYZ extends SummaryHKStackImageServlet {
                     writer.write(sumStack.getSum().getKFromIndex(j)+" "+h+" "+stack[i][j]+"\n");
                 }
             }
+        }catch(SocketException e) {
+            // oh well, client has closed connection
         }catch(EOFException e) {
             // oh well, client has closed connection
         } finally {
-        writer.close();
+            writer.close();
         }
     }
     

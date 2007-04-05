@@ -53,6 +53,10 @@ public class Start {
                               "edu.sc.seis.receiverFunction.web.StationList",
                               servletStrings,
                               rootHandler);
+        RevUtil.populateJetty("/stationCodeList.html",
+                              "edu.sc.seis.receiverFunction.web.StationCodeList",
+                              servletStrings,
+                              rootHandler);
         RevUtil.populateJetty("/stationsNearBy.html",
                               "edu.sc.seis.receiverFunction.web.StationsNearBy",
                               servletStrings,

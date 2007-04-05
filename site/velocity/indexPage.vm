@@ -25,7 +25,16 @@
 <ul>
 <li>Browse the <a href="networkList.html?gaussian=${gaussian}">network list</a> </li>
 <p>or</p>
+<li>Find a station by code:
+<form action="stationCodeList.html?gaussian=${gaussian}" method="get">
+<table class="entry_form">
+<tr><td class="label"><label for="code">Station Code: </label></td><td colspan="2"><input type="text" name="stacode" value=""/></td></tr>
 
+<tr><td></td><td><input type="submit" value="Send"/></td></tr>
+</table>   
+ </form>
+</li>
+<p>or</p>
 
 <li>Graph results near:
 <form action="stationsNearBy.html?gaussian=${gaussian}" method="get">

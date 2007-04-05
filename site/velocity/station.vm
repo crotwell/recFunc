@@ -57,7 +57,7 @@ window.onload=function(){
 <tr><td class="bold">Vs Estimate:</td><td class="data">$!summary.getBest().formatVs()</td></tr>
 <tr><td class="bold">Poisson's Ratio:</td><td class="data">$!summary.getBest().formatPoissonsRatio()</td></tr>
 <tr><td class="bold">Peak Value:</td><td class="data">$!summary.getBest().formatAmp()</td></tr>
-<tr><td class="bold">Assumed Vp:</td><td class="data">$!summary.getBest().formatVs()</td></tr>
+<tr><td class="bold">Assumed Vp:</td><td class="data">$!summary.getBest().formatVp()</td></tr>
 <tr><td class="bold">Ps Weight:</td><td class="data">$!summary.getSum().getWeightPs()</td></tr>
 <tr><td class="bold">PpPs Weight:</td><td class="data">$!summary.getSum().getWeightPpPs()</td></tr>
 <tr><td class="bold">PsPs Weight:</td><td class="data">$!summary.getSum().getWeightPsPs()</td></tr>

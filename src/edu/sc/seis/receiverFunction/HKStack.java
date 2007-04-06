@@ -11,13 +11,10 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import org.w3c.dom.Element;
 import edu.iris.Fissures.FissuresException;
@@ -30,9 +27,7 @@ import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.model.UnitRangeImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
-import edu.iris.Fissures.network.StationIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
-import edu.iris.dmc.seedcodec.CodecException;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
@@ -770,9 +765,7 @@ public class HKStack implements Serializable {
             g.translate(5, fm.getHeight() + fm.getDescent());
             comp.print(g);
             g.translate(0, size.height);
-            int[] xyMin = getMinValueIndices();
             StackMaximum xyMax = getGlobalMaximum();
-            float min = stack[xyMin[0]][xyMin[1]];
             float max = xyMax.getMaxValue();
             g.setColor(Color.white);
             g.drawString("% match=" + percentMatch, 0, fm.getHeight());
@@ -943,14 +936,14 @@ public class HKStack implements Serializable {
                       weightPs,
                       weightPpPs,
                       weightPsPs,
-                      crust2.getStationResult(cachedResult.channels[0].my_site.my_station));
+                      crust2.getStationResult(cachedResult.channels[0].my_site.my_station).getVp());
     }
 
     public static HKStack create(CachedResult cachedResult,
                                  float weightPs,
                                  float weightPpPs,
                                  float weightPsPs,
-                                 StationResult staResult)
+                                 QuantityImpl vp)
             throws TauModelException, FissuresException {
         String[] pPhases = {"P"};
         TauPUtil tauPTime = TauPUtil.getTauPUtil(modelName);
@@ -960,7 +953,7 @@ public class HKStack implements Serializable {
         // convert radian per sec ray param into km per sec
         float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
                 .getRadiusOfEarth());
-        HKStack stack = new HKStack(staResult.getVp(),
+        HKStack stack = new HKStack(vp,
                                     kmRayParam,
                                     cachedResult.config.gwidth,
                                     cachedResult.radialMatch,
@@ -1024,7 +1017,6 @@ public class HKStack implements Serializable {
                                            QuantityImpl h) {
         float a = (float)alpha.convertTo(UnitImpl.KILOMETER_PER_SECOND)
                 .getValue();
-        float etaP = (float)Math.sqrt(1 / (a * a) - p * p);
         float beta = a / k;
         float etaS = (float)Math.sqrt(1 / (beta * beta) - p * p);
         return new TimeInterval(h.getValue(UnitImpl.KILOMETER) * (2 * etaS),
@@ -1218,7 +1210,6 @@ public class HKStack implements Serializable {
         out.newLine();
         out.write("alpha=" + alpha);
         out.newLine();
-        int[] xyMin = getMinValueIndices();
         StackMaximum xyMax = getGlobalMaximum();
         float max = xyMax.getMaxValue();
         out.write("Max H="

@@ -10,6 +10,8 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.FissuresException;
+import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
@@ -30,36 +32,55 @@ import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.ConfigurationException;
 
-
 public class CustomStack extends Station {
-    
+
     public CustomStack() throws SQLException, ConfigurationException, Exception {
         super();
     }
 
-    public SumHKStack getSummaryStack(HttpServletRequest req) throws SQLException, NotFound, IOException, TauModelException, FissuresException {
-    	return calcCustomStack(req, jdbcHKStack, jdbcRejectMax);
+    public SumHKStack getSummaryStack(HttpServletRequest req)
+            throws SQLException, NotFound, IOException, TauModelException,
+            FissuresException {
+        return calcCustomStack(req, jdbcHKStack, jdbcRejectMax);
     }
-    
-    public static SumHKStack calcCustomStack(HttpServletRequest req, JDBCHKStack jdbcHKStack, JDBCRejectedMaxima jdbcRejectMax) throws SQLException, NotFound, IOException, TauModelException, FissuresException {
-    	int[] dbids = parseDbIds(req);
-        if (dbids.length == 0) {
+
+    public static SumHKStack calcCustomStack(HttpServletRequest req,
+                                             JDBCHKStack jdbcHKStack,
+                                             JDBCRejectedMaxima jdbcRejectMax)
+            throws SQLException, NotFound, IOException, TauModelException,
+            FissuresException {
+        int[] dbids = parseDbIds(req);
+        if(dbids.length == 0) {
             throw new RuntimeException("No dbids found in query params");
         }
         HKStack[] plots = new HKStack[dbids.length];
-        for(int i = 0; i < dbids.length; i++) {
-            try {
-            plots[i] = jdbcHKStack.get(dbids[i]);
-            } catch (NotFound n) {
-                plots[i] = jdbcHKStack.calc(dbids[i], true);
+        if(RevUtil.exists("vp", req)) {
+            // custom vp, so we need to recreate the HK stacks
+            for(int i = 0; i < dbids.length; i++) {
+                plots[i] = jdbcHKStack.calc(dbids[i],
+                                            JDBCHKStack.DEFAULT_WEIGHT_Ps,
+                                            JDBCHKStack.DEFAULT_WEIGHT_PpPs,
+                                            JDBCHKStack.DEFAULT_WEIGHT_PsPs,
+                                            false,
+                                            new QuantityImpl(RevUtil.getFloat("vp", req), UnitImpl.KILOMETER_PER_SECOND));
+                plots[i].compact();
             }
-            plots[i].compact();
+        } else {
+            for(int i = 0; i < dbids.length; i++) {
+                try {
+                    plots[i] = jdbcHKStack.get(dbids[i]);
+                } catch(NotFound n) {
+                    plots[i] = jdbcHKStack.calc(dbids[i], true);
+                }
+                plots[i].compact();
+            }
         }
         boolean doBootstrap = RevUtil.getBoolean("bootstrap", req, false);
-        int netDbId = Start.getNetwork(req, jdbcHKStack.getJDBCChannel().getNetworkTable()).getDbId();
+        int netDbId = Start.getNetwork(req,
+                                       jdbcHKStack.getJDBCChannel()
+                                               .getNetworkTable()).getDbId();
         HKBox[] rejects = jdbcRejectMax.getForStation(netDbId,
                                                       req.getParameter("stacode"));
-        
         SumHKStack sumStack = new SumHKStack(plots,
                                              plots[0].getChannel(),
                                              80,
@@ -71,27 +92,29 @@ public class CustomStack extends Station {
         return sumStack;
     }
 
-    public CacheEvent[] getWinnerEvents(HttpServletRequest req) throws SQLException, NotFound, FileNotFoundException, FissuresException, IOException {
+    public CacheEvent[] getWinnerEvents(HttpServletRequest req)
+            throws SQLException, NotFound, FileNotFoundException,
+            FissuresException, IOException {
         int[] dbids = parseDbIds(req);
-        
         CacheEvent[] events = new CacheEvent[dbids.length];
         for(int i = 0; i < dbids.length; i++) {
             CachedResultPlusDbId result = jdbcRecFunc.get(dbids[i]);
-            if (result != null) {
+            if(result != null) {
                 events[i] = result.getEvent();
-                JDBCRecFunc.addToParms(events[i].getOrigin(), result.getCachedResult().radialMatch, dbids[i]);
+                JDBCRecFunc.addToParms(events[i].getOrigin(),
+                                       result.getCachedResult().radialMatch,
+                                       dbids[i]);
             } else {
-                throw new RuntimeException("no receiver function found for dbid="+dbids[i]);
+                throw new RuntimeException("no receiver function found for dbid="
+                        + dbids[i]);
             }
         }
         return events;
-        
     }
-    
+
     static int[] parseDbIds(HttpServletRequest req) {
         String dbidStr = RevUtil.get("recfunc_id", req);
-        StringTokenizer tokenizer = new StringTokenizer(dbidStr, 
-                                                        ",");
+        StringTokenizer tokenizer = new StringTokenizer(dbidStr, ",");
         ArrayList idArray = new ArrayList();
         while(tokenizer.hasMoreTokens()) {
             idArray.add(Integer.valueOf(tokenizer.nextToken().trim()));
@@ -105,8 +128,8 @@ public class CustomStack extends Station {
         return ids;
     }
 
-    public CacheEvent[] getLoserEvents(HttpServletRequest req) throws SQLException, NotFound {
+    public CacheEvent[] getLoserEvents(HttpServletRequest req)
+            throws SQLException, NotFound {
         return new CacheEvent[0];
     }
-    
 }

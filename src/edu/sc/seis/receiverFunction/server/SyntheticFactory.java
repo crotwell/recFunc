@@ -165,7 +165,7 @@ public class SyntheticFactory {
                               1 / 3f,
                               1 / 3f,
                               1 / 3f,
-                              staResult);
+                              staResult.getVp());
     }
 
     public static SacTimeSeries getSac(String name) throws IOException {

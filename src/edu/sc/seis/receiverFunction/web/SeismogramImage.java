@@ -2,6 +2,7 @@ package edu.sc.seis.receiverFunction.web;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import java.io.EOFException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
@@ -181,6 +182,8 @@ public class SeismogramImage extends HttpServlet {
             writer.write("<html><body><p>No waveforms found for id "
                     + req.getParameter("rf") + "</p></body></html>");
             writer.flush();
+        } catch(EOFException e) {
+            //oh well...
         } catch(Exception e) {
             Revlet.sendToGlobalExceptionHandler(req, e);
             throw new RuntimeException(e);

@@ -32,6 +32,7 @@ public class Start {
     public static void main(String[] args) throws Exception {
         Properties props = Initializer.loadProperties(args);
         PropertyConfigurator.configure(props);
+        RecFuncCacheImpl.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc", RecFuncCacheImpl.getDataLoc()));
         ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(props.getProperty("fissuresUtil.database.url"));
         logger.info("connecting to database: " + ConnMgr.getURL());

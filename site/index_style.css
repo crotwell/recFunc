@@ -44,7 +44,7 @@ body {
 #search_station {
                  float: left;
                   background: #D0EFBB;
-                  height: 470px;
+                  height: 580px;
                   margin: 0px 10px 10px 10px;
                    border: 1px solid #999999;
                    width: 440px;
@@ -52,7 +52,7 @@ body {
                  }
 
  #search_earthquake {
-                                     height: 470px;
+                                     height: 580px;
                                       margin: 10px 0 10px 460px;
                                       background: #F9F4C2;
                                       border: 1px solid #999999;
@@ -95,8 +95,7 @@ h1 {
     table.entry_form {
     font-size: 12px;
     margin: 10px 0 15px 10px;
-    300px;
-    
+    width: 300px;
 }
 
 #article {

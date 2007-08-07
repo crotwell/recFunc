@@ -284,6 +284,10 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     public static String getDataLoc() {
         return DATA_LOC;
     }
+    
+    public static void setDataLoc(String loc) {
+        DATA_LOC = loc;
+    }
 
     private TimeInterval timeTol = new TimeInterval(10, UnitImpl.SECOND);
 

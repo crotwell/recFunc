@@ -2,34 +2,25 @@ package edu.sc.seis.receiverFunction.web;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
-import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.NotFound;
-import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
-import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.receiverFunction.HKStack;
-import edu.sc.seis.receiverFunction.StackComplexity;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.server.CachedResultPlusDbId;
 import edu.sc.seis.receiverFunction.server.HKBox;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
 import edu.sc.seis.receiverFunction.server.JDBCRejectedMaxima;
-import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
 import edu.sc.seis.rev.RevUtil;
-import edu.sc.seis.rev.Revlet;
-import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.ConfigurationException;
 
 public class CustomStack extends Station {

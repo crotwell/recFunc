@@ -112,7 +112,7 @@ public class ReceiverFunctionZip extends HttpServlet {
         DataOutputStream dos = new DataOutputStream(zip);
         ArrayList knownEntries = new ArrayList();
 
-        String[] pPhases = {"P"};
+        String[] pPhases = {"ttp"};
         TauPUtil tauPTime = TauPUtil.getTauPUtil(HKStack.modelName);
         for(int i = 0; i < result.length; i++) {
             CachedResult cr = result[i].getCachedResult();
@@ -151,7 +151,9 @@ public class ReceiverFunctionZip extends HttpServlet {
                 // convert radian per sec ray param into km per sec
                 float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
                         .getRadiusOfEarth());
-                TauP_SetSac.setSacTHeader(sac, TauP_SetSac.A_HEADER, arrivals[0]); 
+                // I don't know why, but this generates slightly wrong values, it should be sac.b+10 sec
+                //TauP_SetSac.setSacTHeader(sac, TauP_SetSac.A_HEADER, arrivals[0]); 
+                sac.a = sac.b+10;
                 sac.user2 = kmRayParam;
                 sac.kuser2 = "rayparam";
                 sac.writeHeader(dos);

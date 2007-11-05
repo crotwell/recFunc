@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -178,13 +179,14 @@ public class Station extends Revlet {
                                                  extra));
             }
             TimeInterval timePs = summary.getSum().getTimePs();
-            timePs.setFormat(FissuresFormatter.getDepthFormat());
+            DecimalFormat arrivalTimeFormat = new DecimalFormat("0.00");
+            timePs.setFormat(arrivalTimeFormat);
             context.put("timePs", timePs);
             TimeInterval timePpPs = summary.getSum().getTimePpPs();
-            timePpPs.setFormat(FissuresFormatter.getDepthFormat());
+            timePpPs.setFormat(arrivalTimeFormat);
             context.put("timePpPs", timePpPs);
             TimeInterval timePsPs = summary.getSum().getTimePsPs();
-            timePsPs.setFormat(FissuresFormatter.getDepthFormat());
+            timePsPs.setFormat(arrivalTimeFormat);
             context.put("timePsPs", timePsPs);
         } catch(NotFound e) {
             // no summary, oh well...

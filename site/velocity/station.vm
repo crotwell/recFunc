@@ -112,7 +112,7 @@ window.onload=function(){
 </table>
 
 <table class="station_page2" cellpadding="0" cellspacing="0">
-<tr><td class="headodd" colspan="2">Arrivals for vertical incidence <br />(zero ray parameter)</td></tr>
+<tr><td class="headodd" colspan="2">Predicted Arrivals for vertical incidence <br />(zero ray parameter)</td></tr>
 <tr><td class="even">Ps</td><td class="odd">$timePs</td></tr>
 <tr><td class="even">PpPs</td><td class="odd">$timePpPs</td></tr>
 <tr><td class="even">PsPs/PpSs</td><td class="odd">$timePsPs</td></tr>

@@ -43,6 +43,7 @@ import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.Start;
 import edu.sc.seis.sod.database.JDBCConfig;
+import edu.sc.seis.sod.hibernate.SodDB;
 import edu.sc.seis.sod.process.waveform.vector.WaveformVectorProcess;
 import edu.sc.seis.sod.process.waveform.vector.WaveformVectorResult;
 import edu.sc.seis.sod.status.StringTreeLeaf;
@@ -110,21 +111,13 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess {
                                         CookieJar cookieJar) throws Exception {
         try {
             if(sodconfig_id == -1) {
-                Connection conn = null;
                 try {
-                    conn = ConnMgr.createConnection();
-                    JDBCConfig jdbcConfig = new JDBCConfig(conn);
-                    String sodConfig = jdbcConfig.getCurrentConfig();
-                    sodconfig_id = cache.insertSodConfig(sodConfig);
-                    conn.close();
-                } catch(Exception e) {
+                    SodDB sodDb = new SodDB();
+                    sodconfig_id = sodDb.getCurrentConfig().getDbid();
+                } catch(Throwable e) {
                     // oh well
-                    GlobalExceptionHandler.handle(e);
+                    GlobalExceptionHandler.handle("Unable to get configuration from database, using id=-2", e);
                     sodconfig_id = -2;
-                } finally {
-                    if(conn != null) {
-                        conn.close();
-                    }
                 }
             }
             Channel chan = channelGroup.getChannels()[0];

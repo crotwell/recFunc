@@ -37,12 +37,12 @@ public class TestSimilarEvents {
         JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn,
                                                   RecFuncCacheImpl.getDataLoc());
         for(int i = 0; i < similar.length; i++) {
-            System.out.println(similar[i].getDbId() + "  " + similar[i]);
+            System.out.println(similar[i].getDbid() + "  " + similar[i]);
         }
         if(chanDbId != -1) {
             ChannelId chanId = jdbcRecFunc.getJDBCChannel().getId(chanDbId);
             for(int i = 0; i < similar.length; i++) {
-                System.out.println("is cached "+similar[i].getDbId() + "  " + similar[i] + " "
+                System.out.println("is cached "+similar[i].getDbid() + "  " + similar[i] + " "
                         + jdbcRecFunc.exists(prefOrigin, chanId, new IterDeconConfig(2.5f, 400, 0.001f)));
             }
         } else {
@@ -60,7 +60,7 @@ public class TestSimilarEvents {
                 for(int j = 0; j < similar.length; j++) {
                     System.out.println(ChannelIdUtil.toStringNoDates(chanId[0])
                             + "  "
-                            + similar[j].getDbId()
+                            + similar[j].getDbid()
                             + "  "
                             + "  "
                             + results[i].getDbId()

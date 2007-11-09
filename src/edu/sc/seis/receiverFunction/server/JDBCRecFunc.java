@@ -662,7 +662,7 @@ public class JDBCRecFunc extends JDBCTable {
             throws SQLException, NotFound, FileNotFoundException,
             FissuresException, IOException {
         int index = 1;
-        getStationsByEventByPercent.setInt(index++, event.getDbId());
+        getStationsByEventByPercent.setInt(index++, event.getDbid());
         getStationsByEventByPercent.setFloat(index++, gaussianWidth);
         getStationsByEventByPercent.setFloat(index++, minPercentMatch);
         ResultSet rs = getStationsByEventByPercent.executeQuery();

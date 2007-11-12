@@ -157,7 +157,6 @@ public class StationList extends Revlet {
         while(it.hasNext()) {
             VelocityStation sta = (VelocityStation)it.next();
             try {
-                sta.setDbId(jdbcChannel.getStationTable().getDBId(sta.get_id()));
                 int netDbId = jdbcChannel.getNetworkTable()
                         .getDbId(sta.getNet().get_id());
                 sta.getNet().setDbId(netDbId);

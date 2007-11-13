@@ -15,7 +15,7 @@ public class StationCodeList extends StationList {
 
     public StationCodeList() throws SQLException, ConfigurationException, Exception {
         super();
-        sl = new StationLocator(jdbcChannel.getConnection());
+        sl = new StationLocator();
     }
     
     public String getVelocityTemplate(HttpServletRequest req) {

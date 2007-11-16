@@ -20,7 +20,6 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import edu.iris.Fissures.Orientation;
-import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfSeismogramDC.LocalSeismogram;
@@ -36,6 +35,7 @@ import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
+import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.cache.EventUtil;
 import edu.sc.seis.fissuresUtil.display.DisplayUtils;
 import edu.sc.seis.fissuresUtil.xml.DataSet;
@@ -104,7 +104,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
     /**
      * Processes localSeismograms to calculate receiver functions.
      */
-    public WaveformVectorResult process(EventAccessOperations event,
+    public WaveformVectorResult process(CacheEvent event,
                                         ChannelGroup channelGroup,
                                         RequestFilter[][] original,
                                         RequestFilter[][] available,

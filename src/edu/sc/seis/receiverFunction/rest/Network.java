@@ -11,7 +11,9 @@ import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.NetworkAttr;
 import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
+import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
+import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
@@ -118,7 +120,7 @@ public class Network extends Revlet {
         Station[] stations = jdbcChannel.getStationTable().getAllStations(netid);
         ArrayList stationList = new ArrayList();
         for(int i = 0; i < stations.length; i++) {
-            stationList.add(new VelocityStation(stations[i]));
+            stationList.add(new VelocityStation((StationImpl)stations[i]));
         }
         return new VelocityNetwork(stationList);
     }
@@ -131,14 +133,14 @@ public class Network extends Revlet {
                 sta = stations[i];
             }
         }
-        return new VelocityStation(sta);
+        return new VelocityStation((StationImpl)sta);
     }
     
     ArrayList getAllChannels(String[] parts, VelocityStation sta) throws NotFound, SQLException {
         Channel[] chans = jdbcChannel.getAllChannels(sta.get_id());
         ArrayList chanList = new ArrayList();
         for(int i = 0; i < chans.length; i++) {
-            chanList.add(new VelocityChannel(chans[i]));
+            chanList.add(new VelocityChannel((ChannelImpl)chans[i]));
         }
         return chanList;
     }

@@ -2,10 +2,10 @@ package edu.sc.seis.receiverFunction.server;
 
 import org.omg.CORBA.SystemException;
 import org.w3c.dom.Element;
-import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.IfReceiverFunction.RecFuncCacheOperations;
+import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.display.configuration.DOMHelper;
 import edu.sc.seis.receiverFunction.RecFuncProcessor;
 import edu.sc.seis.sod.ChannelGroup;
@@ -37,7 +37,7 @@ public class RecFuncCacheCheck implements EventVectorSubsetter {
     /**
      * returns true if the receiver functions are already cached.
      */
-    public StringTree accept(EventAccessOperations event,
+    public StringTree accept(CacheEvent event,
                           ChannelGroup channel,
                           CookieJar cookieJar) throws Exception {
         ChannelId[] chanId = new ChannelId[channel.getChannels().length];

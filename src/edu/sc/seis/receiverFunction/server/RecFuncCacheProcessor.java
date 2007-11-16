@@ -8,7 +8,6 @@ import org.omg.CORBA.UserException;
 import org.omg.CosNaming.NamingContextPackage.InvalidName;
 import org.w3c.dom.Element;
 import edu.iris.Fissures.Location;
-import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
@@ -24,6 +23,7 @@ import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
+import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.cache.ProxyEventAccessOperations;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
@@ -103,7 +103,7 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess {
     /**
      * 
      */
-    public WaveformVectorResult process(EventAccessOperations event,
+    public WaveformVectorResult process(CacheEvent event,
                                         ChannelGroup channelGroup,
                                         RequestFilter[][] original,
                                         RequestFilter[][] available,

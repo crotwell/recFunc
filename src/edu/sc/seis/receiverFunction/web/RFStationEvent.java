@@ -3,10 +3,12 @@ package edu.sc.seis.receiverFunction.web;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.velocity.VelocityContext;
-import edu.iris.Fissures.IfNetwork.NetworkId;
+
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
@@ -15,7 +17,6 @@ import edu.sc.seis.fissuresUtil.bag.LongShortTrigger;
 import edu.sc.seis.fissuresUtil.bag.SimplePhaseStoN;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
-import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
@@ -31,9 +32,6 @@ import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.rev.locator.StationLocator;
 import edu.sc.seis.sod.ConfigurationException;
-import edu.sc.seis.sod.database.waveform.JDBCEventChannelCookieJar;
-import edu.sc.seis.sod.database.waveform.JDBCEventChannelStatus;
-import edu.sc.seis.sod.process.waveform.PhaseSignalToNoise;
 import edu.sc.seis.sod.status.FissuresFormatter;
 import edu.sc.seis.sod.velocity.event.VelocityEvent;
 import edu.sc.seis.sod.velocity.network.VelocityStation;

@@ -7,16 +7,17 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
-import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
@@ -32,9 +33,6 @@ import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.locator.StationLocator;
 import edu.sc.seis.sod.ConfigurationException;
-import edu.sc.seis.sod.database.waveform.JDBCEventChannelCookieJar;
-import edu.sc.seis.sod.database.waveform.JDBCEventChannelStatus;
-import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 /**
  * @author crotwell Created on Feb 16, 2005

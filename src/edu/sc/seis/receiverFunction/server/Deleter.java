@@ -20,6 +20,8 @@ import edu.iris.Fissures.IfNetwork.NetworkAccess;
 import edu.iris.Fissures.IfNetwork.NetworkDC;
 import edu.iris.Fissures.IfNetwork.NetworkDCOperations;
 import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.event.EventAttrImpl;
+import edu.iris.Fissures.event.OriginImpl;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.NetworkIdUtil;
@@ -232,8 +234,8 @@ public class Deleter {
         while(rs.next()) {
             CachedResultPlusDbId withDbId = queryRecFunc.extractWithoutSeismograms(rs);
             CachedResult result = withDbId.getCachedResult();
-            CacheEvent cacheEvent = new CacheEvent(result.event_attr,
-                                                   result.prefOrigin);
+            CacheEvent cacheEvent = new CacheEvent((EventAttrImpl)result.event_attr,
+                                                   (OriginImpl)result.prefOrigin);
             File stationDir = jdbcRecFunc.getDir(cacheEvent,
                                                  result.channels[0],
                                                  result.config.gwidth);

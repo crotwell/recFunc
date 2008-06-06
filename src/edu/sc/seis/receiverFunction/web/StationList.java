@@ -16,6 +16,8 @@ import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
 import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.fissuresUtil.hibernate.EventDB;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCHKStack;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
@@ -25,6 +27,7 @@ import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.ConfigurationException;
+import edu.sc.seis.sod.hibernate.SodDB;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
 
@@ -36,9 +39,9 @@ public class StationList extends Revlet {
     public StationList() throws SQLException, ConfigurationException, Exception {
         DATA_LOC = Start.getDataLoc();
         Connection conn = getConnection();
-        jdbcEventAccess = new JDBCEventAccess(conn);
-        jdbcChannel = new JDBCChannel(conn);
-        jdbcSodConfig = new JDBCSodConfig(conn);
+        jdbcEventAccess =  EventDB.getSingleton();
+        jdbcChannel = NetworkDB.getSingleton();
+        jdbcSodConfig = SodDB.getSingleton();
         jdbcRecFunc = new JDBCRecFunc(conn,
                                       jdbcEventAccess,
                                       jdbcChannel,
@@ -157,9 +160,7 @@ public class StationList extends Revlet {
         while(it.hasNext()) {
             VelocityStation sta = (VelocityStation)it.next();
             try {
-                int netDbId = jdbcChannel.getNetworkTable()
-                        .getDbId(sta.getNet().get_id());
-                sta.getNet().setDbId(netDbId);
+                int netDbId = sta.getWrapped().getNetworkAttr().getDbid();
                 SumHKStack sumStack = jdbcSumHKStack.getForStation(netDbId,
                                                                    sta.get_code(),
                                                                    gaussianWidth,
@@ -224,15 +225,15 @@ public class StationList extends Revlet {
 
     String DATA_LOC;
 
-    JDBCEventAccess jdbcEventAccess;
+    EventDB jdbcEventAccess;
 
-    JDBCChannel jdbcChannel;
+    NetworkDB jdbcChannel;
 
     JDBCHKStack jdbcHKStack;
 
     JDBCRecFunc jdbcRecFunc;
 
-    JDBCSodConfig jdbcSodConfig;
+    SodDB jdbcSodConfig;
 
     JDBCSummaryHKStack jdbcSumHKStack;
 

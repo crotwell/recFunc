@@ -7,6 +7,7 @@
 package edu.sc.seis.receiverFunction;
 
 import org.apache.log4j.Logger;
+
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
@@ -24,8 +25,8 @@ import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
 import edu.sc.seis.fissuresUtil.bag.Rotate;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
+import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
-import edu.sc.seis.sod.ChannelGroup;
 
 public class RecFunc {
 

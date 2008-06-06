@@ -89,7 +89,7 @@ public class Station extends Revlet {
             return handleNotFound(res);
         }
         // possible that there are multiple stations with the same code
-        String staCode = req.getParameter("stacode");
+        String staCode = req.getParameter("stacode").toUpperCase();
         ArrayList stationList = getStationList(net.getDbId(), staCode);
         TimeOMatic.start();
         CacheEvent[] events = getWinnerEvents(req);

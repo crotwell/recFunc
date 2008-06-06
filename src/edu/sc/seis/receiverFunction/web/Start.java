@@ -3,6 +3,7 @@ package edu.sc.seis.receiverFunction.web;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -11,10 +12,12 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.VelocityContext;
 import org.mortbay.jetty.servlet.ServletHandler;
 import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.rev.FloatQueryParamParser;
@@ -257,11 +260,11 @@ public class Start {
     }
 
     public static VelocityNetwork getNetwork(HttpServletRequest req,
-                                             JDBCNetwork jdbcNetwork)
+                                             NetworkDB jdbcNetwork)
             throws SQLException, NotFound {
         int netDbId = RevUtil.getInt("netdbid", req, -1);
         if(netDbId != -1) {
-            return new VelocityNetwork(jdbcNetwork.get(netDbId), netDbId);
+            return new VelocityNetwork(jdbcNetwork.getNetwork(netDbId), netDbId);
         }
         String netCode;
         // also check for netCode to keep google happy
@@ -270,11 +273,12 @@ public class Start {
         } else {
             netCode = RevUtil.get("netcode", req);
         }
+        netCode = netCode.toUpperCase();
         return getNetwork(netCode, jdbcNetwork);
     }
 
     public static VelocityNetwork getNetwork(String netCode,
-                                             JDBCNetwork jdbcNetwork) throws SQLException, NotFound {
+                                             NetworkDB jdbcNetwork) throws SQLException, NotFound {
         int netDbId = -1;
         String netCodeNoYear = netCode;
         if(netCodeNoYear != null) {
@@ -282,16 +286,14 @@ public class Start {
             if(netCodeNoYear.length() > 2) {
                 netCodeNoYear = netCodeNoYear.substring(0, 2);
             }
-            NetworkId[] netIds = jdbcNetwork.getByCode(netCodeNoYear);
-            for(int i = 0; i < netIds.length; i++) {
-                if(NetworkIdUtil.toStringNoDates(netIds[i]).equals(netCode)) {
-                    netDbId = jdbcNetwork.getDbId(netIds[i]);
-                    break;
+            List<NetworkAttrImpl> nets = jdbcNetwork.getNetworkByCode(netCodeNoYear);
+            for(NetworkAttrImpl networkAttrImpl : nets) {
+                if(NetworkIdUtil.toStringNoDates(networkAttrImpl.get_id()).equals(netCode)) {
+                    return new VelocityNetwork(networkAttrImpl);
                 }
             }
         }
-        if (netDbId == -1) {throw new NotFound();}
-        return new VelocityNetwork(jdbcNetwork.get(netDbId), netDbId);
+        throw new NotFound();
     }
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Start.class);

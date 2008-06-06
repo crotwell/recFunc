@@ -3,32 +3,29 @@ package edu.sc.seis.receiverFunction.browser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import javax.swing.JOptionPane;
+
 import edu.iris.Fissures.IfEvent.EventAccessOperations;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.model.MicroSecondDate;
-import edu.iris.Fissures.model.TimeInterval;
-import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
-import edu.sc.seis.IfReceiverFunction.SodConfigNotFound;
-import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.fissuresUtil.cache.AbstractJob;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.fissuresUtil.namingService.FissuresNamingService;
-import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.gee.CommonAccess;
 import edu.sc.seis.gee.configurator.ConfigurationException;
 import edu.sc.seis.gee.task.DisplayAllTask;
 import edu.sc.seis.gee.task.EventSeismogramTask;
 import edu.sc.seis.receiverFunction.server.NSRecFuncCache;
-import edu.sc.seis.sod.ChannelGroup;
 import edu.sc.seis.sod.ChannelGrouper;
 
 
@@ -71,13 +68,13 @@ public class EventSeismogramRFTask extends EventSeismogramTask {
         public void runJob() {
             Origin origin = null;
             MicroSecondDate originTime;
-            Channel[] channels;
+            ChannelImpl[] channels;
             
             for (int eventNum=0; eventNum<eventAccess.length; eventNum++) {
                 try {
                     origin = eventAccess[eventNum].get_preferred_origin();
                     originTime = new MicroSecondDate(origin.origin_time);
-                    channels = channelChooserTask.getChannelChooser().getSelectedChannels(originTime);
+                    channels = (ChannelImpl[])channelChooserTask.getChannelChooser().getSelectedChannels(originTime);
                     
                     if(channels.length == 0){
                         String mesg = (String)configParams.get("NoStationWithDataMessage");

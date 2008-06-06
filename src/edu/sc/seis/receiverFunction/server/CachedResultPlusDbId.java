@@ -1,6 +1,9 @@
 package edu.sc.seis.receiverFunction.server;
 
 import java.text.DecimalFormat;
+
+import edu.iris.Fissures.event.EventAttrImpl;
+import edu.iris.Fissures.event.OriginImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 
@@ -9,7 +12,6 @@ public class CachedResultPlusDbId {
 
     public CachedResultPlusDbId(CachedResult cachedResult, int dbid) {
         super();
-        // TODO Auto-generated constructor stub
         this.cachedResult = cachedResult;
         this.dbid = dbid;
     }
@@ -26,7 +28,7 @@ public class CachedResultPlusDbId {
         return dbid;
     }
     public CacheEvent getEvent() {
-        return new CacheEvent(getCachedResult().event_attr, getCachedResult().prefOrigin);
+        return new CacheEvent((EventAttrImpl)getCachedResult().event_attr, (OriginImpl)getCachedResult().prefOrigin);
     }
     
     public String formatRadialMatch() {

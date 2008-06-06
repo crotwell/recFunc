@@ -10,7 +10,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,6 +17,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.QuantityImpl;

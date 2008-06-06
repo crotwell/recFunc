@@ -2,13 +2,14 @@ package edu.sc.seis.receiverFunction.server;
 
 import org.omg.CORBA.SystemException;
 import org.w3c.dom.Element;
+
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.IfReceiverFunction.RecFuncCacheOperations;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.display.configuration.DOMHelper;
+import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.receiverFunction.RecFuncProcessor;
-import edu.sc.seis.sod.ChannelGroup;
 import edu.sc.seis.sod.CommonAccess;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;

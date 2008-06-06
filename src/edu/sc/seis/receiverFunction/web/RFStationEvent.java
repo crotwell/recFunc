@@ -9,8 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.velocity.VelocityContext;
 
+import edu.iris.Fissures.event.OriginImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.network.StationImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.fissuresUtil.bag.LongShortTrigger;
@@ -76,13 +78,13 @@ public class RFStationEvent extends Revlet {
                 try {
                     resultPlusDbId = hkStack.getJDBCRecFunc().get(rfid);
                 } catch (NotFound ee) {
-                    return handleNotFound(res);
+                    return handleNotFound(req, res, ee);
                 }
             }
             CachedResult result = resultPlusDbId.getCachedResult();
-            CacheEvent eq = new CacheEvent(result.event_attr, result.prefOrigin);
+            CacheEvent eq = new CacheEvent(result.event_attr, (OriginImpl)result.prefOrigin);
             VelocityEvent velEvent = new VelocityEvent(eq);
-            VelocityStation sta = new VelocityStation(result.channels[0].my_site.my_station);
+            VelocityStation sta = new VelocityStation((StationImpl)result.channels[0].my_site.my_station);
             
             VelocityContext vContext = new VelocityContext( Start.getDefaultContext());
             vContext.put("sta", sta);

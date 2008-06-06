@@ -206,7 +206,7 @@
         </dependency>
         <dependency>
             <id>fissuresIDL</id>
-            <version>1.0</version>
+            <version>1.0_getset</version>
             <url>http://www.seis.sc.edu/software/fissuresIDL</url>
         </dependency>
         <dependency>

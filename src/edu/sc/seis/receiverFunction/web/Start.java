@@ -3,20 +3,20 @@ package edu.sc.seis.receiverFunction.web;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.VelocityContext;
 import org.mortbay.jetty.servlet.ServletHandler;
-import edu.iris.Fissures.IfNetwork.NetworkId;
+
 import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
-import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;

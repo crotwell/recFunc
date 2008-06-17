@@ -32,9 +32,9 @@ public class StationSummaryDataset extends AbstractXYZDataset {
 			return new Float(0);
 		}
 		if (HKLatLonPlot.LATITUDE.equals(key)) {
-			return new Float(sta.my_location.latitude);
+			return new Float(sta.getLocation().latitude);
 		} else if (HKLatLonPlot.LONGITUDE.equals(key)) {
-			return new Float(sta.my_location.longitude);
+			return new Float(sta.getLocation().longitude);
 		}
 		SumHKStack stack = (SumHKStack) summary.get(stationList.get(item));
 		if (HKLatLonPlot.THICKNESS.equals(key)) {

@@ -71,7 +71,7 @@ public class Overview extends StationList {
 				for (Iterator iter = summaryList.iterator(); iter.hasNext();) {
 					SumHKStack stack = (SumHKStack) iter.next();
 					data.put(new VelocityStation(
-							stack.getChannel().my_site.my_station), stack);
+							stack.getChannel().getSite().getStation()), stack);
 				}
 			} catch (NotFound e) {
 				// I don't think this should ever happen

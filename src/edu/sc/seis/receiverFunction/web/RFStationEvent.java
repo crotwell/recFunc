@@ -84,7 +84,7 @@ public class RFStationEvent extends Revlet {
             CachedResult result = resultPlusDbId.getCachedResult();
             CacheEvent eq = new CacheEvent(result.event_attr, (OriginImpl)result.prefOrigin);
             VelocityEvent velEvent = new VelocityEvent(eq);
-            VelocityStation sta = new VelocityStation((StationImpl)result.channels[0].my_site.my_station);
+            VelocityStation sta = new VelocityStation((StationImpl)result.channels[0].getSite().getStation());
             
             VelocityContext vContext = new VelocityContext( Start.getDefaultContext());
             vContext.put("sta", sta);
@@ -116,7 +116,7 @@ public class RFStationEvent extends Revlet {
             LocalSeismogramImpl[] seis = (LocalSeismogramImpl[])result.original;
             ArrayList triggers = new ArrayList();
             for(int i = 0; i < seis.length; i++) {
-                LongShortTrigger trigger = ston.process(sta.my_location, velEvent.get_preferred_origin(), seis[i]);
+                LongShortTrigger trigger = ston.process(sta.getLocation(), velEvent.get_preferred_origin(), seis[i]);
                 triggers.add(trigger);
             }
             vContext.put("ston", triggers);

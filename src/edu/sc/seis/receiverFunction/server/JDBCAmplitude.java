@@ -94,7 +94,7 @@ public class JDBCAmplitude extends JDBCTable {
             HKStack stack = iter.nextStack();
             LocalSeismogramImpl seis = ((MemoryDataSetSeismogram)stack.getRecFunc()).getCache()[0];
             Arrival[] arrivals = TauPUtil.getTauPUtil()
-                    .calcTravelTimes(stack.getChannel().my_site.my_station,
+                    .calcTravelTimes(stack.getChannel().getSite().getStation(),
                                      stack.getOrigin(),
                                      new String[] {"P"});
             float flatRP = (float)arrivals[0].getRayParam() / 6371;
@@ -110,7 +110,7 @@ public class JDBCAmplitude extends JDBCTable {
                                                           model.getVp(),
                                                           model.getVpVs(),
                                                           model.getH());
-            MicroSecondDate timeP = new MicroSecondDate(stack.getOrigin().origin_time).add(new TimeInterval(arrivals[0].getTime(),
+            MicroSecondDate timeP = new MicroSecondDate(stack.getOrigin().getOriginTime()).add(new TimeInterval(arrivals[0].getTime(),
                                                                                                             UnitImpl.SECOND));
             MicroSecondDate timePs = timeP.add(offsetPs);
             MicroSecondDate timePpPs = timeP.add(offsetPpPs);

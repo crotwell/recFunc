@@ -22,7 +22,7 @@ public class AzimuthPlot {
             IOException {
         String prefix = "azplot-";
         File psFile = File.createTempFile(prefix, ".ps", getTempDir());
-        float staLat = station.my_location.latitude;
+        float staLat = station.getLocation().latitude;
         // -JE proj has trouble at pole
         if (staLat == -90) {staLat = -89.999f;}
         if (staLat == 90) {staLat = 89.999f;}
@@ -38,8 +38,8 @@ public class AzimuthPlot {
         PSXYExecute.addPoints(psFile, proj, region, "c.1i", "0", "0", data);
         // plot station location
         data = new double[1][2];
-        data[0][0] = station.my_location.longitude;
-        data[0][1] = station.my_location.latitude;
+        data[0][0] = station.getLocation().longitude;
+        data[0][1] = station.getLocation().latitude;
         PSXYExecute.addPoints(psFile, proj, region, "t.2i", "0", "0", data);
         PSXYExecute.close(psFile, proj, region);
         String pngFilename = psFile.getName()

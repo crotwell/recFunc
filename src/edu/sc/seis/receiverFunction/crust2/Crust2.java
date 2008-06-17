@@ -77,9 +77,9 @@ public class Crust2 {
     }
 
     public StationResult getStationResult(Station station) {
-        Crust2Profile profile = getClosest(station.my_location.longitude,
-                                           station.my_location.latitude);
-        return new StationResult(station.my_network.get_id(),
+        Crust2Profile profile = getClosest(station.getLocation().longitude,
+                                           station.getLocation().latitude);
+        return new StationResult(station.getNetworkAttr().get_id(),
                                  station.get_code(),
                                  profile.getCrustThickness(),
                                  (float)(profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity()),

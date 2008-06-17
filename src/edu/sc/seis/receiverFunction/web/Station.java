@@ -131,7 +131,7 @@ public class Station extends Revlet {
             crust2Type = result.getExtras();
         }
         TimeOMatic.print("crust2");
-        StationResult[] results = jdbcStationResult.get(sta.my_network.get_id(),
+        StationResult[] results = jdbcStationResult.get(sta.getNetworkAttr().get_id(),
                                                         sta.get_code());
         for(int i = 0; i < results.length; i++) {
             markerList.add(results[i]);

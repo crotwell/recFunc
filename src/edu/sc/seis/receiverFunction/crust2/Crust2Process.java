@@ -32,7 +32,7 @@ public class Crust2Process implements WaveformVectorProcess  {
                                         LocalSeismogramImpl[][] seismograms,
                                         CookieJar cookieJar) throws Exception {
         if (crust2 != null) {
-            Location loc = channelGroup.getChannels()[0].my_site.my_station.my_location;
+            Location loc = channelGroup.getChannels()[0].getSite().getStation().getLocation();
             Crust2Profile profile = crust2.getClosest(loc.longitude,
                                                       loc.latitude);
             cookieJar.put("Crust2_H", new Float(profile.getLayer(7).getTopDepth()));

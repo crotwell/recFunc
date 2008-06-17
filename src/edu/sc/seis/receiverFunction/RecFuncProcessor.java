@@ -181,12 +181,12 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                     String ITR_ITT = (i==0?"ITR":"ITT");
                     MemoryDataSetSeismogram predicted = processor.getPredicted()[i];
                     dataset.remove(predicted); // to avoid duplicates
-                    Channel recFuncChannel = new ChannelImpl(predicted.getRequestFilter().channel_id,
+                    ChannelImpl recFuncChannel = new ChannelImpl(predicted.getRequestFilter().channel_id,
                                                              "receiver function fake channel for "+ChannelIdUtil.toStringNoDates(zeroChannel.get_id()),
                                                              new Orientation(0, 0),
-                                                             zeroChannel.sampling_info,
-                                                             zeroChannel.effective_time,
-                                                             zeroChannel.my_site);
+                                                             zeroChannel.getSamplingInfo(),
+                                                             zeroChannel.getEffectiveTime(),
+                                                             zeroChannel.getSite());
 
                     URLDataSetSeismogram saved =
                         saveInDataSet(event, recFuncChannel, predicted.getCache(), SeismogramFileTypes.SAC);
@@ -200,7 +200,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                     Origin origin = EventUtil.extractOrigin(event);
 
                     Arrival[] arrivals =
-                        tauPTime.calcTravelTimes(recFuncChannel.my_site.my_station, origin, pPhases);
+                        tauPTime.calcTravelTimes(recFuncChannel.getSite().getStation(), origin, pPhases);
 
                     // convert radian per sec ray param into km per sec
                     float kmRayParam = (float)(arrivals[0].getRayParam()/tauPTime.getTauModel().getRadiusOfEarth());
@@ -228,7 +228,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
 
                     synchronized(lSeisTemplateGen) {
                         RequestFilter[] zoomP = new RequestFilter[1];
-                        MicroSecondDate oTime = new MicroSecondDate(event.get_preferred_origin().origin_time);
+                        MicroSecondDate oTime = new MicroSecondDate(event.get_preferred_origin().getOriginTime());
                         MicroSecondDate pTime = oTime.add(new TimeInterval(arrivals[0].getTime(), UnitImpl.SECOND));
                         zoomP[0] = new RequestFilter(recFuncChannel.get_id(),
                                                      pTime.subtract(new TimeInterval(5, UnitImpl.SECOND)).getFissuresTime(),
@@ -315,12 +315,12 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                 DataSetSeismogram dss = dataset.getDataSetSeismogram(names[i]);
                 if (dss instanceof MemoryDataSetSeismogram) {
                     dataset.remove(dss); // avoid duplicates
-                    Channel recFuncChannel = new ChannelImpl(dss.getRequestFilter().channel_id,
+                    ChannelImpl recFuncChannel = new ChannelImpl(dss.getRequestFilter().channel_id,
                                                              "receiver function fake channel for "+ChannelIdUtil.toStringNoDates(dss.getRequestFilter().channel_id),
                                                              new Orientation(0, 0),
-                                                             zeroChannel.sampling_info,
-                                                             zeroChannel.effective_time,
-                                                             zeroChannel.my_site);
+                                                             zeroChannel.getSamplingInfo(),
+                                                             zeroChannel.getEffectiveTime(),
+                                                             zeroChannel.getSite());
                     URLDataSetSeismogram saved =
                         saveInDataSet(event, recFuncChannel, ((MemoryDataSetSeismogram)dss).getCache(), SeismogramFileTypes.SAC);
                 }

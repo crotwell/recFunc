@@ -201,7 +201,7 @@ public class StackSummary {
         float nextK = residual.getMaxValueK(sumStack.getSmallestH());
         float nextVal = residual.getMaxValue(sumStack.getSmallestH());
         StationResult crust2Result = HKStack.getCrust2()
-                .getStationResult(sumStack.getChannel().my_site.my_station);
+                .getStationResult(sumStack.getChannel().getSite().getStation());
         float crust2diff = bestH
                 - (float)crust2Result.getH().getValue(UnitImpl.KILOMETER);
         jdbcStackComplexity.put(sumStack.getDbid(),

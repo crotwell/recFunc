@@ -60,10 +60,10 @@ public class StationLatLonBox extends StationList {
         Station[] stations = jdbcChannel.getStationTable().getAllStations();
         logger.info("getAllStations finished");
         for(int j = 0; j < stations.length; j++) {
-            if(stations[j].my_location.latitude >= minLat
-                    && stations[j].my_location.latitude <= maxLat
-                    && stations[j].my_location.longitude >= minLon
-                    && stations[j].my_location.longitude <= maxLon) {
+            if(stations[j].getLocation().latitude >= minLat
+                    && stations[j].getLocation().latitude <= maxLat
+                    && stations[j].getLocation().longitude >= minLon
+                    && stations[j].getLocation().longitude <= maxLon) {
                 stationList.add(new VelocityStation(stations[j]));
             }
         }

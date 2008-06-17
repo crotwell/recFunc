@@ -91,7 +91,7 @@ public class ReceiverFunctionZip extends HttpServlet {
             }
             String netCode = "";
             if(result.length != 0) {
-                netCode = result[0].getCachedResult().channels[0].my_site.my_station.my_network.get_code();
+                netCode = result[0].getCachedResult().channels[0].getSite().getStation().getNetworkAttr().get_code();
             }
             res.addHeader("Content-Disposition", "inline; filename=" + "ears_"
                     + netCode + "_" + staCode + ".zip");
@@ -118,7 +118,7 @@ public class ReceiverFunctionZip extends HttpServlet {
             CachedResult cr = result[i].getCachedResult();
             VelocityEvent event = new VelocityEvent(new CacheEvent(cr.event_attr,
                                                                    cr.prefOrigin));
-            VelocityStation sta = new VelocityStation(cr.channels[2].my_site.my_station);
+            VelocityStation sta = new VelocityStation(cr.channels[2].getSite().getStation());
             // 0 for radial, 1 for transverse
             for(int rfType = 0; rfType < 2; rfType++) {
                 String entryName = TOP_ZIP_DIR + "gauss_"+gaussianWidth+"/"+sta.getNetCode() + "."
@@ -138,14 +138,14 @@ public class ReceiverFunctionZip extends HttpServlet {
                                                          cr.channels[2],
                                                          cr.prefOrigin);
                 // fix orientation to radial and transverse
-                sac.cmpaz = (float)(rfType == 0 ? Rotate.getRadialAzimuth(sta.my_location, cr.prefOrigin.my_location) : Rotate.getTransverseAzimuth(sta.my_location, cr.prefOrigin.my_location));
+                sac.cmpaz = (float)(rfType == 0 ? Rotate.getRadialAzimuth(sta.getLocation(), cr.prefOrigin.getLocation()) : Rotate.getTransverseAzimuth(sta.getLocation(), cr.prefOrigin.getLocation()));
                 sac.cmpinc = 90;
                 // put percent match in user0 and gaussian width in user1
                 sac.user0 = (rfType == 0 ? cr.radialMatch : cr.transverseMatch);
                 sac.kuser0 = "% match ";
                 sac.user1 = cr.config.gwidth;
                 sac.kuser1 = "gwidth";
-                Arrival[] arrivals = tauPTime.calcTravelTimes(cr.channels[0].my_site.my_station,
+                Arrival[] arrivals = tauPTime.calcTravelTimes(cr.channels[0].getSite().getStation(),
                                                               cr.prefOrigin,
                                                               pPhases);
                 // convert radian per sec ray param into km per sec

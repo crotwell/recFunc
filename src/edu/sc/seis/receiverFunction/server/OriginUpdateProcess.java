@@ -54,22 +54,22 @@ public class OriginUpdateProcess {
     public StringTree accept(EventAccessOperations eventAccess,
                              EventAttr eventAttr,
                              Origin preferred_origin) throws Exception {
-        MicroSecondDate originTime = new MicroSecondDate(preferred_origin.origin_time);
+        MicroSecondDate originTime = new MicroSecondDate(preferred_origin.getOriginTime());
         getByTime.setTimestamp(1, originTime.getTimestamp());
         ResultSet rs = getByTime.executeQuery();
         while(rs.next()) {
             int dbid = rs.getInt("origin_id");
             Origin dbOrigin = eventTable.getJDBCOrigin().get(dbid);
-            if (dbOrigin.my_location.latitude == preferred_origin.my_location.latitude &&
-                    dbOrigin.my_location.longitude == preferred_origin.my_location.longitude) {
+            if (dbOrigin.getLocation().latitude == preferred_origin.getLocation().latitude &&
+                    dbOrigin.getLocation().longitude == preferred_origin.getLocation().longitude) {
                 System.out.println("Match: lat lon equal");
             } else {
-                System.out.println("Match: "+dbOrigin.my_location.latitude +"  "+ preferred_origin.my_location.latitude 
-                                   +"  long "+dbOrigin.my_location.longitude +"  "+ preferred_origin.my_location.longitude);
+                System.out.println("Match: "+dbOrigin.getLocation().latitude +"  "+ preferred_origin.getLocation().latitude 
+                                   +"  long "+dbOrigin.getLocation().longitude +"  "+ preferred_origin.getLocation().longitude);
                 int loc_dbid = rs.getInt("origin_location_id");
                 int index = 1;
-                updateLocation.setFloat(index++, preferred_origin.my_location.latitude);
-                updateLocation.setFloat(index++, preferred_origin.my_location.longitude);
+                updateLocation.setFloat(index++, preferred_origin.getLocation().latitude);
+                updateLocation.setFloat(index++, preferred_origin.getLocation().longitude);
                 updateLocation.setFloat(index++, loc_dbid);
                 updateLocation.executeUpdate();
             }

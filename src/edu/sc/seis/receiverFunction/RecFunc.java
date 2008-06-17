@@ -95,11 +95,11 @@ public class RecFunc {
                                            " "+(nChan != null)+" "+(eChan != null)+" "+(zChan != null));
         }
 
-        Location staLoc = zChan.my_site.my_station.my_location;
+        Location staLoc = zChan.getSite().getStation().getLocation();
         Origin origin = event.get_preferred_origin();
-        Location evtLoc = origin.my_location;
+        Location evtLoc = origin.getLocation();
 
-        LocalSeismogramImpl[] rotSeis = Rotate.rotateGCP(e, eChan.an_orientation, n, nChan.an_orientation, staLoc, evtLoc, "T", "R");
+        LocalSeismogramImpl[] rotSeis = Rotate.rotateGCP(e, eChan.getOrientation(), n, nChan.getOrientation(), staLoc, evtLoc, "T", "R");
         float[][] rotated = { rotSeis[0].get_as_floats(), rotSeis[1].get_as_floats() };
 
         // check lengths, trim if needed???
@@ -177,7 +177,7 @@ public class RecFunc {
         Arrival[] pPhases =
             timeCalc.calcTravelTimes(staLoc, origin, phaseName);
 
-        MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
+        MicroSecondDate firstP = new MicroSecondDate(origin.getOriginTime());
         logger.debug("origin "+firstP);
         firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
         logger.debug("firstP "+firstP);

@@ -118,7 +118,7 @@ public class SeismogramImage extends HttpServlet {
                                                             new QuantityImpl(h,
                                                                              UnitImpl.KILOMETER),
                                                             vpvs,
-                                                            crust2.getStationResult(result.channels[0].my_site.my_station)
+                                                            crust2.getStationResult(result.channels[0].getSite().getStation())
                                                                     .getVp(),
                                                             null);
                 Sampling samp = new SamplingImpl(10,
@@ -134,7 +134,7 @@ public class SeismogramImage extends HttpServlet {
                                          0,
                                          new String[] {"P"});
                 float flatRP = (float)arrivals[0].getRayParam() / 6371;
-                MicroSecondDate pTime = new MicroSecondDate(result.prefOrigin.origin_time);
+                MicroSecondDate pTime = new MicroSecondDate(result.prefOrigin.getOriginTime());
                 pTime = pTime.add(new TimeInterval(arrivals[0].getTime(),
                                                    UnitImpl.SECOND));
                 // pTime = pTime.subtract(RecFunc.DEFAULT_SHIFT);
@@ -241,10 +241,10 @@ public class SeismogramImage extends HttpServlet {
     public Channel createChannel(ChannelId newId, Channel old, DataSet ds) {
         Channel out =  new ChannelImpl(newId,
                                "fake chan " + ChannelIdUtil.toString(newId),
-                               old.an_orientation,
-                               old.sampling_info,
-                               old.effective_time,
-                               old.my_site);
+                               old.getOrientation(),
+                               old.getSamplingInfo(),
+                               old.getEffectiveTime(),
+                               old.getSite());
         ds.addParameter(StdDataSetParamNames.CHANNEL
                          + ChannelIdUtil.toString(newId),
                          out,

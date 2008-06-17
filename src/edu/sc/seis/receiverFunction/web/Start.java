@@ -259,12 +259,11 @@ public class Start {
         return RecFuncCacheImpl.getDataLoc();
     }
 
-    public static VelocityNetwork getNetwork(HttpServletRequest req,
-                                             NetworkDB jdbcNetwork)
+    public static VelocityNetwork getNetwork(HttpServletRequest req)
             throws SQLException, NotFound {
         int netDbId = RevUtil.getInt("netdbid", req, -1);
         if(netDbId != -1) {
-            return new VelocityNetwork(jdbcNetwork.getNetwork(netDbId), netDbId);
+            return new VelocityNetwork(NetworkDB.getSingleton().getNetwork(netDbId), netDbId);
         }
         String netCode;
         // also check for netCode to keep google happy
@@ -274,11 +273,10 @@ public class Start {
             netCode = RevUtil.get("netcode", req);
         }
         netCode = netCode.toUpperCase();
-        return getNetwork(netCode, jdbcNetwork);
+        return getNetwork(netCode);
     }
 
-    public static VelocityNetwork getNetwork(String netCode,
-                                             NetworkDB jdbcNetwork) throws SQLException, NotFound {
+    public static VelocityNetwork getNetwork(String netCode) throws SQLException, NotFound {
         int netDbId = -1;
         String netCodeNoYear = netCode;
         if(netCodeNoYear != null) {
@@ -286,7 +284,7 @@ public class Start {
             if(netCodeNoYear.length() > 2) {
                 netCodeNoYear = netCodeNoYear.substring(0, 2);
             }
-            List<NetworkAttrImpl> nets = jdbcNetwork.getNetworkByCode(netCodeNoYear);
+            List<NetworkAttrImpl> nets = NetworkDB.getSingleton().getNetworkByCode(netCodeNoYear);
             for(NetworkAttrImpl networkAttrImpl : nets) {
                 if(NetworkIdUtil.toStringNoDates(networkAttrImpl.get_id()).equals(netCode)) {
                     return new VelocityNetwork(networkAttrImpl);

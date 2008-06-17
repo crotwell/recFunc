@@ -198,7 +198,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                     GlobalExceptionHandler.handle("Problem with "
                             + ChannelIdUtil.toString(channels[0].get_id())
                             + " for origin time="
-                            + prefOrigin.origin_time.date_time, e);
+                            + prefOrigin.getOriginTime().date_time, e);
                     throw new UNKNOWN(e.toString(),
                                       12,
                                       CompletionStatus.COMPLETED_MAYBE);
@@ -212,7 +212,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
             // why would get and set AutoCommit throw?
             GlobalExceptionHandler.handle("AutoCommit problem "
                     + ChannelIdUtil.toString(channels[0].get_id())
-                    + " for origin time=" + prefOrigin.origin_time.date_time, e);
+                    + " for origin time=" + prefOrigin.getOriginTime().date_time, e);
             throw new UNKNOWN(e.toString(),
                               12,
                               CompletionStatus.COMPLETED_MAYBE);

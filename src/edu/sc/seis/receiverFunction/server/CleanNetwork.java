@@ -231,7 +231,7 @@ public class CleanNetwork {
         NetworkAccess[] nets = netDC.a_finder().retrieve_all();
         for(int c = 0; c < channels.length; c++) {
             try {
-                MicroSecondTimeRange localTR = fixFuture(channels[c].effective_time);
+                MicroSecondTimeRange localTR = fixFuture(channels[c].getEffectiveTime());
                 NetworkAccess net = null;
                 for(int i = 0; i < nets.length; i++) {
                     if(NetworkIdUtil.areEqual(nets[i].get_attributes().get_id(),
@@ -252,7 +252,7 @@ public class CleanNetwork {
                 boolean found = false;
                 for(int i = 0; i < matchChan.length; i++) {
                     Channel irisChan = matchChan[i];
-                    MicroSecondTimeRange irisTR = fixFuture(irisChan.effective_time);
+                    MicroSecondTimeRange irisTR = fixFuture(irisChan.getEffectiveTime());
                     if(irisTR.equals(localTR)) {
                         numGood++;
                         found = true;
@@ -266,7 +266,7 @@ public class CleanNetwork {
                                 + ChannelIdUtil.toStringFormatDates(channels[c].get_id())
                                 + "\n  iris=" + irisTR + "\n  local=" + localTR);
                         updateTime(updateChanEnd,
-                                   irisChan.effective_time.end_time,
+                                   irisChan.getEffectiveTime().end_time,
                                    jdbcChannel.getDBId(channels[c].get_id()));
                         numFixed++;
                         found = true;
@@ -284,13 +284,13 @@ public class CleanNetwork {
                         if(overlaps.size() == 1) {
                             // go ahead and fix:
                             Channel irisChan = (Channel)overlapChans.get(0);
-                            MicroSecondTimeRange irisTR = fixFuture(irisChan.effective_time);
+                            MicroSecondTimeRange irisTR = fixFuture(irisChan.getEffectiveTime());
                             int dbid = jdbcChannel.getDBId(channels[c].get_id());
                             updateTime(updateChanBegin,
-                                       irisChan.effective_time.start_time,
+                                       irisChan.getEffectiveTime().start_time,
                                        dbid);
                             updateTime(updateChanEnd,
-                                       irisChan.effective_time.end_time,
+                                       irisChan.getEffectiveTime().end_time,
                                        dbid);
                             numFixed++;
                             System.out.println("Single overlap, fixed "

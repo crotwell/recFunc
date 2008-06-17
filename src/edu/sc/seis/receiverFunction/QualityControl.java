@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import com.martiansoftware.jsap.FlaggedOption;
@@ -19,8 +20,10 @@ import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.IfNetwork.StationId;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.iris.Fissures.network.StationIdUtil;
+import edu.iris.Fissures.network.StationImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.TauModelException;
@@ -32,6 +35,7 @@ import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.server.CachedResultPlusDbId;
 import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
@@ -58,10 +62,10 @@ public class QualityControl {
                                     new TimeInterval(-1, UnitImpl.SECOND),
                                     "P",
                                     new TimeInterval(1, UnitImpl.SECOND));
-        radial = cut.cut(result.channels[0].my_site.my_station.my_location,
+        radial = cut.cut(result.channels[0].getSite().getStation().getLocation(),
                          result.prefOrigin,
                          radial);
-        transverse = cut.cut(result.channels[0].my_site.my_station.my_location,
+        transverse = cut.cut(result.channels[0].getSite().getStation().getLocation(),
                              result.prefOrigin,
                              transverse);
         Statistics radialStats = new Statistics(radial);
@@ -78,7 +82,7 @@ public class QualityControl {
                                     new TimeInterval(-1, UnitImpl.SECOND),
                                     "P",
                                     new TimeInterval(1, UnitImpl.SECOND));
-        radialP = cut.cut(result.channels[0].my_site.my_station.my_location,
+        radialP = cut.cut(result.channels[0].getSite().getStation().getLocation(),
                           result.prefOrigin,
                           radial);
         Statistics radialStats = new Statistics(radial);
@@ -105,8 +109,8 @@ public class QualityControl {
                                                           .getTimestamp()));
             System.out.println(decFormat.format(result.radialMatch)
                     + " "
-                    + StationIdUtil.toStringFormatDates(result.channels[0].my_site.my_station)
-                    + " origin=" + result.prefOrigin.origin_time.date_time
+                    + StationIdUtil.toStringFormatDates(result.channels[0].getSite().getStation())
+                    + " origin=" + result.prefOrigin.getOriginTime().date_time
                     + "  T to R=" + decFormat.format(tToR) + "  P amp="
                     + decFormat.format(pAmp));
             return false;
@@ -208,16 +212,13 @@ public class QualityControl {
                 kMin = hkbadList[2];
                 kMax = hkbadList[3];
             }
-            JDBCStation jdbcStation = jdbcRecFunc.getJDBCChannel()
-                    .getStationTable();
             JDBCRecFuncQC jdbcRecFuncQC = new JDBCRecFuncQC(conn);
             if(hMin != -1) {
                 JDBCRejectedMaxima jdbcReject = new JDBCRejectedMaxima(conn);
                 if(netArg.equals("") || staArg.equals("")) {
                     throw new NotFound(netArg + " " + staArg);
                 }
-                VelocityNetwork net = Start.getNetwork(netArg,
-                                                       jdbcStation.getNetTable());
+                VelocityNetwork net = Start.getNetwork(netArg);
                 jdbcReject.put(net.getDbId(),
                                staArg,
                                hMin,
@@ -242,33 +243,34 @@ public class QualityControl {
                                                               .getTimestamp()));
             }
             logger.info("calc for station: " + netArg + "." + staArg);
-            NetworkId[] nets = jdbcStation.getNetTable().getByCode(netArg);
-            System.out.println("calc for " + nets.length + " nets");
-            for(int i = 0; i < nets.length; i++) {
+            List<NetworkAttrImpl> nets = NetworkDB.getSingleton().getNetworkByCode(netArg);
+            System.out.println("calc for " + nets.size() + " nets");
+            NetworkDB netdb = NetworkDB.getSingleton();
+            for(NetworkAttrImpl networkAttrImpl : nets) {
                 try {
                     String[] staCodes;
                     if(staArg.length() == 0) {
                         System.out.println("Calc for all stations in "
-                                + NetworkIdUtil.toStringFormatDates(nets[i]));
-                        StationId[] staIds = jdbcStation.getAllStationIds(nets[i]);
-                        System.out.println("Got " + staIds.length + " stations");
+                                + NetworkIdUtil.toStringFormatDates(networkAttrImpl));
+                        List<StationImpl> staIds = netdb.getStationForNet(networkAttrImpl);
+                        System.out.println("Got " + staIds.size() + " stations");
                         Set allCodes = new HashSet();
-                        for(int j = 0; j < staIds.length; j++) {
-                            allCodes.add(staIds[j].station_code);
+                        for(StationImpl stationImpl : staIds) {
+                            allCodes.add(stationImpl.get_code());
                         }
                         staCodes = (String[])allCodes.toArray(new String[0]);
                     } else {
                         staCodes = new String[] {staArg};
                     }
-                    for(int j = 0; j < staCodes.length; j++) {
-                        System.out.println("Processing " + staCodes[j]);
-                        int[] dbids = jdbcStation.getDBIds(nets[i], staCodes[j]);
-                        Station station = jdbcStation.get(dbids[0]);
+                    for(String staCode : staCodes) {
+                        System.out.println("Processing " + staCode);
+                        int[] dbids = jdbcStation.getDBIds(nets[i], staCode);
+                        Station station = netdb.getStation(dbids[0]);
                         int numGood = 0;
                         int netDbId = jdbcStation.getNetTable()
-                                .getDbId(station.my_network.get_id());
+                                .getDbId(station.getNetworkAttr().get_id());
                         CachedResultPlusDbId[] resultsWithDbId = jdbcRecFunc.getSuccessful(netDbId,
-                                                                                           staCodes[j],
+                                                                                           staCode,
                                                                                            2.5f,
                                                                                            80f);
                         for(int r = 0; r < resultsWithDbId.length; r++) {

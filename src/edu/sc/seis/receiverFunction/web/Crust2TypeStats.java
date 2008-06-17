@@ -64,7 +64,7 @@ public class Crust2TypeStats  extends Revlet {
             VelocityStation sta = (VelocityStation)it.next();
             SumHKStack sum = (SumHKStack)summary.get(sta);
             if (sum.getNumEQ() < 3) {it.remove();} else {
-            Crust2Profile profile = ComparePriorResult.crust2.getClosest(sta.my_location.longitude, sta.my_location.latitude);
+            Crust2Profile profile = ComparePriorResult.crust2.getClosest(sta.getLocation().longitude, sta.getLocation().latitude);
             allDiffs[i] = (float)profile.getCrustThickness().getValue(UnitImpl.KILOMETER)-sum.getComplexityResult().getBestH();
             ArrayList typeDiffList = (ArrayList)typeDiffs.get(oneLetterCodes.get(profile.getCode().substring(0,1)));
             typeDiffList.add(new Float(allDiffs[i]));

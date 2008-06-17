@@ -66,7 +66,7 @@ public class SyntheticFactory {
     }
     
     public static Arrival getFirstP() throws TauModelException, IOException {
-        Arrival[] pPhases = getTauP().calcTravelTimes(getChannels()[0].my_site.my_station,
+        Arrival[] pPhases = getTauP().calcTravelTimes(getChannels()[0].getSite().getStation(),
                                                       getEvent().getOrigin(),
                                                  new String[] {"ttp"});
         return pPhases[0];
@@ -84,7 +84,7 @@ public class SyntheticFactory {
         if(event == null) { throw new NoPreferredOrigin(); }
         Channel[] channels = getChannels();
         Channel chan = channels[0];
-        Location staLoc = chan.my_site.my_station.my_location;
+        Location staLoc = chan.getSite().getStation().getLocation();
         TauPUtil taup = getTauP();
         IterDecon decon = new IterDecon(RecFuncProcessor.DEFAULT_MAXBUMPS,
                                         true,
@@ -112,7 +112,7 @@ public class SyntheticFactory {
         ans[0] = ansRadial;
         ans[1] = ansTangential;
         Arrival pPhase = getFirstP();
-        MicroSecondDate firstP = new MicroSecondDate(event.getOrigin().origin_time);
+        MicroSecondDate firstP = new MicroSecondDate(event.getOrigin().getOriginTime());
         firstP = firstP.add(new TimeInterval(pPhase.getTime(),
                                              UnitImpl.SECOND));
         shift = recFunc.getShift();

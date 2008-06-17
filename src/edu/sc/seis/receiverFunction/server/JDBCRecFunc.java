@@ -207,9 +207,9 @@ public class JDBCRecFunc extends JDBCTable {
                                                     "receiver function fake channel for "
                                                             + ChannelIdUtil.toStringNoDates(zeroChannel.get_id()),
                                                     new Orientation(0, 0),
-                                                    zeroChannel.sampling_info,
-                                                    zeroChannel.effective_time,
-                                                    zeroChannel.my_site);
+                                                    zeroChannel.getSamplingInfo(),
+                                                    zeroChannel.getEffectiveTime(),
+                                                    zeroChannel.getSite());
             File radialFile = URLDataSetSeismogram.saveAs((LocalSeismogramImpl)radial,
                                                           stationDir,
                                                           radialChannel,
@@ -224,9 +224,9 @@ public class JDBCRecFunc extends JDBCTable {
                                                         "receiver function fake channel for "
                                                                 + ChannelIdUtil.toStringNoDates(zeroChannel.get_id()),
                                                         new Orientation(0, 0),
-                                                        zeroChannel.sampling_info,
-                                                        zeroChannel.effective_time,
-                                                        zeroChannel.my_site);
+                                                        zeroChannel.getSamplingInfo(),
+                                                        zeroChannel.getEffectiveTime(),
+                                                        zeroChannel.getSite());
             File transverseFile = URLDataSetSeismogram.saveAs((LocalSeismogramImpl)transverse,
                                                               stationDir,
                                                               transverseChannel,
@@ -539,14 +539,14 @@ public class JDBCRecFunc extends JDBCTable {
             EventAttr attr = jdbcEventAttr.extract(rs);
             // TimeOMatic.print("attr");
             CacheEvent event = new CacheEvent(attr, o);
-            ParameterRef[] parms = o.parm_ids;
+            ParameterRef[] parms = o.getParmIds();
             ParameterRef[] newParms = new ParameterRef[parms.length + 2];
             System.arraycopy(parms, 0, newParms, 0, parms.length);
             newParms[newParms.length - 2] = new ParameterRef("itr_match", ""
                     + rs.getFloat("itr_match"));
             newParms[newParms.length - 1] = new ParameterRef("recFunc_id", ""
                     + getRecFuncId(rs));
-            o.parm_ids = newParms;
+            o.setParmIds(newParms);
             out.add(event);
         }
         return (CacheEvent[])out.toArray(new CacheEvent[0]);
@@ -600,14 +600,14 @@ public class JDBCRecFunc extends JDBCTable {
     }
 
     public static void addToParms(Origin o, float itr_match, int recFunc_id) {
-        ParameterRef[] parms = o.parm_ids;
+        ParameterRef[] parms = o.getParmIds();
         ParameterRef[] newParms = new ParameterRef[parms.length + 2];
         System.arraycopy(parms, 0, newParms, 0, parms.length);
         newParms[newParms.length - 2] = new ParameterRef("itr_match", ""
                 + itr_match);
         newParms[newParms.length - 1] = new ParameterRef("recFunc_id", ""
                 + recFunc_id);
-        o.parm_ids = newParms;
+        o.setParmIds(newParms);
     }
 
     public CacheEvent[] getUnsuccessfulEvents(int netDbId,
@@ -628,7 +628,7 @@ public class JDBCRecFunc extends JDBCTable {
             EventAttr attr = jdbcEventAttr.extract(rs);
             // TimeOMatic.print("attr");
             CacheEvent event = new CacheEvent(attr, o);
-            ParameterRef[] parms = o.parm_ids;
+            ParameterRef[] parms = o.getParmIds();
             ParameterRef[] newParms = new ParameterRef[parms.length + 3];
             System.arraycopy(parms, 0, newParms, 0, parms.length);
             float itrMatch = rs.getFloat("itr_match");
@@ -649,7 +649,7 @@ public class JDBCRecFunc extends JDBCTable {
                 }
             }
             newParms[newParms.length - 3] = new ParameterRef("reason", reason);
-            o.parm_ids = newParms;
+            o.setParmIds(newParms);
             out.add(event);
         }
         return (CacheEvent[])out.toArray(new CacheEvent[0]);
@@ -684,8 +684,8 @@ public class JDBCRecFunc extends JDBCTable {
     public boolean exists(Origin origin, ChannelId chanz, IterDeconConfig config)
             throws SQLException, NotFound {
         int index = 1;
-        BoxArea box = AreaUtil.makeContainingBox(new PointDistanceAreaImpl(origin.my_location.latitude,
-                                                                           origin.my_location.longitude,
+        BoxArea box = AreaUtil.makeContainingBox(new PointDistanceAreaImpl(origin.getLocation().latitude,
+                                                                           origin.getLocation().longitude,
                                                                            new QuantityImpl(0.0,
                                                                                             UnitImpl.DEGREE),
                                                                            new QuantityImpl(0.1,
@@ -696,7 +696,7 @@ public class JDBCRecFunc extends JDBCTable {
         originChanExists.setString(index++, chanz.site_code);
         originChanExists.setString(index++, chanz.channel_code);
         originChanExists.setFloat(index++, config.gwidth);
-        MicroSecondDate oTime = new MicroSecondDate(origin.origin_time);
+        MicroSecondDate oTime = new MicroSecondDate(origin.getOriginTime());
         originChanExists.setTimestamp(index++, oTime.subtract(ONE_SEC)
                 .getTimestamp());
         originChanExists.setTimestamp(index++, oTime.add(ONE_SEC)

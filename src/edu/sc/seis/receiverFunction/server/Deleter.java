@@ -269,7 +269,7 @@ public class Deleter {
                                 + " is not empty");
                     }
                     deletedChans.add(ChannelIdUtil.toStringNoDates(result.channels[0]));
-                    deletedNets.add(NetworkIdUtil.toStringNoDates(result.channels[0].my_site.my_station.my_network.get_id()));
+                    deletedNets.add(NetworkIdUtil.toStringNoDates(result.channels[0].getSite().getStation().getNetworkAttr().get_id()));
                 } catch(Exception e1) {
                     throw new RuntimeException("Should not happen", e1);
                 }

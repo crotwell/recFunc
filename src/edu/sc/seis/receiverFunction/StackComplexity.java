@@ -20,7 +20,7 @@ public class StackComplexity {
 
     public StackComplexity(HKStack hkplot, int num_points, float gaussianWidth) {
         this.hkplot = hkplot;
-        this.samp = hkplot.getChannel().sampling_info;
+        this.samp = hkplot.getChannel().getSamplingInfo();
         this.num_points = num_points;
         this.gaussianWidth = gaussianWidth;
     }

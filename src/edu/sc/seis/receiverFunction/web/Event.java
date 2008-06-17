@@ -41,7 +41,7 @@ public class Event extends edu.sc.seis.winkle.Event {
             List stationList = new ArrayList();
             HashMap resultMap = new HashMap();
             for(int i = 0; i < resultsWithDbId.length; i++) {
-                VelocityStation sta = new VelocityStation(resultsWithDbId[i].getCachedResult().channels[0].my_site.my_station);
+                VelocityStation sta = new VelocityStation(resultsWithDbId[i].getCachedResult().channels[0].getSite().getStation());
                 stationList.add(sta);
                 resultMap.put(sta, resultsWithDbId[i]);
             }

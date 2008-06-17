@@ -671,11 +671,11 @@ public class HKStack implements Serializable {
         int startHIndex = getHIndex(smallestH);
         HKStackImage stackImage = new HKStackImage(this, phase, startHIndex);
         if(crust2 != null) {
-            StationResult result = crust2.getStationResult(chan.my_site.my_station);
+            StationResult result = crust2.getStationResult(chan.getSite().getStation());
             stackImage.addMarker(result, Color.blue);
         }
         if(wilson != null) {
-            StationResult result = wilson.getResult(chan.my_site.my_station.get_id());
+            StationResult result = wilson.getResult(chan.getSite().getStation().get_id());
             if(result != null) {
                 stackImage.addMarker(result, Color.GREEN);
             }
@@ -936,7 +936,7 @@ public class HKStack implements Serializable {
                       weightPs,
                       weightPpPs,
                       weightPsPs,
-                      crust2.getStationResult(cachedResult.channels[0].my_site.my_station).getVp());
+                      crust2.getStationResult(cachedResult.channels[0].getSite().getStation()).getVp());
     }
 
     public static HKStack create(CachedResult cachedResult,
@@ -947,7 +947,7 @@ public class HKStack implements Serializable {
             throws TauModelException, FissuresException {
         String[] pPhases = {"P"};
         TauPUtil tauPTime = TauPUtil.getTauPUtil(modelName);
-        Arrival[] arrivals = tauPTime.calcTravelTimes(cachedResult.channels[0].my_site.my_station,
+        Arrival[] arrivals = tauPTime.calcTravelTimes(cachedResult.channels[0].getSite().getStation(),
                                                       cachedResult.prefOrigin,
                                                       pPhases);
         // convert radian per sec ray param into km per sec
@@ -1385,8 +1385,8 @@ public class HKStack implements Serializable {
     public static QuantityImpl getBestSmallestH(Station station,
                                                 QuantityImpl smallestH) {
         Crust2Profile crust2 = HKStack.getCrust2()
-                .getClosest(station.my_location.longitude,
-                            station.my_location.latitude);
+                .getClosest(station.getLocation().longitude,
+                            station.getLocation().latitude);
         QuantityImpl crust2H = crust2.getCrustThickness();
         QuantityImpl modSmallestH = smallestH;
         if(crust2H.subtract(smallestH).getValue() < 5) {

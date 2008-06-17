@@ -361,7 +361,7 @@ public class SumHKStack {
         float nextK = residual.getMaxValueK(getSmallestH());
         float nextVal = residual.getMaxValue(getSmallestH());
         StationResult crust2Result = HKStack.getCrust2()
-                .getStationResult(getChannel().my_site.my_station);
+                .getStationResult(getChannel().getSite().getStation());
         float crust2diff = bestH
                 - (float)crust2Result.getH().getValue(UnitImpl.KILOMETER);
         setComplexityResult(new StackComplexityResult(getDbid(),

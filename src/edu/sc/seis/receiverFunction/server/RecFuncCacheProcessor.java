@@ -128,10 +128,10 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess {
                                                     singleSeismograms);
             String[] phaseName = pWave ? new String[] {"ttp"}
                     : new String[] {"tts"};
-            Arrival[] pPhases = taup.calcTravelTimes(chan.my_site.my_station,
+            Arrival[] pPhases = taup.calcTravelTimes(chan.getSite().getStation(),
                                                      origin,
                                                      phaseName);
-            MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
+            MicroSecondDate firstP = new MicroSecondDate(origin.getOriginTime());
             firstP = firstP.add(new TimeInterval(pPhases[0].getTime(),
                                                  UnitImpl.SECOND));
             TimeInterval shift = recFunc.getShift();

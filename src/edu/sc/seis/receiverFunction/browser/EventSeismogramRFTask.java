@@ -73,7 +73,7 @@ public class EventSeismogramRFTask extends EventSeismogramTask {
             for (int eventNum=0; eventNum<eventAccess.length; eventNum++) {
                 try {
                     origin = eventAccess[eventNum].get_preferred_origin();
-                    originTime = new MicroSecondDate(origin.origin_time);
+                    originTime = new MicroSecondDate(origin.getOriginTime());
                     channels = (ChannelImpl[])channelChooserTask.getChannelChooser().getSelectedChannels(originTime);
                     
                     if(channels.length == 0){
@@ -87,7 +87,7 @@ public class EventSeismogramRFTask extends EventSeismogramTask {
                         return;
                     }
                     
-                    logger.debug("The depth is "+origin.my_location.depth.value);
+                    logger.debug("The depth is "+origin.getLocation().depth.value);
                     logger.debug("Num Channel->"+channels.length);
                     List failures = new ArrayList();
                     ChannelGroup[] groups = grouper.group(channels, failures);
@@ -113,11 +113,11 @@ public class EventSeismogramRFTask extends EventSeismogramTask {
                                                                         chanIds[0].site_code,
                                                                         "ITR",
                                                                         chanIds[0].begin_time),
-                                                           "ITR_"+groups[channelNum].getChannels()[0].name,
-                                                           groups[channelNum].getChannels()[0].an_orientation,
-                                                           groups[channelNum].getChannels()[0].sampling_info,
-                                                           groups[channelNum].getChannels()[0].effective_time,
-                                                           groups[channelNum].getChannels()[0].my_site);
+                                                           "ITR_"+groups[channelNum].getChannels()[0].getName(),
+                                                           groups[channelNum].getChannels()[0].getOrientation(),
+                                                           groups[channelNum].getChannels()[0].getSamplingInfo(),
+                                                           groups[channelNum].getChannels()[0].getEffectiveTime(),
+                                                           groups[channelNum].getChannels()[0].getSite());
                             MemoryDataSetSeismogram dss = new MemoryDataSetSeismogram((LocalSeismogramImpl)result.radial);
                             populateLocalDataSet(eventAccess[eventNum], dss, itrChan);
                             if (display != null){

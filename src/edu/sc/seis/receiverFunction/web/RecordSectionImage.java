@@ -102,7 +102,7 @@ public class RecordSectionImage extends HttpServlet {
                 organizer.addSeismogram(itrDSS[i], event, emptyAudit);
                 Channel chan = cr.channels[2];
                 chan = new ChannelImpl(cr.radial.channel_id,
-                                       chan.name, chan.an_orientation, chan.sampling_info, chan.effective_time, chan.my_site);
+                                       chan.getName(), chan.getOrientation(), chan.getSamplingInfo(), chan.getEffectiveTime(), chan.getSite());
                 organizer.addChannel(chan, event, emptyAudit);
                 Channel outchan = itrDSS[i].getChannel();
             }

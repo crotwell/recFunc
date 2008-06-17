@@ -16,7 +16,7 @@ public class PolarityCheck {
     public static boolean checkPolarity(CachedResult result)
             throws FissuresException, TauModelException, PhaseNonExistent {
         LocalSeismogramImpl itr = (LocalSeismogramImpl)result.radial;
-        itr = cutter.cut(result.channels[0].my_site.my_station.my_location,
+        itr = cutter.cut(result.channels[0].getSite().getStation().getLocation(),
                          result.prefOrigin,
                          itr);
         float[] data = itr.get_as_floats();

@@ -1,22 +1,23 @@
 package edu.sc.seis.receiverFunction.rest;
 
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.NetworkAttr;
 import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.network.ChannelImpl;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.iris.Fissures.network.StationImpl;
-import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
-import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.velocity.network.VelocityChannel;
@@ -25,9 +26,7 @@ import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 public class Network extends Revlet {
 
-    public Network() throws SQLException, IOException {
-        Connection conn = getConnection();
-        jdbcChannel = new JDBCChannel(conn);
+    public Network() {
     }
 
     protected void setContentType(HttpServletRequest request,
@@ -50,10 +49,10 @@ public class Network extends Revlet {
         if (parts.length == 1) {
             // list of networks
             c = new RevletContext("restnetworkList.vm");
-            NetworkAttr[] nets = jdbcChannel.getNetworkTable().getAllNetworkAttrs();
-            ArrayList list = new ArrayList();
-            for(int i = 0; i < nets.length; i++) {
-                list.add(new VelocityNetwork(nets[i]));
+            List<NetworkAttrImpl> nets = NetworkDB.getSingleton().getAllNetworks();
+            ArrayList<VelocityNetwork> list = new ArrayList<VelocityNetwork>();
+            for(NetworkAttrImpl n : nets) {
+                list.add(new VelocityNetwork(n));
             }
             c.put("netList", list);
         } else if(parts.length == 2) {
@@ -78,7 +77,7 @@ public class Network extends Revlet {
             Iterator it = chanList.iterator();
             while (it.hasNext()) {
                 VelocityChannel chan = (VelocityChannel)it.next();
-                if (chan.my_site.get_code().equals(parts[3]) && chan.get_code().equals(parts[4])) {
+                if (chan.getSite().get_code().equals(parts[3]) && chan.get_code().equals(parts[4])) {
                     c.put("chan", chan);
                     break;
                 }
@@ -102,48 +101,46 @@ public class Network extends Revlet {
         } else {
             codeOnly = netCode;
         }
-        NetworkId[] nets = jdbcChannel.getNetworkTable().getByCode(codeOnly);
-        NetworkId netid = null;
+        List<NetworkAttrImpl> nets = NetworkDB.getSingleton().getNetworkByCode(codeOnly);
+        NetworkAttrImpl netid = null;
         if (codeOnly.startsWith("X") || codeOnly.startsWith("Y") || codeOnly.startsWith("Z")) {
-            for(int i = 0; i < nets.length; i++) {
-                if (NetworkIdUtil.toStringNoDates(nets[i]).equals(netCode)) {
-                    netid = nets[i];
+            for(NetworkAttrImpl networkAttrImpl : nets) {
+                if (NetworkIdUtil.toStringNoDates(networkAttrImpl).equals(netCode)) {
+                    netid = networkAttrImpl;
                     break;
                 }
             }
         } else {
-            netid = nets[0];
+            netid = nets.get(0);
         }
         if (netid == null) {
             throw new NotFound(netCode);
         }
-        Station[] stations = jdbcChannel.getStationTable().getAllStations(netid);
-        ArrayList stationList = new ArrayList();
-        for(int i = 0; i < stations.length; i++) {
-            stationList.add(new VelocityStation((StationImpl)stations[i]));
+        List<StationImpl> stations = NetworkDB.getSingleton().getStationForNet(netid);
+        ArrayList<VelocityStation> stationList = new ArrayList<VelocityStation>();
+        for(StationImpl stationImpl : stations) {
+            stationList.add(new VelocityStation(stationImpl));
         }
         return new VelocityNetwork(stationList);
     }
     
     VelocityStation getStation(String[] parts, VelocityNetwork net) throws SQLException, NotFound {
-        Station[] stations = jdbcChannel.getStationTable().getAllStations(net.get_id());
-        Station sta = null;
-        for(int i = 0; i < stations.length; i++) {
-            if (stations[i].get_code().equals(parts[2])) {
-                sta = stations[i];
+        List<StationImpl> stations = NetworkDB.getSingleton().getStationForNet(net.getWrapped());
+        StationImpl sta = null;
+        for(StationImpl stationImpl : stations) {
+            if (stationImpl.get_code().equals(parts[2])) {
+                sta = stationImpl;
             }
         }
-        return new VelocityStation((StationImpl)sta);
+        return new VelocityStation(sta);
     }
     
     ArrayList getAllChannels(String[] parts, VelocityStation sta) throws NotFound, SQLException {
-        Channel[] chans = jdbcChannel.getAllChannels(sta.get_id());
+        Channel[] chans = NetworkDB.getSingleton().getChannelsForStation(sta.getWrapped());
         ArrayList chanList = new ArrayList();
         for(int i = 0; i < chans.length; i++) {
             chanList.add(new VelocityChannel((ChannelImpl)chans[i]));
         }
         return chanList;
     }
-    
-    JDBCChannel jdbcChannel;
 }

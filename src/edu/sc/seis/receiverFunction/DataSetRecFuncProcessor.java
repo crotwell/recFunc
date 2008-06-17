@@ -79,12 +79,12 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
                                   localSeis);
 
             Channel chan = channel[0];
-            Location staLoc = chan.my_site.my_station.my_location;
+            Location staLoc = chan.getSite().getStation().getLocation();
             Origin origin = event.get_preferred_origin();
-            Location evtLoc = origin.my_location;
+            Location evtLoc = origin.getLocation();
 
-            Arrival[] pPhases = taupUtil.calcTravelTimes(chan.my_site.my_station, origin, new String[] { "ttp"});
-            MicroSecondDate firstP = new MicroSecondDate(origin.origin_time);
+            Arrival[] pPhases = taupUtil.calcTravelTimes(chan.getSite().getStation(), origin, new String[] { "ttp"});
+            MicroSecondDate firstP = new MicroSecondDate(origin.getOriginTime());
             firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
 
             TimeInterval shift = recFunc.getShift();
@@ -157,7 +157,7 @@ public class DataSetRecFuncProcessor implements SeisDataChangeListener {
 
 
             }
-            logger.debug("Processing finished OK "+chan.my_site.my_station.name);
+            logger.debug("Processing finished OK "+chan.getSite().getStation().getName());
         } catch (Throwable ee) {
             logger.error("Problem", ee);
             this.error = new SeisDataErrorEvent(ee, seis[0], this);

@@ -3,14 +3,17 @@ package edu.sc.seis.receiverFunction.server;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
+
 import org.omg.CORBA.ORB;
+
 import edu.iris.Fissures.IfNetwork.NetworkAccess;
 import edu.iris.Fissures.IfNetwork.NetworkDCOperations;
 import edu.iris.Fissures.IfNetwork.NetworkNotFound;
 import edu.iris.Fissures.model.AllVTFactory;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.sc.seis.fissuresUtil.cache.VestingNetworkDC;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
-import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.namingService.FissuresNamingService;
 
 /**
@@ -32,8 +35,7 @@ public class NetworkDBPopulate {
                                                          "IRIS_NetworkDC",
                                                          fisName);
         NetworkAccess[] nets = netDC.a_finder().retrieve_by_code(args[0]);
-        JDBCNetwork jdbcNet = new JDBCNetwork();
-        int dbid = jdbcNet.put(nets[0].get_attributes());
+        int dbid = NetworkDB.getSingleton().put((NetworkAttrImpl)nets[0].get_attributes());
         System.out.println("Done " + args[0] + " " + dbid);
     }
 }

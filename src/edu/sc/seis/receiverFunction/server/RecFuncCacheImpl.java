@@ -1,12 +1,15 @@
 package edu.sc.seis.receiverFunction.server;
 
+import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.UNKNOWN;
-import edu.iris.Fissures.TimeRange;
+
+import edu.iris.Fissures.Orientation;
 import edu.iris.Fissures.IfEvent.EventAttr;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
@@ -19,6 +22,8 @@ import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.iris.Fissures.network.ChannelImpl;
+import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.IfReceiverFunction.RecFuncCachePOA;
@@ -28,12 +33,20 @@ import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
-import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
-import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
+import edu.sc.seis.fissuresUtil.hibernate.EventDB;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
+import edu.sc.seis.fissuresUtil.xml.SeismogramFileTypes;
+import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
+import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.QualityControl;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.sod.ConfigurationException;
-import edu.sc.seis.sod.subsetter.channel.ChannelEffectiveTimeOverlap;
+import edu.sc.seis.sod.SodConfig;
+import edu.sc.seis.sod.hibernate.SodDB;
+import edu.sc.seis.sod.status.EventFormatter;
 
 /**
  * @author crotwell Created on Sep 9, 2004
@@ -46,47 +59,30 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(databaseURL);
         DATA_LOC = dataloc;
-        Connection conn = ConnMgr.createConnection();
-        jdbcEventAccess = new JDBCEventAccess(conn);
-        jdbcChannel = new JDBCChannel(conn);
-        jdbcSodConfig = new JDBCSodConfig(conn);
-        jdbcRecFunc = new JDBCRecFunc(conn,
-                                      jdbcEventAccess,
-                                      jdbcChannel,
-                                      jdbcSodConfig,
-                                      DATA_LOC);
-        jdbcHKStack = new JDBCHKStack(conn,
-                                      jdbcEventAccess,
-                                      jdbcChannel,
-                                      jdbcSodConfig,
-                                      jdbcRecFunc);
-        qualityControl = new QualityControl(conn);
-    }
-
-    Connection getConnection() {
-        return jdbcRecFunc.getConnection();
+        qualityControl = new QualityControl();
     }
 
     public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,
                                               ChannelId[] channel) {
         try {
             ArrayList configs = new ArrayList();
-            synchronized(jdbcRecFunc.getConnection()) {
-                CacheEvent[] similar = jdbcEventAccess.getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
-                                                                                       prefOrigin),
-                                                                        timeTol,
-                                                                        positionTol);
-                for(int i = 0; i < similar.length; i++) {
-                    try {
-                        IterDeconConfig[] tmpConfigs = jdbcRecFunc.getCachedConfigs(similar[i].get_preferred_origin(),
-                                                                                    channel);
-                        for(int j = 0; j < tmpConfigs.length; j++) {
-                            configs.add(tmpConfigs[j]);
-                        }
-                    } catch(NotFound e) {}
+            List<CacheEvent> similar = EventDB.getSingleton().getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"), prefOrigin), timeTol, positionTol);
+                
+            ChannelGroup chanGroup = NetworkDB.getSingleton()
+                    .getChannelGroup(NetworkDB.getSingleton()
+                            .getChannel(channel[0].network_id.network_code,
+                                        channel[0].station_code,
+                                        channel[0].site_code,
+                                        channel[0].channel_code,
+                                        new MicroSecondDate(prefOrigin.getOriginTime())));
+            for(CacheEvent cacheEvent : similar) {
+                IterDeconConfig[] tmpConfigs = RecFuncDB.getSingleton()
+                        .getResults(cacheEvent, chanGroup);
+                for(int j = 0; j < tmpConfigs.length; j++) {
+                    configs.add(tmpConfigs[j]);
                 }
-                return (IterDeconConfig[])configs.toArray(new IterDeconConfig[0]);
             }
+            return (IterDeconConfig[])configs.toArray(new IterDeconConfig[0]);
         } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
             throw new org.omg.CORBA.UNKNOWN(e.toString(),
@@ -95,31 +91,62 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         }
     }
 
-    /**
-     * 
-     */
+    protected ReceiverFunctionResult getResult(Origin prefOrigin,
+                                               ChannelId[] channel,
+                                               IterDeconConfig config) {
+        try {
+            List<CacheEvent> similar = EventDB.getSingleton().getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"), prefOrigin), timeTol, positionTol);
+                
+            ChannelGroup chanGroup = NetworkDB.getSingleton()
+                    .getChannelGroup(NetworkDB.getSingleton()
+                            .getChannel(channel[0].network_id.network_code,
+                                        channel[0].station_code,
+                                        channel[0].site_code,
+                                        channel[0].channel_code,
+                                        new MicroSecondDate(prefOrigin.getOriginTime())));
+            for(CacheEvent cacheEvent : similar) {
+                ReceiverFunctionResult result = RecFuncDB.getSingleton()
+                        .getRecFuncResult(cacheEvent, chanGroup, config);
+                if(result != null) {
+                    return result;
+                }
+            }
+        } catch(NotFound e) {}
+        return null;
+    }
+
     public CachedResult get(Origin prefOrigin,
                             ChannelId[] channel,
                             IterDeconConfig config) throws RecFuncNotFound {
         try {
-            synchronized(jdbcRecFunc.getConnection()) {
-                CacheEvent[] similar = jdbcEventAccess.getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
-                                                                                       prefOrigin),
-                                                                        timeTol,
-                                                                        positionTol);
-                for(int i = 0; i < similar.length; i++) {
-                    try {
-                        CachedResult out = jdbcRecFunc.get(similar[i].get_preferred_origin(),
-                                                           channel,
-                                                           config)
-                                .getCachedResult();
-                        if(out != null) {
-                            return out;
-                        }
-                    } catch(NotFound e) {}
-                }
-                throw new RecFuncNotFound();
+            ReceiverFunctionResult result = getResult(prefOrigin,
+                                                      channel,
+                                                      config);
+            if(result != null) {
+                CachedResult out = new CachedResult(result.getEvent()
+                                                            .getPreferred(),
+                                                    result.getEvent()
+                                                            .get_attributes(),
+                                                    new IterDeconConfig(result.getGwidth(),
+                                                                        result.getMaxBumps(),
+                                                                        result.getTol()),
+                                                    result.getChannelGroup()
+                                                            .getChannels(),
+                                                    new LocalSeismogramImpl[] {result.getOriginal1(),
+                                                                               result.getOriginal2(),
+                                                                               result.getOriginal3()},
+                                                    result.getRadial(),
+                                                    result.getRadialMatch(),
+                                                    result.getRadialBump(),
+                                                    result.getTransverse(),
+                                                    result.getTransverseMatch(),
+                                                    result.getTransverseBump(),
+                                                    result.getConfig()
+                                                            .getDbid(),
+                                                    new MicroSecondDate(result.getInsertTime()).getFissuresTime());
+                return out;
             }
+            throw new RecFuncNotFound();
         } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
             throw new org.omg.CORBA.UNKNOWN(e.toString(),
@@ -139,83 +166,118 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                        LocalSeismogram radial,
                        float radialMatch,
                        int radialBump,
-                       LocalSeismogram tansverse,
+                       LocalSeismogram transverse,
                        float transverseMatch,
                        int transverseBump,
                        int sodConfig_id) {
         try {
-            Connection conn = jdbcRecFunc.getConnection();
-            synchronized(conn) {
-                try {
-                    CacheEvent[] similar = jdbcEventAccess.getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
-                                                                                           prefOrigin),
-                                                                            timeTol,
-                                                                            positionTol);
-                    if(similar.length > 0) {
-                        // already an origin in the database, keep using
-                        // existing origin
-                        prefOrigin = similar[0].get_preferred_origin();
-                    }
-                } catch(NotFound e) {
-                    // event not yet in db, so proceed as new
-                } catch(NoPreferredOrigin e) {
-                    // should never happen, just act as if new origin
+            CacheEvent event = null;
+            try {
+                List<CacheEvent> similar = EventDB.getSingleton().getSimilarEvents(new CacheEvent(eventAttr, prefOrigin), timeTol, positionTol);
+                
+                if(similar.size() > 0) {
+                    // already an origin in the database, keep using
+                    // existing origin
+                    event = similar.get(0);
                 }
-                boolean autocommit = conn.getAutoCommit();
-                try {
-                    if(autocommit) {
-                        conn.setAutoCommit(false);
-                    }
-                    int recFuncDbId = jdbcRecFunc.put(prefOrigin,
-                                                      eventAttr,
-                                                      config,
-                                                      channels,
-                                                      original,
-                                                      radial,
-                                                      radialMatch,
-                                                      radialBump,
-                                                      tansverse,
-                                                      transverseMatch,
-                                                      transverseBump,
-                                                      sodConfig_id);
-                    CachedResultPlusDbId result = jdbcRecFunc.get(recFuncDbId);
-                    if(qualityControl.check(result)) {
-                        System.out.println("insert " + recFuncDbId
-                                + " with weights of 1/3 for gaussian="
-                                + config.gwidth + " for "
-                                + ChannelIdUtil.toStringNoDates(channels[0]));
-                        float weightPs = 1 / 3f;
-                        float weightPpPs = 1 / 3f;
-                        float weightPsPs = 1 - weightPs - weightPpPs;
-                        jdbcHKStack.calcAndStore(recFuncDbId,
-                                                 weightPs,
-                                                 weightPpPs,
-                                                 weightPsPs);
-                    }
-                    conn.commit();
-                } catch(Throwable e) {
-                    conn.rollback();
-                    GlobalExceptionHandler.handle("Problem with "
-                            + ChannelIdUtil.toString(channels[0].get_id())
-                            + " for origin time="
-                            + prefOrigin.getOriginTime().date_time, e);
-                    throw new UNKNOWN(e.toString(),
-                                      12,
-                                      CompletionStatus.COMPLETED_MAYBE);
-                } finally {
-                    if(autocommit) {
-                        conn.setAutoCommit(autocommit);
-                    }
+            } catch(NotFound e) {
+                // event not yet in db, so proceed as new
+            }
+            if(event == null) {
+                event = new CacheEvent(eventAttr, prefOrigin);
+            }
+            SodConfig sodConfig = SodDB.getSingleton().getConfig(sodConfig_id);
+            File stationDir = getDir(event, channels[0], config.gwidth);
+            File[] seisFile = new File[original.length];
+            for(int i = 0; i < original.length; i++) {
+                seisFile[i] = URLDataSetSeismogram.saveAs((LocalSeismogramImpl)original[i],
+                                                          stationDir,
+                                                          channels[i],
+                                                          event,
+                                                          SeismogramFileTypes.SAC);
+            }
+            int zChanNum = 0;
+            for(int i = 0; i < channels.length; i++) {
+                if(channels[i].get_code().endsWith("Z")) {
+                    zChanNum = i;
+                    break;
                 }
             }
-        } catch(SQLException e) {
-            // why would get and set AutoCommit throw?
-            GlobalExceptionHandler.handle("AutoCommit problem "
-                    + ChannelIdUtil.toString(channels[0].get_id())
-                    + " for origin time=" + prefOrigin.getOriginTime().date_time, e);
-            throw new UNKNOWN(e.toString(),
-                              12,
-                              CompletionStatus.COMPLETED_MAYBE);
+            Channel zeroChannel = channels[zChanNum];
+            ChannelId radialChannelId = new ChannelId(zeroChannel.get_id().network_id,
+                                                      zeroChannel.get_id().station_code,
+                                                      zeroChannel.get_id().site_code,
+                                                      "ITR",
+                                                      zeroChannel.get_id().begin_time);
+            Channel radialChannel = new ChannelImpl(radialChannelId,
+                                                    "receiver function fake channel for "
+                                                            + ChannelIdUtil.toStringNoDates(zeroChannel.get_id()),
+                                                    new Orientation(0, 0),
+                                                    zeroChannel.getSamplingInfo(),
+                                                    zeroChannel.getEffectiveTime(),
+                                                    zeroChannel.getSite());
+            File radialFile = URLDataSetSeismogram.saveAs((LocalSeismogramImpl)radial,
+                                                          stationDir,
+                                                          radialChannel,
+                                                          event,
+                                                          SeismogramFileTypes.SAC);
+            ChannelId transverseChannelId = new ChannelId(zeroChannel.get_id().network_id,
+                                                          zeroChannel.get_id().station_code,
+                                                          zeroChannel.get_id().site_code,
+                                                          "ITT",
+                                                          zeroChannel.get_id().begin_time);
+            Channel transverseChannel = new ChannelImpl(transverseChannelId,
+                                                        "receiver function fake channel for "
+                                                                + ChannelIdUtil.toStringNoDates(zeroChannel.get_id()),
+                                                        new Orientation(0, 0),
+                                                        zeroChannel.getSamplingInfo(),
+                                                        zeroChannel.getEffectiveTime(),
+                                                        zeroChannel.getSite());
+            File transverseFile = URLDataSetSeismogram.saveAs((LocalSeismogramImpl)transverse,
+                                                              stationDir,
+                                                              transverseChannel,
+                                                              event,
+                                                              SeismogramFileTypes.SAC);
+            ReceiverFunctionResult result = new ReceiverFunctionResult(event,
+                                                                       new ChannelGroup(ChannelImpl.implize(channels)),
+                                                                       seisFile[0].getName(),
+                                                                       seisFile[1].getName(),
+                                                                       seisFile[2].getName(),
+                                                                       radialFile.getName(),
+                                                                       transverseFile.getName(),
+                                                                       radialMatch,
+                                                                       radialBump,
+                                                                       transverseMatch,
+                                                                       transverseBump,
+                                                                       config.gwidth,
+                                                                       config.maxBumps,
+                                                                       config.tol,
+                                                                       sodConfig);
+            try {
+                if(qualityControl.check(result)) {
+                    float weightPs = 1 / 3f;
+                    float weightPpPs = 1 / 3f;
+                    float weightPsPs = 1 - weightPs - weightPpPs;
+                    result.setHKstack(HKStack.create(result,
+                                                     weightPs,
+                                                     weightPpPs,
+                                                     weightPsPs));
+                }
+                RecFuncDB.getSingleton().put(result);
+                RecFuncDB.commit();
+            } catch(Throwable e) {
+                RecFuncDB.rollback();
+                GlobalExceptionHandler.handle("Problem with "
+                        + ChannelIdUtil.toString(channels[0].get_id())
+                        + " for origin time="
+                        + prefOrigin.getOriginTime().date_time, e);
+                throw new UNKNOWN(e.toString(),
+                                  12,
+                                  CompletionStatus.COMPLETED_MAYBE);
+            }
+        } catch(Throwable t) {
+            GlobalExceptionHandler.handle(t);
+            throw new UNKNOWN(t.getMessage());
         }
     }
 
@@ -226,34 +288,25 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                             ChannelId[] channel,
                             IterDeconConfig config) {
         try {
-            ChannelId chanz = null;
-            for(int i = 0; i < channel.length; i++) {
-                if (channel[i].channel_code.endsWith("Z")) {
-                    chanz = channel[i];
-                }
+            ReceiverFunctionResult result = getResult(prefOrigin,
+                                                      channel,
+                                                      config);
+            if(result != null) {
+                return true;
             }
-            if (chanz == null) {
-                throw new UNKNOWN("Can't find Z channel: ");
-            }
-            synchronized(jdbcRecFunc.getConnection()) {
-                return jdbcRecFunc.exists(prefOrigin, chanz, config);
-            }
-        } catch(NotFound e) {
             return false;
         } catch(Throwable e) {
             GlobalExceptionHandler.handle(e);
+            throw new UNKNOWN(e.getMessage());
         }
-        return false;
     }
 
     public int insertSodConfig(String config) {
         try {
-            synchronized(jdbcRecFunc.getConnection()) {
-                return jdbcSodConfig.put(config);
-            }
-        } catch(SQLException e) {
-            GlobalExceptionHandler.handle(e);
-            throw new UNKNOWN(e.getMessage(), 7, CompletionStatus.COMPLETED_NO);
+            SodConfig sc = new SodConfig(config);
+            SodDB.getSingleton().putConfig(sc);
+            SodDB.commit();
+            return sc.getDbid();
         } catch(Throwable t) {
             GlobalExceptionHandler.handle(t);
             throw new UNKNOWN(t.getMessage(),
@@ -264,15 +317,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
 
     public String getSodConfig(int sodConfig_id) throws SodConfigNotFound {
         try {
-            synchronized(jdbcRecFunc.getConnection()) {
-                return jdbcSodConfig.get(sodConfig_id);
-            }
-        } catch(SQLException e) {
-            GlobalExceptionHandler.handle(e);
-            throw new UNKNOWN(e.getMessage(), 8, CompletionStatus.COMPLETED_NO);
-        } catch(NotFound e) {
-            GlobalExceptionHandler.handle(e);
-            throw new UNKNOWN(e.getMessage(), 9, CompletionStatus.COMPLETED_NO);
+            return SodDB.getSingleton().getConfig(sodConfig_id).getConfig();
         } catch(Throwable t) {
             GlobalExceptionHandler.handle(t);
             throw new UNKNOWN(t.getMessage(),
@@ -281,10 +326,51 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         }
     }
 
+    public static File getDir(CacheEvent cacheEvent,
+                              Channel chan,
+                              float gaussianWidth) {
+        if(dataDir == null) {
+            dataDir = new File(getDataLoc());
+            dataDir.mkdirs();
+        }
+        File gaussDir = new File(dataDir, "gauss_" + gaussianWidth);
+        File eventDir = new File(gaussDir, eventFormatter.getResult(cacheEvent));
+        File netDir = new File(eventDir, chan.get_id().network_id.network_code);
+        File stationDir = new File(netDir, chan.get_id().station_code);
+        boolean dirsCreated = stationDir.exists();
+        if(!dirsCreated) {
+            dirsCreated = stationDir.mkdirs();
+        }
+        if(!dirsCreated) {
+            logger.debug("initial mkdirs returned false: " + dirsCreated + "  "
+                    + stationDir.exists());
+            // try once more just for kicks...
+            for(int i = 0; i < 10 && !dirsCreated; i++) {
+                try {
+                    Thread.sleep(1000 * i);
+                } catch(InterruptedException e) {}
+                dirsCreated = stationDir.mkdirs();
+                logger.debug(i + " mkdirs returned false: " + dirsCreated
+                        + "  " + stationDir.exists());
+            }
+            if(!dirsCreated) {
+                File tmpDir = stationDir;
+                while(tmpDir.getParentFile() != null
+                        && !tmpDir.getParentFile().exists()) {
+                    tmpDir = tmpDir.getParentFile();
+                }
+                logger.error("mkdirs seemed to fail on this directory: "
+                        + tmpDir);
+                throw new UNKNOWN("Unable to create directory");
+            }
+        }
+        return stationDir;
+    }
+
     public static String getDataLoc() {
         return DATA_LOC;
     }
-    
+
     public static void setDataLoc(String loc) {
         DATA_LOC = loc;
     }
@@ -293,15 +379,9 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
 
     private QuantityImpl positionTol = new QuantityImpl(.5, UnitImpl.DEGREE);
 
-    private JDBCEventAccess jdbcEventAccess;
+    private static EventFormatter eventFormatter = EventFormatter.makeFilizer();
 
-    private JDBCChannel jdbcChannel;
-
-    private JDBCRecFunc jdbcRecFunc;
-
-    private JDBCHKStack jdbcHKStack;
-
-    private JDBCSodConfig jdbcSodConfig;
+    private static File dataDir = null;
 
     private QualityControl qualityControl;
 

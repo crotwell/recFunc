@@ -8,6 +8,8 @@ import edu.iris.Fissures.IfNetwork.StationId;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.StationIdUtil;
+import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 
 
 /**
@@ -25,12 +27,18 @@ public class WilsonRistra implements StationCompare {
     public StationResult getResult(StationId stationId) {
         String prefix = StationIdUtil.toStringNoDates(stationId);
         if (props.containsKey(prefix+"_H")) {
-            return new StationResult(stationId.network_id,
-                                     stationId.station_code,
-                                     new QuantityImpl(Float.parseFloat(props.getProperty(prefix+"_H")), UnitImpl.KILOMETER),
-                                     Float.parseFloat(props.getProperty(prefix+"_VpVs")),
-                                     new QuantityImpl(6, UnitImpl.KILOMETER_PER_SECOND),
-                                     new StationResultRef("a","b","c"));
+            try {
+                return new StationResult(NetworkDB.getSingleton().getNetworkById(stationId.network_id),
+                                         stationId.station_code,
+                                         new QuantityImpl(Float.parseFloat(props.getProperty(prefix+"_H")), UnitImpl.KILOMETER),
+                                         Float.parseFloat(props.getProperty(prefix+"_VpVs")),
+                                         new QuantityImpl(6, UnitImpl.KILOMETER_PER_SECOND),
+                                         new StationResultRef("a","b","c"));
+            } catch(NumberFormatException e) {
+                return null;
+            } catch(NotFound e) {
+                return null;
+            }
         } else {
             return null;
         }

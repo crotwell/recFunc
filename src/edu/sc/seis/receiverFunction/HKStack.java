@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import javax.swing.JFrame;
 import org.w3c.dom.Element;
 import edu.iris.Fissures.FissuresException;
+import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
@@ -27,6 +28,7 @@ import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.model.UnitRangeImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.Arrival;
@@ -51,6 +53,7 @@ import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.WilsonRistra;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.web.GMTColorPalette;
 import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.status.FissuresFormatter;
@@ -478,12 +481,14 @@ public class HKStack implements Serializable {
                                   max,
                                   -1,
                                   -1);
-        StationResult maxResult = getMaximumAsStationResult(dumb);
+        HKAlpha hka = new HKAlpha(dumb.getHValue(),
+                                  dumb.getKValue(),
+                                  getAlpha());
         StackComplexity complexity = new StackComplexity(this,
                                                          4096,
                                                          getGaussianWidth());
         try {
-            HKStack residualStack = complexity.getResidual(maxResult, 80);
+            HKStack residualStack = complexity.getResidual(hka, 80);
             out[0] = new StackMaximum(maxIndexX,
                                       getHFromIndex(maxIndexX),
                                       maxIndexY,
@@ -501,20 +506,6 @@ public class HKStack implements Serializable {
                                        e);
         }
         return out;
-    }
-
-    public StationResult getMaximumAsStationResult(int startHIndex) {
-        StackMaximum[] maxIndex = getLocalMaxima(startHIndex, 1);
-        return getMaximumAsStationResult(maxIndex[0]);
-    } 
-    
-    public StationResult getMaximumAsStationResult(StackMaximum max) {
-        return new StationResult(getChannelId().network_id,
-                                 getChannelId().station_code,
-                                 max.getHValue(),
-                                 max.getKValue(),
-                                 getAlpha(),
-                                 null);
     }
 
     private boolean isLocalMaxima(int j, int k, float[][] stackOut) {
@@ -927,7 +918,7 @@ public class HKStack implements Serializable {
         analyticPsPs.setImag(hIndex, kIndex, getAmp(imag, timePsPs));
     }
 
-    public static HKStack create(CachedResult cachedResult,
+    public static HKStack create(ReceiverFunctionResult cachedResult,
                                  float weightPs,
                                  float weightPpPs,
                                  float weightPsPs) throws TauModelException,
@@ -936,10 +927,10 @@ public class HKStack implements Serializable {
                       weightPs,
                       weightPpPs,
                       weightPsPs,
-                      crust2.getStationResult(cachedResult.channels[0].getSite().getStation()).getVp());
+                      crust2.getStationResult(cachedResult.getChannelGroup().getChannel1().getSite().getStation()).getVp());
     }
 
-    public static HKStack create(CachedResult cachedResult,
+    public static HKStack create(ReceiverFunctionResult cachedResult,
                                  float weightPs,
                                  float weightPpPs,
                                  float weightPsPs,
@@ -947,16 +938,21 @@ public class HKStack implements Serializable {
             throws TauModelException, FissuresException {
         String[] pPhases = {"P"};
         TauPUtil tauPTime = TauPUtil.getTauPUtil(modelName);
-        Arrival[] arrivals = tauPTime.calcTravelTimes(cachedResult.channels[0].getSite().getStation(),
-                                                      cachedResult.prefOrigin,
-                                                      pPhases);
+        Arrival[] arrivals;
+        try {
+            arrivals = tauPTime.calcTravelTimes(cachedResult.getChannelGroup().getChannel1().getSite().getStation(),
+                                                          cachedResult.getEvent().getPreferred(),
+                                                          pPhases);
+        } catch(NoPreferredOrigin e) {
+            throw new RuntimeException("No Preferred Origin, should never happen but it jut did!");
+        }
         // convert radian per sec ray param into km per sec
         float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
                 .getRadiusOfEarth());
         HKStack stack = new HKStack(vp,
                                     kmRayParam,
-                                    cachedResult.config.gwidth,
-                                    cachedResult.radialMatch,
+                                    cachedResult.getGwidth(),
+                                    cachedResult.getRadialMatch(),
                                     getDefaultMinH(),
                                     new QuantityImpl(.25f, UnitImpl.KILOMETER),
                                     240,
@@ -966,9 +962,8 @@ public class HKStack implements Serializable {
                                     weightPs,
                                     weightPpPs,
                                     weightPsPs,
-                                    (LocalSeismogramImpl)cachedResult.radial,
-                                    cachedResult.channels[2], // chan arraay
-                                    // is a, b, z
+                                    (LocalSeismogramImpl)cachedResult.getRadial(),
+                                    cachedResult.getChannelGroup().getVertical(),
                                     RecFunc.getDefaultShift());
         return stack;
     }
@@ -1138,6 +1133,10 @@ public class HKStack implements Serializable {
         return alpha;
     }
 
+    public float getAlphaKmps() {
+        return (float)alpha.getValue(UnitImpl.KILOMETER_PER_SECOND);
+    }
+
     public String formatAlpha() {
         return FissuresFormatter.formatQuantity(getAlpha());
     }
@@ -1295,7 +1294,60 @@ public class HKStack implements Serializable {
     public CmplxArray2D getCompactAnalyticPhase() {
         return compactAnalyticPhase;
     }
-
+    
+    //hibernate
+    protected String stackFile;
+    
+    protected void setStackFile(String f) {this.stackFile = f;}
+    public String getStackFile() {return stackFile;}
+    
+    protected void setAlphaKmps(float v) {
+        alpha = new QuantityImpl(v, UnitImpl.KILOMETER_PER_SECOND);
+    }
+    
+    protected void setP(float p) {
+        this.p = p;
+    }
+    
+    protected void setMinHKm(float v) {
+        this.minH = new QuantityImpl(v, UnitImpl.KILOMETER);
+    }
+    
+    protected float getMinHKm() { return (float)minH.getValue(UnitImpl.KILOMETER);}
+    
+    protected void setStepHKm(float v) {
+        this.stepH = new QuantityImpl(v, UnitImpl.KILOMETER);
+    }
+    protected float getStepHKm() { return (float)stepH.getValue(UnitImpl.KILOMETER);}
+    
+    protected void setNumH(int v) {
+        this.numH = v;
+    }
+    
+    protected void setMinKKm(float v) {
+        this.minK = v;
+    }
+    
+    protected void setStepK(float v) {
+        this.stepK = v;
+    }
+    
+    protected void setNumK(int v) {
+        this.numK = v;
+    }
+    
+    protected void setWeightPs(float v) {
+        this.weightPs = v;
+    }
+    
+    protected void setWeightPpPs(float v) {
+        this.weightPpPs = v;
+    }
+    
+    protected void setWeightPsPs(float v) {
+        this.weightPsPs = v;
+    }
+    
     CmplxArray2D compactAnalyticPhase = null;
 
     float[][] realStack;
@@ -1346,21 +1398,9 @@ public class HKStack implements Serializable {
 
     public static String modelName = "iasp91";
 
-    transient static Crust2 crust2 = null;
+    transient static Crust2 crust2 = new Crust2();
 
     transient static WilsonRistra wilson = null;
-    static {
-        try {
-            crust2 = new Crust2();
-        } catch(IOException e) {
-            GlobalExceptionHandler.handle("Couldn't load Crust2.0", e);
-        }
-        try {
-            wilson = new WilsonRistra();
-        } catch(IOException e) {
-            GlobalExceptionHandler.handle("Couldn't load Wilson RISTRA", e);
-        }
-    }
 
     public static Crust2 getCrust2() {
         return crust2;
@@ -1405,6 +1445,14 @@ public class HKStack implements Serializable {
     transient DataSetSeismogram recFunc;
 
     Channel chan;
+
+    public static final float DEFAULT_WEIGHT_Ps = 1 / 3f;
+    
+    public static final float DEFAULT_WEIGHT_PpPs = 1 / 3f;
+    
+    public static final float DEFAULT_WEIGHT_PsPs = 1 - DEFAULT_WEIGHT_Ps
+    - DEFAULT_WEIGHT_PpPs;
+
 
     private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
 

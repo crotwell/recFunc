@@ -4,28 +4,29 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.StationId;
 import edu.iris.Fissures.model.QuantityImpl;
-import edu.iris.Fissures.network.StationIdUtil;
+import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.AzimuthSumHKStack;
 import edu.sc.seis.receiverFunction.BazIterator;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
+import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.sod.ConfigurationException;
 
 public class AzimuthStackSummary extends StackSummary {
 
     public AzimuthStackSummary(Connection conn, Properties props) throws IOException, SQLException, ConfigurationException,
             TauModelException, Exception {
-        super(conn, props);
-        jdbcAz = new JDBCAzimuthSummaryHKStack(jdbcSummary);
+        super(props);
     }
 
     public SumHKStack createSummary(StationId station,
@@ -77,8 +78,9 @@ public class AzimuthStackSummary extends StackSummary {
             // stack
             if(sectorHK.size() > 1) {
                 HKStack temp = (HKStack)sectorHK.get(0);
+                List<StationImpl> sta = NetworkDB.getSingleton().getStationByCodes(netCode, staCode);
                 int netDbId = jdbcHKStack.getJDBCChannel().getStationTable().getBestNetworkDbId(netCode, staCode);
-                HKBox[] rejects = jdbcRejectMax.getForStation(netDbId,
+                RejectedMaxima[] rejects = jdbcRejectMax.getForStation(netDbId,
                                                               staCode);
                 SumHKStack sumStack = new SumHKStack((HKStack[])sectorHK.toArray(new HKStack[0]),
                                                      temp.getChannel(),
@@ -114,8 +116,6 @@ public class AzimuthStackSummary extends StackSummary {
     float step = 22.5f;
 
     float width = 45;
-
-    JDBCAzimuthSummaryHKStack jdbcAz;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AzimuthStackSummary.class);
 }

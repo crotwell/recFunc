@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.imageio.ImageIO;
@@ -18,16 +17,11 @@ import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
-import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
-import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
-import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.RecFuncException;
-import edu.sc.seis.receiverFunction.server.JDBCHKStack;
-import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
-import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
-import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.server.SyntheticFactory;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
@@ -48,13 +42,6 @@ public class HKStackImageServlet  extends HttpServlet {
      *
      */
     public HKStackImageServlet() throws SQLException, ConfigurationException, Exception {
-        Connection conn = ConnMgr.createConnection();
-        jdbcEvent = new JDBCEventAccess(conn);
-        
-        JDBCChannel jdbcChannel  = new JDBCChannel(conn);
-        JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
-        JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.getDataLoc());
-        hkStack = new JDBCHKStack(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
     }
 
     public synchronized void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -90,50 +77,20 @@ public class HKStackImageServlet  extends HttpServlet {
     }
     
     public HKStack getStack(HttpServletRequest req) throws Exception {
-
-        if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
-
-        HKStack stack;
-        if (req.getParameter("rf").equals("synth")) {
-             stack = SyntheticFactory.getHKStack();
-        } else {
-            int rf_id = RevUtil.getInt("rf", req);
-            synchronized(hkStack.getConnection()) {
-                stack = hkStack.get(rf_id);
-            }
-        }
-        return stack;
+        return getCachedResult(req).getHKstack();
     }
 
-    CachedResult getCachedResult(HttpServletRequest req)
+    ReceiverFunctionResult getCachedResult(HttpServletRequest req)
             throws NoPreferredOrigin, IncompatibleSeismograms,
             TauModelException, RecFuncException, FileNotFoundException, FissuresException, NotFound, IOException, SQLException {
         if (req.getParameter("rf").equals("synth")) {
-            return SyntheticFactory.getCachedResult();
+            return SyntheticFactory.getReceiverFunctionResult();
         } else {
             int rf_id = RevUtil.getInt("rf", req);
-            synchronized(hkStack.getConnection()) {
-                return hkStack.getJDBCRecFunc().get(rf_id).getCachedResult();
-            }
+                return RecFuncDB.getSingleton().getReceiverFunctionResult(rf_id);
         }
     }
-    
-    private StationLocator staLoc;
-    
-    private JDBCEventAccess jdbcEvent;
-    
-    protected JDBCHKStack hkStack;
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(HKStackImageServlet.class);
-
-    public void destroy() {
-        try {
-            Connection conn = jdbcEvent.getConnection();
-            if (conn != null) {conn.close();}
-        } catch(SQLException e) {
-            // oh well
-        }
-        super.destroy();
-    }
     
 }

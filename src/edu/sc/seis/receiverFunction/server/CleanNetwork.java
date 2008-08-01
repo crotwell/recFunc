@@ -5,8 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
+
 import org.apache.log4j.BasicConfigurator;
+
 import edu.iris.Fissures.Time;
 import edu.iris.Fissures.TimeRange;
 import edu.iris.Fissures.IfNetwork.Channel;
@@ -21,15 +24,15 @@ import edu.iris.Fissures.model.AllVTFactory;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.TimeUtils;
 import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.iris.Fissures.network.ChannelImpl;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.fissuresUtil.cache.VestingNetworkDC;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.NotFound;
-import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
-import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
-import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.fissuresUtil.display.MicroSecondTimeRange;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.namingService.FissuresNamingService;
 
 public class CleanNetwork {
@@ -37,7 +40,6 @@ public class CleanNetwork {
     public CleanNetwork(NetworkDCOperations netDC, Connection conn)
             throws SQLException {
         this.netDC = netDC;
-        jdbcChannel = new JDBCChannel(conn);
         updateNetBegin = conn.prepareStatement("UPDATE network SET net_begin_id = ? "
                 + "WHERE net_id = ?");
         updateNetEnd = conn.prepareStatement("UPDATE network SET net_end_id = ? "
@@ -58,15 +60,14 @@ public class CleanNetwork {
 
     public void checkNetworks() throws SQLException,
             edu.sc.seis.fissuresUtil.database.NotFound {
-        JDBCNetwork jdbcNet = jdbcChannel.getNetworkTable();
-        NetworkAttr[] attrs = jdbcNet.getAllNetworkAttrs();
+        List<NetworkAttrImpl> attrs = NetworkDB.getSingleton().getAllNetworks();
         NetworkAccess[] irisNets = netDC.a_finder().retrieve_all();
-        for(int i = 0; i < attrs.length; i++) {
-            checkNetwork(attrs[i], irisNets);
+        for(NetworkAttrImpl net : attrs) {
+            checkNetwork(net, irisNets);
         }
     }
 
-    public void checkNetwork(NetworkAttr attr, NetworkAccess[] irisNets)
+    public void checkNetwork(NetworkAttrImpl attr, NetworkAccess[] irisNets)
             throws SQLException, NotFound {
         NetworkAccess irisNA = bestMatch(attr.get_id(), irisNets);
         if(irisNA == null) {
@@ -75,8 +76,8 @@ public class CleanNetwork {
             return;
         }
         NetworkAttr irisAttr = irisNA.get_attributes();
-        MicroSecondTimeRange iris = fixFuture(irisAttr.effective_time);
-        MicroSecondTimeRange local = fixFuture(attr.effective_time);
+        MicroSecondTimeRange iris = fixFuture(irisAttr.getEffectiveTime());
+        MicroSecondTimeRange local = fixFuture(attr.getEffectiveTime());
         if(!iris.equals(local)) {
             System.out.println(attr.get_code()
                     + " unequal network effective times: iris=" + iris
@@ -85,20 +86,10 @@ public class CleanNetwork {
                 // begin times different
                 // if permanent net or same year, fix begin, best only finds
                 // temp nets in same year
-                updateTime(updateNetBegin,
-                           irisAttr.effective_time.start_time,
-                           jdbcChannel.getNetworkTable().getDbId(attr.get_id()));
+                attr.updateBeginTime(irisAttr.getEffectiveTime().start_time);
                 System.out.println("fixed net begin...");
             }
         }
-    }
-
-    void updateTime(PreparedStatement stmt, Time time, int dbid)
-            throws SQLException {
-        int timeDbId = jdbcChannel.getTimeTable().put(time);
-        stmt.setInt(1, timeDbId);
-        stmt.setInt(2, dbid);
-        stmt.executeUpdate();
     }
 
     public static MicroSecondTimeRange fixFuture(TimeRange effective_time) {
@@ -114,7 +105,7 @@ public class CleanNetwork {
             // match code and start year
             if(nets[j].get_attributes().get_code().equals(netId.network_code)
                     && (!(netId.network_code.startsWith("X")
-                            || netId.network_code.startsWith("Y") || netId.network_code.startsWith("Z")) || nets[j].get_attributes().effective_time.start_time.date_time.substring(0,
+                            || netId.network_code.startsWith("Y") || netId.network_code.startsWith("Z")) || nets[j].get_attributes().getEffectiveTime().start_time.date_time.substring(0,
                                                                                                                                                                                    4)
                             .equals(netId.begin_time.date_time.substring(0, 4)))) {
                 return nets[j];
@@ -125,8 +116,7 @@ public class CleanNetwork {
 
     public void checkStations() throws SQLException,
             edu.sc.seis.fissuresUtil.database.NotFound {
-        JDBCStation jdbcSta = jdbcChannel.getStationTable();
-        Station[] stations = jdbcSta.getAllStations();
+        Station[] stations = NetworkDB.getSingleton().getAllStations();
         for(int i = 0; i < stations.length; i++) {
             checkStation(stations[i]);
         }
@@ -141,8 +131,8 @@ public class CleanNetwork {
                     + StationIdUtil.toStringFormatDates(station));
             return false;
         }
-        MicroSecondTimeRange local = fixFuture(station.effective_time);
-        MicroSecondTimeRange irisNet = fixFuture(bestNet.get_attributes().effective_time);
+        MicroSecondTimeRange local = fixFuture(station.getEffectiveTime());
+        MicroSecondTimeRange irisNet = fixFuture(bestNet.get_attributes().getEffectiveTime());
         if(local.getBeginTime().before(irisNet.getBeginTime())) {
             System.out.println("WARNING: station begin before net begin: "
                     + StationIdUtil.toStringFormatDates(station) + "iris="
@@ -165,7 +155,7 @@ public class CleanNetwork {
             boolean found = false;
             while(it.hasNext()) {
                 Station irisSta = (Station)it.next();
-                MicroSecondTimeRange irisTR = fixFuture(irisSta.effective_time);
+                MicroSecondTimeRange irisTR = fixFuture(irisSta.getEffectiveTime());
                 if(irisTR.equals(local)) {
                     // found and matches
                     return true;
@@ -180,10 +170,7 @@ public class CleanNetwork {
                     if(local.getEndTime().equals(TimeUtils.future)) {
                         // looks like station ended after we received it, safe
                         // to fix
-                        updateTime(updateStaEnd,
-                                   irisSta.effective_time.end_time,
-                                   jdbcChannel.getStationTable()
-                                           .getDBId(station.get_id()));
+                        station.setEndTime(irisSta.getEffectiveTime().end_time);
                         System.out.println("fixed...");
                         return true;
                     }
@@ -215,7 +202,7 @@ public class CleanNetwork {
                 while(overlapIt.hasNext()) {
                     Station s = (Station)overlapIt.next();
                     System.out.println("   "
-                            + new MicroSecondTimeRange(s.effective_time) + "  "
+                            + new MicroSecondTimeRange(s.getEffectiveTime()) + "  "
                             + local);
                 }
             }
@@ -224,26 +211,26 @@ public class CleanNetwork {
     }
 
     public void checkChannels() throws NotFound, SQLException {
-        Channel[] channels = jdbcChannel.getAllChannels();
+        List<ChannelImpl> channels = NetworkDB.getSingleton().getAllChannels();
         int numGood = 0;
         int numFixed = 0;
         int numBad = 0;
         NetworkAccess[] nets = netDC.a_finder().retrieve_all();
-        for(int c = 0; c < channels.length; c++) {
+        for(Channel chan : channels) {
             try {
-                MicroSecondTimeRange localTR = fixFuture(channels[c].getEffectiveTime());
+                MicroSecondTimeRange localTR = fixFuture(chan.getEffectiveTime());
                 NetworkAccess net = null;
                 for(int i = 0; i < nets.length; i++) {
                     if(NetworkIdUtil.areEqual(nets[i].get_attributes().get_id(),
-                                              channels[c].get_id().network_id)) {
+                                              chan.get_id().network_id)) {
                         net = nets[i];
                     }
                 }
                 if(net == null) {
                     System.out.println("Can't find network for channel: "
-                            + ChannelIdUtil.toString(channels[c].get_id()));
+                            + ChannelIdUtil.toString(chan.get_id()));
                 }
-                ChannelId chanId = channels[c].get_id();
+                ChannelId chanId = chan.get_id();
                 Channel[] matchChan = net.retrieve_channels_by_code(chanId.station_code,
                                                                     chanId.site_code,
                                                                     chanId.channel_code);
@@ -263,11 +250,9 @@ public class CleanNetwork {
                                     .equals(localTR.getEndTime())
                             && localTR.getEndTime().equals(TimeUtils.future)) {
                         System.out.println("found ended channel: "
-                                + ChannelIdUtil.toStringFormatDates(channels[c].get_id())
+                                + ChannelIdUtil.toStringFormatDates(chan.get_id())
                                 + "\n  iris=" + irisTR + "\n  local=" + localTR);
-                        updateTime(updateChanEnd,
-                                   irisChan.getEffectiveTime().end_time,
-                                   jdbcChannel.getDBId(channels[c].get_id()));
+                        chan.setEndTime(irisChan.getEffectiveTime().end_time);
                         numFixed++;
                         found = true;
                         System.out.println("fixed...");
@@ -285,47 +270,40 @@ public class CleanNetwork {
                             // go ahead and fix:
                             Channel irisChan = (Channel)overlapChans.get(0);
                             MicroSecondTimeRange irisTR = fixFuture(irisChan.getEffectiveTime());
-                            int dbid = jdbcChannel.getDBId(channels[c].get_id());
-                            updateTime(updateChanBegin,
-                                       irisChan.getEffectiveTime().start_time,
-                                       dbid);
-                            updateTime(updateChanEnd,
-                                       irisChan.getEffectiveTime().end_time,
-                                       dbid);
+                            chan.setBeginTime(irisChan.getEffectiveTime().start_time);
+                            chan.setEndTime(irisChan.getEffectiveTime().end_time);
                             numFixed++;
                             System.out.println("Single overlap, fixed "
                                                + irisTR
                                                + "  "
-                                               + ChannelIdUtil.toStringNoDates(channels[c].get_id()));
+                                               + ChannelIdUtil.toStringNoDates(chan.get_id()));
                             found = true;
                         } else {
                             Iterator it = overlaps.iterator();
                             System.out.println("Overlaps "
                                     + localTR
                                     + "  "
-                                    + ChannelIdUtil.toStringNoDates(channels[c].get_id()));
+                                    + ChannelIdUtil.toStringNoDates(chan.get_id()));
                             while(it.hasNext()) {
                                 System.out.println("         " + it.next());
                             }
                         }
                     } else {
                         System.out.println("No overlaps: "
-                                + ChannelIdUtil.toStringNoDates(channels[c].get_id())
+                                + ChannelIdUtil.toStringNoDates(chan.get_id())
                                 + ": " + localTR);
                     }
                     if (!found){numBad++;}
                 }
             } catch(ChannelNotFound e) {
                 System.out.println("No channel found at iris for: "
-                        + ChannelIdUtil.toStringFormatDates(channels[c].get_id()));
+                        + ChannelIdUtil.toStringFormatDates(chan.get_id()));
                 numBad++;
             }
         }
-        System.out.println("total=" + channels.length + " good=" + numGood
+        System.out.println("total=" + channels.size() + " good=" + numGood
                 + " fixed=" + numFixed + "  bad=" + numBad);
     }
-
-    JDBCChannel jdbcChannel;
 
     NetworkDCOperations netDC;
 

@@ -9,8 +9,10 @@ import edu.iris.Fissures.LocationType;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.ConfigurationException;
@@ -48,16 +50,14 @@ public class StationsNearBy extends StationList {
                                     ZERO_KM,
                                     ZERO_KM,
                                     LocationType.GEOGRAPHIC);
-        ArrayList stationList =new ArrayList();
+        ArrayList<VelocityStation> stationList =new ArrayList<VelocityStation>();
         Station[] stations;
-        synchronized(jdbcChannel.getConnection()) {
-            stations = jdbcChannel.getStationTable().getAllStations();
-        }
+            stations = NetworkDB.getSingleton().getAllStations();
         logger.info("getAllStations finished");
         for(int j = 0; j < stations.length; j++) {
             DistAz distAz = new DistAz(stations[j].getLocation(), loc);
             if(distAz.getDelta() < delta) {
-                stationList.add(new VelocityStation(stations[j]));
+                stationList.add(new VelocityStation((StationImpl)stations[j]));
             }
         }
         return stationList;
@@ -65,7 +65,7 @@ public class StationsNearBy extends StationList {
 
     public void postProcess(HttpServletRequest req,
                             RevletContext context,
-                            ArrayList stationList,
+                            ArrayList<VelocityStation> stationList,
                             HashMap summary) {
         summary = cleanSummaries(stationList, summary);
         StationLatLonBox.makeChart(req, context, stationList, summary);

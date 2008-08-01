@@ -1,12 +1,13 @@
 package edu.sc.seis.receiverFunction;
 
 import java.util.Iterator;
-import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
+
 import edu.sc.seis.fissuresUtil.bag.DistAz;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 
-public class BazIterator implements Iterator {
+public class BazIterator implements Iterator<ReceiverFunctionResult> {
 
-    public BazIterator(Iterator it, float minBaz, float maxBaz) {
+    public BazIterator(Iterator<ReceiverFunctionResult> it, float minBaz, float maxBaz) {
         this.it = it;
         // make sure 0 <= minBaz < 360
         // assume maxBaz is in same convention
@@ -27,9 +28,9 @@ public class BazIterator implements Iterator {
         return (next != null);
     }
 
-    public Object next() {
+    public ReceiverFunctionResult next() {
         checkNext();
-        HKStack temp = next;
+        ReceiverFunctionResult temp = next;
         next = null;
         return temp;
     }
@@ -40,8 +41,8 @@ public class BazIterator implements Iterator {
 
     void checkNext() {
         while(next == null && it.hasNext()) {
-            HKStack temp = (HKStack)it.next();
-            DistAz distAz = new DistAz(temp.chan, temp.getOrigin());
+            ReceiverFunctionResult temp = it.next();
+            DistAz distAz = new DistAz(temp.getChannelGroup().getChannel1(), temp.getEvent());
             double baz = distAz.getBaz();
             if (baz < 0) {baz += 360;}
             if(baz >= minBaz && baz <= maxBaz) {
@@ -51,11 +52,11 @@ public class BazIterator implements Iterator {
         }
     }
 
-    Iterator it;
+    Iterator<ReceiverFunctionResult> it;
 
     float minBaz;
 
     float maxBaz;
 
-    HKStack next = null;
+    ReceiverFunctionResult next = null;
 }

@@ -1,47 +1,49 @@
 package edu.sc.seis.receiverFunction.server;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+
 import org.apache.log4j.PropertyConfigurator;
+
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.Channel;
-import edu.iris.Fissures.IfNetwork.Network;
-import edu.iris.Fissures.IfNetwork.NetworkAttr;
-import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.IfNetwork.StationId;
 import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.iris.Fissures.network.StationIdUtil;
+import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
-import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
-import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
-import edu.sc.seis.fissuresUtil.database.network.JDBCNetwork;
-import edu.sc.seis.fissuresUtil.database.network.JDBCStation;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.StackComplexity;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
-import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
+import edu.sc.seis.receiverFunction.hibernate.RFInsertion;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
+import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.receiverFunction.web.Start;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.status.FissuresFormatter;
@@ -52,76 +54,49 @@ import edu.sc.seis.sod.velocity.network.VelocityNetwork;
  */
 public class StackSummary {
 
-    public StackSummary(Connection conn, Properties props) throws IOException,
+    public StackSummary(Properties props) throws IOException,
             SQLException, ConfigurationException, TauModelException, Exception {
-        JDBCEventAccess jdbcEventAccess = new JDBCEventAccess(conn);
-        JDBCChannel jdbcChannel = new JDBCChannel(conn);
-        JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
-        JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn,
-                                                  jdbcEventAccess,
-                                                  jdbcChannel,
-                                                  jdbcSodConfig,
-                                                  props.getProperty("cormorant.servers.ears.dataloc",
-                                                                    RecFuncCacheImpl.getDataLoc()));
-        jdbcHKStack = new JDBCHKStack(conn,
-                                      jdbcEventAccess,
-                                      jdbcChannel,
-                                      jdbcSodConfig,
-                                      jdbcRecFunc);
-        jdbcSummary = new JDBCSummaryHKStack(jdbcHKStack);
-        jdbcStackComplexity = new JDBCStackComplexity(jdbcSummary);
-        jdbcRejectMax = new JDBCRejectedMaxima(conn);
+        RecFuncCacheImpl.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc",
+                                                      RecFuncCacheImpl.getDataLoc()));
     }
 
-    public void createSummary(String net,
+    public void createSummary(String netCode,
                               float gaussianWidth,
                               float minPercentMatch,
                               QuantityImpl smallestH,
                               boolean doBootstrap,
                               boolean usePhaseWeight) throws FissuresException,
             NotFound, IOException, SQLException, TauModelException {
-        JDBCStation jdbcStation = jdbcHKStack.getJDBCChannel()
-                .getSiteTable()
-                .getStationTable();
-        JDBCNetwork jdbcNetwork = jdbcStation.getNetTable();
-        NetworkId[] netId;
-        if(net.equals("-all")) {
-            netId = jdbcNetwork.getAllNetworkIds();
+        List<NetworkAttrImpl> allNets;
+        if(netCode.equals("-all")) {
+            allNets = NetworkDB.getSingleton().getAllNetworks();
         } else {
-            netId = new NetworkId[] {Start.getNetwork(net, jdbcNetwork)
-                    .get_id()};
+            allNets = new ArrayList<NetworkAttrImpl>();
+            allNets.add(Start.getNetwork(netCode).getWrapped());
         }
-        for(int i = 0; i < netId.length; i++) {
-            Station[] station = jdbcStation.getAllStations(netId[i]);
-            for(int j = 0; j < station.length; j++) {
-                processStation(station[j],
-                               gaussianWidth,
-                               minPercentMatch,
-                               smallestH,
-                               doBootstrap,
-                               usePhaseWeight);
+        for(NetworkAttrImpl net : allNets) {
+            List<StationImpl> stations = NetworkDB.getSingleton()
+                    .getStationForNet(net);
+            HashMap<String, StationImpl> staCodes = new HashMap<String, StationImpl>();
+            for(StationImpl sta : stations) {
+                staCodes.put(sta.get_code(), sta);
+            }
+            for(String stationCode : staCodes.keySet()) {
+                QuantityImpl modSmallestH = HKStack.getBestSmallestH(staCodes.get(stationCode), smallestH);
+                createSummary(net,
+                              stationCode,
+                              gaussianWidth,
+                              minPercentMatch,
+                              modSmallestH,
+                              doBootstrap,
+                              usePhaseWeight);
             }
         }
-        TimeOMatic.print("Time for network: " + net);
+        TimeOMatic.print("Time for network: " + netCode);
     }
-
-    void processStation(Station station,
-                        float gaussianWidth,
-                        float minPercentMatch,
-                        QuantityImpl smallestH,
-                        boolean doBootstrap,
-                        boolean usePhaseWeight) throws FissuresException,
-            NotFound, IOException, SQLException, TauModelException {
-        QuantityImpl modSmallestH = HKStack.getBestSmallestH(station, smallestH);
-        createSummary(station.get_id(),
-                      gaussianWidth,
-                      minPercentMatch,
-                      modSmallestH,
-                      doBootstrap,
-                      usePhaseWeight);
-    }
-
-    public SumHKStack createSummary(StationId station,
+    
+    public SumHKStack createSummary(NetworkAttrImpl net,
+                                    String staCode,
                                     float gaussianWidth,
                                     float minPercentMatch,
                                     QuantityImpl smallestH,
@@ -130,9 +105,9 @@ public class StackSummary {
             throws FissuresException, NotFound, IOException, SQLException,
             TauModelException {
         System.out.println("createSummary for "
-                + StationIdUtil.toStringNoDates(station));
-        SumHKStack sumStack = sum(station.network_id.network_code,
-                                  station.station_code,
+                + NetworkIdUtil.toStringNoDates(net)+"."+staCode);
+        SumHKStack sumStack = sum(net,
+                                  staCode,
                                   gaussianWidth,
                                   minPercentMatch,
                                   smallestH,
@@ -140,49 +115,21 @@ public class StackSummary {
                                   usePhaseWeight);
         if(sumStack == null) {
             System.out.println("stack is null for "
-                    + StationIdUtil.toStringNoDates(station));
+                    + NetworkIdUtil.toStringNoDates(net)+"."+staCode);
         } else {
-            int dbid;
-            try {
-                dbid = jdbcSummary.getDbIdForStation(station.network_id,
-                                                     station.station_code,
-                                                     gaussianWidth,
-                                                     minPercentMatch);
-                jdbcSummary.update(dbid, sumStack);
-            } catch(NotFound e) {
-                dbid = jdbcSummary.put(sumStack);
+            SumHKStack sum = RecFuncDB.getSingleton().getSumStack(net, staCode, gaussianWidth);
+            if (sum != null) {
+                RecFuncDB.getSession().delete(sum);   
             }
-            sumStack.setDbid(dbid);
             calcComplexity(sumStack);
+            RecFuncDB.getSingleton().put(sumStack);
         }
         return sumStack;
     }
 
-    public void calcComplexity() throws SQLException, NotFound, IOException,
-            FissuresException, TauModelException {
-        HKSummaryIterator it = jdbcSummary.getAllIterator();
-        System.out.println("in calc Complexity");
-        while(it.hasNext()) {
-            SumHKStack sumStack = (SumHKStack)it.next();
-            calcComplexity(sumStack);
-        }
-        it.close();
-    }
-
-    public float calcComplexity(SumHKStack sumStack) throws FissuresException,
+    public static float calcComplexity(SumHKStack sumStack) throws FissuresException,
             TauModelException, SQLException {
-        StackComplexity complexity = new StackComplexity(sumStack.getSum(),
-                                                         4096,
-                                                         sumStack.getSum()
-                                                                 .getGaussianWidth());
-        StationResult model = new StationResult(sumStack.getChannel().get_id().network_id,
-                                                sumStack.getChannel().get_id().station_code,
-                                                sumStack.getSum()
-                                                        .getMaxValueH(sumStack.getSmallestH()),
-                                                sumStack.getSum()
-                                                        .getMaxValueK(sumStack.getSmallestH()),
-                                                sumStack.getSum().getAlpha(),
-                                                null);
+        Channel chan = sumStack.getIndividuals().get(0).getChannelGroup().getChannel1();
         HKStack residual = sumStack.getResidual();
         float complex = sumStack.getResidualPower();
         float complex25 = sumStack.getResidualPower(.25f);
@@ -201,11 +148,10 @@ public class StackSummary {
         float nextK = residual.getMaxValueK(sumStack.getSmallestH());
         float nextVal = residual.getMaxValue(sumStack.getSmallestH());
         StationResult crust2Result = HKStack.getCrust2()
-                .getStationResult(sumStack.getChannel().getSite().getStation());
+                .getStationResult(chan.getSite().getStation());
         float crust2diff = bestH
                 - (float)crust2Result.getH().getValue(UnitImpl.KILOMETER);
-        jdbcStackComplexity.put(sumStack.getDbid(),
-                                complex,
+        sumStack.setComplexityResult( new StackComplexityResult(complex,
                                 complex25,
                                 complex50,
                                 bestH,
@@ -217,16 +163,16 @@ public class StackSummary {
                                 nextH,
                                 nextK,
                                 nextVal,
-                                crust2diff);
-        System.out.println(NetworkIdUtil.toStringNoDates(sumStack.getChannel()
+                                crust2diff));
+        System.out.println(NetworkIdUtil.toStringNoDates(chan
                 .get_id().network_id)
                 + "."
-                + sumStack.getChannel().get_id().station_code
+                + chan.get_id().station_code
                 + " Complexity: " + complex);
         return complex;
     }
 
-    public SumHKStack sum(String netCode,
+    public SumHKStack sum(NetworkAttrImpl net,
                           String staCode,
                           float gaussianWidth,
                           float percentMatch,
@@ -234,30 +180,28 @@ public class StackSummary {
                           boolean doBootstrap,
                           boolean usePhaseWeight) throws FissuresException,
             NotFound, IOException, SQLException {
-        ArrayList individualHK = jdbcHKStack.getForStation(netCode,
+        List<ReceiverFunctionResult> individualHK = RecFuncDB.getSingleton().getSuccessful(net,
                                                            staCode,
                                                            gaussianWidth,
-                                                           percentMatch,
-                                                           true);
-        int netDbId = jdbcHKStack.getJDBCChannel()
-                .getStationTable()
-                .getBestNetworkDbId(netCode, staCode);
-        HKBox[] rejects = jdbcRejectMax.getForStation(netDbId, staCode);
-        logger.info("in sum for " + netCode + "." + staCode + " numeq="
+                                                           percentMatch);
+        List<StationImpl> stations = NetworkDB.getSingleton()
+                .getStationForNet(net, staCode);
+        Set<RejectedMaxima> rejects = new HashSet<RejectedMaxima>();
+        rejects.addAll(RecFuncDB.getSingleton().getRejectedMaxima((NetworkAttrImpl)stations.get(0).getNetworkAttr(), staCode));
+        logger.info("in sum for " + net.get_code() + "." + staCode + " numeq="
                 + individualHK.size());
-        System.out.println("in sum for " + netCode + "." + staCode + " numeq="
+        System.out.println("in sum for " + net.get_code() + "." + staCode + " numeq="
                 + individualHK.size());
         // if there is only 1 eq that matches, then we can't really do a stack
         if(individualHK.size() > 1) {
-            HKStack temp = (HKStack)individualHK.get(0);
-            SumHKStack sumStack = new SumHKStack((HKStack[])individualHK.toArray(new HKStack[0]),
-                                                 temp.getChannel(),
-                                                 percentMatch,
-                                                 smallestH,
-                                                 doBootstrap,
-                                                 usePhaseWeight,
-                                                 rejects);
-            TimeOMatic.print("sum for " + netCode + "." + staCode);
+            SumHKStack sumStack = SumHKStack.calculateForPhase(individualHK,
+                                                       smallestH,
+                                                       percentMatch,
+                                                       usePhaseWeight,
+                                                       rejects,
+                                                       doBootstrap,
+                                                       SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS, "all");
+            TimeOMatic.print("sum for " + net.get_code() + "." + staCode);
             return sumStack;
         } else {
             return null;
@@ -273,31 +217,40 @@ public class StackSummary {
                                   boolean usePhaseWeight)
             throws FissuresException, NotFound, IOException, SQLException {
         logger.info("in sum for " + netCode + "." + staCode);
-        HKStackIterator it = jdbcHKStack.getIteratorForStation(netCode,
-                                                               staCode,
-                                                               gaussianWidth,
-                                                               minPercentMatch,
-                                                               false);
-        SumHKStack sumStack = sumForPhase(it,
-                                          minPercentMatch,
-                                          smallestH,
-                                          phase,
-                                          usePhaseWeight);
-        it.close();
-        TimeOMatic.print("sum for " + netCode + "." + staCode);
-        return sumStack;
+        List<NetworkAttrImpl> net = NetworkDB.getSingleton()
+                .getNetworkByCode(netCode);
+        for(NetworkAttrImpl networkAttr : net) {
+            List<ReceiverFunctionResult> rfResults = RecFuncDB.getSingleton()
+                    .getSuccessful(networkAttr,
+                                   staCode,
+                                   gaussianWidth,
+                                   minPercentMatch);
+            if(rfResults.size() > 0) {
+                SumHKStack sumStack = sumForPhase(rfResults,
+                                                  minPercentMatch,
+                                                  smallestH,
+                                                  phase,
+                                                  usePhaseWeight);
+                TimeOMatic.print("sum for " + netCode + "." + staCode);
+                return sumStack;
+            }
+        }
+        throw new NotFound();
     }
 
-    public SumHKStack sumForPhase(Iterator hkstackIterator,
+    public SumHKStack sumForPhase(List<ReceiverFunctionResult> rfResults,
                                   float minPercentMatch,
                                   QuantityImpl smallestH,
                                   String phase,
                                   boolean usePhaseWeight)
             throws FissuresException, NotFound, IOException, SQLException {
-        SumHKStack sumStack = SumHKStack.calculateForPhase(hkstackIterator,
+        SumHKStack sumStack = SumHKStack.calculateForPhase(rfResults,
                                                            smallestH,
                                                            minPercentMatch,
                                                            usePhaseWeight,
+                                                           new HashSet(),
+                                                           false,
+                                                           0,
                                                            phase);
         return sumStack;
     }
@@ -319,8 +272,7 @@ public class StackSummary {
                                         "SumHKStack_"
                                                 + minPercentMatch
                                                 + "_"
-                                                + FissuresFormatter.filize(ChannelIdUtil.toStringNoDates(sumStack.getChannel()
-                                                        .get_id())
+                                                + FissuresFormatter.filize(StationIdUtil.toStringNoDates(station)
                                                         + ".png"));
         if(outSumImageFile.exists()) {
             outSumImageFile.delete();
@@ -363,14 +315,6 @@ public class StackSummary {
         return props;
     }
 
-    JDBCHKStack jdbcHKStack;
-
-    JDBCSummaryHKStack jdbcSummary;
-
-    private JDBCStackComplexity jdbcStackComplexity;
-
-    JDBCRejectedMaxima jdbcRejectMax;
-
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StackSummary.class);
 
     public static Connection initDB(Properties props) throws IOException,
@@ -390,7 +334,6 @@ public class StackSummary {
         boolean bootstrap = true;
         boolean bootstrapXY = false;
         boolean usePhaseWeight = true;
-        boolean complexityOnly = false;
         boolean neededOnly = false;
         String netArg = "";
         String staArg = "";
@@ -399,7 +342,6 @@ public class StackSummary {
                 System.out.println("Usage:");
                 System.out.println(" [ -net network [-sta station]] | -all | --needRecalc");
                 System.out.println("-g gaussian");
-                System.out.println("--complexity");
                 System.out.println("--nobootstrap");
                 System.out.println("--bootstrapXY");
                 System.out.println();
@@ -417,8 +359,6 @@ public class StackSummary {
                 netArg = args[i];
             } else if(args[i].equals("-g")) {
                 gaussianWidth = Float.parseFloat(args[i + 1]);
-            } else if(args[i].equals("--complexity")) {
-                complexityOnly = true;
             } else if(args[i].equals("--nobootstrap")) {
                 bootstrap = false;
             } else if(args[i].equals("--needRecalc")) {
@@ -427,19 +367,17 @@ public class StackSummary {
                 bootstrapXY = true;
             }
         }
-        if(complexityOnly) {
-            summary.calcComplexity();
-            return;
-        }
         if(neededOnly) {
             System.out.println("needed only");
-            Station[] stations = summary.getJdbcSummary()
-                    .getStationsNeedingUpdate(gaussianWidth, minPercentMatch);
-            for(int i = 0; i < stations.length; i++) {
-                summary.createSummary(stations[i].get_id(),
+            List<RFInsertion> netSta = RecFuncDB.getSingleton().getOlderInsertions(RF_AGE_TIME, gaussianWidth);
+            for(RFInsertion insertion : netSta) {
+                StationImpl oneStationByCode = NetworkDB.getSingleton().getStationForNet(insertion.getNet(),
+                                                                                     insertion.getStaCode()).get(0);
+                summary.createSummary(insertion.getNet(),
+                                      insertion.getStaCode(),
                                       gaussianWidth,
                                       minPercentMatch,
-                                      HKStack.getBestSmallestH(stations[i],
+                                      HKStack.getBestSmallestH(oneStationByCode,
                                                                HKStack.getDefaultSmallestH()),
                                       bootstrap,
                                       usePhaseWeight);
@@ -455,19 +393,18 @@ public class StackSummary {
         } else {
             System.out.println("calc for staion " + netArg + " " + staArg);
             logger.info("calc for station");
-            JDBCStation jdbcStation = summary.jdbcHKStack.getJDBCChannel()
-                    .getStationTable();
-            VelocityNetwork net = Start.getNetwork(netArg,
-                                                   jdbcStation.getNetTable());
+            VelocityNetwork net = Start.getNetwork(netArg);
             int sta_dbid = -1;
             boolean foundNet = false;
+            NetworkDB netdb = NetworkDB.getSingleton();
             try {
-                int[] tmp = jdbcStation.getDBIds(net.get_id(), staArg);
-                if(tmp.length > 0) {
+                List<StationImpl> stations = netdb.getStationByCodes(net.get_code(),
+                                                                     staArg);
+                if(stations.size() > 0) {
                     foundNet = true;
-                    sta_dbid = tmp[0];
-                    Station station = jdbcStation.get(sta_dbid);
-                    SumHKStack sum = summary.createSummary(station.get_id(),
+                    Station station = stations.get(0);;
+                    SumHKStack sum = summary.createSummary((NetworkAttrImpl)station.getNetworkAttr(),
+                                                           station.get_code(),
                                                            gaussianWidth,
                                                            minPercentMatch,
                                                            HKStack.getBestSmallestH(station,
@@ -509,7 +446,7 @@ public class StackSummary {
             TimeOMatic.start();
             Properties props = loadProps(args);
             conn = initDB(props);
-            StackSummary summary = new StackSummary(conn, props);
+            StackSummary summary = new StackSummary(props);
             parseArgsAndRun(args, summary);
         } catch(Exception e) {
             GlobalExceptionHandler.handle(e);
@@ -523,16 +460,6 @@ public class StackSummary {
             }
         }
     }
-
-    public JDBCHKStack getJDBCHKStack() {
-        return jdbcHKStack;
-    }
-
-    public JDBCSummaryHKStack getJdbcSummary() {
-        return jdbcSummary;
-    }
-
-    public Connection getConnection() {
-        return jdbcHKStack.getConnection();
-    }
+    
+    public static final TimeInterval RF_AGE_TIME = new TimeInterval(1, UnitImpl.HOUR);
 }

@@ -13,6 +13,7 @@ import edu.sc.seis.receiverFunction.HKStackImage;
 import edu.sc.seis.receiverFunction.StackComplexity;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.receiverFunction.server.HKBox;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.sod.ConfigurationException;
@@ -42,7 +43,7 @@ public class ComplexityResidualImage extends SummaryHKStackImageServlet {
                               -1,
                               -1,
                               stack.getNumEQ(),
-                              new HKBox[0]);
+                              new RejectedMaxima[0]);
     }
 
     void output(SumHKStack sumStack,

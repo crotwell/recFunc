@@ -2,7 +2,6 @@ package edu.sc.seis.receiverFunction;
 
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.Sampling;
-import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
@@ -31,7 +30,7 @@ public class StackComplexity {
         return getSyntheticForRayParam(staResult, flatRP);
     }
 
-    public HKStack getSyntheticForDist(StationResult staResult, float distDeg)
+    public HKStack getSyntheticForDist(HKAlpha staResult, float distDeg)
             throws TauModelException {
         Arrival[] arrivals = TauPUtil.getTauPUtil()
                 .calcTravelTimes(distDeg, 0, new String[] {"P"});
@@ -39,7 +38,7 @@ public class StackComplexity {
                                        (float)arrivals[0].getRayParam() / 6371);
     }
 
-    public HKStack getSyntheticForRayParam(StationResult staResult, float flatRP) {
+    public HKStack getSyntheticForRayParam(HKAlpha staResult, float flatRP) {
         for(int i = 0; i < cache.length; i++) {
             if (cache[i] != null && cache[i].flatRP == flatRP && cache[i].staResult.equals(staResult)) {
                 return cache[i].synthStack;
@@ -82,7 +81,7 @@ public class StackComplexity {
         }
     }
 
-    public HKStack getResidual(StationResult staResult, float distDeg)
+    public HKStack getResidual(HKAlpha staResult, float distDeg)
             throws TauModelException {
         HKStack synthStack = getSyntheticForDist(staResult, distDeg);
         return getResidual(hkplot, synthStack);
@@ -124,12 +123,12 @@ public class StackComplexity {
     }
     
     class CachedStackComplexity {
-        public CachedStackComplexity(StationResult staResult2, float flatRP2, HKStack synthStack2) {
+        public CachedStackComplexity(HKAlpha staResult2, float flatRP2, HKStack synthStack2) {
             this.staResult = staResult2;
             this.flatRP = flatRP2;
             this.synthStack = synthStack2;
         }
-        StationResult staResult;
+        HKAlpha staResult;
         float flatRP;
         HKStack synthStack;
     }

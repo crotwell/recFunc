@@ -1,11 +1,13 @@
 package edu.sc.seis.receiverFunction.compare;
 
 import java.text.DecimalFormat;
+
 import edu.iris.Fissures.IfNetwork.NetworkId;
-import edu.iris.Fissures.IfNetwork.StationId;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.sc.seis.fissuresUtil.bag.PoissonsRatio;
+import edu.sc.seis.receiverFunction.HKAlpha;
 import edu.sc.seis.sod.status.FissuresFormatter;
 
 /**
@@ -14,9 +16,9 @@ import edu.sc.seis.sod.status.FissuresFormatter;
  * 
  * @author crotwell Created on Dec 7, 2004
  */
-public class StationResult {
+public class StationResult extends HKAlpha {
 
-    public StationResult(NetworkId networkId,
+    public StationResult(NetworkAttrImpl networkId,
                          String stationCode,
                          QuantityImpl h,
                          float vpVs,
@@ -34,7 +36,7 @@ public class StationResult {
              "");
     }
      
-    public StationResult(NetworkId networkId,
+    public StationResult(NetworkAttrImpl networkId,
                          String stationCode,
                          QuantityImpl h,
                          float vpVs,
@@ -53,7 +55,7 @@ public class StationResult {
              extras);
     }
 
-    public StationResult(NetworkId networkId,
+    public StationResult(NetworkAttrImpl networkId,
                          String stationCode,
                          QuantityImpl h,
                          float vpVs,
@@ -74,7 +76,7 @@ public class StationResult {
              "");
     }
 
-    public StationResult(NetworkId networkId,
+    public StationResult(NetworkAttrImpl networkId,
                          String stationCode,
                          QuantityImpl h,
                          float vpVs,
@@ -84,68 +86,14 @@ public class StationResult {
                          float kStdDev,
                          StationResultRef ref,
                          String extras) {
-        this.h = h;
-        h.setFormat(depthFormat);
-        this.vp = vp;
-        this.vpVs = vpVs;
-        this.amp = amp;
-        this.hStdDev = hStdDev;
-        this.kStdDev = kStdDev;
+        super(h, vpVs, vp, amp, hStdDev, kStdDev);
         this.networkId = networkId;
         this.ref = ref;
         this.stationCode = stationCode;
         this.extras = extras;
     }
 
-    public String formatH() {
-        return FissuresFormatter.formatDepth(getH());
-    }
-
-    public String formatVpVs() {
-        return vpvsFormat.format(getVpVs());
-    }
-
-    public String formatVp() {
-        return FissuresFormatter.formatQuantity(getVp());
-    }
-
-    public String formatVs() {
-        return FissuresFormatter.formatQuantity(getVs());
-    }
-
-    public String formatPoissonsRatio() {
-        return vpvsFormat.format(PoissonsRatio.calcPoissonsRatio(getVpVs()));
-    }
-
-    public String formatAmp() {
-        return vpvsFormat.format(getAmp());
-    }
-
-    public String formatHStdDev() {
-        return FissuresFormatter.formatDepth(getHStdDev());
-    }
-
-    public String formatKStdDev() {
-        return vpvsFormat.format(getKStdDev());
-    }
-
-    public QuantityImpl getH() {
-        return h;
-    }
-
-    public float getVpVs() {
-        return vpVs;
-    }
-
-    public QuantityImpl getVp() {
-        return vp;
-    }
-
-    public QuantityImpl getVs() {
-        return getVp().divideBy(getVpVs());
-    }
-
-    public NetworkId getNetworkId() {
+    public NetworkAttrImpl getNetworkId() {
         return networkId;
     }
 
@@ -161,18 +109,6 @@ public class StationResult {
         return extras;
     }
 
-    public float getAmp() {
-        return amp;
-    }
-
-    public QuantityImpl getHStdDev() {
-        return hStdDev;
-    }
-
-    public float getKStdDev() {
-        return kStdDev;
-    }
-
     /**
      * Same as getExtras() except all commas are removed. Mainly for use in CSV
      * output.
@@ -181,34 +117,15 @@ public class StationResult {
         return extras.replaceAll(",", "");
     }
 
-    public String toString() {
-        return "H=" + formatH() + " Vp=" + formatVp() + " Vs=" + formatVs()
-                + " Vp/Vs=" + formatVpVs() + " pr=" + formatPoissonsRatio();
-    }
-
     private String stationCode;
 
     private StationResultRef ref;
 
-    private NetworkId networkId;
-
-    private QuantityImpl h;
-
-    private float vpVs;
-
-    private QuantityImpl vp;
-
-    private float amp;
-
-    private QuantityImpl hStdDev;
-
-    private float kStdDev;
+    private NetworkAttrImpl networkId;
 
     private String extras;
 
-    private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
-
-    private static DecimalFormat depthFormat = new DecimalFormat("0.##");
+    private int dbid;
 
     public void setHStdDev(QuantityImpl stdDev) {
         hStdDev = stdDev;
@@ -216,5 +133,50 @@ public class StationResult {
 
     public void setKStdDev(float stdDev) {
         this.kStdDev = stdDev;
+    }
+
+    
+    protected void setStationCode(String stationCode) {
+        this.stationCode = stationCode;
+    }
+
+    
+    protected void setRef(StationResultRef ref) {
+        this.ref = ref;
+    }
+
+    
+    protected void setNetworkId(NetworkAttrImpl networkId) {
+        this.networkId = networkId;
+    }
+
+    
+    protected void setH(QuantityImpl h) {
+        this.h = h;
+    }
+
+    
+    protected void setVpVs(float vpVs) {
+        this.vpVs = vpVs;
+    }
+
+    
+    protected void setVp(QuantityImpl vp) {
+        this.vp = vp;
+    }
+
+    
+    protected void setAmp(float amp) {
+        this.amp = amp;
+    }
+
+    
+    protected void setExtras(String extras) {
+        this.extras = extras;
+    }
+
+    
+    protected void setDbid(int dbid) {
+        this.dbid = dbid;
     }
 }

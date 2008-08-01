@@ -4,18 +4,17 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.entity.StandardEntityCollection;
 import org.jfree.chart.imagemap.ImageMapUtilities;
-import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.servlet.ServletUtilities;
-import edu.iris.Fissures.Location;
-import edu.iris.Fissures.LocationType;
+
 import edu.iris.Fissures.IfNetwork.Station;
-import edu.sc.seis.fissuresUtil.bag.DistAz;
+import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.rev.RevUtil;
@@ -56,15 +55,15 @@ public class StationLatLonBox extends StationList {
         context.put("minLon", new Float(minLon));
         context.put("maxLat", new Float(maxLat));
         context.put("maxLon", new Float(maxLon));
-        ArrayList stationList = new ArrayList();
-        Station[] stations = jdbcChannel.getStationTable().getAllStations();
+        ArrayList<VelocityStation> stationList = new ArrayList<VelocityStation>();
+        Station[] stations = jdbcChannel.getAllStations();
         logger.info("getAllStations finished");
         for(int j = 0; j < stations.length; j++) {
             if(stations[j].getLocation().latitude >= minLat
                     && stations[j].getLocation().latitude <= maxLat
                     && stations[j].getLocation().longitude >= minLon
                     && stations[j].getLocation().longitude <= maxLon) {
-                stationList.add(new VelocityStation(stations[j]));
+                stationList.add(new VelocityStation((StationImpl)stations[j]));
             }
         }
         return stationList;
@@ -72,7 +71,7 @@ public class StationLatLonBox extends StationList {
 
     public void postProcess(HttpServletRequest req,
                             RevletContext context,
-                            ArrayList stationList,
+                            ArrayList<VelocityStation> stationList,
                             HashMap summary) {
         summary = cleanSummaries(stationList, summary);
         makeChart(req, context, stationList, summary);

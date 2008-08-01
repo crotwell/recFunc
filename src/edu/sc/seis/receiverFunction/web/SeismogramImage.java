@@ -1,15 +1,15 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.awt.Dimension;
-import java.io.IOException;
 import java.io.EOFException;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import edu.iris.Fissures.AuditInfo;
 import edu.iris.Fissures.Sampling;
 import edu.iris.Fissures.IfNetwork.Channel;
@@ -21,6 +21,7 @@ import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.Arrival;
@@ -28,10 +29,7 @@ import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
-import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
-import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
-import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.display.MicroSecondTimeRange;
 import edu.sc.seis.fissuresUtil.display.MultiSeismogramWindowDisplay;
 import edu.sc.seis.fissuresUtil.display.SeismogramSorter;
@@ -45,29 +43,17 @@ import edu.sc.seis.fissuresUtil.xml.StdDataSetParamNames;
 import edu.sc.seis.receiverFunction.RecFunc;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
-import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
-import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
-import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.server.SyntheticFactory;
 import edu.sc.seis.receiverFunction.synth.SimpleSynthReceiverFunction;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
-import edu.sc.seis.sod.ConfigurationException;
 
 /**
  * @author crotwell Created on Feb 24, 2005
  */
 public class SeismogramImage extends HttpServlet {
-
-    /**
-     * @throws Exception
-     * @throws ConfigurationException
-     * @throws SQLException
-     */
-    public SeismogramImage() throws SQLException, ConfigurationException,
-            Exception {
-        jdbcRecFunc = new JDBCRecFunc(ConnMgr.createConnection(), RecFuncCacheImpl.getDataLoc());
-    }
 
     public synchronized void doGet(HttpServletRequest req,
                                    HttpServletResponse res) throws IOException {
@@ -77,14 +63,12 @@ public class SeismogramImage extends HttpServlet {
                 throw new Exception("rf param not set");
             }
             relTime = new PhaseAlignedTimeConfig("ttp");
-            CachedResult result;
+            edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult result;
             if(req.getParameter("rf").equals("synth")) {
-                result = SyntheticFactory.getCachedResult();
+                result = SyntheticFactory.getReceiverFunctionResult();
             } else {
                 int rf_id = new Integer(req.getParameter("rf")).intValue();
-                synchronized(jdbcRecFunc.getConnection()) {
-                    result = jdbcRecFunc.get(rf_id).getCachedResult();
-                }
+                    result = RecFuncDB.getSingleton().getReceiverFunctionResult(rf_id);
             }
             int xdim = RevUtil.getInt("xdim", req, xdimDefault);
             int ydim = RevUtil.getInt("ydim", req, ydimDefault);
@@ -113,12 +97,12 @@ public class SeismogramImage extends HttpServlet {
                     && !RevUtil.get("vpvs", req, null).equals("$maxValueK")) {
                 float h = RevUtil.getFloat("H", req);
                 float vpvs = RevUtil.getFloat("vpvs", req);
-                StationResult staResult = new StationResult(result.channels[0].get_id().network_id,
-                                                            result.channels[0].get_code(),
+                StationResult staResult = new StationResult((NetworkAttrImpl)result.getChannelGroup().getNetworkAttr(),
+                                                            result.getChannelGroup().getStation().get_code(),
                                                             new QuantityImpl(h,
                                                                              UnitImpl.KILOMETER),
                                                             vpvs,
-                                                            crust2.getStationResult(result.channels[0].getSite().getStation())
+                                                            crust2.getStationResult(result.getChannelGroup().getStation())
                                                                     .getVp(),
                                                             null);
                 Sampling samp = new SamplingImpl(10,
@@ -127,14 +111,14 @@ public class SeismogramImage extends HttpServlet {
                 SimpleSynthReceiverFunction synth = new SimpleSynthReceiverFunction(staResult,
                                                                                     samp,
                                                                                     2048);
-                DistAz distAz = new DistAz(result.channels[0],
-                                           result.prefOrigin);
+                DistAz distAz = new DistAz(result.getChannelGroup().getStation(),
+                                           result.getEvent());
                 Arrival[] arrivals = TauPUtil.getTauPUtil()
                         .calcTravelTimes(distAz.getDelta(),
                                          0,
                                          new String[] {"P"});
                 float flatRP = (float)arrivals[0].getRayParam() / 6371;
-                MicroSecondDate pTime = new MicroSecondDate(result.prefOrigin.getOriginTime());
+                MicroSecondDate pTime = new MicroSecondDate(result.getEvent().getPreferred().getOriginTime());
                 pTime = pTime.add(new TimeInterval(arrivals[0].getTime(),
                                                    UnitImpl.SECOND));
                 // pTime = pTime.subtract(RecFunc.DEFAULT_SHIFT);
@@ -145,11 +129,11 @@ public class SeismogramImage extends HttpServlet {
                                                                   pTime.getFissuresTime(),
                                                                   RecFunc.DEFAULT_SHIFT,
                                                                   dss[0].getChannelId(),
-                                                                  result.config.gwidth);
+                                                                  result.getGwidth());
 
                 
                 synthDSS = new MemoryDataSetSeismogram(synthRadial);
-                createChannel(synthRadial.channel_id, result.channels[0], dss[0].getDataSet());
+                createChannel(synthRadial.channel_id, result.getChannelGroup().getChannel1(), dss[0].getDataSet());
                 dss[0].getDataSet().addDataSetSeismogram(synthDSS,
                                                          new AuditInfo[0]);
                 disp.get(dss[0]).add(new DataSetSeismogram[] {synthDSS});
@@ -190,45 +174,45 @@ public class SeismogramImage extends HttpServlet {
         }
     }
 
-    public DataSetSeismogram[] getDSS(CachedResult stack) {
-        CacheEvent event = new CacheEvent(stack.event_attr, stack.prefOrigin);
+    public DataSetSeismogram[] getDSS(ReceiverFunctionResult result) {
+        CacheEvent event = result.getEvent();
         // radial RF
-        LocalSeismogramImpl radial = (LocalSeismogramImpl)stack.radial;
+        LocalSeismogramImpl radial = (LocalSeismogramImpl)result.getRadial();
         MemoryDataSetSeismogram radialDSS = new MemoryDataSetSeismogram(radial,
                                                                         "radial RF");
         DataSet dataset = new MemoryDataSet("temp", "Temp Dataset for "
                 + radialDSS.getName(), "temp", new AuditInfo[0]);
         dataset.addDataSetSeismogram(radialDSS, emptyAudit);
-        createChannel(radial.channel_id, stack.channels[0], dataset);
+        createChannel(radial.channel_id, result.getChannelGroup().getRadial(event), dataset);
         // tangential RF
-        LocalSeismogramImpl tangential = (LocalSeismogramImpl)stack.tansverse;
+        LocalSeismogramImpl tangential = (LocalSeismogramImpl)result.getTransverse();
         MemoryDataSetSeismogram tangentialDSS = new MemoryDataSetSeismogram(tangential,
                                                                             "tangential RF");
         dataset.addDataSetSeismogram(tangentialDSS, emptyAudit);
-        createChannel(tangential.channel_id, stack.channels[0], dataset);
+        createChannel(tangential.channel_id, result.getChannelGroup().getTransverse(event), dataset);
         // Z
-        LocalSeismogramImpl zSeis = (LocalSeismogramImpl)stack.original[0];
+        LocalSeismogramImpl zSeis = (LocalSeismogramImpl)result.getOriginal3();
         MemoryDataSetSeismogram zDSS = new MemoryDataSetSeismogram(zSeis,
                                                                    zSeis.getName());
         dataset.addDataSetSeismogram(zDSS, emptyAudit);
         String channelParamName = StdDataSetParamNames.CHANNEL
-                + ChannelIdUtil.toString(stack.channels[0].get_id());
-        dataset.addParameter(channelParamName, stack.channels[0], emptyAudit);
+                + ChannelIdUtil.toString(result.getChannelGroup().getChannel1().get_id());
+        dataset.addParameter(channelParamName, result.getChannelGroup().getChannel1(), emptyAudit);
         // a horizontal
-        LocalSeismogramImpl aSeis = (LocalSeismogramImpl)stack.original[1];
+        LocalSeismogramImpl aSeis = (LocalSeismogramImpl)result.getOriginal1();
         MemoryDataSetSeismogram aDSS = new MemoryDataSetSeismogram(aSeis,
                                                                    aSeis.getName());
         dataset.addDataSetSeismogram(aDSS, emptyAudit);
         channelParamName = StdDataSetParamNames.CHANNEL
-                + ChannelIdUtil.toString(stack.channels[1].get_id());
-        dataset.addParameter(channelParamName, stack.channels[1], emptyAudit);
+                + ChannelIdUtil.toString(result.getChannelGroup().getChannel1().get_id());
+        dataset.addParameter(channelParamName, result.getChannelGroup().getChannel1(), emptyAudit);
         // b horizontal
-        LocalSeismogramImpl bSeis = (LocalSeismogramImpl)stack.original[2];
+        LocalSeismogramImpl bSeis = (LocalSeismogramImpl)result.getOriginal2();
         MemoryDataSetSeismogram bDSS = new MemoryDataSetSeismogram(bSeis,
                                                                    bSeis.getName());
         channelParamName = StdDataSetParamNames.CHANNEL
-                + ChannelIdUtil.toString(stack.channels[2].get_id());
-        dataset.addParameter(channelParamName, stack.channels[2], emptyAudit);
+                + ChannelIdUtil.toString(result.getChannelGroup().getChannel2().get_id());
+        dataset.addParameter(channelParamName, result.getChannelGroup().getChannel2(), emptyAudit);
         dataset.addDataSetSeismogram(bDSS, emptyAudit);
         dataset.addParameter(DataSet.EVENT, event, emptyAudit);
         return new DataSetSeismogram[] {radialDSS,
@@ -252,18 +236,6 @@ public class SeismogramImage extends HttpServlet {
         return out;
     }
 
-    public void destroy() {
-        try {
-            Connection conn = jdbcRecFunc.getConnection();
-            if(conn != null) {
-                conn.close();
-            }
-        } catch(SQLException e) {
-            // oh well
-        }
-        super.destroy();
-    }
-
     private static final UnitImpl SEC_PER_SEC = UnitImpl.divide(UnitImpl.SECOND,
                                                                 UnitImpl.SECOND);
 
@@ -272,8 +244,6 @@ public class SeismogramImage extends HttpServlet {
     public static int xdimDefault = 800;
 
     public static int ydimDefault = 800;
-
-    JDBCRecFunc jdbcRecFunc;
 
     Crust2 crust2 = new Crust2();
 

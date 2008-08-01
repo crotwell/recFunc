@@ -3,11 +3,13 @@ package edu.sc.seis.receiverFunction.synth;
 import edu.iris.Fissures.Sampling;
 import edu.iris.Fissures.Time;
 import edu.iris.Fissures.IfNetwork.ChannelId;
+import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.SamplingImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.ReflTransCoefficient;
+import edu.sc.seis.receiverFunction.HKAlpha;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.IterDecon;
 import edu.sc.seis.receiverFunction.compare.StationResult;
@@ -15,27 +17,26 @@ import edu.sc.seis.receiverFunction.compare.StationResult;
 public class SimpleSynthReceiverFunction {
 
 
-    public SimpleSynthReceiverFunction(StationResult model) {
+    public SimpleSynthReceiverFunction(HKAlpha model) {
         this(model, new SamplingImpl(20, new TimeInterval(1, UnitImpl.SECOND)), 4096);
     }
     
-    public SimpleSynthReceiverFunction(StationResult model, Sampling samp, int num_points) {
+    public SimpleSynthReceiverFunction(HKAlpha model, Sampling samp, int num_points) {
         this(model, samp, num_points, 2.7, 8.0, 4.5, 3.2);
     }
 
-    public SimpleSynthReceiverFunction(StationResult model,
+    public SimpleSynthReceiverFunction(HKAlpha hka,
                                        Sampling samp,
                                        int num_points,
                                        double crustRho,
                                        double mantleVp,
                                        double mantleVs,
                                        double mantleRho) {
-        this.model = model;
+        this.hka = hka;
         this.samp = samp;
         this.num_points = num_points;
-        logger.info("calc for model: " + model);
-        downgoingRFCoeff = new ReflTransCoefficient(model.getVp().getValue(kmps),
-                                                    model.getVs().getValue(kmps),
+        downgoingRFCoeff = new ReflTransCoefficient(hka.getVp().getValue(kmps), 
+                                                    hka.getVs().getValue(kmps),
                                                     crustRho,
                                                     mantleVp,
                                                     mantleVs,
@@ -63,18 +64,19 @@ public class SimpleSynthReceiverFunction {
         double refTransP = getAmpP(flatRP);
         float index = HKStack.getDataIndex(seis, timeP.add(lagZeroOffset));
         data[Math.round(index)] = scale * (float)refTransP;
+        
         // Ps
-        TimeInterval timePs = HKStack.getTimePs(flatRP, model.getVp(), model.getVpVs(), model.getH());
+        TimeInterval timePs = HKStack.getTimePs(flatRP, hka.getVp(), hka.getVpVs(), hka.getH());
         double refTransPs = getAmpPs(flatRP);
         index = HKStack.getDataIndex(seis, timePs.add(lagZeroOffset));
         data[Math.round(index)] = scale * (float)refTransPs;
         // PpPs
-        TimeInterval timePpPs = HKStack.getTimePpPs(flatRP, model.getVp(), model.getVpVs(), model.getH());
+        TimeInterval timePpPs = HKStack.getTimePpPs(flatRP, hka.getVp(), hka.getVpVs(), hka.getH());
         double refTransPpPs = getAmpPpPs(flatRP);
         index = HKStack.getDataIndex(seis, timePpPs.add(lagZeroOffset));
         data[Math.round(index)] = scale * (float)refTransPpPs;
         // PsPs+PpSs
-        TimeInterval timePsPs = HKStack.getTimePsPs(flatRP, model.getVp(), model.getVpVs(), model.getH());
+        TimeInterval timePsPs = HKStack.getTimePsPs(flatRP, hka.getVp(), hka.getVpVs(), hka.getH());
         double refTransPsPs = getAmpPsPs(flatRP);
         index = HKStack.getDataIndex(seis, timePsPs.add(lagZeroOffset));
         data[Math.round(index)] = scale * (float)refTransPsPs;
@@ -127,8 +129,8 @@ public class SimpleSynthReceiverFunction {
     }
 
     void calcBasicTerms(double flatRP) {
-        double Vs = model.getVs().getValue(UnitImpl.KILOMETER_PER_SECOND);
-        double Vp = model.getVp().getValue(UnitImpl.KILOMETER_PER_SECOND);
+        double Vs = hka.getVs().getValue(UnitImpl.KILOMETER_PER_SECOND);
+        double Vp = hka.getVp().getValue(UnitImpl.KILOMETER_PER_SECOND);
         double etas0 = Math.sqrt(1 / (Vs * Vs) - flatRP * flatRP);
         double etap0 = Math.sqrt(1 / (Vp * Vp) - flatRP * flatRP);
         double c1 = (1 / (Vs * Vs) - 2 * flatRP * flatRP);
@@ -145,9 +147,9 @@ public class SimpleSynthReceiverFunction {
     double rpz0;
 
     ReflTransCoefficient downgoingRFCoeff, upgoingRFCoeff;
-
-    StationResult model;
-
+    
+    HKAlpha hka;
+    
     Sampling samp;
 
     int num_points;

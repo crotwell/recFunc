@@ -6,28 +6,28 @@
 package edu.sc.seis.receiverFunction;
 
 import java.awt.image.BufferedImage;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.Random;
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
-import edu.iris.Fissures.FissuresException;
+import java.util.List;
+import java.util.Set;
+
 import edu.iris.Fissures.IfNetwork.Channel;
+import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
-import edu.iris.Fissures.network.NetworkIdUtil;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
-import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
-import edu.sc.seis.receiverFunction.server.HKBox;
-import edu.sc.seis.receiverFunction.server.JDBCRejectedMaxima;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
+import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.receiverFunction.server.StackComplexityResult;
 
 public class SumHKStack {
@@ -38,14 +38,23 @@ public class SumHKStack {
                       float hVariance,
                       float kVariance,
                       int numEQ,
-                      HKBox[] rejects) {
+                      List<ReceiverFunctionResult> individuals,
+                      Set<RejectedMaxima> rejects) {
         this.sum = sum;
         this.minPercentMatch = minPercentMatch;
         this.smallestH = smallestH;
         this.hVariance = hVariance;
         this.kVariance = kVariance;
-        this.channel = sum.chan;
         this.numEQ = numEQ;
+        this.individuals = individuals;
+        Station sta = individuals.iterator()
+                .next()
+                .getChannelGroup()
+                .getChannel1()
+                .getSite()
+                .getStation();
+        net = (NetworkAttrImpl)sta.getNetworkAttr();
+        stationCode = sta.get_code();
         this.rejects = rejects;
         best = makeStationResult(new StackMaximum(-1,
                                                   sum.getMaxValueH(),
@@ -56,83 +65,15 @@ public class SumHKStack {
                                                   -1), "max", "");
     }
 
-    public SumHKStack(HKStack[] individuals,
-                      Channel chan,
-                      float minPercentMatch,
-                      QuantityImpl smallestH,
-                      boolean doBootstrap,
-                      boolean usePhaseWeight,
-                      HKBox[] rejects) {
-        this(individuals,
-             chan,
-             minPercentMatch,
-             smallestH,
-             doBootstrap,
-             usePhaseWeight,
-             DEFAULT_BOOTSTRAP_ITERATONS,
-             rejects);
-    }
-
-    public SumHKStack(HKStack[] individuals,
-                      Channel chan,
-                      float minPercentMatch,
-                      QuantityImpl smallestH,
-                      boolean doBootstrap,
-                      boolean usePhaseWeight,
-                      int bootstrapIterations,
-                      HKBox[] rejects) {
-        this.individuals = individuals;
-        this.minPercentMatch = minPercentMatch;
-        this.channel = chan;
-        this.smallestH = smallestH;
-        this.numEQ = individuals.length;
-        this.rejects = rejects;
-        if(individuals.length == 0) {
-            throw new IllegalArgumentException("Cannot create SumStack with empty array");
-        }
-        for(int i = 0; i < individuals.length; i++) {
-            if(!individuals[i].getMinH().equals(individuals[0].getMinH())) {
-                throw new IllegalArgumentException("Cannot create SumStack with different minH, "
-                        + individuals[i].getMinH()
-                        + "!="
-                        + individuals[0].getMinH());
-            }
-            if(individuals[i].getMinK() != individuals[0].getMinK()) {
-                throw new IllegalArgumentException("Cannot create SumStack with different minK, "
-                        + individuals[i].getMinK()
-                        + "!="
-                        + individuals[0].getMinK());
-            }
-            // need to do more of this checking...
-        }
-        sum = SumHKStack.calculate(chan,
-                        individuals,
-                        smallestH,
-                        minPercentMatch,
-                        usePhaseWeight,
-                        rejects);
-        recalcBest();
-        if(doBootstrap) {
-            calcVarianceBootstrap(usePhaseWeight, bootstrapIterations);
-        } else {
-            hVariance = -1;
-            kVariance = -1;
-        }
-    }
-
     public BufferedImage createStackImage() {
         return sum.createStackImage();
-    }
-
-    public Channel getChannel() {
-        return channel;
     }
 
     public HKStack getSum() {
         return sum;
     }
 
-    public HKStack[] getIndividuals() {
+    public List<ReceiverFunctionResult> getIndividuals() {
         return individuals;
     }
 
@@ -155,8 +96,8 @@ public class SumHKStack {
         StationResultRef earsStaRef = new StationResultRef("Global Maxima",
                                                            "ears",
                                                            "ears");
-        StationResult result = new StationResult(getChannel().get_id().network_id,
-                                                 getChannel().get_id().station_code,
+        StationResult result = new StationResult(net,
+                                                 stationCode,
                                                  getSum().getMaxValueH(getSmallestH()),
                                                  getSum().getMaxValueK(getSmallestH()),
                                                  getSum().getAlpha(),
@@ -167,67 +108,13 @@ public class SumHKStack {
         return complexity.getResidual(result, 60);
     }
 
-    static HKStack calculate(Channel chan,
-                             HKStack[] individuals,
-                             QuantityImpl smallestH,
-                             float minPercentMatch,
-                             boolean usePhaseWeight,
-                             HKBox[] rejects) {
-        if(individuals.length == 0) {
-            throw new IllegalArgumentException("individual HKStack cannot be length 0");
-        }
-        int smallestHIndex = individuals[0].getHIndex(smallestH);
-        float[][] sumStack = new float[individuals[0].getStack().length
-                - smallestHIndex][individuals[0].getStack()[0].length];
-        for(int hIndex = 0; hIndex < sumStack.length; hIndex++) {
-            int shiftHIndex = smallestHIndex + hIndex;
-            for(int kIndex = 0; kIndex < sumStack[0].length; kIndex++) {
-                Cmplx phaseWeight = new Cmplx(0, 0);
-                float realStack = 0;
-                for(int s = 0; s < individuals.length; s++) {
-                    if(usePhaseWeight) {
-                        phaseWeight = Cmplx.add(phaseWeight,
-                                                individuals[s].getCompactAnalyticPhase()
-                                                        .get(shiftHIndex,
-                                                             kIndex));
-                    }
-                    realStack += individuals[s].getStack()[shiftHIndex][kIndex];
-                }
-                realStack /= individuals.length;
-                if(usePhaseWeight) {
-                    sumStack[hIndex][kIndex] = (float)(realStack * Math.pow(phaseWeight.mag()
-                                                                                    / individuals.length
-                                                                                    / 3,
-                                                                            2));
-                } else {
-                    sumStack[hIndex][kIndex] = realStack;
-                }
-            }
-        }
-        HKStack hkStack = new HKStack(individuals[0].getAlpha(),
-                                      0f,
-                                      individuals[0].getGaussianWidth(),
-                                      minPercentMatch,
-                                      individuals[0].getMinH()
-                                              .add(individuals[0].getStepH()
-                                                      .multiplyBy(smallestHIndex)),
-                                      individuals[0].getStepH(),
-                                      individuals[0].getNumH() - smallestHIndex,
-                                      individuals[0].getMinK(),
-                                      individuals[0].getStepK(),
-                                      individuals[0].getNumK(),
-                                      individuals[0].getWeightPs(),
-                                      individuals[0].getWeightPpPs(),
-                                      individuals[0].getWeightPsPs(),
-                                      sumStack,
-                                      chan);
-        return hkStack;
-    }
-
-    public static SumHKStack calculateForPhase(Iterator iterator,
+    public static SumHKStack calculateForPhase(List<ReceiverFunctionResult> stackList,
                                                QuantityImpl smallestH,
                                                float minPercentMatch,
                                                boolean usePhaseWeight,
+                                               Set<RejectedMaxima> rejects,
+                                               boolean doBootstrap,
+                                               int bootstrapIterations,
                                                String phase) {
         Channel chan = null;
         int numStacks = 0;
@@ -236,8 +123,13 @@ public class SumHKStack {
         HKStack individual;
         HKStack first = null;
         int smallestHIndex = 0;
+        Iterator<ReceiverFunctionResult> iterator = stackList.iterator();
+        if(!iterator.hasNext()) {
+            throw new IllegalArgumentException("individual HKStack cannot be length 0");
+        }
         while(iterator.hasNext()) {
-            individual = (HKStack)iterator.next();
+            ReceiverFunctionResult result = iterator.next();
+            individual = result.getHKstack();
             if(numStacks == 0) {
                 first = individual;
                 chan = first.chan;
@@ -246,6 +138,15 @@ public class SumHKStack {
                 phaseWeight = new CmplxArray2D(sumStack.length,
                                                sumStack[0].length);
             }
+            if(!individual.getMinH().equals(first.getMinH())) {
+                throw new IllegalArgumentException("Cannot create SumStack with different minH, "
+                        + individual.getMinH() + "!=" + first.getMinH());
+            }
+            if(individual.getMinK() != first.getMinK()) {
+                throw new IllegalArgumentException("Cannot create SumStack with different minK, "
+                        + individual.getMinK() + "!=" + first.getMinK());
+            }
+            // need to do more of this checking...
             for(int hIndex = 0; hIndex < sumStack.length; hIndex++) {
                 int shiftHIndex = smallestHIndex + hIndex;
                 for(int kIndex = 0; kIndex < sumStack[0].length; kIndex++) {
@@ -326,21 +227,29 @@ public class SumHKStack {
                                       first.getWeightPsPs(),
                                       sumStack,
                                       chan);
-        return new SumHKStack(minPercentMatch,
-                              smallestH,
-                              hkStack,
-                              -1,
-                              -1,
-                              numStacks,
-                              new HKBox[0]);
+        float hVariance = -1;
+        float kVariance = -1;
+        SumHKStack out = new SumHKStack(minPercentMatch,
+                                        smallestH,
+                                        hkStack,
+                                        hVariance,
+                                        kVariance,
+                                        numStacks,
+                                        stackList,
+                                        rejects);
+        out.recalcBest();
+        if(doBootstrap) {
+            out.calcVarianceBootstrap(usePhaseWeight, bootstrapIterations);
+        }
+        return out;
     }
 
     public StackComplexityResult calcStackComplexity() throws TauModelException {
         StackComplexity complexity = new StackComplexity(getSum(),
                                                          4096,
                                                          getSum().getGaussianWidth());
-        StationResult model = new StationResult(getChannel().get_id().network_id,
-                                                getChannel().get_id().station_code,
+        StationResult model = new StationResult(net,
+                                                stationCode,
                                                 getSum().getMaxValueH(getSmallestH()),
                                                 getSum().getMaxValueK(getSmallestH()),
                                                 getSum().getAlpha(),
@@ -361,11 +270,15 @@ public class SumHKStack {
         float nextK = residual.getMaxValueK(getSmallestH());
         float nextVal = residual.getMaxValue(getSmallestH());
         StationResult crust2Result = HKStack.getCrust2()
-                .getStationResult(getChannel().getSite().getStation());
+                .getStationResult(getIndividuals().iterator()
+                        .next()
+                        .getChannelGroup()
+                        .getChannel1()
+                        .getSite()
+                        .getStation());
         float crust2diff = bestH
                 - (float)crust2Result.getH().getValue(UnitImpl.KILOMETER);
-        setComplexityResult(new StackComplexityResult(getDbid(),
-                                                      complex,
+        setComplexityResult(new StackComplexityResult(complex,
                                                       complex25,
                                                       complex50,
                                                       bestH,
@@ -419,22 +332,26 @@ public class SumHKStack {
 
     protected void calcVarianceBootstrap(boolean usePhaseWeight,
                                          int bootstrapIterations) {
-        HKStack temp = individuals[0];
+        List<ReceiverFunctionResult> individualList = new ArrayList<ReceiverFunctionResult>();
+        individualList.addAll(getIndividuals());
+        HKStack temp = getIndividuals().iterator().next().getHKstack();
         double[] hErrors = new double[bootstrapIterations];
         double[] kErrors = new double[bootstrapIterations];
         TimeOMatic.start();
         for(int i = 0; i < bootstrapIterations; i++) {
             ArrayList sample = new ArrayList();
-            for(int j = 0; j < individuals.length; j++) {
-                sample.add(individuals[randomInt(individuals.length)]);
+            for(ReceiverFunctionResult result : getIndividuals()) {
+                sample.add(individualList.get(randomInt(individualList.size())));
             }
-            HKStack sampleStack = calculate(temp.chan,
-                                            (HKStack[])sample.toArray(new HKStack[0]),
-                                            smallestH,
-                                            minPercentMatch,
-                                            usePhaseWeight,
-                                            rejects);
-            StationResult bestBoot = calcBest(sampleStack);
+            SumHKStack sampleStack = calculateForPhase(sample,
+                                                    smallestH,
+                                                    minPercentMatch,
+                                                    usePhaseWeight,
+                                                    rejects,
+                                                    false,
+                                                    0,
+                                                    "all");
+            StationResult bestBoot = sampleStack.getBest();
             hErrors[i] = bestBoot.getH().getValue(UnitImpl.KILOMETER);
             kErrors[i] = bestBoot.getVpVs();
             if(i % 10 == 0) {
@@ -461,9 +378,9 @@ public class SumHKStack {
     }
 
     protected void calcVarianceSecondDerivative() {
-        float[] peakVals = new float[individuals.length];
+        float[] peakVals = new float[individuals.size()];
         StackMaximum maxIndices = sum.getGlobalMaximum();
-        for(int s = 0; s < individuals.length; s++) {
+        for(int s = 0; s < individuals.size(); s++) {
             peakVals[s] = maxIndices.getMaxValue();
         }
         Statistics stat = new Statistics(peakVals);
@@ -630,9 +547,9 @@ public class SumHKStack {
     StationResult calcBest(HKStack sum) {
         StackMaximum[] localMaxima = sum.getLocalMaxima(smallestH, 5);
         for(int i = 0; i < localMaxima.length; i++) {
-            if(-1 == inAnalystReject(localMaxima[i].getHValue(),
-                                  localMaxima[i].getKValue(),
-                                  rejects)) {
+            if(inAnalystReject(localMaxima[i].getHValue(),
+                                     localMaxima[i].getKValue(),
+                                     rejects) == null) {
                 String extra = "amp=" + localMaxima[i].getMaxValue();
                 String name = i == 0 ? "Global Maxima" : "Local Maxima " + i;
                 return makeStationResult(localMaxima[i], name, extra);
@@ -646,8 +563,8 @@ public class SumHKStack {
                                            String name,
                                            String extra) {
         StationResultRef earsStaRef = new StationResultRef(name, "ears", "ears");
-        return new StationResult(getChannel().get_id().network_id,
-                                 getChannel().get_id().station_code,
+        return new StationResult(net,
+                                 stationCode,
                                  max.getHValue(),
                                  max.getKValue(),
                                  sum.getAlpha(),
@@ -658,38 +575,39 @@ public class SumHKStack {
                                  extra);
     }
 
-    public static int inAnalystReject(QuantityImpl hQuantity,
-                                            float k,
-                                            HKBox[] rejects) {
+    public static RejectedMaxima inAnalystReject(QuantityImpl hQuantity,
+                                      float k,
+                                      Collection<RejectedMaxima> rejects) {
         float h = (float)hQuantity.getValue(UnitImpl.KILOMETER);
-        for(int i = 0; i < rejects.length; i++) {
-            if(rejects[i].inside(h, k)) {
-                return i;
+        for(RejectedMaxima box : rejects) {
+            if(box.inside(h, k)) {
+                return box;
             }
         }
-        return -1;
+        return null;
     }
 
     public StationResult getBest() {
-        if (best == null) {
+        if(best == null) {
             logger.error("best is null", new NullPointerException());
         }
         return best;
     }
-    
+
     public void recalcBest() {
         best = calcBest(sum);
     }
 
-    public double[] getHBootstrap(){
+    public double[] getHBootstrap() {
         return hBootstrap;
     }
+
     public double[] getKBootstrap() {
         return kBootstrap;
     }
-    protected Channel channel;
+    
 
-    protected HKStack[] individuals;
+    protected List<ReceiverFunctionResult> individuals;
 
     protected int numEQ;
 
@@ -702,20 +620,24 @@ public class SumHKStack {
     protected double maxVariance;
 
     protected double hVariance;
-    
+
     protected double[] hBootstrap;
 
     protected double kVariance;
-    
+
     protected double[] kBootstrap;
 
     protected StationResult best;
 
-    protected HKBox[] rejects;
+    protected Set<RejectedMaxima> rejects;
 
     protected double mixedVariance;
 
     protected int dbid = -1;
+
+    protected NetworkAttrImpl net;
+
+    protected String stationCode;
 
     public static int DEFAULT_BOOTSTRAP_ITERATONS = 100;
 
@@ -724,4 +646,24 @@ public class SumHKStack {
     private static DecimalFormat vpvsFormat = new DecimalFormat("0.000");
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumHKStack.class);
+
+    
+    public NetworkAttrImpl getNet() {
+        return net;
+    }
+
+    
+    public void setNet(NetworkAttrImpl net) {
+        this.net = net;
+    }
+
+    
+    public String getStationCode() {
+        return stationCode;
+    }
+
+    
+    public void setStationCode(String stationCode) {
+        this.stationCode = stationCode;
+    }
 }

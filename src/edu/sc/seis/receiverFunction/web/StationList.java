@@ -1,28 +1,25 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.MicroSecondDate;
-import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.StationIdUtil;
-import edu.sc.seis.fissuresUtil.database.ConnMgr;
+import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.fissuresUtil.database.NotFound;
-import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
-import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.fissuresUtil.hibernate.EventDB;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.receiverFunction.SumHKStack;
-import edu.sc.seis.receiverFunction.server.JDBCHKStack;
-import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
-import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
-import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
@@ -38,21 +35,6 @@ public class StationList extends Revlet {
 
     public StationList() throws SQLException, ConfigurationException, Exception {
         DATA_LOC = Start.getDataLoc();
-        Connection conn = getConnection();
-        jdbcEventAccess =  EventDB.getSingleton();
-        jdbcChannel = NetworkDB.getSingleton();
-        jdbcSodConfig = SodDB.getSingleton();
-        jdbcRecFunc = new JDBCRecFunc(conn,
-                                      jdbcEventAccess,
-                                      jdbcChannel,
-                                      jdbcSodConfig,
-                                      DATA_LOC);
-        jdbcHKStack = new JDBCHKStack(conn,
-                                      jdbcEventAccess,
-                                      jdbcChannel,
-                                      jdbcSodConfig,
-                                      jdbcRecFunc);
-        jdbcSumHKStack = new JDBCSummaryHKStack(jdbcHKStack);
     }
 
     public synchronized RevletContext getContext(HttpServletRequest req,
@@ -73,7 +55,7 @@ public class StationList extends Revlet {
         return context;
     }
     
-    public void postProcess(HttpServletRequest req, RevletContext context, ArrayList stationList, HashMap summary) {
+    public void postProcess(HttpServletRequest req, RevletContext context, ArrayList<VelocityStation> stationList, HashMap summary) {
     	    return;
     }
 
@@ -101,17 +83,14 @@ public class StationList extends Revlet {
         }
     }
 
-    public ArrayList getStations(HttpServletRequest req, RevletContext context)
+    public ArrayList<VelocityStation> getStations(HttpServletRequest req, RevletContext context)
             throws SQLException, NotFound {
-        VelocityNetwork net = Start.getNetwork(req, jdbcChannel.getStationTable()
-                .getNetTable());
+        VelocityNetwork net = Start.getNetwork(req);
         context.put("net", net);
-        Station[] stations = jdbcChannel.getSiteTable()
-                .getStationTable()
-                .getAllStations(net.get_id());
-        ArrayList stationList = new ArrayList();
-        for(int i = 0; i < stations.length; i++) {
-            stationList.add(new VelocityStation(stations[i]));
+        ArrayList<VelocityStation> stationList = new ArrayList<VelocityStation>();
+        List<StationImpl> stations = NetworkDB.getSingleton().getStationForNet(net.getWrapped());
+        for(StationImpl stationImpl : stations) {
+            stationList.add(new VelocityStation(stationImpl));
         }
         return stationList;
     }
@@ -127,7 +106,7 @@ public class StationList extends Revlet {
     public HashMap getSummaries(ArrayList stationList,
                                 RevletContext context,
                                 HttpServletRequest req) throws SQLException,
-            IOException {
+            IOException, NotFound {
         float gaussianWidth = RevUtil.getFloat("gaussian",
                                                req,
                                                Start.getDefaultGaussian());
@@ -159,25 +138,15 @@ public class StationList extends Revlet {
         HashMap summary = new HashMap();
         while(it.hasNext()) {
             VelocityStation sta = (VelocityStation)it.next();
-            try {
-                int netDbId = sta.getWrapped().getNetworkAttr().getDbid();
-                SumHKStack sumStack = jdbcSumHKStack.getForStation(netDbId,
-                                                                   sta.get_code(),
-                                                                   gaussianWidth,
-                                                                   minPercentMatch,
-                                                                   false);
-                float bestVpvs = sumStack.getComplexityResult().getBestK();
-                float bestH = (float)sumStack.getComplexityResult().getBestH();
-                if (sumStack.getComplexityResidual() <= maxComplexity &&
-                        bestVpvs >= minVpvs && bestVpvs <= maxVpvs &&
-                        bestH >= minH && bestH <= maxH &&
-                        sumStack.getNumEQ() >= minEQ && sumStack.getNumEQ() <= maxEQ) {
-                    summary.put(sta, sumStack);
-                }
-            } catch(NotFound e) {
-                // oh well, skip this station
-                logger.warn("not found " + sta.getNetCode() + "."
-                        + sta.get_code());
+            SumHKStack sumStack = RecFuncDB.getSingleton().getSumStack((NetworkAttrImpl)sta.getWrapped().getNetworkAttr(),
+                                                                       sta.get_code(), gaussianWidth);
+            float bestVpvs = sumStack.getComplexityResult().getBestK();
+            float bestH = (float)sumStack.getComplexityResult().getBestH();
+            if (sumStack.getComplexityResidual() <= maxComplexity &&
+                    bestVpvs >= minVpvs && bestVpvs <= maxVpvs &&
+                    bestH >= minH && bestH <= maxH &&
+                    sumStack.getNumEQ() >= minEQ && sumStack.getNumEQ() <= maxEQ) {
+                summary.put(sta, sumStack);
             }
         }
         logger.debug("found " + summary.size() + " summaries");
@@ -194,8 +163,8 @@ public class StationList extends Revlet {
             String key = StationIdUtil.toStringNoDates(sta.get_id());
             if(codeMap.containsKey(key)) {
                 Station previousSta = (Station)codeMap.get(key);
-                MicroSecondDate staBegin = new MicroSecondDate(sta.effective_time.start_time);
-                MicroSecondDate previousStaBegin = new MicroSecondDate(previousSta.effective_time.start_time);
+                MicroSecondDate staBegin = new MicroSecondDate(sta.getEffectiveTime().start_time);
+                MicroSecondDate previousStaBegin = new MicroSecondDate(previousSta.getEffectiveTime().start_time);
                 if(staBegin.after(previousStaBegin)) {
                     codeMap.put(key, sta);
                 }
@@ -229,13 +198,7 @@ public class StationList extends Revlet {
 
     NetworkDB jdbcChannel;
 
-    JDBCHKStack jdbcHKStack;
-
-    JDBCRecFunc jdbcRecFunc;
-
     SodDB jdbcSodConfig;
-
-    JDBCSummaryHKStack jdbcSumHKStack;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StationList.class);
 }

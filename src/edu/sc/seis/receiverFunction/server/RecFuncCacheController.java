@@ -4,6 +4,7 @@ import java.util.Properties;
 import org.omg.CORBA.ORB;
 import org.omg.PortableServer.Servant;
 import edu.sc.seis.cormorant.AbstractController;
+import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
 
 /**
  * @author crotwell
@@ -24,7 +25,8 @@ public class RecFuncCacheController extends AbstractController {
     
     public void destroy() throws Exception {
         super.destroy();
-        impl.getConnection().close();
+        // maybe should have something like? 
+        //AbstractHibernateDB.close();
     }
     
     public Servant getServant() {

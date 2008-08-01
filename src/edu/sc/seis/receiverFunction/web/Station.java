@@ -6,45 +6,42 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.network.NetworkAttrImpl;
+import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.NotFound;
-import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
-import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.StackMaximum;
 import edu.sc.seis.receiverFunction.SumHKStack;
-import edu.sc.seis.receiverFunction.compare.JDBCStationResult;
-import edu.sc.seis.receiverFunction.compare.JDBCStationResultRef;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
-import edu.sc.seis.receiverFunction.server.HKBox;
-import edu.sc.seis.receiverFunction.server.JDBCHKStack;
-import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
-import edu.sc.seis.receiverFunction.server.JDBCRejectedMaxima;
-import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
-import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
+import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.ConfigurationException;
-import edu.sc.seis.sod.status.FissuresFormatter;
 import edu.sc.seis.sod.velocity.event.VelocityEvent;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
@@ -56,24 +53,6 @@ public class Station extends Revlet {
 
     public Station() throws SQLException, ConfigurationException, Exception {
         DATA_LOC = Start.getDataLoc();
-        Connection conn = getConnection();
-        jdbcEventAccess = new JDBCEventAccess(conn);
-        jdbcChannel = new JDBCChannel(conn);
-        jdbcSodConfig = new JDBCSodConfig(conn);
-        jdbcRecFunc = new JDBCRecFunc(conn,
-                                      jdbcEventAccess,
-                                      jdbcChannel,
-                                      jdbcSodConfig,
-                                      DATA_LOC);
-        jdbcHKStack = new JDBCHKStack(conn,
-                                      jdbcEventAccess,
-                                      jdbcChannel,
-                                      jdbcSodConfig,
-                                      jdbcRecFunc);
-        jdbcSummaryHKStack = new JDBCSummaryHKStack(jdbcHKStack);
-        jdbcRejectMax = new JDBCRejectedMaxima(conn);
-        jdbcStationResult = new JDBCStationResult(jdbcChannel.getNetworkTable(),
-                                                  new JDBCStationResultRef(conn));
     }
 
     /**
@@ -84,37 +63,34 @@ public class Station extends Revlet {
             throws Exception {
         VelocityNetwork net;
         try {
-            net = Start.getNetwork(req, jdbcChannel.getNetworkTable());
+            net = Start.getNetwork(req);
         } catch(NotFound e) {
-            return handleNotFound(res);
+            return handleNotFound(req, res, e);
         }
         // possible that there are multiple stations with the same code
         String staCode = req.getParameter("stacode").toUpperCase();
-        ArrayList stationList = getStationList(net.getDbId(), staCode);
+        ArrayList stationList = getStationList(net.getWrapped(), staCode);
         TimeOMatic.start();
-        CacheEvent[] events = getWinnerEvents(req);
+        List<ReceiverFunctionResult> winners = getWinnerEvents(req);
         TimeOMatic.print("successful events");
-        CacheEvent[] loserEvents = getLoserEvents(req);
+        List<ReceiverFunctionResult> losers = getLoserEvents(req);
         TimeOMatic.print("go losers");
-        ArrayList eventList = new ArrayList();
+        ArrayList<VelocityEvent> eventList = new ArrayList<VelocityEvent>();
         int numNinty = 0;
         int numEighty = 0;
-        for(int i = 0; i < events.length; i++) {
-            VelocityEvent ve = new VelocityEvent(events[i]);
-            eventList.add(ve);
-            float match = new Float(ve.getParam("itr_match")).floatValue();
-            if(match >= 80) {
+        for(ReceiverFunctionResult result : winners) {
+            eventList.add(new VelocityEvent(result.getEvent()));
+            if(result.getRadialMatch() >= 80) {
                 numEighty++;
-                if(match >= 90) {
+                if(result.getRadialMatch() >= 90) {
                     numNinty++;
                 }
             }
         }
         TimeOMatic.print("numEighty");
-        ArrayList eventLoserList = new ArrayList();
-        for(int i = 0; i < loserEvents.length; i++) {
-            VelocityEvent ve = new VelocityEvent(loserEvents[i]);
-            eventLoserList.add(ve);
+        ArrayList<VelocityEvent> eventLoserList = new ArrayList<VelocityEvent>();
+        for(ReceiverFunctionResult result : losers) {
+            eventLoserList.add(new VelocityEvent(result.getEvent()));
         }
         Collections.sort(eventList, itrMatchComparator);
         Collections.reverse(eventList);
@@ -131,11 +107,9 @@ public class Station extends Revlet {
             crust2Type = result.getExtras();
         }
         TimeOMatic.print("crust2");
-        StationResult[] results = jdbcStationResult.get(sta.getNetworkAttr().get_id(),
+        List<StationResult> results = RecFuncDB.getSingleton().getPriorResults((NetworkAttrImpl)sta.getNetworkAttr(),
                                                         sta.get_code());
-        for(int i = 0; i < results.length; i++) {
-            markerList.add(results[i]);
-        }
+        markerList.addAll(results);
         TimeOMatic.print("other results");
         String fileType = RevUtil.getFileType(req);
         String vmFile = "station.vm";
@@ -162,15 +136,15 @@ public class Station extends Revlet {
                                                                    "ears",
                                                                    "ears");
                 String extra = "amp=" + localMaxima[i].getMaxValue();
-                HKBox[] rejects = jdbcRejectMax.getForStation(net.getDbId(),
+                List<RejectedMaxima> rejects = RecFuncDB.getSingleton().getRejectedMaxima(net.getWrapped(),
                                                               staCode);
-                int rejectNum = SumHKStack.inAnalystReject(localMaxima[i].getHValue(),
+                RejectedMaxima reject = SumHKStack.inAnalystReject(localMaxima[i].getHValue(),
                                                            localMaxima[i].getKValue(),
                                                            rejects);
-                if(-1 != rejectNum) {
-                    extra += ", reject by analyst: "+rejects[rejectNum].getReason();
+                if(reject != null) {
+                    extra += ", reject by analyst: "+reject.getReason();
                 }
-                markerList.add(new StationResult(net.get_id(),
+                markerList.add(new StationResult(net.getWrapped(),
                                                  staCode,
                                                  localMaxima[i].getHValue(),
                                                  localMaxima[i].getKValue(),
@@ -203,27 +177,25 @@ public class Station extends Revlet {
         context.put("eventList", eventList);
         context.put("eventLoserList", eventLoserList);
         context.put("numNinty", new Integer(numNinty));
+        int numEvents = winners.size()+losers.size();
+        context.put("numEvents", new Integer(numEvents));
         context.put("percentNinty", ""
-                + new Float(numNinty * 100f / events.length));
+                + new Float(numNinty * 100f / numEvents));
         context.put("numEighty", new Integer(numEighty));
         context.put("percentEighty",
-                    new Float(numEighty * 100f / events.length));
+                    new Float(numEighty * 100f / numEvents));
         context.put("markerList", markerList);
         context.put("smallestH", smallestH);
         TimeOMatic.print("done");
         return context;
     }
 
-    public ArrayList getStationList(int netDbId, String staCode)
+    public ArrayList getStationList(NetworkAttrImpl attr, String staCode)
             throws SQLException, NotFound {
-        int[] dbids = jdbcChannel.getSiteTable()
-                .getStationTable()
-                .getDBIds(netDbId, staCode);
+        List<StationImpl> stations = NetworkDB.getSingleton().getStationForNet(attr, staCode);
         ArrayList stationList = new ArrayList();
-        for(int i = 0; i < dbids.length; i++) {
-            stationList.add(new VelocityStation(jdbcChannel.getSiteTable()
-                    .getStationTable()
-                    .get(dbids[i]), dbids[i]));
+        for(StationImpl sta : stations) {
+            stationList.add(new VelocityStation(sta));
         }
         return stationList;
     }
@@ -236,43 +208,36 @@ public class Station extends Revlet {
         float minPercentMatch = RevUtil.getFloat("minPercentMatch",
                                                  req,
                                                  Start.getDefaultMinPercentMatch());
-        VelocityNetwork net = Start.getNetwork(req,
-                                               jdbcChannel.getNetworkTable());
+        VelocityNetwork net = Start.getNetwork(req);
         String staCode = req.getParameter("stacode");
-        int summaryDbId = jdbcSummaryHKStack.getDbIdForStation(net.get_id(),
-                                                               staCode,
-                                                               gaussianWidth,
-                                                               minPercentMatch);
-        return jdbcSummaryHKStack.get(summaryDbId);
+        return RecFuncDB.getSingleton().getSumStack(net.getWrapped(), staCode, gaussianWidth);
     }
 
-    public CacheEvent[] getWinnerEvents(HttpServletRequest req)
+    public List<ReceiverFunctionResult> getWinnerEvents(HttpServletRequest req)
             throws SQLException, NotFound, FileNotFoundException,
             FissuresException, IOException {
         float gaussianWidth = RevUtil.getFloat("gaussian",
                                                req,
                                                Start.getDefaultGaussian());
-        VelocityNetwork net = Start.getNetwork(req,
-                                               jdbcChannel.getNetworkTable());
+        VelocityNetwork net = Start.getNetwork(req);
         String staCode = req.getParameter("stacode");
-        return jdbcRecFunc.getSuccessfulEvents(net.getDbId(),
+        return RecFuncDB.getSingleton().getSuccessful(net.getWrapped(),
                                                staCode,
                                                gaussianWidth,
                                                80);
     }
 
-    public CacheEvent[] getLoserEvents(HttpServletRequest req)
+    public List<ReceiverFunctionResult> getLoserEvents(HttpServletRequest req)
             throws SQLException, NotFound {
         float gaussianWidth = RevUtil.getFloat("gaussian",
                                                req,
                                                Start.getDefaultGaussian());
-        VelocityNetwork net = Start.getNetwork(req,
-                                               jdbcChannel.getNetworkTable());
+        VelocityNetwork net = Start.getNetwork(req);
         String staCode = req.getParameter("stacode");
-        return jdbcRecFunc.getUnsuccessfulEvents(net.getDbId(),
-                                                 staCode,
-                                                 gaussianWidth,
-                                                 80);
+        return RecFuncDB.getSingleton().getUnsuccessful(net.getWrapped(),
+                                                      staCode,
+                                                      gaussianWidth,
+                                                      80);
     }
 
     public static String makeHKPlot(SumHKStack sumStack, HttpSession session)
@@ -321,22 +286,6 @@ public class Station extends Revlet {
     }
 
     String DATA_LOC;
-
-    JDBCEventAccess jdbcEventAccess;
-
-    JDBCChannel jdbcChannel;
-
-    JDBCHKStack jdbcHKStack;
-
-    JDBCSummaryHKStack jdbcSummaryHKStack;
-
-    JDBCRecFunc jdbcRecFunc;
-
-    JDBCSodConfig jdbcSodConfig;
-
-    JDBCStationResult jdbcStationResult;
-
-    JDBCRejectedMaxima jdbcRejectMax;
-
+    
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Station.class);
 }

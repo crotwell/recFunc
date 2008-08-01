@@ -135,11 +135,11 @@ public class Network extends Revlet {
         return new VelocityStation(sta);
     }
     
-    ArrayList getAllChannels(String[] parts, VelocityStation sta) throws NotFound, SQLException {
-        Channel[] chans = NetworkDB.getSingleton().getChannelsForStation(sta.getWrapped());
-        ArrayList chanList = new ArrayList();
-        for(int i = 0; i < chans.length; i++) {
-            chanList.add(new VelocityChannel((ChannelImpl)chans[i]));
+    ArrayList<VelocityChannel> getAllChannels(String[] parts, VelocityStation sta) throws NotFound, SQLException {
+        ArrayList<VelocityChannel> chanList = new ArrayList<VelocityChannel>();
+        List<ChannelImpl> chans = NetworkDB.getSingleton().getChannelsForStation(sta.getWrapped());
+        for(ChannelImpl channelImpl : chans) {
+            chanList.add(new VelocityChannel(channelImpl));
         }
         return chanList;
     }

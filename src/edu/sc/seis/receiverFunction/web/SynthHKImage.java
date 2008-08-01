@@ -1,24 +1,18 @@
 package edu.sc.seis.receiverFunction.web;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServlet;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 import edu.iris.Fissures.FissuresException;
 import edu.sc.seis.TauP.TauModelException;
-import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.StackComplexity;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
-import edu.sc.seis.receiverFunction.server.HKBox;
+import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
@@ -43,7 +37,7 @@ public class SynthHKImage extends SummaryHKStackImageServlet {
         gaussianWidth =  RevUtil.getFloat("synthGaussian", req, gaussianWidth);
         float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());
         StackComplexity complexity = new StackComplexity(stack.getSum(), 4096, gaussianWidth);
-        StationResult model = new StationResult(net.get_id(),
+        StationResult model = new StationResult(net.getWrapped(),
                                                 staCode, 
                                                 stack.getSum().getMaxValueH(stack.getSmallestH()),
                                                 stack.getSum().getMaxValueK(stack.getSmallestH()),
@@ -58,7 +52,7 @@ public class SynthHKImage extends SummaryHKStackImageServlet {
             individuals.add(hk);
         }
         HKStack[] stacks = (HKStack[])individuals.toArray(new HKStack[0]);
-        SumHKStack distStack =  new SumHKStack(stacks, stacks[0].getChannel(), -1, stack.getSmallestH(), false, true, new HKBox[0]);
+        SumHKStack distStack = SumHKStack.calculateForPhase(individuals, stacks[0].getChannel(), -1, stack.getSmallestH(), false, true, new RejectedMaxima[0]);
         return distStack;   
     }
 

@@ -1,14 +1,14 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.sql.SQLException;
-import edu.iris.Fissures.model.UnitImpl;
+
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.fissuresUtil.bag.Hilbert;
-import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.sod.ConfigurationException;
 
 
@@ -27,7 +27,7 @@ public class AnalyticPhaseSeismogramImage extends SeismogramImage {
         // TODO Auto-generated constructor stub
     }
 
-    public DataSetSeismogram[] getDSS(CachedResult stack) {
+    public DataSetSeismogram[] getDSS(ReceiverFunctionResult stack) {
         DataSetSeismogram[] tmp = super.getDSS(stack);
         try {
             DataSetSeismogram[] out = new DataSetSeismogram[tmp.length+6];

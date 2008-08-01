@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 
 public class Crust2Test extends TestCase {
 
-    public void testLoad() throws IOException {
+    public void testLoad()  {
         Crust2 crust2 = new Crust2();
         Crust2Profile profile = crust2.get(-180, 90);
         assertEquals("code", "A2", crust2.getCode(-180, 90));

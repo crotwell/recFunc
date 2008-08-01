@@ -5,13 +5,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.receiverFunction.SumHKStack;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.ConfigurationException;
@@ -60,30 +64,24 @@ public class Overview extends StationList {
 		}
 	}
 
-	synchronized void checkDataLoaded(HttpServletRequest req)
-			throws SQLException {
+	synchronized void checkDataLoaded(HttpServletRequest req) {
 		if (data == null
 				|| loadtime.subtract(ClockUtil.now()).greaterThan(CACHE_TIME)) {
-			data = new HashMap();
+	        float gaussianWidth = RevUtil.getFloat("gaussian",
+	                                               req,
+	                                               Start.getDefaultGaussian());
+			data = new HashMap<VelocityStation, SumHKStack>();
 			loadtime = ClockUtil.now();
-			try {
-				ArrayList summaryList = jdbcSumHKStack.getAllWithoutData();
-				for (Iterator iter = summaryList.iterator(); iter.hasNext();) {
-					SumHKStack stack = (SumHKStack) iter.next();
-					data.put(new VelocityStation(
-							stack.getChannel().getSite().getStation()), stack);
-				}
-			} catch (NotFound e) {
-				// I don't think this should ever happen
-				throw new RuntimeException(e);
-			} catch (IOException e) {
-				// bad database problem if this happens
-				throw new RuntimeException(e);
-			}
+			List<SumHKStack> summaryList = RecFuncDB.getSingleton().getAllSumStack(gaussianWidth);
+            for (Iterator<SumHKStack> iter = summaryList.iterator(); iter.hasNext();) {
+            	SumHKStack stack = (SumHKStack) iter.next();
+            	data.put(new VelocityStation(NetworkDB.getSingleton().getStationForNet(stack.getNet(), stack.getStationCode()).get(0))
+            			, stack);
+            }
 		}
 	}
 
-	HashMap data = null;
+	HashMap<VelocityStation, SumHKStack> data = null;
 
 	MicroSecondDate loadtime;
 

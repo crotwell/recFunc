@@ -7,12 +7,15 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
@@ -23,12 +26,13 @@ import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.urls.StandardXYURLGenerator;
 import org.jfree.chart.urls.XYURLGenerator;
 import org.jfree.data.xy.AbstractXYDataset;
+
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.receiverFunction.HKStack;
-import edu.sc.seis.receiverFunction.server.HKStackIterator;
-import edu.sc.seis.receiverFunction.server.JDBCHKStack;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.sod.ConfigurationException;
@@ -47,7 +51,6 @@ public class EarthquakeHKPlot extends HttpServlet {
      */
     public EarthquakeHKPlot() throws Exception {
         station = new Station();
-        jdbcHKStack = station.jdbcHKStack;
     }
 
     protected void doPost(HttpServletRequest arg0, HttpServletResponse arg1)
@@ -61,25 +64,14 @@ public class EarthquakeHKPlot extends HttpServlet {
             boolean legend = false;
             boolean tooltips = true;
             boolean urls = true;
-            VelocityNetwork net = Start.getNetwork(req, jdbcHKStack.getJDBCChannel().getNetworkTable());
+            VelocityNetwork net = Start.getNetwork(req);
             String staCode = req.getParameter("stacode");
-            ArrayList stationList = station.getStationList(net.getDbId(), staCode);
+            ArrayList stationList = station.getStationList(net.getWrapped(), staCode);
 
             float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
             float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());QuantityImpl smallestH = HKStack.getBestSmallestH((VelocityStation)stationList.get(0));
-            ArrayList stackList = new ArrayList();
-            synchronized(jdbcHKStack.getConnection()) {
-                HKStackIterator it = jdbcHKStack.getIteratorForStation(net.getCode(),
-                                                                       staCode,
-                                                                       gaussianWidth,
-                                                                       minPercentMatch,
-                                                                       true);
-                while(it.hasNext()) {
-                    HKStack stack = (HKStack)it.next();
-                    stackList.add(new HKMax(stack, smallestH));
-                }
-                it.close();
-            }
+            List<ReceiverFunctionResult> stackList = RecFuncDB.getSingleton().getSuccessful(net.getWrapped(), staCode, gaussianWidth, minPercentMatch);
+            
             HKXYDataset dataset = new HKXYDataset(stackList);
             String title = "Maxima for Earthquakes at " + net.getCode() + "."
                     + staCode;
@@ -149,8 +141,6 @@ public class EarthquakeHKPlot extends HttpServlet {
 
     Station station;
 
-    JDBCHKStack jdbcHKStack;
-
     int xdimDefault = 600;
 
     int ydimDefault = 600;
@@ -185,9 +175,9 @@ class HKMax {
 
 class HKXYDataset extends AbstractXYDataset {
 
-    private ArrayList items;
+    private List items;
 
-    public HKXYDataset(ArrayList items) {
+    public HKXYDataset(List items) {
         this.items = items;
     }
 

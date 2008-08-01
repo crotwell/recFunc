@@ -1,6 +1,5 @@
 package edu.sc.seis.receiverFunction.web;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -20,14 +19,10 @@ import edu.sc.seis.fissuresUtil.bag.SimplePhaseStoN;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.NotFound;
-import edu.sc.seis.fissuresUtil.database.event.JDBCEventAccess;
-import edu.sc.seis.fissuresUtil.database.network.JDBCChannel;
 import edu.sc.seis.receiverFunction.HKStack;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.server.CachedResultPlusDbId;
-import edu.sc.seis.receiverFunction.server.JDBCHKStack;
-import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
-import edu.sc.seis.receiverFunction.server.JDBCSodConfig;
-import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.receiverFunction.server.SyntheticFactory;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
@@ -46,13 +41,6 @@ import edu.sc.seis.sod.velocity.network.VelocityStation;
 public class RFStationEvent extends Revlet {
 
     public RFStationEvent() throws SQLException, ConfigurationException, Exception {
-        Connection conn = getConnection();
-        jdbcEvent = new JDBCEventAccess(conn);
-        
-        JDBCChannel jdbcChannel  = new JDBCChannel(conn);
-        JDBCSodConfig jdbcSodConfig = new JDBCSodConfig(conn);
-        JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, RecFuncCacheImpl.getDataLoc());
-        hkStack = new JDBCHKStack(conn, jdbcEvent, jdbcChannel, jdbcSodConfig, jdbcRecFunc);
         staLoc = new StationLocator();
         ston = new SimplePhaseStoN("P",
                                    new TimeInterval(-1, UnitImpl.SECOND),
@@ -70,34 +58,29 @@ public class RFStationEvent extends Revlet {
         try {
             logger.debug("doGet called");
             res.setContentType("image/png");
-            CachedResultPlusDbId resultPlusDbId;
+            ReceiverFunctionResult result;
             if (RevUtil.get("rf", req).equals("synth")) {
-                resultPlusDbId = new CachedResultPlusDbId(SyntheticFactory.getCachedResult(), -1);
+                result = SyntheticFactory.getReceiverFunctionResult();
             } else {
                 int rfid = RevUtil.getInt("rf", req);
-                try {
-                    resultPlusDbId = hkStack.getJDBCRecFunc().get(rfid);
-                } catch (NotFound ee) {
-                    return handleNotFound(req, res, ee);
-                }
+                result = RecFuncDB.getSingleton().getReceiverFunctionResult(rfid);
             }
-            CachedResult result = resultPlusDbId.getCachedResult();
-            CacheEvent eq = new CacheEvent(result.event_attr, (OriginImpl)result.prefOrigin);
+            CacheEvent eq = result.getEvent();
             VelocityEvent velEvent = new VelocityEvent(eq);
-            VelocityStation sta = new VelocityStation((StationImpl)result.channels[0].getSite().getStation());
+            VelocityStation sta = new VelocityStation((StationImpl)result.getChannelGroup().getStation());
             
             VelocityContext vContext = new VelocityContext( Start.getDefaultContext());
             vContext.put("sta", sta);
             vContext.put("eq", velEvent);
             vContext.put("result", new VelocityCachedResult(result));
             vContext.put("rf", req.getParameter("rf"));
-            try {
                 HKStack stack;
                 if (req.getParameter("rf").equals("synth")) {
                     stack = SyntheticFactory.getHKStack();
                 } else {
-                    stack = hkStack.get(RevUtil.getInt("rf", req));
+                    stack = result.getHKstack();
                 }
+                if (stack != null) {
                 vContext.put("stack", stack);
                 vContext.put("rayparam", ""+stack.getP());
                 TimeInterval timePs = stack.getTimePs();
@@ -109,11 +92,9 @@ public class RFStationEvent extends Revlet {
                 TimeInterval timePsPs = stack.getTimePsPs();
                 timePsPs.setFormat(FissuresFormatter.getDepthFormat());
                 vContext.put("timePsPs", timePsPs);
-            } catch(NotFound e) {
-                logger.warn("Assume percent match below threshold. rf="+req.getParameter("rf"), e);
-            }
+                }
             
-            LocalSeismogramImpl[] seis = (LocalSeismogramImpl[])result.original;
+            LocalSeismogramImpl[] seis = new LocalSeismogramImpl[]{result.getOriginal1(),result.getOriginal2(),result.getOriginal3()};
             ArrayList triggers = new ArrayList();
             for(int i = 0; i < seis.length; i++) {
                 LongShortTrigger trigger = ston.process(sta.getLocation(), velEvent.get_preferred_origin(), seis[i]);
@@ -136,10 +117,6 @@ public class RFStationEvent extends Revlet {
     private SimplePhaseStoN ston;
     
     private StationLocator staLoc;
-    
-    private JDBCEventAccess jdbcEvent;
-    
-    private JDBCHKStack hkStack;
     
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(RFStationEvent.class);
 }

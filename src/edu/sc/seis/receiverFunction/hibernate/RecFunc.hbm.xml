@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult"
+		table="receiverFunctionResult">
+		<id name="dbid" type="integer">
+			<generator class="native" />
+		</id>
+		<many-to-one name="event"
+			class="edu.sc.seis.fissuresUtil.cache.CacheEvent" column="event"
+			foreign-key="FK_rf_event" />
+		<many-to-one name="channelGroup"
+			class="edu.sc.seis.fissuresUtil.hibernate.ChannelGroup" column="channelGroup"
+			foreign-key="FK_rf_channel" />
+		<property name="originalFile1"/>
+		<property name="originalFile2"/>
+		<property name="originalFile3"/>
+		<property name="radialFile"/>
+		<property name="transverseFile"/>
+		<property name="radialMatch" type="float"/>
+		<property name="radialBump" type="integer"/>
+		<property name="transverseMatch" type="float"/>
+		<property name="transverseBump" type="integer"/>
+		<property name="gwidth" type="float"/>
+		<property name="maxBumps" type="integer"/>
+		<property name="tol" type="float"/>
+		<property name="insertTime" type="timestamp"/>
+		<component name="qc" class="edu.sc.seis.receiverFunction.hibernate.RecFuncQCResult">
+			<property name="keep" type="boolean"/>
+			<property name="manualOverride" type="boolean"/>
+			<property name="transRadialRatio" type="float"/>
+			<property name="pMaxAmpRatio" type="float"/>
+			<property name="reason"/>
+			<property name="insertTime" type="timestamp"/>
+		</component>
+		<component name="HKstack" class="edu.sc.seis.receiverFunction.HKStack" >
+			<property name="alphaKmps" type="float"/>
+			<property name="p" type="float"/>
+			<property name="percentMatch" type="float"/>
+			<property name="minHKm" type="float"/>
+			<property name="stepHKm" type="float"/>
+			<property name="numH" type="integer"/>
+			<property name="minK" type="float"/>
+			<property name="stepK" type="float"/>
+			<property name="numK" type="integer"/>
+			<property name="weightPs" type="float"/>
+			<property name="weightPpPs" type="float"/>
+			<property name="weightPsPs" type="float"/>
+			<property name="stackFile"/>
+		</component>
+	</class>
+	
+	
+	<class name="edu.sc.seis.receiverFunction.SumHKStack"
+		table="sumHKStack">
+		<id name="dbid" type="integer">
+			<generator class="native" />
+		</id>
+		<many-to-one name="net"
+			class="edu.iris.Fissures.network.NetworkAttrImpl"
+			foreign-key="FK_reject_net"  unique-key="sumstack_net_sta_gauss_uniq"/>
+		<property name="staCode" unique-key="sumstack_net_sta_gauss_uniq"/>
+		<property name="gaussianWidth" type="float"  unique-key="sumstack_net_sta_gauss_uniq"/>
+		<component name="sum" class="edu.sc.seis.receiverFunction.HKStack" >
+			<property name="alphaKmps" type="float"/>
+			<property name="p" type="float"/>
+			<property name="percentMatch" type="float"/>
+			<property name="minHKm" type="float"/>
+			<property name="stepHKm" type="float"/>
+			<property name="numH" type="integer"/>
+			<property name="minK" type="float"/>
+			<property name="stepK" type="float"/>
+			<property name="numK" type="integer"/>
+			<property name="weightPs" type="float"/>
+			<property name="weightPpPs" type="float"/>
+			<property name="weightPsPs" type="float"/>
+			<property name="stackFile"/>
+		</component>
+		<list name="individuals" table="summaryStacks">
+			<key column="stackid"/> 
+		    <list-index column="position"/>
+		    <element type="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult" column="rfResult"></element>
+		</list>
+		<property name="maxVariance" type="float"/>
+		<property name="hVariance" type="float"/>
+		<property name="kVariance" type="float"/>
+		<property name="mixedVariance" type="float"/>
+		<component name="best" class="edu.sc.seis.receiverFunction.compare.StationResult">
+			<property name="h" type="float"/>
+			<property name="VpVs" type="float"/>
+			<property name="amp" type="float"/>
+		</component>
+		<component name="complexityResult" class="edu.sc.seis.receiverFunction.server.StackComplexityResult">
+			<property name="complexity" type="float"/>
+			<property name="complexity25" type="float"/>
+			<property name="complexity50" type="float"/>
+			<property name="bestH" type="float"/>
+			<property name="bestHStdDev" type="float"/>
+			<property name="bestK" type="float"/>
+			<property name="bestKStdDev" type="float"/>
+			<property name="bestVal" type="float"/>
+			<property name="hkCorrelation" type="float"/>
+			<property name="nextH" type="float"/>
+			<property name="nextK" type="float"/>
+			<property name="nextVal" type="float"/>
+			<property name="crust2diff" type="float"/>
+		</component>
+	</class>
+
+	<class name="edu.sc.seis.receiverFunction.hibernate.RejectedMaxima"
+		table="rejectedMaxima">
+		<id name="dbid" type="integer">
+			<generator class="native" />
+		</id>
+		<many-to-one name="net"
+			class="edu.iris.Fissures.network.NetworkAttrImpl"
+			foreign-key="FK_reject_net" />
+		<property name="staCode"/>
+		<property name="hMin" type="float"/>
+		<property name="hMax" type="float"/>
+		<property name="kMin" type="float"/>
+		<property name="kMax" type="float"/>
+		<property name="reason"/>
+		<property name="insertTime" type="timestamp"/>
+	</class>
+
+	<class name="edu.sc.seis.receiverFunction.compare.StationResult"
+		table="priorResults">
+		<id name="dbid" type="integer">
+			<generator class="native" />
+		</id>
+		<many-to-one name="net"
+			class="edu.iris.Fissures.network.NetworkAttrImpl"
+			foreign-key="FK_reject_net" />
+		<property name="staCode"/>
+		<component name="ref" class="edu.sc.seis.receiverFunction.compare.StationResultRef">
+			<property name="name"/>
+			<property name="method"/>
+			<property name="reference"/>
+			<property name="url"/>
+		</component>
+		<component name="h"
+			class="edu.iris.Fissures.model.QuantityImpl" access="field">
+			<property name="value" column="depth_value"
+				type="double"  />
+			<many-to-one name="unit"
+				class="edu.iris.Fissures.model.UnitImpl" column="depth_unit_id"
+				foreign-key="FK_DEPTH_UNIT_ID" lazy="false" />
+		</component>
+		<property name="VpVs" type="float"/>
+		<property name="Vp" type="float"/>
+		<component name="hStdDev"
+			class="edu.iris.Fissures.model.QuantityImpl" access="field">
+			<property name="value" column="depth_value"
+				type="double"  />
+			<many-to-one name="unit"
+				class="edu.iris.Fissures.model.UnitImpl" column="depth_unit_id"
+				foreign-key="FK_DEPTH_UNIT_ID" lazy="false" />
+		</component>
+		<property name="kStdDev" type="float"/>
+		<property name="extras"/>
+	</class>
+	
+	<class name="edu.sc.seis.receiverFunction.hibernate.RFInsertion"
+		table="rfinsertion">
+		<id name="dbid" type="integer">
+			<generator class="native" />
+		</id>
+		<many-to-one name="net"
+			class="edu.iris.Fissures.network.NetworkAttrImpl"
+			foreign-key="FK_reject_net" unique-key="RFInsertion_uniq"/>
+		<property name="staCode" unique-key="RFInsertion_uniq"/>
+		<property name="gaussianWidth" type="float"  unique-key="RFInsertion_uniq"/>
+		<property name="insertTime" type="timestamp"/>
+	</class>
+
+</hibernate-mapping>

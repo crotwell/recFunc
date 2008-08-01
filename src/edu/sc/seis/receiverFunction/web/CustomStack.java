@@ -4,22 +4,25 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
+
 import javax.servlet.http.HttpServletRequest;
+
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.sc.seis.TauP.TauModelException;
-import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
-import edu.sc.seis.receiverFunction.server.CachedResultPlusDbId;
-import edu.sc.seis.receiverFunction.server.HKBox;
-import edu.sc.seis.receiverFunction.server.JDBCHKStack;
-import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
-import edu.sc.seis.receiverFunction.server.JDBCRejectedMaxima;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
+import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.sod.ConfigurationException;
 
@@ -32,12 +35,10 @@ public class CustomStack extends Station {
     public SumHKStack getSummaryStack(HttpServletRequest req)
             throws SQLException, NotFound, IOException, TauModelException,
             FissuresException {
-        return calcCustomStack(req, jdbcHKStack, jdbcRejectMax);
+        return calcCustomStack(req);
     }
 
-    public static SumHKStack calcCustomStack(HttpServletRequest req,
-                                             JDBCHKStack jdbcHKStack,
-                                             JDBCRejectedMaxima jdbcRejectMax)
+    public static SumHKStack calcCustomStack(HttpServletRequest req)
             throws SQLException, NotFound, IOException, TauModelException,
             FissuresException {
         int[] dbids = parseDbIds(req);
@@ -45,62 +46,62 @@ public class CustomStack extends Station {
             throw new RuntimeException("No dbids found in query params");
         }
         HKStack[] plots = new HKStack[dbids.length];
+        List<ReceiverFunctionResult> rf = new ArrayList<ReceiverFunctionResult>();
+        RecFuncDB rfdb = RecFuncDB.getSingleton();
         if(RevUtil.exists("vp", req)) {
             // custom vp, so we need to recreate the HK stacks
             for(int i = 0; i < dbids.length; i++) {
-                plots[i] = jdbcHKStack.calc(dbids[i],
-                                            JDBCHKStack.DEFAULT_WEIGHT_Ps,
-                                            JDBCHKStack.DEFAULT_WEIGHT_PpPs,
-                                            JDBCHKStack.DEFAULT_WEIGHT_PsPs,
-                                            false,
+                ReceiverFunctionResult result = rfdb.getReceiverFunctionResult(dbids[i]);
+                rf.add(result);
+                plots[i] = HKStack.create(result,
+                                            HKStack.DEFAULT_WEIGHT_Ps,
+                                            HKStack.DEFAULT_WEIGHT_PpPs,
+                                            HKStack.DEFAULT_WEIGHT_PsPs,
                                             new QuantityImpl(RevUtil.getFloat("vp", req), UnitImpl.KILOMETER_PER_SECOND));
                 plots[i].compact();
             }
         } else {
             for(int i = 0; i < dbids.length; i++) {
-                try {
-                    plots[i] = jdbcHKStack.get(dbids[i]);
-                } catch(NotFound n) {
-                    plots[i] = jdbcHKStack.calc(dbids[i], true);
+                ReceiverFunctionResult result = rfdb.getReceiverFunctionResult(dbids[i]);
+                rf.add(result);
+                    plots[i] = result.getHKstack();
+                if (plots[i] == null) {
+                    plots[i] = HKStack.create(result,
+                                               HKStack.DEFAULT_WEIGHT_Ps,
+                                               HKStack.DEFAULT_WEIGHT_PpPs,
+                                               HKStack.DEFAULT_WEIGHT_PsPs);
                 }
                 plots[i].compact();
             }
         }
         boolean doBootstrap = RevUtil.getBoolean("bootstrap", req, false);
-        int netDbId = Start.getNetwork(req,
-                                       jdbcHKStack.getJDBCChannel()
-                                               .getNetworkTable()).getDbId();
-        HKBox[] rejects = jdbcRejectMax.getForStation(netDbId,
-                                                      req.getParameter("stacode"));
-        SumHKStack sumStack = new SumHKStack(plots,
-                                             plots[0].getChannel(),
-                                             80,
-                                             HKStack.getDefaultSmallestH(),
-                                             doBootstrap,
-                                             true,
-                                             rejects);
+        NetworkAttrImpl net = Start.getNetwork(req).getWrapped();
+        Set<RejectedMaxima> rejects = new HashSet<RejectedMaxima>();
+        rejects.addAll(rfdb.getRejectedMaxima(net, req.getParameter("stacode")));
+        SumHKStack sumStack = SumHKStack.calculateForPhase(rf, 
+                                                           HKStack.getDefaultSmallestH(), 
+                                                           0, true, rejects, doBootstrap, 
+                                                           SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS, "all");
         sumStack.calcStackComplexity();
         return sumStack;
     }
 
-    public CacheEvent[] getWinnerEvents(HttpServletRequest req)
-            throws SQLException, NotFound, FileNotFoundException,
+    public List<ReceiverFunctionResult> getWinnerEvents(HttpServletRequest req)
+            throws NotFound, FileNotFoundException,
             FissuresException, IOException {
         int[] dbids = parseDbIds(req);
-        CacheEvent[] events = new CacheEvent[dbids.length];
+        List<ReceiverFunctionResult> out = new ArrayList<ReceiverFunctionResult>();
+        RecFuncDB rfdb = RecFuncDB.getSingleton();
         for(int i = 0; i < dbids.length; i++) {
-            CachedResultPlusDbId result = jdbcRecFunc.get(dbids[i]);
+            ReceiverFunctionResult result = rfdb.getReceiverFunctionResult(dbids[i]);
             if(result != null) {
-                events[i] = result.getEvent();
-                JDBCRecFunc.addToParms(events[i].getOrigin(),
-                                       result.getCachedResult().radialMatch,
-                                       dbids[i]);
+                out.add(result);
             } else {
                 throw new RuntimeException("no receiver function found for dbid="
                         + dbids[i]);
             }
         }
-        return events;
+        return out;
     }
 
     static int[] parseDbIds(HttpServletRequest req) {
@@ -119,8 +120,8 @@ public class CustomStack extends Station {
         return ids;
     }
 
-    public CacheEvent[] getLoserEvents(HttpServletRequest req)
+    public List<ReceiverFunctionResult> getLoserEvents(HttpServletRequest req)
             throws SQLException, NotFound {
-        return new CacheEvent[0];
+        return new ArrayList<ReceiverFunctionResult>();
     }
 }

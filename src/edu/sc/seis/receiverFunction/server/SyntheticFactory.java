@@ -13,6 +13,7 @@ import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.SamplingImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
@@ -22,9 +23,12 @@ import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
+import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
+import edu.sc.seis.sod.SodConfig;
 import edu.sc.seis.fissuresUtil.sac.SacToFissures;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
+import edu.sc.seis.receiverFunction.HKAlpha;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.IterDecon;
 import edu.sc.seis.receiverFunction.IterDeconResult;
@@ -32,6 +36,7 @@ import edu.sc.seis.receiverFunction.RecFunc;
 import edu.sc.seis.receiverFunction.RecFuncException;
 import edu.sc.seis.receiverFunction.RecFuncProcessor;
 import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 
 /**
  * @author crotwell Created on Apr 29, 2005
@@ -47,8 +52,8 @@ public class SyntheticFactory {
         return out;
     }
 
-    public static Channel[] getChannels() throws IOException {
-        Channel[] out = new Channel[3];
+    public static ChannelImpl[] getChannels() throws IOException {
+        ChannelImpl[] out = new ChannelImpl[3];
         for(int i = 0; i < out.length; i++) {
             out[i] = SacToFissures.getChannel(getSac(filebase + suffix[i]));
         }
@@ -76,13 +81,13 @@ public class SyntheticFactory {
         return shift;
     }
     
-    public static CachedResult getCachedResult() throws NoPreferredOrigin,
+    public static ReceiverFunctionResult getReceiverFunctionResult() throws NoPreferredOrigin,
             FissuresException, IncompatibleSeismograms, TauModelException,
             RecFuncException, IOException {
         LocalSeismogramImpl[] seis = getSeismograms();
         CacheEvent event = getEvent();
         if(event == null) { throw new NoPreferredOrigin(); }
-        Channel[] channels = getChannels();
+        ChannelImpl[] channels = getChannels();
         Channel chan = channels[0];
         Location staLoc = chan.getSite().getStation().getLocation();
         TauPUtil taup = getTauP();
@@ -130,38 +135,33 @@ public class SyntheticFactory {
                                                      seis[0],
                                                      UnitImpl.DIMENSONLESS);
         }
-        return new CachedResult(event.getOrigin(),
-                                event.get_attributes(),
-                                new IterDeconConfig(RecFuncProcessor.DEFAULT_GWIDTH,
-                                                    RecFuncProcessor.DEFAULT_MAXBUMPS,
-                                                    RecFuncProcessor.DEFAULT_TOL),
-                                channels,
-                                seis,
+        return new ReceiverFunctionResult(event,
+                                          new ChannelGroup(channels),
+                                seis[0], seis[1], seis[2],
                                 predictedDSS[0].getCache()[0],
+                                predictedDSS[1].getCache()[0],
                                 ans[0].getPercentMatch(),
                                 ans[0].getBump(),
-                                predictedDSS[1].getCache()[0],
                                 ans[1].getPercentMatch(),
                                 ans[1].getBump(),
-                                -1,
-                                ClockUtil.now().getFissuresTime());
+                                RecFuncProcessor.DEFAULT_GWIDTH,
+                                RecFuncProcessor.DEFAULT_MAXBUMPS,
+                                RecFuncProcessor.DEFAULT_TOL,
+                                new SodConfig("fake"));
     }
 
-    public static StationResult getStationResult() {
-        return new StationResult(new NetworkId("XX", ClockUtil.now().getFissuresTime()),
-                                 "XX",
-                                 new QuantityImpl(30, UnitImpl.KILOMETER),
+    public static HKAlpha getHKAlpha() {
+        return new HKAlpha(new QuantityImpl(30, UnitImpl.KILOMETER),
                                  1.75f,
                                  new QuantityImpl(6.3,
-                                                  UnitImpl.KILOMETER_PER_SECOND),
-                                 null);
+                                                  UnitImpl.KILOMETER_PER_SECOND));
     }
 
     public static HKStack getHKStack() throws FissuresException,
             NoPreferredOrigin, TauModelException, IncompatibleSeismograms,
             RecFuncException, IOException {
-        StationResult staResult = getStationResult();
-        return HKStack.create(getCachedResult(),
+        HKAlpha staResult = getHKAlpha();
+        return HKStack.create(getReceiverFunctionResult(),
                               1 / 3f,
                               1 / 3f,
                               1 / 3f,

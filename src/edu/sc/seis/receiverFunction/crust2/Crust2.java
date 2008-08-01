@@ -22,15 +22,20 @@ import edu.iris.Fissures.Location;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.sc.seis.TauP.VelocityLayer;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
 
 public class Crust2 {
 
-    public Crust2() throws IOException {
-        parseTypes();
-        parseLatLonModel();
+    public Crust2() {
+        try {
+            parseTypes();
+            parseLatLonModel();
+        } catch(IOException e) {
+            throw new RuntimeException("Shouldn't happen", e);
+        }
     }
 
     public String getCode(int longitude, int latitude) {
@@ -79,7 +84,7 @@ public class Crust2 {
     public StationResult getStationResult(Station station) {
         Crust2Profile profile = getClosest(station.getLocation().longitude,
                                            station.getLocation().latitude);
-        return new StationResult(station.getNetworkAttr().get_id(),
+        return new StationResult((NetworkAttrImpl)station.getNetworkAttr(),
                                  station.get_code(),
                                  profile.getCrustThickness(),
                                  (float)(profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity()),

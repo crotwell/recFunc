@@ -1,6 +1,7 @@
 package edu.sc.seis.receiverFunction.browser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -90,14 +91,16 @@ public class EventSeismogramRFTask extends EventSeismogramTask {
                     logger.debug("The depth is "+origin.getLocation().depth.value);
                     logger.debug("Num Channel->"+channels.length);
                     List failures = new ArrayList();
-                    ChannelGroup[] groups = grouper.group(channels, failures);
-                    for(int channelNum = 0; channelNum < groups.length; channelNum++){
+                    List<ChannelGroup> groups = grouper.group(Arrays.asList(channels), failures);
+                    int channelNum = 0;
+                    for(ChannelGroup channelGroup : groups) {
                         String channelStatus = (channelNum + 1) + "/" + channels.length;
+                        channelNum++;
                         setStatus("Loading channel " + channelStatus);// + " for event " + eventStatus);
                         
-                        ChannelId[] chanIds = new ChannelId[groups[channelNum].getChannels().length];
+                        ChannelId[] chanIds = new ChannelId[channelGroup.getChannels().length];
                         for(int i = 0; i < chanIds.length; i++) {
-                            chanIds[i] = groups[channelNum].getChannels()[i].get_id();
+                            chanIds[i] = channelGroup.getChannels()[i].get_id();
                         }
                         
                         IterDeconConfig[] deconConfig = cache.getCachedConfigs(eventAccess[eventNum].get_preferred_origin(), chanIds);
@@ -113,11 +116,11 @@ public class EventSeismogramRFTask extends EventSeismogramTask {
                                                                         chanIds[0].site_code,
                                                                         "ITR",
                                                                         chanIds[0].begin_time),
-                                                           "ITR_"+groups[channelNum].getChannels()[0].getName(),
-                                                           groups[channelNum].getChannels()[0].getOrientation(),
-                                                           groups[channelNum].getChannels()[0].getSamplingInfo(),
-                                                           groups[channelNum].getChannels()[0].getEffectiveTime(),
-                                                           groups[channelNum].getChannels()[0].getSite());
+                                                           "ITR_"+channelGroup.getChannels()[0].getName(),
+                                                           channelGroup.getChannels()[0].getOrientation(),
+                                                           channelGroup.getChannels()[0].getSamplingInfo(),
+                                                           channelGroup.getChannels()[0].getEffectiveTime(),
+                                                           channelGroup.getChannels()[0].getSite());
                             MemoryDataSetSeismogram dss = new MemoryDataSetSeismogram((LocalSeismogramImpl)result.radial);
                             populateLocalDataSet(eventAccess[eventNum], dss, itrChan);
                             if (display != null){
@@ -125,7 +128,7 @@ public class EventSeismogramRFTask extends EventSeismogramTask {
                             }
                         } else {
                             logger.info("No CachedResult for "+
-                                        ChannelIdUtil.toString(groups[channelNum].getChannels()[0].get_id()));
+                                        ChannelIdUtil.toString(channelGroup.getChannels()[0].get_id()));
                         }
                     }
                 } catch(Exception ex) {

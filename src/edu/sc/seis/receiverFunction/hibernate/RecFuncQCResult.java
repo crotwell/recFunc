@@ -1,13 +1,15 @@
-package edu.sc.seis.receiverFunction.server;
+package edu.sc.seis.receiverFunction.hibernate;
 
 import java.sql.Timestamp;
 
 public class RecFuncQCResult {
 
-    public RecFuncQCResult(int recFunc_id, boolean keep, boolean manualOverride, float transRadialRatio, float pMaxAmpRatio, String reason, Timestamp insertTime) {
-        super();
-        // TODO Auto-generated constructor stub
-        this.recFunc_id = recFunc_id;
+    public RecFuncQCResult(boolean keep,
+                           boolean manualOverride,
+                           float transRadialRatio,
+                           float pMaxAmpRatio,
+                           String reason,
+                           Timestamp insertTime) {
         this.keep = keep;
         this.manualOverride = manualOverride;
         this.transRadialRatio = transRadialRatio;
@@ -32,33 +34,47 @@ public class RecFuncQCResult {
         return reason;
     }
 
-    public int getRecFunc_id() {
-        return recFunc_id;
-    }
-
     public float getPMaxAmpRatio() {
         return pMaxAmpRatio;
     }
 
-    
     public float getTransRadialRatio() {
         return transRadialRatio;
     }
-    
-    private int recFunc_id;
 
     private boolean keep;
 
     private boolean manualOverride;
 
     private float transRadialRatio;
-    
+
     private float pMaxAmpRatio;
-    
+
     private String reason;
 
     private Timestamp insertTime;
 
-    
-    
+    public void setKeep(boolean keep) {
+        this.keep = keep;
+    }
+
+    public void setManualOverride(boolean manualOverride) {
+        this.manualOverride = manualOverride;
+    }
+
+    public void setTransRadialRatio(float transRadialRatio) {
+        this.transRadialRatio = transRadialRatio;
+    }
+
+    public void setPMaxAmpRatio(float maxAmpRatio) {
+        pMaxAmpRatio = maxAmpRatio;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public void setInsertTime(Timestamp insertTime) {
+        this.insertTime = insertTime;
+    }
 }

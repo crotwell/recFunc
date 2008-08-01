@@ -45,14 +45,7 @@ public class Crust2Process implements WaveformVectorProcess  {
 
     }
 
-    transient static Crust2 crust2 = null;
-    static {
-        try {
-            crust2 = new Crust2();
-        } catch (IOException e) {
-            GlobalExceptionHandler.handle("Couldn't load Crust2.0", e);
-        }
-    }
+    transient static Crust2 crust2 =  new Crust2();
 
 }
 

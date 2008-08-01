@@ -3,6 +3,7 @@ package edu.sc.seis.receiverFunction.web;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.IfReceiverFunction.SodConfigNotFound;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.sod.status.FissuresFormatter;
 
 
@@ -15,45 +16,45 @@ public class VelocityCachedResult {
     /**
      *
      */
-    public VelocityCachedResult(CachedResult result) {
+    public VelocityCachedResult(ReceiverFunctionResult result) {
         this.result = result;
     }
 
     public String getradialMatch() {
-        return ""+result.radialMatch;
+        return ""+result.getRadialMatch();
     }
     
     public String getradialBump() {
-        return ""+result.radialBump;
+        return ""+result.getRadialBump();
     }
     
     public String gettransverseMatch() {
-        return ""+result.transverseMatch;
+        return ""+result.getTransverseMatch();
     }
     
     public String gettransverseBump() {
-        return ""+result.transverseBump;
+        return ""+result.getTransverseBump();
     }
     
     public String getsodConfigId() {
-        return ""+result.sodConfigId;
+        return ""+result.getConfig().getDbid();
     }
     
     public String getinsertTime() {
-        return FissuresFormatter.formatDate(new MicroSecondDate(result.insertTime));
+        return FissuresFormatter.formatDate(new MicroSecondDate(result.getInsertTime()));
     }
     
     public String getgwidth() {
-        return ""+result.config.gwidth;
+        return ""+result.getGwidth();
     }
     
     public String getmaxBumps() {
-        return ""+result.config.maxBumps;
+        return ""+result.getMaxBumps();
     }
     
     public String gettol() {
-        return ""+result.config.tol;
+        return ""+result.getTol();
     }
     
-    CachedResult result;
+    ReceiverFunctionResult result;
 }

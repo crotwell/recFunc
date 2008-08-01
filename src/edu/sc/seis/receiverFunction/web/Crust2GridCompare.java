@@ -1,22 +1,18 @@
 package edu.sc.seis.receiverFunction.web;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.model.UnitImpl;
-import edu.sc.seis.fissuresUtil.bag.Statistics;
-import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
-import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
-import edu.sc.seis.receiverFunction.server.JDBCHKStack;
-import edu.sc.seis.receiverFunction.server.JDBCRecFunc;
-import edu.sc.seis.receiverFunction.server.JDBCSummaryHKStack;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
@@ -24,10 +20,6 @@ import edu.sc.seis.rev.RevletContext;
 public class Crust2GridCompare extends Revlet {
 
 	public Crust2GridCompare() throws Exception {
-		Connection conn = getConnection();
-		JDBCRecFunc jdbcRecFunc = new JDBCRecFunc(conn, Start.getDataLoc());
-		JDBCHKStack jdbcHKStack = new JDBCHKStack(jdbcRecFunc);
-		jdbcSummaryHKStack = new JDBCSummaryHKStack(jdbcHKStack);
 	}
 
 	public RevletContext getContext(HttpServletRequest req,
@@ -42,14 +34,17 @@ public class Crust2GridCompare extends Revlet {
 		} else {
 			vmFile = "crust2GridCompare.vm";
 		}
+        float gaussianWidth = RevUtil.getFloat("gaussian",
+                                               req,
+                                               Start.getDefaultGaussian());
 		RevletContext context = new RevletContext(vmFile, Start
 				.getDefaultContext());
-		ArrayList summaries = jdbcSummaryHKStack.getAllWithoutData();
+		List<SumHKStack> summaries = RecFuncDB.getSingleton().getAllSumStack(gaussianWidth);
 		Iterator it = summaries.iterator();
 		HashMap sumByGrid = new HashMap();
 		while (it.hasNext()) {
 			SumHKStack sum = (SumHKStack) it.next();
-			Location loc = sum.getChannel().getSite().getStation().getLocation();
+			Location loc = sum.getIndividuals().iterator().next().getChannelGroup().getStation().getLocation();
 			int[] ll = Crust2.getClosestLonLat(loc.longitude, loc.latitude);
 			String llStr = ll[0] + "," + ll[1];
 			List gridList;
@@ -82,7 +77,7 @@ public class Crust2GridCompare extends Revlet {
 						.getValue(UnitImpl.KILOMETER);
 				kVals[i] = sum.getSum().getMaxValueK();
 			}
-			Location loc = sum.getChannel().getSite().getStation().getLocation();
+			Location loc = sum.getIndividuals().iterator().next().getChannelGroup().getStation().getLocation();
 			int[] lonLat = Crust2.getClosestLonLat(loc);
 			output.add(new Crust2GridCompareResult(hVals, kVals, lonLat[1],
 					lonLat[0], gridList, crust2.getByCode(crust2
@@ -106,6 +101,4 @@ public class Crust2GridCompare extends Revlet {
 	}
 
 	Crust2 crust2 = new Crust2();
-
-	JDBCSummaryHKStack jdbcSummaryHKStack;
 }

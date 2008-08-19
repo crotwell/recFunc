@@ -4,18 +4,16 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
+
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import edu.sc.seis.fissuresUtil.display.BorderedDisplay;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.HKStackImage;
 import edu.sc.seis.receiverFunction.StackComplexity;
 import edu.sc.seis.receiverFunction.SumHKStack;
-import edu.sc.seis.receiverFunction.compare.StationResult;
-import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
-import edu.sc.seis.receiverFunction.server.HKBox;
-import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
@@ -43,7 +41,8 @@ public class ComplexityResidualImage extends SummaryHKStackImageServlet {
                               -1,
                               -1,
                               stack.getNumEQ(),
-                              new RejectedMaxima[0]);
+                              stack.getIndividuals(),
+                              stack.getRejectedMaxima());
     }
 
     void output(SumHKStack sumStack,

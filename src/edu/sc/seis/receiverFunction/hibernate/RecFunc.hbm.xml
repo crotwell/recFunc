@@ -110,6 +110,64 @@
 			<property name="crust2diff" type="float"/>
 		</component>
 	</class>
+	
+	<class name="edu.sc.seis.receiverFunction.AzimuthSumHKStack"
+		table="azSumHKStack">
+		<id name="dbid" type="integer">
+			<generator class="native" />
+		</id>
+		<many-to-one name="net"
+			class="edu.iris.Fissures.network.NetworkAttrImpl"
+			foreign-key="FK_reject_net"  unique-key="azsumstack_net_sta_gauss_uniq"/>
+		<property name="staCode" unique-key="azsumstack_net_sta_gauss_uniq"/>
+		<property name="gaussianWidth" type="float"  unique-key="azsumstack_net_sta_gauss_uniq"/>
+		<component name="sum" class="edu.sc.seis.receiverFunction.HKStack" >
+			<property name="alphaKmps" type="float"/>
+			<property name="p" type="float"/>
+			<property name="percentMatch" type="float"/>
+			<property name="minHKm" type="float"/>
+			<property name="stepHKm" type="float"/>
+			<property name="numH" type="integer"/>
+			<property name="minK" type="float"/>
+			<property name="stepK" type="float"/>
+			<property name="numK" type="integer"/>
+			<property name="weightPs" type="float"/>
+			<property name="weightPpPs" type="float"/>
+			<property name="weightPsPs" type="float"/>
+			<property name="stackFile"/>
+		</component>
+		<list name="individuals" table="summaryStacks">
+			<key column="stackid"/> 
+		    <list-index column="position"/>
+		    <element type="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult" column="rfResult"></element>
+		</list>
+		<property name="maxVariance" type="float"/>
+		<property name="hVariance" type="float"/>
+		<property name="kVariance" type="float"/>
+		<property name="mixedVariance" type="float"/>
+		<component name="best" class="edu.sc.seis.receiverFunction.compare.StationResult">
+			<property name="h" type="float"/>
+			<property name="VpVs" type="float"/>
+			<property name="amp" type="float"/>
+		</component>
+		<component name="complexityResult" class="edu.sc.seis.receiverFunction.server.StackComplexityResult">
+			<property name="complexity" type="float"/>
+			<property name="complexity25" type="float"/>
+			<property name="complexity50" type="float"/>
+			<property name="bestH" type="float"/>
+			<property name="bestHStdDev" type="float"/>
+			<property name="bestK" type="float"/>
+			<property name="bestKStdDev" type="float"/>
+			<property name="bestVal" type="float"/>
+			<property name="hkCorrelation" type="float"/>
+			<property name="nextH" type="float"/>
+			<property name="nextK" type="float"/>
+			<property name="nextVal" type="float"/>
+			<property name="crust2diff" type="float"/>
+		</component>
+		<property name="azimuthCenter" type="float"  unique-key="azsumstack_net_sta_gauss_uniq"/>
+		<property name="azimuthWidth" type="float"  unique-key="azsumstack_net_sta_gauss_uniq"/>
+	</class>
 
 	<class name="edu.sc.seis.receiverFunction.hibernate.RejectedMaxima"
 		table="rejectedMaxima">

@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.IfNetwork.StationId;
 import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.database.NotFound;
@@ -19,37 +22,34 @@ import edu.sc.seis.receiverFunction.AzimuthSumHKStack;
 import edu.sc.seis.receiverFunction.BazIterator;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
+import edu.sc.seis.receiverFunction.web.Start;
 import edu.sc.seis.sod.ConfigurationException;
 
 public class AzimuthStackSummary extends StackSummary {
 
-    public AzimuthStackSummary(Connection conn, Properties props) throws IOException, SQLException, ConfigurationException,
+    public AzimuthStackSummary(Connection conn, Properties props)
+            throws IOException, SQLException, ConfigurationException,
             TauModelException, Exception {
         super(props);
     }
 
     public SumHKStack createSummary(StationId station,
-                              float gaussianWidth,
-                              float minPercentMatch,
-                              QuantityImpl smallestH,
-                              boolean doBootstrap,
-                              boolean usePhaseWeight) throws FissuresException, NotFound, IOException, SQLException {
-        AzimuthSumHKStack[] azimuthSum = azimuthSum(station.network_id.network_code,
-                                                    station.station_code,
-                                                    gaussianWidth,
-                                                    minPercentMatch,
-                                                    smallestH,
-                                                    doBootstrap,
-                                                    usePhaseWeight);
-        for(int i = 0; i < azimuthSum.length; i++) {
-            try {
-                int dbid = jdbcAz.getDbIdForStation(station.network_id, station.station_code, azimuthSum[i].getAzimuth(), azimuthSum[i].getAzWidth());
-                jdbcAz.update(dbid, azimuthSum[i]);
-            } catch(NotFound e) {
-                jdbcAz.put(azimuthSum[i]);
-            }
-        }
+                                    float gaussianWidth,
+                                    float minPercentMatch,
+                                    QuantityImpl smallestH,
+                                    boolean doBootstrap,
+                                    boolean usePhaseWeight)
+            throws FissuresException, NotFound, IOException, SQLException {
+        azimuthSum(station.network_id.network_code,
+                   station.station_code,
+                   gaussianWidth,
+                   minPercentMatch,
+                   smallestH,
+                   doBootstrap,
+                   usePhaseWeight);
         // bad code, but isn't needed
         // fix later
         // famous last words...
@@ -62,35 +62,54 @@ public class AzimuthStackSummary extends StackSummary {
                                           float percentMatch,
                                           QuantityImpl smallestH,
                                           boolean doBootstrap,
-                                          boolean usePhaseWeight) throws FissuresException, NotFound, IOException,
-            SQLException {
+                                          boolean usePhaseWeight)
+            throws FissuresException, NotFound, IOException, SQLException {
         logger.info("in sum for " + netCode + "." + staCode);
+        RecFuncDB rfdb = RecFuncDB.getSingleton();
         TimeOMatic.start();
-        List out = new ArrayList();
-        ArrayList individualHK = jdbcHKStack.getForStation(netCode, staCode, gaussianWidth, percentMatch, true);
+        List<AzimuthSumHKStack> out = new ArrayList<AzimuthSumHKStack>();
+        NetworkAttrImpl net = Start.getNetwork(netCode).getWrapped();
+        List<ReceiverFunctionResult> individualHK = rfdb.getSuccessful(net,
+                                                                       staCode,
+                                                                       gaussianWidth,
+                                                                       percentMatch);
         for(float center = 0; center < 360; center += step) {
-            ArrayList sectorHK = new ArrayList();
-            BazIterator bazIt = new BazIterator(individualHK.iterator(), center - width / 2, center + width / 2);
+            List<ReceiverFunctionResult> sectorHK = new ArrayList<ReceiverFunctionResult>();
+            BazIterator bazIt = new BazIterator(individualHK.iterator(), center
+                    - width / 2, center + width / 2);
             while(bazIt.hasNext()) {
                 sectorHK.add(bazIt.next());
             }
             // if there is only 1 eq that matches, then we can't really do a
             // stack
             if(sectorHK.size() > 1) {
-                HKStack temp = (HKStack)sectorHK.get(0);
-                List<StationImpl> sta = NetworkDB.getSingleton().getStationByCodes(netCode, staCode);
-                int netDbId = jdbcHKStack.getJDBCChannel().getStationTable().getBestNetworkDbId(netCode, staCode);
-                RejectedMaxima[] rejects = jdbcRejectMax.getForStation(netDbId,
-                                                              staCode);
-                SumHKStack sumStack = new SumHKStack((HKStack[])sectorHK.toArray(new HKStack[0]),
-                                                     temp.getChannel(),
-                                                     percentMatch,
-                                                     smallestH,
-                                                     doBootstrap,
-                                                     usePhaseWeight,
-                                                     rejects);
+                List<StationImpl> sta = NetworkDB.getSingleton()
+                        .getStationByCodes(netCode, staCode);
+                Set<RejectedMaxima> rejects = new HashSet<RejectedMaxima>();
+                rejects.addAll(rfdb.getRejectedMaxima(net, staCode));
+                AzimuthSumHKStack azStack = AzimuthSumHKStack.calculateForPhase(sectorHK,
+                                                                                smallestH,
+                                                                                percentMatch,
+                                                                                usePhaseWeight,
+                                                                                rejects,
+                                                                                doBootstrap,
+                                                                                SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS,
+                                                                                "ALL",
+                                                                                center,
+                                                                                width);
+                AzimuthSumHKStack dbAzStack = rfdb.getAzSumStack(net,
+                                                                 staCode,
+                                                                 gaussianWidth,
+                                                                 center,
+                                                                 width);
+                if(dbAzStack == null) {
+                    rfdb.putAzimuthSummary(azStack);
+                } else {
+                    azStack.setDbid(dbAzStack.getDbid());
+                    RecFuncDB.getSession().evict(dbAzStack);
+                    RecFuncDB.getSession().saveOrUpdate(azStack);
+                }
                 TimeOMatic.print("sum for " + netCode + "." + staCode);
-                AzimuthSumHKStack azStack = new AzimuthSumHKStack(sumStack, center, width);
                 out.add(azStack);
             }
         }
@@ -99,7 +118,7 @@ public class AzimuthStackSummary extends StackSummary {
 
     public static void main(String[] args) {
         if(args.length == 0) {
-            System.out.println("Usage: StackSummary -net netCode [ -sta staCode ]");
+            System.out.println("Usage: AzimuthStackSummary -net netCode [ -sta staCode ]");
             return;
         }
         try {

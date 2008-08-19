@@ -80,6 +80,14 @@ public class SumHKStack {
     public int getNumEQ() {
         return numEQ;
     }
+    
+    public Set<RejectedMaxima> getRejectedMaxima() {
+        return rejects;
+    }
+    
+    protected void setRejectedMaxima(Set<RejectedMaxima> rejects) {
+        this.rejects = rejects;
+    }
 
     public float getResidualPower() throws TauModelException {
         return getResidualPower(0);

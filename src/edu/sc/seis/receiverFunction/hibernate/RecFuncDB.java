@@ -15,10 +15,10 @@ import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
+import edu.sc.seis.receiverFunction.AzimuthSumHKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
-import edu.sc.seis.receiverFunction.server.CachedResultPlusDbId;
 import edu.sc.seis.receiverFunction.web.Start;
 
 public class RecFuncDB extends AbstractHibernateDB {
@@ -119,9 +119,9 @@ public class RecFuncDB extends AbstractHibernateDB {
     }
 
     public int countSuccessful(NetworkAttrImpl networkAttr,
-                                                      String staCode,
-                                                      float gaussian,
-                                                      float percentMatch) {
+                               String staCode,
+                               float gaussian,
+                               float percentMatch) {
         Query q = getSession().createQuery("select count(*) from "
                 + ReceiverFunctionResult.class.getName()
                 + " where channelGroup.channel1.station_code = :sta and channelGroup.channel1.site.station.networkAttr = :networkAttr "
@@ -134,9 +134,9 @@ public class RecFuncDB extends AbstractHibernateDB {
     }
 
     public List<ReceiverFunctionResult> getUnsuccessful(NetworkAttrImpl networkAttr,
-                                                      String staCode,
-                                                      float gaussian,
-                                                      float percentMatch) {
+                                                        String staCode,
+                                                        float gaussian,
+                                                        float percentMatch) {
         Query q = getSession().createQuery("from "
                 + ReceiverFunctionResult.class.getName()
                 + " where channelGroup.channel1.station_code = :sta and channelGroup.channel1.site.station.networkAttr = :networkAttr "
@@ -149,9 +149,9 @@ public class RecFuncDB extends AbstractHibernateDB {
     }
 
     public int countUnsuccessful(NetworkAttrImpl networkAttr,
-                                                      String staCode,
-                                                      float gaussian,
-                                                      float percentMatch) {
+                                 String staCode,
+                                 float gaussian,
+                                 float percentMatch) {
         Query q = getSession().createQuery("select count(*) from "
                 + ReceiverFunctionResult.class.getName()
                 + " where channelGroup.channel1.station_code = :sta and channelGroup.channel1.site.station.networkAttr = :networkAttr "
@@ -208,13 +208,12 @@ public class RecFuncDB extends AbstractHibernateDB {
         }
         return null;
     }
-    
+
     public List<StationResultRef> getAllPriorResultsRef() {
         Query q = getSession().createQuery("select distinct ref from "
-                + StationResult.class.getName() );
+                + StationResult.class.getName());
         return q.list();
     }
-
 
     public RFInsertion getInsertion(NetworkAttrImpl net,
                                     String staCode,
@@ -242,6 +241,26 @@ public class RecFuncDB extends AbstractHibernateDB {
         return ((Integer)getSession().save(sum)).intValue();
     }
 
+    public int putAzimuthSummary(AzimuthSumHKStack sum) {
+        return ((Integer)getSession().save(sum)).intValue();
+    }
+
+    public AzimuthSumHKStack getAzSumStack(NetworkAttrImpl net,
+                                    String staCode,
+                                    float gaussianWidth,
+                                    float azCenter,
+                                    float azWidth) {
+        Query q = getSession().createQuery("from "
+                + AzimuthSumHKStack.class.getName()
+                + " where net = :net and staCode = :staCode and gaussianWidth = :gaussianWidth");
+        q.setEntity("net", net);
+        q.setString("staCode", staCode);
+        q.setFloat("gaussianWidth", gaussianWidth);
+        q.setFloat("azimuthWidth", azWidth);
+        q.setFloat("azimuthCenter", azCenter);
+        return (AzimuthSumHKStack)q.uniqueResult();
+    }
+
     public SumHKStack getSumStack(NetworkAttrImpl net,
                                   String staCode,
                                   float gaussianWidth) {
@@ -260,7 +279,7 @@ public class RecFuncDB extends AbstractHibernateDB {
         q.setFloat("gaussianWidth", gaussianWidth);
         return q.list();
     }
-    
+
     public static void addToParms(Origin o, float itr_match, int recFunc_id) {
         ParameterRef[] parms = o.getParmIds();
         ParameterRef[] newParms = new ParameterRef[parms.length + 2];

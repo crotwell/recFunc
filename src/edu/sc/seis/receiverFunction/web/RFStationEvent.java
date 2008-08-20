@@ -64,6 +64,9 @@ public class RFStationEvent extends Revlet {
             } else {
                 int rfid = RevUtil.getInt("rf", req);
                 result = RecFuncDB.getSingleton().getReceiverFunctionResult(rfid);
+                if (result == null) {
+                    handleNotFound(req, res, new NotFound());
+                }
             }
             CacheEvent eq = result.getEvent();
             VelocityEvent velEvent = new VelocityEvent(eq);

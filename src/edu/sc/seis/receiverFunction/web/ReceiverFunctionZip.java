@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -70,6 +71,9 @@ public class ReceiverFunctionZip extends HttpServlet {
                     + netCode + "_" + staCode + ".zip");
             processResults(result, req, res);
         } catch(EOFException e) {
+            // client has closed the connection, so not much we can do...
+            return;
+        } catch(SocketException e) {
             // client has closed the connection, so not much we can do...
             return;
         } catch(Exception e) {

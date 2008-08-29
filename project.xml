@@ -131,7 +131,7 @@
             <!--
             <version>7.4.1-jdbc3</version>
 -->
-            <version>8.0-312.jdbc3</version>
+            <version>8.3-603.jdbc3</version>
             <properties/>
         </dependency>
         <dependency>
@@ -205,6 +205,15 @@
             <version>3.0.0alpha</version>
         </dependency>
         <dependency>
+            <artifactId>bag</artifactId>
+            <groupId>bag</groupId>
+            <version>0.1</version>
+        </dependency>
+         <dependency>
+            <id>jline</id>
+            <version>0.9.91</version>
+        </dependency>
+        <dependency>
             <id>jing</id>
             <version>20030619</version>
         </dependency>
@@ -255,7 +264,7 @@
         </dependency>
         <dependency>
             <id>SeedCodec</id>
-            <version>1.0.3</version>
+            <version>1.0.4</version>
             <url>http://www.seis.sc.edu/software/SeedCodec</url>
         </dependency>
         <dependency>
@@ -411,6 +420,13 @@
                 <includes>
                     <include>*.prop</include>
                     <include>*.vm</include>
+                    <include>*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/edu/sc/seis/receiverFunction/hibernate</directory>
+                <targetPath>edu/sc/seis/receiverFunction/hibernate</targetPath>
+                <includes>
                     <include>*.xml</include>
                 </includes>
             </resource>

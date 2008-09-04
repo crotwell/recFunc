@@ -135,7 +135,7 @@ public class RecFuncDB extends AbstractHibernateDB {
         q.setString("sta", staCode);
         q.setEntity("networkAttr", networkAttr);
         q.setFloat("gauss", gaussian);
-        return (Integer)q.uniqueResult();
+        return ((Long)q.uniqueResult()).intValue();
     }
 
     public List<ReceiverFunctionResult> getUnsuccessful(NetworkAttrImpl networkAttr,
@@ -163,7 +163,7 @@ public class RecFuncDB extends AbstractHibernateDB {
         q.setString("sta", staCode);
         q.setEntity("networkAttr", networkAttr);
         q.setFloat("gauss", gaussian);
-        return (Integer)q.uniqueResult();
+        return ((Long)q.uniqueResult()).intValue();
     }
 
     public int put(RejectedMaxima reject) {

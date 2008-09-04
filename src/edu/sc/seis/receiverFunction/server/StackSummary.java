@@ -58,6 +58,9 @@ public class StackSummary {
             SQLException, ConfigurationException, TauModelException, Exception {
         RecFuncCacheImpl.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc",
                                                       RecFuncCacheImpl.getDataLoc()));
+        RecFuncCacheImpl impl = new RecFuncCacheImpl(props.getProperty("cormorant.servers.ears.databaseURL"), 
+                                                     props.getProperty("cormorant.servers.ears.dataloc"), 
+                                                     props);
     }
 
     public void createSummary(String netCode,

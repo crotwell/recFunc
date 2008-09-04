@@ -62,6 +62,9 @@ public class HKStack implements Serializable {
 
     public static final String ALL = "all";
 
+    /** for hibernate */
+    protected HKStack() {}
+    
     protected HKStack(QuantityImpl alpha,
                       float p,
                       float gwidth,
@@ -1149,6 +1152,10 @@ public class HKStack implements Serializable {
         return percentMatch;
     }
 
+    public void setPercentMatch(float percentMatch) {
+        this.percentMatch = percentMatch;
+    }
+
     public String formatPercentMatch() {
         return vpvsFormat.format(getPercentMatch());
     }
@@ -1167,6 +1174,10 @@ public class HKStack implements Serializable {
 
     public float getMinK() {
         return minK;
+    }
+    
+    protected void setMinK(float minK) {
+        this.minK = minK;
     }
 
     public float getStepK() {
@@ -1322,10 +1333,6 @@ public class HKStack implements Serializable {
     
     protected void setNumH(int v) {
         this.numH = v;
-    }
-    
-    protected void setMinKKm(float v) {
-        this.minK = v;
     }
     
     protected void setStepK(float v) {

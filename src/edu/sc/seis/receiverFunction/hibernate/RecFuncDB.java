@@ -276,16 +276,15 @@ public class RecFuncDB extends AbstractHibernateDB {
                                   float gaussianWidth) {
         Query q = getSession().createQuery("from "
                 + SumHKStack.class.getName()
-                + " where staCode = :staCodeString");
-//        + " where net = :net and staCode = :staCode and gaussianWidth = :gaussianWidth");
+                + " where net = :net and staCode = :staCode and gaussianWidth = :gaussianWidth");
         String[] s = q.getNamedParameters();
         logger.debug("Named parameters ("+s.length+")");
         for(int i = 0; i < s.length; i++) {
             logger.debug("named parameter["+i+"] = "+s[i]);
         }
-  //      q.setEntity("net", net);
+        q.setEntity("net", net);
         q.setString("staCodeString", staCode);
-  //      q.setFloat("gw", gaussianWidth);
+        q.setFloat("gw", gaussianWidth);
         q.setMaxResults(1);
         List<SumHKStack> result = q.list();
         if(result.size() > 0) {

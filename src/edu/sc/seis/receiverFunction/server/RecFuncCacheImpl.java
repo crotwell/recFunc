@@ -142,7 +142,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                         new MicroSecondDate(prefOrigin.getOriginTime()));
             for(CacheEvent cacheEvent : similar) {
                 ReceiverFunctionResult result = RecFuncDB.getSingleton()
-                        .getRecFuncResult(cacheEvent, chanGroup, config);
+                        .getRecFuncResult(cacheEvent, chanGroup, config.gwidth);
                 if(result != null) {
                     return result;
                 }

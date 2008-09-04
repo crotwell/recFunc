@@ -74,15 +74,13 @@ public class RecFuncDB extends AbstractHibernateDB {
 
     public ReceiverFunctionResult getRecFuncResult(CacheEvent cacheEvent,
                                                    ChannelGroup chanGroup,
-                                                   IterDeconConfig config) {
+                                                   float gwidth) {
         Query q = getSession().createQuery("from "
                 + ReceiverFunctionResult.class.getName()
-                + " where event = :event and channelGroup = :cg and gwidth = :gwidth and maxBumps = :maxBumps and tol = :tol");
+                + " where event = :event and channelGroup = :cg and gwidth = :gwidth");
         q.setEntity("event", cacheEvent);
         q.setEntity("cg", chanGroup);
-        q.setFloat("gwidth", config.gwidth);
-        q.setInteger("maxBumps", config.maxBumps);
-        q.setFloat("tol", config.tol);
+        q.setFloat("gwidth", gwidth);
         q.setMaxResults(1);
         List<ReceiverFunctionResult> l = q.list();
         if(l.size() != 0) {

@@ -118,8 +118,7 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                 List<ReceiverFunctionResult> results = RecFuncDB.getSingleton()
                         .getSuccessful(net.getWrapped(),
                                        staCode,
-                                       gaussianWidth,
-                                       minPercentMatch);
+                                       gaussianWidth);
                 BazIterator bazIt = new BazIterator(results.iterator(),
                                                     minBaz,
                                                     maxBaz);

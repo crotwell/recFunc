@@ -69,7 +69,7 @@ public class Event extends edu.sc.seis.winkle.Event {
                                                  req,
                                                  Start.getDefaultMinPercentMatch());
         
-        return RecFuncDB.getSingleton().getStationsByEvent(event.getCacheEvent(), gaussianWidth, minPercentMatch);
+        return RecFuncDB.getSingleton().getStationsByEvent(event.getCacheEvent(), gaussianWidth);
         
     }
     

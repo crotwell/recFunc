@@ -62,15 +62,13 @@ public class RecFuncDB extends AbstractHibernateDB {
     }
 
     public List<ReceiverFunctionResult> getStationsByEvent(CacheEvent cacheEvent,
-                                                           float gaussian,
-                                                           float percentMatch) {
+                                                           float gaussian) {
         Query q = getSession().createQuery("from "
                 + ReceiverFunctionResult.class.getName()
                 + " where event = :event "
-                + " and gwidth = :gauss and (( radialMatch > :match and qc = null ) or qc.keep = true)");
+                + " and gwidth = :gauss and qc.keep = true)");
         q.setEntity("event", cacheEvent);
         q.setFloat("gauss", gaussian);
-        q.setFloat("match", percentMatch);
         return q.list();
     }
 

@@ -4,6 +4,9 @@ import java.sql.Timestamp;
 
 public class RecFuncQCResult {
 
+    /** for hibernate */
+    protected RecFuncQCResult() {}
+    
     public RecFuncQCResult(boolean keep,
                            boolean manualOverride,
                            float transRadialRatio,

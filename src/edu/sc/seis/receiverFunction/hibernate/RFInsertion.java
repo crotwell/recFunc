@@ -6,6 +6,9 @@ import edu.iris.Fissures.network.NetworkAttrImpl;
 
 public class RFInsertion {
 
+    /** for hibernate */
+    protected RFInsertion() {}
+    
     public RFInsertion(NetworkAttrImpl net,
                        String staCode,
                        float gaussianWidth,

@@ -31,7 +31,7 @@ public class StationResultRef {
         return reference;
     }
 
-    public String getURL() {
+    public String getUrl() {
         return url;
     }
 

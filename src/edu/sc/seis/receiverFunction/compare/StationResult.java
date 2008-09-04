@@ -93,7 +93,7 @@ public class StationResult extends HKAlpha {
         this.extras = extras;
     }
 
-    public NetworkAttrImpl getNetworkId() {
+    public NetworkAttrImpl getNet() {
         return networkId;
     }
 
@@ -101,7 +101,7 @@ public class StationResult extends HKAlpha {
         return ref;
     }
 
-    public String getStationCode() {
+    public String getStaCode() {
         return stationCode;
     }
 
@@ -127,6 +127,10 @@ public class StationResult extends HKAlpha {
 
     private int dbid;
 
+    public int getDbid() {
+        return dbid;
+    }
+    
     public void setHStdDev(QuantityImpl stdDev) {
         hStdDev = stdDev;
     }
@@ -136,7 +140,7 @@ public class StationResult extends HKAlpha {
     }
 
     
-    protected void setStationCode(String stationCode) {
+    protected void setStaCode(String stationCode) {
         this.stationCode = stationCode;
     }
 
@@ -146,7 +150,7 @@ public class StationResult extends HKAlpha {
     }
 
     
-    protected void setNetworkId(NetworkAttrImpl networkId) {
+    protected void setNet(NetworkAttrImpl networkId) {
         this.networkId = networkId;
     }
 

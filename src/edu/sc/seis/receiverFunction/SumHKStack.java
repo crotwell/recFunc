@@ -54,7 +54,7 @@ public class SumHKStack {
                 .getSite()
                 .getStation();
         net = (NetworkAttrImpl)sta.getNetworkAttr();
-        stationCode = sta.get_code();
+        staCode = sta.get_code();
         this.rejects = rejects;
         best = makeStationResult(new StackMaximum(-1,
                                                   sum.getMaxValueH(),
@@ -76,6 +76,10 @@ public class SumHKStack {
     public List<ReceiverFunctionResult> getIndividuals() {
         return individuals;
     }
+    
+    protected void setIndividuals(List<ReceiverFunctionResult> individuals) {
+        this.individuals = individuals;
+    }
 
     public int getNumEQ() {
         return numEQ;
@@ -87,6 +91,10 @@ public class SumHKStack {
     
     protected void setRejectedMaxima(Set<RejectedMaxima> rejects) {
         this.rejects = rejects;
+    }
+    
+    protected void setSum(HKStack sum) {
+        this.sum = sum;
     }
 
     public float getResidualPower() throws TauModelException {
@@ -105,7 +113,7 @@ public class SumHKStack {
                                                            "ears",
                                                            "ears");
         StationResult result = new StationResult(net,
-                                                 stationCode,
+                                                 staCode,
                                                  getSum().getMaxValueH(getSmallestH()),
                                                  getSum().getMaxValueK(getSmallestH()),
                                                  getSum().getAlpha(),
@@ -257,7 +265,7 @@ public class SumHKStack {
                                                          4096,
                                                          getSum().getGaussianWidth());
         StationResult model = new StationResult(net,
-                                                stationCode,
+                                                staCode,
                                                 getSum().getMaxValueH(getSmallestH()),
                                                 getSum().getMaxValueK(getSmallestH()),
                                                 getSum().getAlpha(),
@@ -305,13 +313,25 @@ public class SumHKStack {
     public double getHVariance() {
         return hVariance;
     }
+    
+    protected void setHVariance(double var) {
+        this.hVariance = var;
+    }
 
     public double getKVariance() {
         return kVariance;
     }
+    
+    protected void setKVariance(double var) {
+        this.kVariance = var;
+    }
 
     public double getMixedVariance() {
         return mixedVariance;
+    }
+    
+    protected void setMixedVariance(double var) {
+        this.mixedVariance = var;
     }
 
     public QuantityImpl getHStdDev() {
@@ -572,7 +592,7 @@ public class SumHKStack {
                                            String extra) {
         StationResultRef earsStaRef = new StationResultRef(name, "ears", "ears");
         return new StationResult(net,
-                                 stationCode,
+                                 staCode,
                                  max.getHValue(),
                                  max.getKValue(),
                                  sum.getAlpha(),
@@ -601,6 +621,10 @@ public class SumHKStack {
         }
         return best;
     }
+    
+    protected void setBest(StationResult sr) {
+        this.best = sr;
+    }
 
     public void recalcBest() {
         best = calcBest(sum);
@@ -614,6 +638,15 @@ public class SumHKStack {
         return kBootstrap;
     }
     
+    public float getGaussianWidth() {
+        return gaussianWidth;
+    }
+    
+    protected void setGaussianWidth(float gw) {
+        this.gaussianWidth = gw;
+    }
+    
+    protected float gaussianWidth;
 
     protected List<ReceiverFunctionResult> individuals;
 
@@ -645,7 +678,7 @@ public class SumHKStack {
 
     protected NetworkAttrImpl net;
 
-    protected String stationCode;
+    protected String staCode;
 
     public static int DEFAULT_BOOTSTRAP_ITERATONS = 100;
 
@@ -666,12 +699,12 @@ public class SumHKStack {
     }
 
     
-    public String getStationCode() {
-        return stationCode;
+    public String getStaCode() {
+        return staCode;
     }
 
     
-    public void setStationCode(String stationCode) {
-        this.stationCode = stationCode;
+    public void setStaCode(String stationCode) {
+        this.staCode = stationCode;
     }
 }

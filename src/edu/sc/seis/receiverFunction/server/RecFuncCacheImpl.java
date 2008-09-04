@@ -2,9 +2,15 @@ package edu.sc.seis.receiverFunction.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
+
+import net.sf.ehcache.CacheManager;
 
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.UNKNOWN;
@@ -32,10 +38,13 @@ import edu.sc.seis.IfReceiverFunction.SodConfigNotFound;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
+import edu.sc.seis.fissuresUtil.database.DBUtil;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.fissuresUtil.hibernate.EventDB;
+import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.xml.SeismogramFileTypes;
 import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
@@ -45,6 +54,7 @@ import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.SodConfig;
+import edu.sc.seis.sod.Start;
 import edu.sc.seis.sod.hibernate.SodDB;
 import edu.sc.seis.sod.status.EventFormatter;
 
@@ -53,12 +63,23 @@ import edu.sc.seis.sod.status.EventFormatter;
  */
 public class RecFuncCacheImpl extends RecFuncCachePOA {
 
-    public RecFuncCacheImpl(String databaseURL, String dataloc)
-            throws IOException, SQLException, ConfigurationException,
-            TauModelException, Exception {
+    public RecFuncCacheImpl(String databaseURL,
+                            String dataloc,
+                            Properties confProps) throws IOException,
+            SQLException, ConfigurationException, TauModelException, Exception {
         ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(databaseURL);
         DATA_LOC = dataloc;
+        synchronized(HibernateUtil.class) {
+            // configure EhCache
+            InputStream ehconfigStream = (Start.class).getClassLoader()
+                    .getResourceAsStream(Start.EHCACHE_CONFIG);
+            CacheManager singletonManager = CacheManager.create(ehconfigStream);
+            HibernateUtil.setUpFromConnMgr(confProps);
+            RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
+        }
+        AbstractHibernateDB.deploySchema();
+        logger.debug("Impl created, using " + databaseURL + " and POSTGRES");
         qualityControl = new QualityControl();
     }
 
@@ -66,15 +87,12 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                               ChannelId[] channel) {
         try {
             ArrayList configs = new ArrayList();
-            List<CacheEvent> similar = EventDB.getSingleton().getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"), prefOrigin), timeTol, positionTol);
-                
-            ChannelGroup chanGroup = NetworkDB.getSingleton()
-                    .getChannelGroup(NetworkDB.getSingleton()
-                            .getChannel(channel[0].network_id.network_code,
-                                        channel[0].station_code,
-                                        channel[0].site_code,
-                                        channel[0].channel_code,
-                                        new MicroSecondDate(prefOrigin.getOriginTime())));
+            List<CacheEvent> similar = EventDB.getSingleton()
+                    .getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
+                                                     prefOrigin),
+                                      timeTol,
+                                      positionTol);
+            ChannelGroup chanGroup = getChannelGroup(channel, new MicroSecondDate(prefOrigin.getOriginTime()));
             for(CacheEvent cacheEvent : similar) {
                 IterDeconConfig[] tmpConfigs = RecFuncDB.getSingleton()
                         .getResults(cacheEvent, chanGroup);
@@ -91,19 +109,37 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         }
     }
 
+    protected ChannelGroup getChannelGroup(ChannelId[] channel, MicroSecondDate begin) throws NotFound {
+        NetworkDB ndb = NetworkDB.getSingleton();
+        ChannelImpl chanA = ndb.getChannel(channel[0].network_id.network_code,
+                                           channel[0].station_code,
+                                           channel[0].site_code,
+                                           channel[0].channel_code,
+                                           begin);
+        ChannelImpl chanB = ndb.getChannel(channel[1].network_id.network_code,
+                                           channel[1].station_code,
+                                           channel[1].site_code,
+                                           channel[1].channel_code,
+                                           begin);
+        ChannelImpl chanC = ndb.getChannel(channel[2].network_id.network_code,
+                                           channel[2].station_code,
+                                           channel[2].site_code,
+                                           channel[2].channel_code,
+                                           begin);
+        return ndb.getChannelGroup(chanA, chanB, chanC);
+    }
+    
     protected ReceiverFunctionResult getResult(Origin prefOrigin,
                                                ChannelId[] channel,
                                                IterDeconConfig config) {
         try {
-            List<CacheEvent> similar = EventDB.getSingleton().getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"), prefOrigin), timeTol, positionTol);
-                
-            ChannelGroup chanGroup = NetworkDB.getSingleton()
-                    .getChannelGroup(NetworkDB.getSingleton()
-                            .getChannel(channel[0].network_id.network_code,
-                                        channel[0].station_code,
-                                        channel[0].site_code,
-                                        channel[0].channel_code,
-                                        new MicroSecondDate(prefOrigin.getOriginTime())));
+            List<CacheEvent> similar = EventDB.getSingleton()
+                    .getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
+                                                     prefOrigin),
+                                      timeTol,
+                                      positionTol);
+            ChannelGroup chanGroup = getChannelGroup(channel,
+                                        new MicroSecondDate(prefOrigin.getOriginTime()));
             for(CacheEvent cacheEvent : similar) {
                 ReceiverFunctionResult result = RecFuncDB.getSingleton()
                         .getRecFuncResult(cacheEvent, chanGroup, config);
@@ -173,8 +209,10 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         try {
             CacheEvent event = null;
             try {
-                List<CacheEvent> similar = EventDB.getSingleton().getSimilarEvents(new CacheEvent(eventAttr, prefOrigin), timeTol, positionTol);
-                
+                List<CacheEvent> similar = EventDB.getSingleton()
+                        .getSimilarEvents(new CacheEvent(eventAttr, prefOrigin),
+                                          timeTol,
+                                          positionTol);
                 if(similar.size() > 0) {
                     // already an origin in the database, keep using
                     // existing origin
@@ -185,6 +223,17 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
             }
             if(event == null) {
                 event = new CacheEvent(eventAttr, prefOrigin);
+                EventDB.getSingleton().put(event);
+            }
+            ChannelImpl[] channelImpls = ChannelImpl.implize(channels);
+            NetworkDB ndb = NetworkDB.getSingleton();
+            ndb.put(channelImpls[0]);
+            ndb.put(channelImpls[1]);
+            ndb.put(channelImpls[2]);
+            ChannelGroup cg = NetworkDB.getSingleton().getChannelGroup(channelImpls[0], channelImpls[1], channelImpls[2]);
+            if (cg == null) {
+                cg = new ChannelGroup(channelImpls);
+                NetworkDB.getSingleton().put(cg);
             }
             SodConfig sodConfig = SodDB.getSingleton().getConfig(sodConfig_id);
             File stationDir = getDir(event, channels[0], config.gwidth);
@@ -239,7 +288,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                               event,
                                                               SeismogramFileTypes.SAC);
             ReceiverFunctionResult result = new ReceiverFunctionResult(event,
-                                                                       new ChannelGroup(ChannelImpl.implize(channels)),
+                                                                       cg,
                                                                        seisFile[0].getName(),
                                                                        seisFile[1].getName(),
                                                                        seisFile[2].getName(),

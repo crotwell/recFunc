@@ -14,6 +14,9 @@ jacorb.security.ssl.server.required_options=0
 
 # start of log4j configuration
 log4j.rootCategory=debug, C, R
+log4j.logger.org.hibernate=ERROR
+log4j.logger.com.mchange=ERROR
+log4j.logpath=logs
 
 log4j.appender.C=org.apache.log4j.ConsoleAppender
 log4j.appender.C.layout=org.apache.log4j.PatternLayout

@@ -1,4 +1,7 @@
-log4j.rootCategory=debug, everything, error, fatal
+log4j.rootCategory=debug, everything, error, fatal 
+log4j.logger.org.hibernate=ERROR
+log4j.logger.com.mchange=ERROR
+log4j.logpath=logs
 
 log4j.appender.fatal=org.apache.log4j.ConsoleAppender
 log4j.appender.fatal.layout=org.apache.log4j.PatternLayout

@@ -70,7 +70,7 @@ public class EarthquakeHKPlot extends HttpServlet {
 
             float gaussianWidth = RevUtil.getFloat("gaussian", req, Start.getDefaultGaussian());
             float minPercentMatch = RevUtil.getFloat("minPercentMatch", req, Start.getDefaultMinPercentMatch());QuantityImpl smallestH = HKStack.getBestSmallestH((VelocityStation)stationList.get(0));
-            List<ReceiverFunctionResult> stackList = RecFuncDB.getSingleton().getSuccessful(net.getWrapped(), staCode, gaussianWidth, minPercentMatch);
+            List<ReceiverFunctionResult> stackList = RecFuncDB.getSingleton().getSuccessful(net.getWrapped(), staCode, gaussianWidth);
             
             HKXYDataset dataset = new HKXYDataset(stackList);
             String title = "Maxima for Earthquakes at " + net.getCode() + "."

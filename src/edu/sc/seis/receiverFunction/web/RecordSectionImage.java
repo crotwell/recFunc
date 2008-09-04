@@ -64,8 +64,7 @@ public class RecordSectionImage extends HttpServlet {
                                                    UnitImpl.SECOND);
             List<ReceiverFunctionResult> results = RecFuncDB.getSingleton().getSuccessful(net.getWrapped(), 
                                                 staCode,
-                                                gaussianWidth,
-                                                minPercentMatch);
+                                                gaussianWidth);
             DataSetEventOrganizer organizer = new DataSetEventOrganizer();
             DataSetSeismogram[] itrDSS = new DataSetSeismogram[results.size()];
             int i = 0;

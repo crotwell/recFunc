@@ -55,8 +55,7 @@ public class ReceiverFunctionZip extends HttpServlet {
             List<ReceiverFunctionResult> result = RecFuncDB.getSingleton()
                     .getSuccessful(net.getWrapped(),
                                    staCode,
-                                   gaussianWidth,
-                                   minPercentMatch);
+                                   gaussianWidth);
             String netCode = "";
             if(result.size() != 0) {
                 netCode = result.get(0)

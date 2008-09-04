@@ -223,8 +223,7 @@ public class Station extends Revlet {
         String staCode = req.getParameter("stacode");
         return RecFuncDB.getSingleton().getSuccessful(net.getWrapped(),
                                                staCode,
-                                               gaussianWidth,
-                                               80);
+                                               gaussianWidth);
     }
 
     public List<ReceiverFunctionResult> getLoserEvents(HttpServletRequest req)

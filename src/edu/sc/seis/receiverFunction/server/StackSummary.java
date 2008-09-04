@@ -182,8 +182,7 @@ public class StackSummary {
             NotFound, IOException, SQLException {
         List<ReceiverFunctionResult> individualHK = RecFuncDB.getSingleton().getSuccessful(net,
                                                            staCode,
-                                                           gaussianWidth,
-                                                           percentMatch);
+                                                           gaussianWidth);
         List<StationImpl> stations = NetworkDB.getSingleton()
                 .getStationForNet(net, staCode);
         Set<RejectedMaxima> rejects = new HashSet<RejectedMaxima>();
@@ -223,8 +222,7 @@ public class StackSummary {
             List<ReceiverFunctionResult> rfResults = RecFuncDB.getSingleton()
                     .getSuccessful(networkAttr,
                                    staCode,
-                                   gaussianWidth,
-                                   minPercentMatch);
+                                   gaussianWidth);
             if(rfResults.size() > 0) {
                 SumHKStack sumStack = sumForPhase(rfResults,
                                                   minPercentMatch,

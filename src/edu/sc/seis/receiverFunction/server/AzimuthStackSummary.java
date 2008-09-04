@@ -71,8 +71,7 @@ public class AzimuthStackSummary extends StackSummary {
         NetworkAttrImpl net = Start.getNetwork(netCode).getWrapped();
         List<ReceiverFunctionResult> individualHK = rfdb.getSuccessful(net,
                                                                        staCode,
-                                                                       gaussianWidth,
-                                                                       percentMatch);
+                                                                       gaussianWidth);
         for(float center = 0; center < 360; center += step) {
             List<ReceiverFunctionResult> sectorHK = new ArrayList<ReceiverFunctionResult>();
             BazIterator bazIt = new BazIterator(individualHK.iterator(), center

@@ -262,8 +262,7 @@ public class QualityControl {
                             .getSuccessful((NetworkAttrImpl)stations.get(0)
                                                    .getNetworkAttr(),
                                            staCode,
-                                           2.5f,
-                                           80f);
+                                           2.5f);
                     for(ReceiverFunctionResult receiverFunctionResult : results) {
                         if(control.check(receiverFunctionResult)) {
                             numGood++;

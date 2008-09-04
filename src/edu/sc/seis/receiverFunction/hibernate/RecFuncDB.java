@@ -112,8 +112,7 @@ public class RecFuncDB extends AbstractHibernateDB {
 
     public List<ReceiverFunctionResult> getSuccessful(NetworkAttrImpl networkAttr,
                                                       String staCode,
-                                                      float gaussian,
-                                                      float percentMatch) {
+                                                      float gaussian) {
         Query q = getSession().createQuery("from "
                 + ReceiverFunctionResult.class.getName()
                 + " where channelGroup.channel1.site.station.id.station_code = :sta "

@@ -26,7 +26,7 @@ import edu.sc.seis.sod.hibernate.SodDB;
 public class RecFuncDB extends AbstractHibernateDB {
     
     public int put(ReceiverFunctionResult result) {
-        if(result.getRadialMatch() > Start.getDefaultMinPercentMatch()) {
+        if(result.getQc().isKeep()) {
             RFInsertion insertion = getInsertion((NetworkAttrImpl)result.getChannelGroup()
                                                          .getNetworkAttr(),
                                                  result.getChannelGroup()

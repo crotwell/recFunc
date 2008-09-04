@@ -17,8 +17,10 @@ import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.rev.FloatQueryParamParser;
 import edu.sc.seis.rev.RevUtil;
@@ -38,6 +40,7 @@ public class Start {
         RecFuncCacheImpl.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc", RecFuncCacheImpl.getDataLoc()));
         ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(props.getProperty("fissuresUtil.database.url"));
+        RecFuncDB.getSingleton();
         logger.info("connecting to database: " + ConnMgr.getURL());
         Set servletStrings = new HashSet();
         ServletHandler rootHandler = new ServletFromSet(servletStrings);
@@ -153,10 +156,6 @@ public class Start {
                               rootHandler);
         RevUtil.populateJetty("/recordSection.png",
                               "edu.sc.seis.receiverFunction.web.RecordSectionImage",
-                              servletStrings,
-                              rootHandler);
-        RevUtil.populateJetty("/analyticPhase.txt",
-                              "edu.sc.seis.receiverFunction.web.AnalyticPhaseAsText",
                               servletStrings,
                               rootHandler);
         RevUtil.populateJetty("/complexityResidualImage.png",

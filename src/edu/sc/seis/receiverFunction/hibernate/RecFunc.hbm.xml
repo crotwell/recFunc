@@ -33,9 +33,9 @@
 			<property name="keep" type="boolean"/>
 			<property name="manualOverride" type="boolean"/>
 			<property name="transRadialRatio" type="float"/>
-			<property name="pMaxAmpRatio" type="float"/>
+			<property name="PMaxAmpRatio" type="float"/>
 			<property name="reason"/>
-			<property name="insertTime" type="timestamp"/>
+			<property name="insertTime" type="timestamp" column="qcinsertTime" />
 		</component>
 		<component name="HKstack" class="edu.sc.seis.receiverFunction.HKStack" >
 			<property name="alphaKmps" type="float"/>
@@ -62,7 +62,7 @@
 		</id>
 		<many-to-one name="net"
 			class="edu.iris.Fissures.network.NetworkAttrImpl"
-			foreign-key="FK_reject_net"  unique-key="sumstack_net_sta_gauss_uniq"/>
+			foreign-key="FK_sumstack_net"  unique-key="sumstack_net_sta_gauss_uniq"/>
 		<property name="staCode" unique-key="sumstack_net_sta_gauss_uniq"/>
 		<property name="gaussianWidth" type="float"  unique-key="sumstack_net_sta_gauss_uniq"/>
 		<component name="sum" class="edu.sc.seis.receiverFunction.HKStack" >
@@ -83,11 +83,10 @@
 		<list name="individuals" table="summaryStacks">
 			<key column="stackid"/> 
 		    <list-index column="position"/>
-		    <element type="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult" column="rfResult"></element>
+		    <many-to-many class="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult" column="rfResult"></many-to-many>
 		</list>
-		<property name="maxVariance" type="float"/>
-		<property name="hVariance" type="float"/>
-		<property name="kVariance" type="float"/>
+		<property name="HVariance" type="float"/>
+		<property name="KVariance" type="float"/>
 		<property name="mixedVariance" type="float"/>
 		<component name="best" class="edu.sc.seis.receiverFunction.compare.StationResult">
 			<property name="h" type="float"/>
@@ -118,7 +117,7 @@
 		</id>
 		<many-to-one name="net"
 			class="edu.iris.Fissures.network.NetworkAttrImpl"
-			foreign-key="FK_reject_net"  unique-key="azsumstack_net_sta_gauss_uniq"/>
+			foreign-key="FK_azsumstack_net"  unique-key="azsumstack_net_sta_gauss_uniq"/>
 		<property name="staCode" unique-key="azsumstack_net_sta_gauss_uniq"/>
 		<property name="gaussianWidth" type="float"  unique-key="azsumstack_net_sta_gauss_uniq"/>
 		<component name="sum" class="edu.sc.seis.receiverFunction.HKStack" >
@@ -136,14 +135,13 @@
 			<property name="weightPsPs" type="float"/>
 			<property name="stackFile"/>
 		</component>
-		<list name="individuals" table="summaryStacks">
+		<list name="individuals" table="azsummaryStacks">
 			<key column="stackid"/> 
 		    <list-index column="position"/>
-		    <element type="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult" column="rfResult"></element>
+		    <many-to-many class="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult" column="rfResult"></many-to-many>
 		</list>
-		<property name="maxVariance" type="float"/>
-		<property name="hVariance" type="float"/>
-		<property name="kVariance" type="float"/>
+		<property name="HVariance" type="float"/>
+		<property name="KVariance" type="float"/>
 		<property name="mixedVariance" type="float"/>
 		<component name="best" class="edu.sc.seis.receiverFunction.compare.StationResult">
 			<property name="h" type="float"/>
@@ -178,10 +176,10 @@
 			class="edu.iris.Fissures.network.NetworkAttrImpl"
 			foreign-key="FK_reject_net" />
 		<property name="staCode"/>
-		<property name="hMin" type="float"/>
-		<property name="hMax" type="float"/>
-		<property name="kMin" type="float"/>
-		<property name="kMax" type="float"/>
+		<property name="HMin" type="float"/>
+		<property name="HMax" type="float"/>
+		<property name="KMin" type="float"/>
+		<property name="KMax" type="float"/>
 		<property name="reason"/>
 		<property name="insertTime" type="timestamp"/>
 	</class>
@@ -193,7 +191,7 @@
 		</id>
 		<many-to-one name="net"
 			class="edu.iris.Fissures.network.NetworkAttrImpl"
-			foreign-key="FK_reject_net" />
+			foreign-key="FK_result_net" />
 		<property name="staCode"/>
 		<component name="ref" class="edu.sc.seis.receiverFunction.compare.StationResultRef">
 			<property name="name"/>
@@ -213,13 +211,13 @@
 		<property name="Vp" type="float"/>
 		<component name="hStdDev"
 			class="edu.iris.Fissures.model.QuantityImpl" access="field">
-			<property name="value" column="depth_value"
+			<property name="value" column="hStdDev_value"
 				type="double"  />
 			<many-to-one name="unit"
-				class="edu.iris.Fissures.model.UnitImpl" column="depth_unit_id"
+				class="edu.iris.Fissures.model.UnitImpl" column="hStdDev_unit_id"
 				foreign-key="FK_DEPTH_UNIT_ID" lazy="false" />
 		</component>
-		<property name="kStdDev" type="float"/>
+		<property name="HStdDev" type="float"/>
 		<property name="extras"/>
 	</class>
 	
@@ -230,7 +228,7 @@
 		</id>
 		<many-to-one name="net"
 			class="edu.iris.Fissures.network.NetworkAttrImpl"
-			foreign-key="FK_reject_net" unique-key="RFInsertion_uniq"/>
+			foreign-key="FK_rfinsertion_net" unique-key="RFInsertion_uniq"/>
 		<property name="staCode" unique-key="RFInsertion_uniq"/>
 		<property name="gaussianWidth" type="float"  unique-key="RFInsertion_uniq"/>
 		<property name="insertTime" type="timestamp"/>

@@ -25,11 +25,11 @@ window.onload=function(){
 </tr>
 #foreach($net in $networkList)
 <tr>
-<td class="odd"><a href="stationList.html?netdbid=${net.getDbId()}&gaussian=${gaussian}">$net.getCodeWithYear()</a></td>
+<td class="odd"><a href="stationList.html?netCode=${net.getCodeWithYear()}&gaussian=${gaussian}">$net.getCodeWithYear()</a></td>
 #set( $netid = $net.get_id() )
 #set( $leaps = $netid.begin_time.leap_seconds_version )
 #set( $netbegin = $netid.begin_time.date_time )
-<td class="even"><a href="stationList.html?netdbid=${net.getDbId()}&gaussian=${gaussian}">$net.name</a></td>
+<td class="even"><a href="stationList.html?netCode=${net.getCodeWithYear()}&gaussian=${gaussian}">$net.name</a></td>
 </td>
 </tr>
 #end

@@ -85,8 +85,8 @@ public class ComparePriorResult extends StationList {
             results = jdbcStationResult.getPriorResults(name);
             for(StationResult stationResult : results) {
                 List<StationImpl> staList = NetworkDB.getSingleton()
-                .getStationForNet(stationResult.getNetworkId(),
-                                  stationResult.getStationCode());
+                .getStationForNet(stationResult.getNet(),
+                                  stationResult.getStaCode());
                 if (staList.size() == 0) {
                     continue;
                 }

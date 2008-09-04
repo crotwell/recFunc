@@ -75,7 +75,7 @@ public class Overview extends StationList {
 			List<SumHKStack> summaryList = RecFuncDB.getSingleton().getAllSumStack(gaussianWidth);
             for (Iterator<SumHKStack> iter = summaryList.iterator(); iter.hasNext();) {
             	SumHKStack stack = (SumHKStack) iter.next();
-            	data.put(new VelocityStation(NetworkDB.getSingleton().getStationForNet(stack.getNet(), stack.getStationCode()).get(0))
+            	data.put(new VelocityStation(NetworkDB.getSingleton().getStationForNet(stack.getNet(), stack.getStaCode()).get(0))
             			, stack);
             }
 		}

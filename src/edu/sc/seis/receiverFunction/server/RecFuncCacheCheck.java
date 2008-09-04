@@ -5,7 +5,6 @@ import org.w3c.dom.Element;
 
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
-import edu.sc.seis.IfReceiverFunction.RecFuncCacheOperations;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.display.configuration.DOMHelper;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
@@ -30,6 +29,8 @@ public class RecFuncCacheCheck implements EventVectorSubsetter {
         String serverName = DOMHelper.extractText(config, "name", "Ears");
         try {
             cache = new NSRecFuncCache(dns, serverName, CommonAccess.getNameService());
+            cache.getCorbaObject()._is_a("test");
+            logger.debug("Connection to rf cacheServer ok");
         } catch (SystemException e) {
             throw new ConfigurationException("Problem getting cache server", e);
         }
@@ -48,8 +49,9 @@ public class RecFuncCacheCheck implements EventVectorSubsetter {
         return new StringTreeLeaf(this, cache.isCached(event.get_preferred_origin(), chanId, deconConfig));
     }
     
-    RecFuncCacheOperations cache;
+    NSRecFuncCache cache;
 
     IterDeconConfig deconConfig;
     
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(RecFuncCacheCheck.class);
 }

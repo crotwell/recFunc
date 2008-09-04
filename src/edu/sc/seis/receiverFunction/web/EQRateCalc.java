@@ -34,9 +34,6 @@ public class EQRateCalc extends Revlet {
         float gaussianWidth = RevUtil.getFloat("gaussian",
                                                req,
                                                Start.getDefaultGaussian());
-        float minPercentMatch = RevUtil.getFloat("minPercentMatch",
-                                                 req,
-                                                 Start.getDefaultMinPercentMatch());
         VelocityNetwork net = Start.getNetwork(req);
         Set codes = new HashSet();
         HashMap staBegin = new HashMap();
@@ -75,8 +72,8 @@ public class EQRateCalc extends Revlet {
         it = codes.iterator();
         while(it.hasNext()) {
             String staCode = (String)it.next();
-            int succ = RecFuncDB.getSingleton().countSuccessful(net.getWrapped(), staCode, gaussianWidth, minPercentMatch);
-            int unsucc = RecFuncDB.getSingleton().countUnsuccessful(net.getWrapped(), staCode, gaussianWidth, minPercentMatch);
+            int succ = RecFuncDB.getSingleton().countSuccessful(net.getWrapped(), staCode, gaussianWidth);
+            int unsucc = RecFuncDB.getSingleton().countUnsuccessful(net.getWrapped(), staCode, gaussianWidth);
             rates.put(staCode,
                       new EQRateStation((VelocityStation)stationByCode.get(staCode),
                                         (MicroSecondDate)staBegin.get(staCode),

@@ -236,8 +236,7 @@ public class Station extends Revlet {
         String staCode = req.getParameter("stacode");
         return RecFuncDB.getSingleton().getUnsuccessful(net.getWrapped(),
                                                       staCode,
-                                                      gaussianWidth,
-                                                      80);
+                                                      gaussianWidth);
     }
 
     public static String makeHKPlot(SumHKStack sumStack, HttpSession session)

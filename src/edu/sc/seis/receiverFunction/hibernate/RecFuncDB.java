@@ -116,57 +116,54 @@ public class RecFuncDB extends AbstractHibernateDB {
                                                       float percentMatch) {
         Query q = getSession().createQuery("from "
                 + ReceiverFunctionResult.class.getName()
-                + " where channelGroup.channel1.site.station.id.station_code = :sta and channelGroup.channel1.site.station.networkAttr = :networkAttr "
-                + " and gwidth = :gauss and (( radialMatch >= :match and qc = null ) or qc.keep = true)");
+                + " where channelGroup.channel1.site.station.id.station_code = :sta "
+                + " and channelGroup.channel1.site.station.networkAttr = :networkAttr "
+                + " and gwidth = :gauss and qc.keep = true");
         q.setString("sta", staCode);
         q.setEntity("networkAttr", networkAttr);
         q.setFloat("gauss", gaussian);
-        q.setFloat("match", percentMatch);
         return q.list();
     }
 
     public int countSuccessful(NetworkAttrImpl networkAttr,
                                String staCode,
-                               float gaussian,
-                               float percentMatch) {
+                               float gaussian) {
         Query q = getSession().createQuery("select count(*) from "
                 + ReceiverFunctionResult.class.getName()
-                + " where channelGroup.channel1.site.station.id.station_code = :sta and channelGroup.channel1.site.station.networkAttr = :networkAttr "
-                + " and gwidth = :gauss and (( radialMatch >= :match and qc = null ) or qc.keep = true)");
+                + " where channelGroup.channel1.site.station.id.station_code = :sta "
+                + " and channelGroup.channel1.site.station.networkAttr = :networkAttr "
+                + " and gwidth = :gauss and qc.keep = true");
         q.setString("sta", staCode);
         q.setEntity("networkAttr", networkAttr);
         q.setFloat("gauss", gaussian);
-        q.setFloat("match", percentMatch);
         return (Integer)q.uniqueResult();
     }
 
     public List<ReceiverFunctionResult> getUnsuccessful(NetworkAttrImpl networkAttr,
                                                         String staCode,
-                                                        float gaussian,
-                                                        float percentMatch) {
+                                                        float gaussian) {
         Query q = getSession().createQuery("from "
                 + ReceiverFunctionResult.class.getName()
-                + " where channelGroup.channel1.site.station.id.station_code = :sta and channelGroup.channel1.site.station.networkAttr = :networkAttr "
-                + " and gwidth = :gauss and ( radialMatch < :match and (qc = null  or qc.keep = false))");
+                + " where channelGroup.channel1.site.station.id.station_code = :sta "
+                + " and channelGroup.channel1.site.station.networkAttr = :networkAttr "
+                + " and gwidth = :gauss and qc.keep = false");
         q.setString("sta", staCode);
         q.setEntity("networkAttr", networkAttr);
         q.setFloat("gauss", gaussian);
-        q.setFloat("match", percentMatch);
         return q.list();
     }
 
     public int countUnsuccessful(NetworkAttrImpl networkAttr,
                                  String staCode,
-                                 float gaussian,
-                                 float percentMatch) {
+                                 float gaussian) {
         Query q = getSession().createQuery("select count(*) from "
                 + ReceiverFunctionResult.class.getName()
-                + " where channelGroup.channel1.site.station.id.station_code = :sta and channelGroup.channel1.site.station.networkAttr = :networkAttr "
-                + " and gwidth = :gauss and ( radialMatch < :match and (qc = null  or qc.keep = false))");
+                + " where channelGroup.channel1.site.station.id.station_code = :sta "
+                + " and channelGroup.channel1.site.station.networkAttr = :networkAttr "
+                + " and gwidth = :gauss and qc.keep = false");
         q.setString("sta", staCode);
         q.setEntity("networkAttr", networkAttr);
         q.setFloat("gauss", gaussian);
-        q.setFloat("match", percentMatch);
         return (Integer)q.uniqueResult();
     }
 

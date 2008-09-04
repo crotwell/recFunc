@@ -93,6 +93,88 @@ public class StackComplexityResult {
         return nextVal;
     }
 
+    
+    protected void setHksummary_id(int hksummary_id) {
+        this.hksummary_id = hksummary_id;
+    }
+
+
+    
+    protected void setComplexity(float complexity) {
+        this.complexity = complexity;
+    }
+
+
+    
+    protected void setComplexity25(float complexity25) {
+        this.complexity25 = complexity25;
+    }
+
+
+    
+    protected void setComplexity50(float complexity50) {
+        this.complexity50 = complexity50;
+    }
+
+
+    
+    protected void setBestH(float bestH) {
+        this.bestH = bestH;
+    }
+
+
+    
+    protected void setBestHStdDev(float bestHStdDev) {
+        this.bestHStdDev = bestHStdDev;
+    }
+
+
+    
+    protected void setBestK(float bestK) {
+        this.bestK = bestK;
+    }
+
+
+    
+    protected void setBestKStdDev(float bestKStdDev) {
+        this.bestKStdDev = bestKStdDev;
+    }
+
+
+    
+    protected void setBestVal(float bestVal) {
+        this.bestVal = bestVal;
+    }
+
+
+    
+    protected void setHkCorrelation(float hkCorrelation) {
+        this.hkCorrelation = hkCorrelation;
+    }
+
+
+    
+    protected void setNextH(float nextH) {
+        this.nextH = nextH;
+    }
+
+
+    
+    protected void setNextK(float nextK) {
+        this.nextK = nextK;
+    }
+
+
+    
+    protected void setNextVal(float nextVal) {
+        this.nextVal = nextVal;
+    }
+
+
+    
+    protected void setCrust2diff(float crust2diff) {
+        this.crust2diff = crust2diff;
+    }
 
     int hksummary_id;
 
@@ -121,4 +203,5 @@ public class StackComplexityResult {
     float nextVal;
 
     float crust2diff;
+
 }

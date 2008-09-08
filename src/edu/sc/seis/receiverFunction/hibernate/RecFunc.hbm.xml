@@ -54,6 +54,24 @@
 		</component>
 	</class>
 	
+	<class name="edu.sc.seis.receiverFunction.UserReceiverFunctionQC">
+		<id name="dbid" type="integer">
+			<generator class="native" />
+		</id>
+		<many-to-one name="receiverFunction"
+			class="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult" column="rf"
+			foreign-key="FK_uqc_rf" />
+		<many-to-one name="qcuser" class="edu.sc.seis.receiverFunction.QCUser"
+		forgein-key="FK_urfqc_qcuser"/>
+		<property name="reason"/>
+	</class>
+	
+	<class name="edu.sc.seis.receiverFunction.QCUser">
+		<id name="dbid" type="integer">
+			<generator class="native" />
+		</id>
+		<property name="username"/>
+	
 	
 	<class name="edu.sc.seis.receiverFunction.SumHKStack"
 		table="sumHKStack">

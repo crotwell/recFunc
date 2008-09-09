@@ -119,7 +119,6 @@ public class SumHKStack {
                                                  getSum().getAlpha(),
                                                  earsStaRef);
         StackComplexity complexity = new StackComplexity(getSum(),
-                                                         4096,
                                                          getSum().getGaussianWidth());
         return complexity.getResidual(result, 60);
     }
@@ -145,10 +144,12 @@ public class SumHKStack {
         }
         while(iterator.hasNext()) {
             ReceiverFunctionResult result = iterator.next();
+            if (result.getHKstack().getStack() == null) {
+                throw new RuntimeException("hkstack.stack is null");
+            }
             individual = result.getHKstack();
-            if(numStacks == 0) {
+            if(first == null) {
                 first = individual;
-                chan = first.chan;
                 smallestHIndex = first.getHIndex(smallestH);
                 sumStack = new float[first.getStack().length - smallestHIndex][first.getStack()[0].length];
                 phaseWeight = new CmplxArray2D(sumStack.length,
@@ -241,8 +242,7 @@ public class SumHKStack {
                                       first.getWeightPs(),
                                       first.getWeightPpPs(),
                                       first.getWeightPsPs(),
-                                      sumStack,
-                                      chan);
+                                      sumStack);
         float hVariance = -1;
         float kVariance = -1;
         SumHKStack out = new SumHKStack(minPercentMatch,
@@ -262,7 +262,6 @@ public class SumHKStack {
 
     public StackComplexityResult calcStackComplexity() throws TauModelException {
         StackComplexity complexity = new StackComplexity(getSum(),
-                                                         4096,
                                                          getSum().getGaussianWidth());
         StationResult model = new StationResult(net,
                                                 staCode,
@@ -362,7 +361,6 @@ public class SumHKStack {
                                          int bootstrapIterations) {
         List<ReceiverFunctionResult> individualList = new ArrayList<ReceiverFunctionResult>();
         individualList.addAll(getIndividuals());
-        HKStack temp = getIndividuals().iterator().next().getHKstack();
         double[] hErrors = new double[bootstrapIterations];
         double[] kErrors = new double[bootstrapIterations];
         TimeOMatic.start();
@@ -392,9 +390,6 @@ public class SumHKStack {
         Statistics kStat = new Statistics(kErrors);
         kVariance = (float)kStat.var();
         mixedVariance = hStat.correlation(kErrors);
-        TimeOMatic.print("Stat for "
-                + ChannelIdUtil.toStringNoDates(temp.getChannel())
-                + " h stddev=" + getHStdDev() + "  k stddev=" + getKStdDev());
         best.setHStdDev(getHStdDev());
         best.setKStdDev((float)getKStdDev());
         hBootstrap = hErrors;

@@ -21,7 +21,6 @@ import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
-import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.rev.FloatQueryParamParser;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
@@ -37,7 +36,7 @@ public class Start {
     public static void main(String[] args) throws Exception {
         Properties props = Initializer.loadProperties(args);
         PropertyConfigurator.configure(props);
-        RecFuncCacheImpl.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc", RecFuncCacheImpl.getDataLoc()));
+        RecFuncDB.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc", RecFuncDB.getDataLoc()));
         ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(props.getProperty("fissuresUtil.database.url"));
         RecFuncDB.getSingleton();
@@ -255,7 +254,7 @@ public class Start {
     }
 
     public static String getDataLoc() {
-        return RecFuncCacheImpl.getDataLoc();
+        return RecFuncDB.getDataLoc();
     }
 
     public static VelocityNetwork getNetwork(HttpServletRequest req)

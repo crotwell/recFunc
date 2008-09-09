@@ -2,6 +2,9 @@ package edu.sc.seis.receiverFunction;
 
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.Sampling;
+import edu.iris.Fissures.model.SamplingImpl;
+import edu.iris.Fissures.model.TimeInterval;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
@@ -9,6 +12,7 @@ import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.display.DisplayUtils;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
+import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.fissuresUtil.mockFissures.MockLocation;
 import edu.sc.seis.fissuresUtil.mockFissures.IfNetwork.MockChannel;
 import edu.sc.seis.receiverFunction.compare.StationResult;
@@ -23,9 +27,13 @@ public class StackComplexity {
 
     private float gaussianWidth;
 
-    public StackComplexity(HKStack hkplot, int num_points, float gaussianWidth) {
+    public StackComplexity(HKStack hkplot, float gaussianWidth) {
+        this(hkplot, 4096, new SamplingImpl(20, new TimeInterval(1, UnitImpl.SECOND)), gaussianWidth);
+    }
+    
+    public StackComplexity(HKStack hkplot, int num_points, Sampling samp, float gaussianWidth) {
         this.hkplot = hkplot;
-        this.samp = hkplot.getChannel().getSamplingInfo();
+        this.samp = samp;
         this.num_points = num_points;
         this.gaussianWidth = gaussianWidth;
     }
@@ -57,11 +65,12 @@ public class StackComplexity {
             SimpleSynthReceiverFunction synth = new SimpleSynthReceiverFunction(staResult,
                                                                                 samp,
                                                                                 num_points);
+            ChannelGroup cg = MockChannel.createGroup();
             LocalSeismogramImpl synthRF = synth.calculate(flatRP,
                                                           ClockUtil.now()
                                                                   .getFissuresTime(),
                                                           RecFunc.getDefaultShift(),
-                                                          hkplot.getChannel()
+                                                          cg.getChannel1()
                                                                   .get_id(),
                                                           gaussianWidth);
             HKStack synthStack = new HKStack(hkplot.getAlpha(),
@@ -78,11 +87,10 @@ public class StackComplexity {
                                              1 / 3f,
                                              1 / 3f,
                                              synthRF,
-                                             hkplot.getChannel(),
                                              RecFunc.getDefaultShift());
             synthStack.compact();
             ReceiverFunctionResult result = new ReceiverFunctionResult(null,
-                                                                       MockChannel.createGroup(),
+                                                                       cg,
                                                                        SimplePlotUtil.createSpike(),
                                                                        SimplePlotUtil.createSpike(),
                                                                        SimplePlotUtil.createSpike(),
@@ -145,8 +153,7 @@ public class StackComplexity {
                            1 / 3f,
                            1 / 3f,
                            1 / 3f,
-                           diff,
-                           real.getChannel());
+                           diff);
     }
 
     class CachedStackComplexity {

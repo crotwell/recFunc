@@ -2,6 +2,9 @@ package edu.sc.seis.receiverFunction.server;
 
 public class StackComplexityResult {
 
+    /** for hibernate */
+    protected StackComplexityResult() {}
+    
 	public StackComplexityResult(float complexity,
 			float complexity25, float complexity50, float bestH,
 			float bestHStdDev, float bestK, float bestKStdDev, float bestVal,

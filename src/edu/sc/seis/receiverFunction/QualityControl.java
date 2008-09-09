@@ -93,7 +93,7 @@ public class QualityControl {
         return (float)((radialPStats.max() - radialStats.mean()) / radialStats.maxDeviation());
     }
 
-    public boolean check(ReceiverFunctionResult result)
+    public void check(ReceiverFunctionResult result)
             throws FissuresException, TauModelException, PhaseNonExistent,
             SQLException, NoPreferredOrigin {
         float tToR = transverseToRadial(result);
@@ -115,7 +115,6 @@ public class QualityControl {
                     + result.getEvent().getPreferred().getOriginTime().date_time
                     + "  T to R=" + decFormat.format(tToR) + "  P amp="
                     + decFormat.format(pAmp));
-            return false;
         } else {
             result.setQc(new RecFuncQCResult(true,
                                              false,
@@ -123,7 +122,6 @@ public class QualityControl {
                                              pAmp,
                                              "",
                                              ClockUtil.now().getTimestamp()));
-            return true;
         }
     }
 
@@ -264,7 +262,8 @@ public class QualityControl {
                                            staCode,
                                            2.5f);
                     for(ReceiverFunctionResult receiverFunctionResult : results) {
-                        if(control.check(receiverFunctionResult)) {
+                        control.check(receiverFunctionResult);
+                        if(receiverFunctionResult.getQc().isKeep()) {
                             numGood++;
                         }
                     }

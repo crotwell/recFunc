@@ -1,30 +1,43 @@
 package edu.sc.seis.receiverFunction.hibernate;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.cfg.Configuration;
+import org.omg.CORBA.UNKNOWN;
 
 import edu.iris.Fissures.IfEvent.Origin;
+import edu.iris.Fissures.IfNetwork.Channel;
+import edu.iris.Fissures.IfNetwork.NetworkAttr;
+import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.IfParameterMgr.ParameterRef;
 import edu.iris.Fissures.model.TimeInterval;
-import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.NetworkAttrImpl;
+import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
+import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.receiverFunction.AzimuthSumHKStack;
+import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
-import edu.sc.seis.receiverFunction.web.Start;
 import edu.sc.seis.sod.hibernate.SodDB;
+import edu.sc.seis.sod.status.EventFormatter;
 
 public class RecFuncDB extends AbstractHibernateDB {
-    
+
     public int put(ReceiverFunctionResult result) {
         if(result.getQc().isKeep()) {
             RFInsertion insertion = getInsertion((NetworkAttrImpl)result.getChannelGroup()
@@ -44,7 +57,101 @@ public class RecFuncDB extends AbstractHibernateDB {
             }
             getSession().saveOrUpdate(insertion);
         }
+        if(result.getHKstack() != null) {
+            File dir = getDir(result.getEvent(),
+                              result.getChannelGroup()
+                              .getChannel1(),
+                      result.getGwidth());
+            File stackFile = new File(dir,
+                                      STACK_FILENAME);
+            writeHKStackData(result.getHKstack(), stackFile);
+            result.getHKstack().setStackFile(stackFile.getPath());
+            
+            File analyticFile = new File(dir, ANALYTIC_FILENAME+"Ps.xy");
+            writeAnalyticData(result.getHKstack().getAnalyticPs(), analyticFile);
+            
+            analyticFile = new File(dir, ANALYTIC_FILENAME+"PpPs.xy");
+            writeAnalyticData(result.getHKstack().getAnalyticPpPs(), analyticFile);
+            
+            analyticFile = new File(dir, ANALYTIC_FILENAME+"PsPs.xy");
+            writeAnalyticData(result.getHKstack().getAnalyticPsPs(), analyticFile);
+        }
         return ((Integer)getSession().save(result)).intValue();
+    }
+
+    protected void writeHKStackData(HKStack stack, File outFile) {
+        try {
+            float[][] stackData = stack.getStack();
+            DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(outFile)));
+            for(int i = 0; i < stackData.length; i++) {
+                for(int j = 0; j < stackData[0].length; j++) {
+                    out.writeFloat(stackData[i][j]);
+                }
+            }
+            out.close();
+        } catch(Exception e) {
+            throw new RuntimeException("Unable to save stack to file: "
+                    + outFile, e);
+        }
+    }
+    
+    protected void writeAnalyticData(CmplxArray2D analyticData, File outFile) {
+        try {
+            DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(outFile)));
+            for(int i = 0; i < analyticData.getXLength(); i++) {
+                for(int j = 0; j < analyticData.getYLength(); j++) {
+                    out.writeFloat(analyticData.getReal(i, j));
+                    out.writeFloat(analyticData.getImag(i, j));
+                }
+            }
+            out.close();
+        } catch(Exception e) {
+            throw new RuntimeException("Unable to save stack to file: "
+                    + outFile, e);
+        }
+    }
+
+    public static float[][] loadHKStackFile(HKStack stack) {
+        try {
+            if (stack.getStackFile() == null || stack.getStackFile().length() == 0) {
+                throw new RuntimeException("stack does not have a stackFile set");
+            }
+            DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(stack.getStackFile())));
+            float[][] loadStack = HKStack.createArray(stack.getNumH(),
+                                                      stack.getNumK());
+            for(int i = 0; i < loadStack.length; i++) {
+                for(int j = 0; j < loadStack[0].length; j++) {
+                    loadStack[i][j] = in.readFloat();
+                }
+            }
+            in.close();
+            return loadStack;
+        } catch(Exception e) {
+            throw new RuntimeException("Unable to load stack from file: "
+                    + stack.getStackFile(), e);
+        }
+    }
+    
+    public static CmplxArray2D loadAnalyticFile(HKStack stack, String phase) {
+        try {
+            if (stack.getStackFile() == null || stack.getStackFile().length() == 0) {
+                throw new RuntimeException("stack does not have a stackFile set");
+            }
+            File dir = new File(stack.getStackFile()).getParentFile();
+            DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(new File(dir, RecFuncDB.ANALYTIC_FILENAME+phase+".xy"))));
+            CmplxArray2D out = new CmplxArray2D(stack.getNumH(), stack.getNumK());
+            for(int i = 0; i < stack.getNumH(); i++) {
+                for(int j = 0; j < stack.getNumK(); j++) {
+                    out.setReal(i, j, in.readFloat());
+                    out.setImag(i, j, in.readFloat());
+                }
+            }
+            in.close();
+            return out;
+        } catch(Exception e) {
+            throw new RuntimeException("Unable to load analytic for "+phase+" from file: "
+                    + stack.getStackFile(), e);
+        }
     }
 
     public ReceiverFunctionResult getReceiverFunctionResult(int dbid) {
@@ -65,9 +172,9 @@ public class RecFuncDB extends AbstractHibernateDB {
                                                            float gaussian) {
         Query q = getSession().createQuery("from "
                 + ReceiverFunctionResult.class.getName()
-                + " where event = :event "
-                + " and gwidth = :gauss and qc.keep = true)");
-        q.setEntity("event", cacheEvent);
+                + " r where r.event = :eventxxx "
+                + " and r.gwidth = :gauss and r.qc.keep = true)");
+        q.setEntity("eventxxx", cacheEvent);
         q.setFloat("gauss", gaussian);
         return q.list();
     }
@@ -236,25 +343,37 @@ public class RecFuncDB extends AbstractHibernateDB {
                                                 float gaussianWidth) {
         Query q = getSession().createQuery("from "
                 + RFInsertion.class.getName()
-                + " where now - insertTime > :age and gaussianWidth = :gaussianWidth");
-        q.setDouble("age", age.getValue(UnitImpl.SECOND));
+                + " where insertTime < :oldTime and gaussianWidth = :gaussianWidth");
+        q.setTimestamp("oldTime", ClockUtil.now().subtract(age).getTimestamp());
         q.setFloat("gaussianWidth", gaussianWidth);
         return q.list();
     }
 
     public int put(SumHKStack sum) {
+        File stackFile = new File(getStationDir(sum.getNet(),
+                                                sum.getStaCode(),
+                                                sum.getGaussianWidth()),
+                                  SUM_STACK_FILENAME);
+        writeHKStackData(sum.getSum(), stackFile);
+        sum.getSum().setStackFile(stackFile.getPath());
         return ((Integer)getSession().save(sum)).intValue();
     }
 
     public int putAzimuthSummary(AzimuthSumHKStack sum) {
+        File stackFile = new File(getStationDir(sum.getNet(),
+                                                sum.getStaCode(),
+                                                sum.getGaussianWidth()),
+                                  "AZ_"+sum.getAzimuthCenter()+"_"+sum.getAzimuthWidth()+"_"+SUM_STACK_FILENAME);
+        writeHKStackData(sum.getSum(), stackFile);
+        sum.getSum().setStackFile(stackFile.getPath());
         return ((Integer)getSession().save(sum)).intValue();
     }
 
     public AzimuthSumHKStack getAzSumStack(NetworkAttrImpl net,
-                                    String staCode,
-                                    float gaussianWidth,
-                                    float azCenter,
-                                    float azWidth) {
+                                           String staCode,
+                                           float gaussianWidth,
+                                           float azCenter,
+                                           float azWidth) {
         Query q = getSession().createQuery("from "
                 + AzimuthSumHKStack.class.getName()
                 + " where net = :net and staCode = :staCode and gaussianWidth = :gaussianWidth");
@@ -276,14 +395,14 @@ public class RecFuncDB extends AbstractHibernateDB {
                                   float gaussianWidth) {
         Query q = getSession().createQuery("from "
                 + SumHKStack.class.getName()
-                + " where net = :net and staCode = :staCode and gaussianWidth = :gaussianWidth");
+                + " where net = :n and stacode = :stacode and gaussianWidth = :gw");
         String[] s = q.getNamedParameters();
-        logger.debug("Named parameters ("+s.length+")");
+        logger.debug("Named parameters (" + s.length + ")");
         for(int i = 0; i < s.length; i++) {
-            logger.debug("named parameter["+i+"] = "+s[i]);
+            logger.debug("named parameter[" + i + "] = " + s[i]);
         }
-        q.setEntity("net", net);
-        q.setString("staCodeString", staCode);
+        q.setEntity("n", net);
+        q.setString("stacode", staCode);
         q.setFloat("gw", gaussianWidth);
         q.setMaxResults(1);
         List<SumHKStack> result = q.list();
@@ -300,6 +419,76 @@ public class RecFuncDB extends AbstractHibernateDB {
         return q.list();
     }
 
+    public static File getDir(CacheEvent cacheEvent,
+                              Channel chan,
+                              float gaussianWidth) {
+        if(dataDir == null) {
+            dataDir = new File(getDataLoc());
+            dataDir.mkdirs();
+        }
+        File gaussDir = new File(dataDir, "gauss_" + gaussianWidth);
+        File eventDir = new File(gaussDir, eventFormatter.getResult(cacheEvent));
+        File netDir = new File(eventDir, chan.get_id().network_id.network_code);
+        File stationDir = new File(netDir, chan.get_id().station_code);
+        boolean dirsCreated = stationDir.exists();
+        if(!dirsCreated) {
+            dirsCreated = stationDir.mkdirs();
+        }
+        if(!dirsCreated) {
+            logger.debug("initial mkdirs returned false: " + dirsCreated + "  "
+                    + stationDir.exists());
+            // try once more just for kicks...
+            for(int i = 0; i < 10 && !dirsCreated; i++) {
+                try {
+                    Thread.sleep(1000 * i);
+                } catch(InterruptedException e) {}
+                dirsCreated = stationDir.mkdirs();
+                logger.debug(i + " mkdirs returned false: " + dirsCreated
+                        + "  " + stationDir.exists());
+            }
+            if(!dirsCreated) {
+                File tmpDir = stationDir;
+                while(tmpDir.getParentFile() != null
+                        && !tmpDir.getParentFile().exists()) {
+                    tmpDir = tmpDir.getParentFile();
+                }
+                logger.error("mkdirs seemed to fail on this directory: "
+                        + tmpDir);
+                throw new UNKNOWN("Unable to create directory");
+            }
+        }
+        return stationDir;
+    }
+
+    public static File getStationDir(NetworkAttr net,
+                                     String staCode,
+                                     float gaussianWidth) {
+        if(dataDir == null) {
+            dataDir = new File(getDataLoc());
+            dataDir.mkdirs();
+        }
+        File summaryDir = new File(dataDir, "Summary");
+        File gaussDir = new File(summaryDir, "gauss_" + gaussianWidth);
+        File netDir = new File(gaussDir, NetworkIdUtil.toStringNoDates(net));
+        File stationDir = new File(netDir, staCode);
+        boolean dirsCreated = stationDir.exists();
+        if(!dirsCreated) {
+            dirsCreated = stationDir.mkdirs();
+            if(!dirsCreated) {
+                throw new RuntimeException("Unable to mkdirs on " + stationDir);
+            }
+        }
+        return stationDir;
+    }
+
+    public static void setDataLoc(String loc) {
+        DATA_LOC = loc;
+    }
+
+    public static String getDataLoc() {
+        return DATA_LOC;
+    }
+
     public static void addToParms(Origin o, float itr_match, int recFunc_id) {
         ParameterRef[] parms = o.getParmIds();
         ParameterRef[] newParms = new ParameterRef[parms.length + 2];
@@ -310,7 +499,17 @@ public class RecFuncDB extends AbstractHibernateDB {
                 + recFunc_id);
         o.setParmIds(newParms);
     }
+
+    public static final String STACK_FILENAME = "HKStack.xy";
+    public static final String ANALYTIC_FILENAME = "Analytic_";
+
+    public static final String SUM_STACK_FILENAME = "SumHKStack.xy";
     
+    public static File dataDir = null;
+
+    protected static String DATA_LOC = "../Data";
+
+    public static EventFormatter eventFormatter = EventFormatter.makeFilizer();
 
     static String configFile = "edu/sc/seis/receiverFunction/hibernate/RecFunc.hbm.xml";
 
@@ -319,6 +518,6 @@ public class RecFuncDB extends AbstractHibernateDB {
         logger.debug("adding to HibernateUtil   " + configFile);
         config.addResource(configFile, RecFuncDB.class.getClassLoader());
     }
-    
+
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(RecFuncDB.class);
 }

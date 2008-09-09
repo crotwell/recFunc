@@ -65,9 +65,6 @@ public class Event extends edu.sc.seis.winkle.Event {
         float gaussianWidth = RevUtil.getFloat("gaussian",
                                                req,
                                                Start.getDefaultGaussian());
-        float minPercentMatch = RevUtil.getFloat("minPercentMatch",
-                                                 req,
-                                                 Start.getDefaultMinPercentMatch());
         
         return RecFuncDB.getSingleton().getStationsByEvent(event.getCacheEvent(), gaussianWidth);
         

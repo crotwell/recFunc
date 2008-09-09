@@ -9,6 +9,9 @@ import edu.sc.seis.sod.status.FissuresFormatter;
 
 public class HKAlpha {
 
+    /** for hibernate */
+    protected HKAlpha() {}
+    
     public HKAlpha(QuantityImpl h,
                    float vpVs,
                    QuantityImpl vp) {

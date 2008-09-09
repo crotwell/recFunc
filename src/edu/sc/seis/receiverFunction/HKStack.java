@@ -10,7 +10,11 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
@@ -43,6 +47,7 @@ import edu.sc.seis.fissuresUtil.display.borders.UnitRangeBorder;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
+import edu.sc.seis.fissuresUtil.sac.SacToFissures;
 import edu.sc.seis.fissuresUtil.xml.DataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.fissuresUtil.xml.SeisDataChangeEvent;
@@ -53,8 +58,11 @@ import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.WilsonRistra;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
+import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.receiverFunction.web.GMTColorPalette;
+import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.status.FissuresFormatter;
 
@@ -131,8 +139,6 @@ public class HKStack implements Serializable {
              weightPpPs,
              weightPsPs);
         this.recFunc = recFunc;
-        this.chan = recFunc.getDataSet()
-                .getChannel(recFunc.getRequestFilter().channel_id);
         calculate();
     }
 
@@ -150,7 +156,6 @@ public class HKStack implements Serializable {
                    float weightPpPs,
                    float weightPsPs,
                    LocalSeismogramImpl recFuncSeis,
-                   Channel chan,
                    TimeInterval shift) throws FissuresException {
         this(alpha,
              p,
@@ -166,7 +171,6 @@ public class HKStack implements Serializable {
              weightPpPs,
              weightPsPs);
         this.recFunc = new MemoryDataSetSeismogram(recFuncSeis);
-        this.chan = chan;
         analyticPs = new CmplxArray2D(numH, numK);
         analyticPpPs = new CmplxArray2D(numH, numK);
         analyticPsPs = new CmplxArray2D(numH, numK);
@@ -243,8 +247,6 @@ public class HKStack implements Serializable {
              analyticPpPs,
              analyticPsPs);
         this.recFunc = recFunc;
-        this.chan = recFunc.getDataSet()
-                .getChannel(recFunc.getRequestFilter().channel_id);
     }
 
     public HKStack(QuantityImpl alpha,
@@ -260,44 +262,7 @@ public class HKStack implements Serializable {
                    float weightPs,
                    float weightPpPs,
                    float weightPsPs,
-                   CmplxArray2D analyticPs,
-                   CmplxArray2D analyticPpPs,
-                   CmplxArray2D analyticPsPs,
-                   Channel chan) {
-        this(alpha,
-             p,
-             gwidth,
-             percentMatch,
-             minH,
-             stepH,
-             numH,
-             minK,
-             stepK,
-             numK,
-             weightPs,
-             weightPpPs,
-             weightPsPs,
-             analyticPs,
-             analyticPpPs,
-             analyticPsPs);
-        this.chan = chan;
-    }
-
-    public HKStack(QuantityImpl alpha,
-                   float p,
-                   float gwidth,
-                   float percentMatch,
-                   QuantityImpl minH,
-                   QuantityImpl stepH,
-                   int numH,
-                   float minK,
-                   float stepK,
-                   int numK,
-                   float weightPs,
-                   float weightPpPs,
-                   float weightPsPs,
-                   float[][] stack,
-                   Channel chan) {
+                   float[][] stack) {
         this(alpha,
              p,
              gwidth,
@@ -312,7 +277,6 @@ public class HKStack implements Serializable {
              weightPpPs,
              weightPsPs);
         this.recFunc = null;
-        this.chan = chan;
         this.stack = stack;
         this.compactAnalyticPhase = null;
         this.analyticPs = null;
@@ -320,86 +284,6 @@ public class HKStack implements Serializable {
         this.analyticPsPs = null;
     }
 
-    public HKStack(QuantityImpl alpha,
-                   float p,
-                   float gwidth,
-                   float percentMatch,
-                   QuantityImpl minH,
-                   QuantityImpl stepH,
-                   int numH,
-                   float minK,
-                   float stepK,
-                   int numK,
-                   float weightPs,
-                   float weightPpPs,
-                   float weightPsPs,
-                   QuantityImpl peakH,
-                   Float peakK,
-                   Float peakVal,
-                   Channel chan) {
-        this(alpha,
-             p,
-             gwidth,
-             percentMatch,
-             minH,
-             stepH,
-             numH,
-             minK,
-             stepK,
-             numK,
-             weightPs,
-             weightPpPs,
-             weightPsPs);
-        this.recFunc = null;
-        this.chan = chan;
-        this.stack = null;
-        this.compactAnalyticPhase = null;
-        this.analyticPs = null;
-        this.analyticPpPs = null;
-        this.analyticPsPs = null;
-        this.peakH = peakH;
-        this.peakK = peakK;
-        this.peakVal = peakVal;
-    }
-
-
-    public HKStack(QuantityImpl alpha,
-                   float p,
-                   float gwidth,
-                   float percentMatch,
-                   QuantityImpl minH,
-                   QuantityImpl stepH,
-                   int numH,
-                   float minK,
-                   float stepK,
-                   int numK,
-                   float weightPs,
-                   float weightPpPs,
-                   float weightPsPs,
-                   float[][] stack,
-                   QuantityImpl peakH,
-                   Float peakK,
-                   Float peakVal,
-                   Channel chan) {
-        this(alpha,
-             p,
-             gwidth,
-             percentMatch,
-             minH,
-             stepH,
-             numH,
-             minK,
-             stepK,
-             numK,
-             weightPs,
-             weightPpPs,
-             weightPsPs,
-             stack,
-             chan);
-        this.peakH = peakH;
-        this.peakK = peakK;
-        this.peakVal = peakVal;
-    }
     /**
      * returns the x and y indices for the max value in the stack. The min x
      * value is in index 0 and the y in index 1. The max x value is in 2 and the
@@ -488,7 +372,6 @@ public class HKStack implements Serializable {
                                   dumb.getKValue(),
                                   getAlpha());
         StackComplexity complexity = new StackComplexity(this,
-                                                         4096,
                                                          getGaussianWidth());
         try {
             HKStack residualStack = complexity.getResidual(hka, 80);
@@ -664,6 +547,7 @@ public class HKStack implements Serializable {
                                              QuantityImpl smallestH) {
         int startHIndex = getHIndex(smallestH);
         HKStackImage stackImage = new HKStackImage(this, phase, startHIndex);
+        /*
         if(crust2 != null) {
             StationResult result = crust2.getStationResult(chan.getSite().getStation());
             stackImage.addMarker(result, Color.blue);
@@ -674,6 +558,7 @@ public class HKStack implements Serializable {
                 stackImage.addMarker(result, Color.GREEN);
             }
         }
+        */
         BorderedDisplay bd = new BorderedDisplay(stackImage);
         UnitRangeImpl depthRange = new UnitRangeImpl(getMinH().getValue()
                 + startHIndex * getStepH().getValue(), getMinH().getValue()
@@ -966,7 +851,6 @@ public class HKStack implements Serializable {
                                     weightPpPs,
                                     weightPsPs,
                                     (LocalSeismogramImpl)cachedResult.getRadial(),
-                                    cachedResult.getChannelGroup().getVertical(),
                                     RecFunc.getDefaultShift());
         return stack;
     }
@@ -1063,15 +947,8 @@ public class HKStack implements Serializable {
         if(recFunc != null) {
             return getRecFunc().getRequestFilter().channel_id;
         } else {
-            return chan.get_id();
+            return null;
         }
-    }
-
-    /**
-     * Returns the channel, which may be null.
-     */
-    public Channel getChannel() {
-        return chan;
     }
 
     public DataSetSeismogram getRecFunc() {
@@ -1096,6 +973,9 @@ public class HKStack implements Serializable {
     Origin origin = null;
 
     public float[][] getStack() {
+        if (stack == null) {
+            stack = RecFuncDB.loadHKStackFile(this);
+        }
         return stack;
     }
 
@@ -1291,14 +1171,23 @@ public class HKStack implements Serializable {
     float[][] stack;
 
     public CmplxArray2D getAnalyticPpPs() {
+        if (analyticPpPs == null) {
+            analyticPpPs = RecFuncDB.loadAnalyticFile(this, "PpPs");
+        }
         return analyticPpPs;
     }
 
     public CmplxArray2D getAnalyticPs() {
+        if (analyticPs == null) {
+            analyticPs = RecFuncDB.loadAnalyticFile(this, "Ps");
+        }
         return analyticPs;
     }
 
     public CmplxArray2D getAnalyticPsPs() {
+        if (analyticPsPs == null) {
+            analyticPsPs = RecFuncDB.loadAnalyticFile(this, "PsPs");
+        }
         return analyticPsPs;
     }
 
@@ -1309,7 +1198,7 @@ public class HKStack implements Serializable {
     //hibernate
     protected String stackFile;
     
-    protected void setStackFile(String f) {this.stackFile = f;}
+    public void setStackFile(String f) {this.stackFile = f;}
     public String getStackFile() {return stackFile;}
     
     protected void setAlphaKmps(float v) {
@@ -1450,8 +1339,6 @@ public class HKStack implements Serializable {
 
     // don't serialize the DSS
     transient DataSetSeismogram recFunc;
-
-    Channel chan;
 
     public static final float DEFAULT_WEIGHT_Ps = 1 / 3f;
     

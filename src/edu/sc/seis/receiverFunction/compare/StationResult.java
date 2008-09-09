@@ -18,6 +18,10 @@ import edu.sc.seis.sod.status.FissuresFormatter;
  */
 public class StationResult extends HKAlpha {
 
+    
+    /** for hibernate */
+    protected StationResult() {}
+    
     public StationResult(NetworkAttrImpl networkId,
                          String stationCode,
                          QuantityImpl h,

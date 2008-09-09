@@ -8,6 +8,10 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
 import edu.iris.Fissures.FissuresException;
+import edu.iris.Fissures.Sampling;
+import edu.iris.Fissures.model.SamplingImpl;
+import edu.iris.Fissures.model.TimeInterval;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.receiverFunction.StackComplexity;
 import edu.sc.seis.receiverFunction.SumHKStack;
@@ -49,7 +53,6 @@ public class SynthHKImage extends SummaryHKStackImageServlet {
                                                  req,
                                                  Start.getDefaultMinPercentMatch());
         StackComplexity complexity = new StackComplexity(stack.getSum(),
-                                                         4096,
                                                          gaussianWidth);
         StationResult model = new StationResult(net.getWrapped(),
                                                 staCode,

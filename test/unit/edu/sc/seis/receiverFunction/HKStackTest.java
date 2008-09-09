@@ -27,7 +27,6 @@ public class HKStackTest extends TestCase {
         float weightPs = 1 / 3f;
         float weightPpPs = 1 / 3f;
         float weightPsPs = 1 / 3f;
-        Channel chan = MockChannel.createChannel();
         float[][] stack = new float[numH][numK];
         for(int i = 0; i < inMaxima.length; i++) {
             stack[inMaxima[i][0]][inMaxima[i][1]] = inMaxima.length - i;
@@ -55,8 +54,7 @@ public class HKStackTest extends TestCase {
                            weightPs,
                            weightPpPs,
                            weightPsPs,
-                           stack,
-                           chan);
+                           stack);
     }
 
     public void testGetLocalMaxima() {

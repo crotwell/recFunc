@@ -14,7 +14,7 @@ public class StackComplexityTest extends TestCase {
                                                     stack.getMaxValueK(),
                                                     stack.getAlpha(),
                                                     null);
-        StackComplexity complexity = new StackComplexity(stack, 4096, stack.getGaussianWidth());
+        StackComplexity complexity = new StackComplexity(stack, stack.getGaussianWidth());
         HKStack synth = complexity.getSynthetic(maxResult);
         StackMaximum maxIndex = stack.getGlobalMaximum();
         StackMaximum synthMaxIndex = synth.getGlobalMaximum();

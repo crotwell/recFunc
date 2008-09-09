@@ -79,7 +79,7 @@ public class TestIterDecon {
         HKStack stack = new HKStack(new QuantityImpl(6.5f, UnitImpl.KILOMETER_PER_SECOND), 0.06f, gwidth, 1,
                                     new QuantityImpl(10, UnitImpl.KILOMETER), new QuantityImpl(.25f, UnitImpl.KILOMETER), 200,
                                     1.6f,.0025f, 200,
-                                    1/3f, 1/3f, 1/3f, SacToFissures.getSeismogram(predOut), SacToFissures.getChannel(predOut), new TimeInterval(shift, UnitImpl.SECOND));
+                                    1/3f, 1/3f, 1/3f, SacToFissures.getSeismogram(predOut), TimeInterval(shift, UnitImpl.SECOND));
         BufferedImage bufSumImage = stack.createStackImage();
         File outSumImageFile  = new File("stack.png");
         javax.imageio.ImageIO.write(bufSumImage, "png", outSumImageFile);

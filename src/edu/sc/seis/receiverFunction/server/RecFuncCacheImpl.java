@@ -56,7 +56,6 @@ import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.SodConfig;
 import edu.sc.seis.sod.Start;
 import edu.sc.seis.sod.hibernate.SodDB;
-import edu.sc.seis.sod.status.EventFormatter;
 
 /**
  * @author crotwell Created on Sep 9, 2004
@@ -69,7 +68,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
             SQLException, ConfigurationException, TauModelException, Exception {
         ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(databaseURL);
-        DATA_LOC = dataloc;
+        RecFuncDB.setDataLoc(dataloc);
         synchronized(HibernateUtil.class) {
             // configure EhCache
             InputStream ehconfigStream = (Start.class).getClassLoader()
@@ -236,7 +235,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                 NetworkDB.getSingleton().put(cg);
             }
             SodConfig sodConfig = SodDB.getSingleton().getConfig(sodConfig_id);
-            File stationDir = getDir(event, channels[0], config.gwidth);
+            File stationDir = RecFuncDB.getDir(event, channels[0], config.gwidth);
             File[] seisFile = new File[original.length];
             for(int i = 0; i < original.length; i++) {
                 seisFile[i] = URLDataSetSeismogram.saveAs((LocalSeismogramImpl)original[i],
@@ -303,7 +302,8 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                                        config.tol,
                                                                        sodConfig);
             try {
-                if(qualityControl.check(result)) {
+                qualityControl.check(result);
+                if(result.getQc().isKeep()) {
                     float weightPs = 1 / 3f;
                     float weightPpPs = 1 / 3f;
                     float weightPsPs = 1 - weightPs - weightPpPs;
@@ -375,66 +375,11 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         }
     }
 
-    public static File getDir(CacheEvent cacheEvent,
-                              Channel chan,
-                              float gaussianWidth) {
-        if(dataDir == null) {
-            dataDir = new File(getDataLoc());
-            dataDir.mkdirs();
-        }
-        File gaussDir = new File(dataDir, "gauss_" + gaussianWidth);
-        File eventDir = new File(gaussDir, eventFormatter.getResult(cacheEvent));
-        File netDir = new File(eventDir, chan.get_id().network_id.network_code);
-        File stationDir = new File(netDir, chan.get_id().station_code);
-        boolean dirsCreated = stationDir.exists();
-        if(!dirsCreated) {
-            dirsCreated = stationDir.mkdirs();
-        }
-        if(!dirsCreated) {
-            logger.debug("initial mkdirs returned false: " + dirsCreated + "  "
-                    + stationDir.exists());
-            // try once more just for kicks...
-            for(int i = 0; i < 10 && !dirsCreated; i++) {
-                try {
-                    Thread.sleep(1000 * i);
-                } catch(InterruptedException e) {}
-                dirsCreated = stationDir.mkdirs();
-                logger.debug(i + " mkdirs returned false: " + dirsCreated
-                        + "  " + stationDir.exists());
-            }
-            if(!dirsCreated) {
-                File tmpDir = stationDir;
-                while(tmpDir.getParentFile() != null
-                        && !tmpDir.getParentFile().exists()) {
-                    tmpDir = tmpDir.getParentFile();
-                }
-                logger.error("mkdirs seemed to fail on this directory: "
-                        + tmpDir);
-                throw new UNKNOWN("Unable to create directory");
-            }
-        }
-        return stationDir;
-    }
-
-    public static String getDataLoc() {
-        return DATA_LOC;
-    }
-
-    public static void setDataLoc(String loc) {
-        DATA_LOC = loc;
-    }
-
     private TimeInterval timeTol = new TimeInterval(10, UnitImpl.SECOND);
 
     private QuantityImpl positionTol = new QuantityImpl(.5, UnitImpl.DEGREE);
 
-    private static EventFormatter eventFormatter = EventFormatter.makeFilizer();
-
-    private static File dataDir = null;
-
     private QualityControl qualityControl;
-
-    private static String DATA_LOC = "../Data";
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(RecFuncCacheImpl.class);
 }

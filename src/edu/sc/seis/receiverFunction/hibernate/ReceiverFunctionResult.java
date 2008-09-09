@@ -10,7 +10,6 @@ import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.fissuresUtil.sac.SacToFissures;
 import edu.sc.seis.receiverFunction.HKStack;
-import edu.sc.seis.receiverFunction.server.RecFuncCacheImpl;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import edu.sc.seis.sod.SodConfig;
 
@@ -124,7 +123,7 @@ public class ReceiverFunctionResult {
 
     public LocalSeismogramImpl getOriginal1() {
         if(original1 == null) {
-            File stationDir = RecFuncCacheImpl.getDir(getEvent(),
+            File stationDir = RecFuncDB.getDir(getEvent(),
                                                       getChannelGroup().getChannel1(),
                                                       getGwidth());
             try {
@@ -150,7 +149,7 @@ public class ReceiverFunctionResult {
 
     public LocalSeismogramImpl getOriginal2() {
         if(original2 == null) {
-            File stationDir = RecFuncCacheImpl.getDir(getEvent(),
+            File stationDir = RecFuncDB.getDir(getEvent(),
                                                       getChannelGroup().getChannel2(),
                                                       getGwidth());
             try {
@@ -176,7 +175,7 @@ public class ReceiverFunctionResult {
 
     public LocalSeismogramImpl getOriginal3() {
         if(original3 == null) {
-            File stationDir = RecFuncCacheImpl.getDir(getEvent(),
+            File stationDir = RecFuncDB.getDir(getEvent(),
                                                       getChannelGroup().getChannel3(),
                                                       getGwidth());
             try {
@@ -302,7 +301,7 @@ public class ReceiverFunctionResult {
 
     public LocalSeismogramImpl getRadial() {
         if(radial == null) {
-            File stationDir = RecFuncCacheImpl.getDir(getEvent(),
+            File stationDir = RecFuncDB.getDir(getEvent(),
                                                       getChannelGroup().getChannel1(),
                                                       getGwidth());
             try {
@@ -328,7 +327,7 @@ public class ReceiverFunctionResult {
 
     public LocalSeismogramImpl getTransverse() {
         if(transverse == null) {
-            File stationDir = RecFuncCacheImpl.getDir(getEvent(),
+            File stationDir = RecFuncDB.getDir(getEvent(),
                                                       getChannelGroup().getChannel1(),
                                                       getGwidth());
             try {

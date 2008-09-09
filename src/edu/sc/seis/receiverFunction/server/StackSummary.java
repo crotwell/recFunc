@@ -56,8 +56,8 @@ public class StackSummary {
 
     public StackSummary(Properties props) throws IOException,
             SQLException, ConfigurationException, TauModelException, Exception {
-        RecFuncCacheImpl.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc",
-                                                      RecFuncCacheImpl.getDataLoc()));
+        RecFuncDB.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc",
+                                                      RecFuncDB.getDataLoc()));
         RecFuncCacheImpl impl = new RecFuncCacheImpl(props.getProperty("cormorant.servers.ears.databaseURL"), 
                                                      props.getProperty("cormorant.servers.ears.dataloc"), 
                                                      props);
@@ -433,6 +433,7 @@ public class StackSummary {
                 System.out.println("Warning: didn't find net for " + netArg);
             }
         }
+        RecFuncDB.commit();
         System.out.println("Done.");
     }
 

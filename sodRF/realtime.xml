@@ -15,7 +15,7 @@
             <value>9</value>
             <unit>MINUTE</unit>
         </eventRefreshInterval>
-        <waveformWorkerThreads>2</waveformWorkerThreads>
+        <waveformWorkerThreads>4</waveformWorkerThreads>
         <maxRetryDelay>
             <value>6</value>
             <unit>WEEK</unit>
@@ -75,10 +75,10 @@
             <startTime>20050101T00:00:00.001Z</startTime>
             <endTime>20201231T23:59:59.999Z</endTime>
         </stationEffectiveTimeOverlap>
-        <siteOR>
+        <channelOR>
             <siteCode>  </siteCode>
             <siteCode>00</siteCode>
-        </siteOR>
+        </channelOR>
         <channelAND>
             <!-- Accept any channel with B band code -->
             <channelOR>

@@ -62,7 +62,7 @@
 			class="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult" column="rf"
 			foreign-key="FK_uqc_rf" />
 		<many-to-one name="qcuser" class="edu.sc.seis.receiverFunction.QCUser"
-		forgein-key="FK_urfqc_qcuser"/>
+			foreign-key="FK_urfqc_qcuser"/>
 		<property name="reason"/>
 	</class>
 	
@@ -71,7 +71,8 @@
 			<generator class="native" />
 		</id>
 		<property name="username"/>
-	
+		<property name="passwordHash"/>
+	</class>
 	
 	<class name="edu.sc.seis.receiverFunction.SumHKStack"
 		table="sumHKStack">

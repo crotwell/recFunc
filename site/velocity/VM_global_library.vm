@@ -156,9 +156,9 @@ $sta.getNet().getCodeWithYear(),$sta.getCode(),$sta.getLatitude(),$sta.getLongit
 </tr>
 #foreach($sta in $stationList)
 <tr>
-	<td class="even"><a href="station.html?netcode=$sta.getNet().getCodeWithYear()()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getNet().getCode()</a></td>
-	<td class="odd"><a href="station.html?netcode=$sta.getNet().getCodeWithYear()()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getCode()</a></td>
-    <td class="stat_name"><a href="station.html?netcode=$sta.getNet().getCodeWithYear()()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getName()</a></td>
+	<td class="even"><a href="station.html?netcode=$sta.getNet().getCodeWithYear()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getNet().getCode()</a></td>
+	<td class="odd"><a href="station.html?netcode=$sta.getNet().getCodeWithYear()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getCode()</a></td>
+    <td class="stat_name"><a href="station.html?netcode=$sta.getNet().getCodeWithYear()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getName()</a></td>
     <td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
 	<td class="even">$sta.getElevation()</td>
     <td class="odd">$!summary.get($sta).getBest().formatH()</td>

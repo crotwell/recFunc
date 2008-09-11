@@ -140,6 +140,7 @@ public class StationList extends Revlet {
             VelocityStation sta = (VelocityStation)it.next();
             SumHKStack sumStack = RecFuncDB.getSingleton().getSumStack((NetworkAttrImpl)sta.getWrapped().getNetworkAttr(),
                                                                        sta.get_code(), gaussianWidth);
+            if (sumStack == null) {continue;}
             float bestVpvs = sumStack.getComplexityResult().getBestK();
             float bestH = (float)sumStack.getComplexityResult().getBestH();
             if (sumStack.getComplexityResidual() <= maxComplexity &&

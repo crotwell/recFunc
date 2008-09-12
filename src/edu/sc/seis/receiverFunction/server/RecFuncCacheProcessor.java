@@ -29,6 +29,7 @@ import edu.sc.seis.sod.CommonAccess;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.SodUtil;
+import edu.sc.seis.sod.Threadable;
 import edu.sc.seis.sod.hibernate.SodDB;
 import edu.sc.seis.sod.process.waveform.vector.WaveformVectorProcess;
 import edu.sc.seis.sod.process.waveform.vector.WaveformVectorResult;
@@ -37,7 +38,7 @@ import edu.sc.seis.sod.status.StringTreeLeaf;
 /**
  * @author crotwell Created on Sep 10, 2004
  */
-public class RecFuncCacheProcessor implements WaveformVectorProcess {
+public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable {
 
     public RecFuncCacheProcessor(Element config) throws ConfigurationException,
             TauModelException {
@@ -232,4 +233,8 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess {
     TauPUtil taup;
 
     RecFunc recFunc;
+
+    public boolean isThreadSafe() {
+        return true;
+    }
 }

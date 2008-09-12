@@ -1,5 +1,6 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,6 +9,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+
+import net.sf.ehcache.CacheManager;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.VelocityContext;
@@ -39,7 +42,9 @@ public class Start {
         RecFuncDB.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc", RecFuncDB.getDataLoc()));
         ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(props.getProperty("fissuresUtil.database.url"));
-        RecFuncDB.getSingleton();
+        synchronized(HibernateUtil.class) {
+            RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
+        }
         logger.info("connecting to database: " + ConnMgr.getURL());
         Set servletStrings = new HashSet();
         ServletHandler rootHandler = new ServletFromSet(servletStrings);

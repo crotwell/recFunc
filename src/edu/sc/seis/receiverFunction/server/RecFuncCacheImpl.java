@@ -71,10 +71,11 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         RecFuncDB.setDataLoc(dataloc);
         synchronized(HibernateUtil.class) {
             // configure EhCache
-            InputStream ehconfigStream = (Start.class).getClassLoader()
-                    .getResourceAsStream(Start.EHCACHE_CONFIG);
+            InputStream ehconfigStream = (edu.sc.seis.sod.Start.class).getClassLoader()
+                    .getResourceAsStream(edu.sc.seis.sod.Start.EHCACHE_CONFIG);
             CacheManager singletonManager = CacheManager.create(ehconfigStream);
             HibernateUtil.setUpFromConnMgr(confProps);
+            SodDB.configHibernate(HibernateUtil.getConfiguration());
             RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
         }
         AbstractHibernateDB.deploySchema();

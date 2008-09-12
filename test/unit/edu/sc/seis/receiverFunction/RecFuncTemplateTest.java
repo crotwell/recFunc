@@ -25,11 +25,11 @@ public class RecFuncTemplateTest extends TestCase {
     public void testProcess() throws Exception {
         RecFuncTemplate template = new RecFuncTemplate();
 
-        VelocityContext context = new VelocityContext(CookieJar.getCommonContext());
+        VelocityContext context = new VelocityContext();
 
         context.put("sod_event", MockEventAccessOperations.createEvent());
         context.put("sod_channel", MockChannel.createChannel());
-        context.put( "channelIdToString", ChannelIdUtil.toStringNoDates(MockChannel.createChannel().get_id()));
+        context.put("channelIdToString", ChannelIdUtil.toStringNoDates(MockChannel.createChannel().get_id()));
         context.put("recFunc_hkstack_image", "hkstack.png");
         context.put("ChannelIdUtil", new ChannelIdUtil());
 

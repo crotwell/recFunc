@@ -68,11 +68,4 @@ public class HKStackTest extends TestCase {
             assertEquals("local max y " + i, inMaxima[i][1], out[i].getKIndex());
         }
     }
-    
-    public void testGetMaximumAsStationResult() {
-        HKStack in = getMockHKStack();
-        StationResult staResult = in.getMaximumAsStationResult(0);
-        assertEquals("h", in.getMaxValueH().getValue(UnitImpl.KILOMETER), staResult.getH().getValue(UnitImpl.KILOMETER), 0.00001);
-        assertEquals("k", in.getMaxValueK(), staResult.getVpVs(), 0.00001);
-    }
 }

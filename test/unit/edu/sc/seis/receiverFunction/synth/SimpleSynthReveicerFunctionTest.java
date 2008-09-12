@@ -7,7 +7,7 @@ import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.mockFissures.IfNetwork.MockChannel;
-import edu.sc.seis.fissuresUtil.mockFissures.IfNetwork.MockNetworkId;
+import edu.sc.seis.fissuresUtil.mockFissures.IfNetwork.MockNetworkAttr;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 
 public class SimpleSynthReveicerFunctionTest extends TestCase {
@@ -35,7 +35,7 @@ public class SimpleSynthReveicerFunctionTest extends TestCase {
         double rsr0 = 4.734231;
         double zsz0 = -0.124569595;
         double rpz0 = 0.213547871;
-        SimpleSynthReceiverFunction simple = new SimpleSynthReceiverFunction(new StationResult(MockNetworkId.createNetworkID(),
+        SimpleSynthReceiverFunction simple = new SimpleSynthReceiverFunction(new StationResult(MockNetworkAttr.createNetworkAttr(),
                                                                                                "test",
                                                                                                new QuantityImpl(30,
                                                                                                                 UnitImpl.KILOMETER),
@@ -104,7 +104,7 @@ public class SimpleSynthReveicerFunctionTest extends TestCase {
         double rhoMantle = 3.2;
         float flatRP = 0.0503f;
         double[] a = new double[] {0.339172453,  0.14355889,  0.168260157, -0.130562127};
-        SimpleSynthReceiverFunction simple = new SimpleSynthReceiverFunction(new StationResult(MockNetworkId.createNetworkID(),
+        SimpleSynthReceiverFunction simple = new SimpleSynthReceiverFunction(new StationResult(MockNetworkAttr.createNetworkAttr(),
                                                                                                "test",
                                                                                                new QuantityImpl(30,
                                                                                                                 UnitImpl.KILOMETER),

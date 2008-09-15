@@ -1024,7 +1024,7 @@ public class HKStack implements Serializable {
         return FissuresFormatter.formatQuantity(getAlpha());
     }
 
-    public float getGaussianWidth() {
+    protected float getGaussianWidth() {
         return gwidth;
     }
 

@@ -34,6 +34,7 @@ import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.HKStack;
@@ -45,7 +46,9 @@ import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.receiverFunction.web.Start;
+import edu.sc.seis.rev.hibernate.RevDB;
 import edu.sc.seis.sod.ConfigurationException;
+import edu.sc.seis.sod.hibernate.SodDB;
 import edu.sc.seis.sod.status.FissuresFormatter;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
@@ -58,9 +61,13 @@ public class StackSummary {
             SQLException, ConfigurationException, TauModelException, Exception {
         RecFuncDB.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc",
                                                       RecFuncDB.getDataLoc()));
-        RecFuncCacheImpl impl = new RecFuncCacheImpl(props.getProperty("cormorant.servers.ears.databaseURL"), 
-                                                     props.getProperty("cormorant.servers.ears.dataloc"), 
-                                                     props);
+        ConnMgr.installDbProperties(props, new String[0]);
+        logger.debug("before set up hibernate");
+        synchronized(HibernateUtil.class) {
+            HibernateUtil.setUpFromConnMgr(props);
+            SodDB.configHibernate(HibernateUtil.getConfiguration());
+            RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
+        }
     }
 
     public void createSummary(String netCode,

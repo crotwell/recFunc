@@ -62,7 +62,7 @@
 		<many-to-one name="receiverFunction"
 			class="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult" column="rf"
 			foreign-key="FK_uqc_rf" />
-		<many-to-one name="qcuser" class="edu.sc.seis.receiverFunction.QCUser"
+		<many-to-one name="qcUser" class="edu.sc.seis.receiverFunction.QCUser"
 			foreign-key="FK_urfqc_qcuser"/>
 		<property name="reason"/>
 	</class>

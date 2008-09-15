@@ -6,11 +6,14 @@ import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 
 public class UserReceiverFunctionQC {
 
+    /** for hibernate */
+    protected UserReceiverFunctionQC() {}
+    
     protected long dbid;
 
-    protected QCUser user;
+    protected QCUser qcUser;
 
-    protected ReceiverFunctionResult rfResult;
+    protected ReceiverFunctionResult receiverFunction;
 
     protected String reason;
 
@@ -20,12 +23,12 @@ public class UserReceiverFunctionQC {
         return dbid;
     }
 
-    public QCUser getUser() {
-        return user;
+    public QCUser getQcUser() {
+        return qcUser;
     }
 
-    public ReceiverFunctionResult getRfResult() {
-        return rfResult;
+    public ReceiverFunctionResult getReceiverFunction() {
+        return receiverFunction;
     }
 
     public String getReason() {
@@ -40,12 +43,12 @@ public class UserReceiverFunctionQC {
         this.dbid = dbid;
     }
 
-    protected void setUser(QCUser user) {
-        this.user = user;
+    protected void setQcUser(QCUser user) {
+        this.qcUser = user;
     }
 
-    protected void setRfResult(ReceiverFunctionResult rfResult) {
-        this.rfResult = rfResult;
+    protected void setReceiverFunction(ReceiverFunctionResult rfResult) {
+        this.receiverFunction = rfResult;
     }
 
     protected void setReason(String reason) {

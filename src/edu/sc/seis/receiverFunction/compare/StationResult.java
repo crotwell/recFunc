@@ -157,7 +157,10 @@ public class StationResult extends HKAlpha {
     protected void setNet(NetworkAttrImpl networkId) {
         this.networkId = networkId;
     }
-
+    
+    protected void setHkm(float h) {
+        this.h = new QuantityImpl(h, UnitImpl.KILOMETER);
+    }
     
     protected void setH(QuantityImpl h) {
         this.h = h;
@@ -187,4 +190,6 @@ public class StationResult extends HKAlpha {
     protected void setDbid(int dbid) {
         this.dbid = dbid;
     }
+    
+    
 }

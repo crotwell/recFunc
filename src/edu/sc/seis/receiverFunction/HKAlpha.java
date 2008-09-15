@@ -70,6 +70,10 @@ public class HKAlpha {
         return h;
     }
 
+    public float getHkm() {
+        return (float)h.getValue(UnitImpl.KILOMETER);
+    }
+
     public float getVpVs() {
         return vpVs;
     }

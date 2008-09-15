@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import edu.iris.Fissures.FissuresException;
+import edu.iris.Fissures.IfParameterMgr.ParameterRef;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
@@ -79,7 +80,7 @@ public class Station extends Revlet {
         int numNinty = 0;
         int numEighty = 0;
         for(ReceiverFunctionResult result : winners) {
-            eventList.add(new VelocityEvent(result.getEvent()));
+            eventList.add(createVelocityEvent(result));
             if(result.getRadialMatch() >= 80) {
                 numEighty++;
                 if(result.getRadialMatch() >= 90) {
@@ -90,7 +91,7 @@ public class Station extends Revlet {
         TimeOMatic.print("numEighty");
         ArrayList<VelocityEvent> eventLoserList = new ArrayList<VelocityEvent>();
         for(ReceiverFunctionResult result : losers) {
-            eventLoserList.add(new VelocityEvent(result.getEvent()));
+            eventLoserList.add(createVelocityEvent(result));
         }
         Collections.sort(eventList, itrMatchComparator);
         Collections.reverse(eventList);
@@ -124,6 +125,7 @@ public class Station extends Revlet {
         Revlet.loadStandardQueryParams(req, context);
         try {
             SumHKStack summary = getSummaryStack(req);
+            if (summary != null) {
             context.put("summary", summary);
             String sumHKPlot = makeHKPlot(summary, req.getSession());
             context.put("sumHKPlot", sumHKPlot);
@@ -162,6 +164,7 @@ public class Station extends Revlet {
             TimeInterval timePsPs = summary.getSum().getTimePsPs();
             timePsPs.setFormat(arrivalTimeFormat);
             context.put("timePsPs", timePsPs);
+            }
         } catch(NotFound e) {
             // no summary, oh well...
             logger.warn("Got a not found: ", e);
@@ -236,6 +239,17 @@ public class Station extends Revlet {
         return RecFuncDB.getSingleton().getUnsuccessful(net.getWrapped(),
                                                       staCode,
                                                       gaussianWidth);
+    }
+    
+    public static VelocityEvent createVelocityEvent(ReceiverFunctionResult result) {
+        VelocityEvent ve = new VelocityEvent(result.getEvent());
+        ParameterRef[] p = ve.getOrigin().getParmIds();
+        ParameterRef[] tmp = new ParameterRef[p.length+2];
+        System.arraycopy(p, 0, tmp, 0, p.length);
+        tmp[p.length] = new ParameterRef("itr_match", ""+result.getRadialMatch());
+        tmp[p.length+1] = new ParameterRef("recFunc_id", ""+result.getDbid());
+        ve.getOrigin().setParmIds(tmp);
+        return ve;
     }
 
     public static String makeHKPlot(SumHKStack sumStack, HttpSession session)

@@ -298,7 +298,7 @@ public class RecFuncDB extends AbstractHibernateDB {
                                                String staCode) {
         Query q = getSession().createQuery("from "
                 + StationResult.class.getName()
-                + " where net = :net and stationCode = :staCode");
+                + " where net = :net and staCode = :staCode");
         q.setEntity("net", net);
         q.setString("staCode", staCode);
         return q.list();
@@ -514,7 +514,6 @@ public class RecFuncDB extends AbstractHibernateDB {
     static String configFile = "edu/sc/seis/receiverFunction/hibernate/RecFunc.hbm.xml";
 
     public static void configHibernate(Configuration config) {
-        SodDB.configHibernate(config);
         logger.debug("adding to HibernateUtil   " + configFile);
         config.addResource(configFile, RecFuncDB.class.getClassLoader());
     }

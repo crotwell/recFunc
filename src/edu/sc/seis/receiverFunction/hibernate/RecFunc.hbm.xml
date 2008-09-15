@@ -15,7 +15,7 @@
 			foreign-key="FK_rf_event" />
 		<many-to-one name="channelGroup"
 			class="edu.sc.seis.fissuresUtil.hibernate.ChannelGroup" column="channelGroup"
-			foreign-key="FK_rf_channel" />
+			foreign-key="FK_rf_channel" index="rfr_cg_idx"/>
 		<property name="originalFile1"/>
 		<property name="originalFile2"/>
 		<property name="originalFile3"/>
@@ -28,9 +28,10 @@
 		<property name="gwidth" type="float"/>
 		<property name="maxBumps" type="integer"/>
 		<property name="tol" type="float"/>
+		<many-to-one name="sodconfig" class="edu.sc.seis.sod.SodConfig" foreign-key="FK_rf_sodconfig" />
 		<property name="insertTime" type="timestamp"/>
 		<component name="qc" class="edu.sc.seis.receiverFunction.hibernate.RecFuncQCResult">
-			<property name="keep" type="boolean"/>
+			<property name="keep" type="boolean"  />
 			<property name="manualOverride" type="boolean"/>
 			<property name="transRadialRatio" type="float"/>
 			<property name="PMaxAmpRatio" type="float"/>
@@ -108,7 +109,7 @@
 		<property name="KVariance" type="float"/>
 		<property name="mixedVariance" type="float"/>
 		<component name="best" class="edu.sc.seis.receiverFunction.compare.StationResult">
-			<property name="h" type="float"/>
+			<property name="hkm" type="float"/>
 			<property name="VpVs" type="float"/>
 			<property name="amp" type="float"/>
 		</component>
@@ -204,7 +205,7 @@
 	</class>
 
 	<class name="edu.sc.seis.receiverFunction.compare.StationResult"
-		table="priorResults">
+		table="stationResult">
 		<id name="dbid" type="integer">
 			<generator class="native" />
 		</id>
@@ -224,7 +225,7 @@
 				type="double"  />
 			<many-to-one name="unit"
 				class="edu.iris.Fissures.model.UnitImpl" column="depth_unit_id"
-				foreign-key="FK_DEPTH_UNIT_ID" lazy="false" />
+				foreign-key="fk_sta_result_depth_unit" lazy="false" />
 		</component>
 		<property name="VpVs" type="float"/>
 		<property name="Vp" type="float"/>
@@ -234,7 +235,7 @@
 				type="double"  />
 			<many-to-one name="unit"
 				class="edu.iris.Fissures.model.UnitImpl" column="hStdDev_unit_id"
-				foreign-key="FK_DEPTH_UNIT_ID" lazy="false" />
+				foreign-key="fk_hstddev_unit" lazy="false" />
 		</component>
 		<property name="HStdDev" type="float"/>
 		<property name="extras"/>

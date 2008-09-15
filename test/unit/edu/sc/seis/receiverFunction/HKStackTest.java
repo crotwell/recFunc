@@ -1,11 +1,8 @@
 package edu.sc.seis.receiverFunction;
 
-import edu.iris.Fissures.IfNetwork.Channel;
+import junit.framework.TestCase;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
-import edu.sc.seis.fissuresUtil.mockFissures.IfNetwork.MockChannel;
-import edu.sc.seis.receiverFunction.compare.StationResult;
-import junit.framework.TestCase;
 
 public class HKStackTest extends TestCase {
 

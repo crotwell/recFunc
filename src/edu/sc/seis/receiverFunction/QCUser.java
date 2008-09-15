@@ -1,6 +1,8 @@
 package edu.sc.seis.receiverFunction;
 
 public class QCUser {
+    /** for hibernate */
+    protected QCUser() {}
 
     protected long dbid;
     

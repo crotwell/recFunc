@@ -30,7 +30,9 @@ import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.receiverFunction.AzimuthSumHKStack;
 import edu.sc.seis.receiverFunction.HKStack;
+import edu.sc.seis.receiverFunction.QCUser;
 import edu.sc.seis.receiverFunction.SumHKStack;
+import edu.sc.seis.receiverFunction.UserReceiverFunctionQC;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
 import edu.sc.seis.sod.hibernate.SodDB;
@@ -395,21 +397,36 @@ public class RecFuncDB extends AbstractHibernateDB {
                                   float gaussianWidth) {
         Query q = getSession().createQuery("from "
                 + SumHKStack.class.getName()
-                + " where net = :n and stacode = :stacode and gaussianWidth = :gw");
+ );//               + " where net = :n and stacode = :stacode and gaussianWidth = :gw");
         String[] s = q.getNamedParameters();
         logger.debug("Named parameters (" + s.length + ")");
         for(int i = 0; i < s.length; i++) {
             logger.debug("named parameter[" + i + "] = " + s[i]);
         }
-        q.setEntity("n", net);
-        q.setString("stacode", staCode);
-        q.setFloat("gw", gaussianWidth);
+   //     q.setEntity("n", net);
+  //      q.setString("stacode", staCode);
+   //     q.setFloat("gw", gaussianWidth);
         q.setMaxResults(1);
         List<SumHKStack> result = q.list();
         if(result.size() > 0) {
             return result.get(0);
         }
         return null;
+    }
+
+    public int put(UserReceiverFunctionQC qc) {
+        return ((Integer)getSession().save(qc)).intValue();
+    }
+
+    public QCUser getQCUser(String hash) {
+        Query q = getSession().createQuery("from "+QCUser.class.getName()+" where passwordHash = :hash");
+        q.setString("hash", hash);
+        q.setMaxResults(1);
+        List ans = q.list();
+        if (ans.size() == 0) {
+            return null;
+        }
+        return (QCUser)ans.get(0);
     }
 
     public List<SumHKStack> getAllSumStack(float gaussianWidth) {

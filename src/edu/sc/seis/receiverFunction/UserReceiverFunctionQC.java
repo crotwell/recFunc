@@ -2,6 +2,7 @@ package edu.sc.seis.receiverFunction;
 
 import java.sql.Timestamp;
 
+import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 
 public class UserReceiverFunctionQC {
@@ -9,12 +10,26 @@ public class UserReceiverFunctionQC {
     /** for hibernate */
     protected UserReceiverFunctionQC() {}
     
+    public UserReceiverFunctionQC(QCUser qcUser,
+                                  ReceiverFunctionResult receiverFunction,
+                                  boolean keep,
+                                  String reason) {
+        super();
+        this.qcUser = qcUser;
+        this.receiverFunction = receiverFunction;
+        this.keep = keep;
+        this.reason = reason;
+        this.insertTime = ClockUtil.now().getTimestamp();
+    }
+
     protected long dbid;
 
     protected QCUser qcUser;
 
     protected ReceiverFunctionResult receiverFunction;
 
+    protected boolean keep;
+    
     protected String reason;
 
     protected Timestamp insertTime;
@@ -57,5 +72,15 @@ public class UserReceiverFunctionQC {
 
     protected void setInsertTime(Timestamp insertTime) {
         this.insertTime = insertTime;
+    }
+
+    
+    public boolean isKeep() {
+        return keep;
+    }
+
+    
+    protected void setKeep(boolean keep) {
+        this.keep = keep;
     }
 }

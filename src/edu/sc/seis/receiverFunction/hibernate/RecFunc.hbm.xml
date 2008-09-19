@@ -64,6 +64,7 @@
 			foreign-key="FK_uqc_rf" />
 		<many-to-one name="qcUser" class="edu.sc.seis.receiverFunction.QCUser"
 			foreign-key="FK_urfqc_qcuser"/>
+		<property name="keep" type="boolean"/>
 		<property name="reason"/>
 	</class>
 	

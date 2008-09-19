@@ -52,10 +52,25 @@ public class ReceiverFunctionZip extends HttpServlet {
             float minPercentMatch = RevUtil.getFloat("minPercentMatch",
                                                      req,
                                                      Start.getDefaultMinPercentMatch());
+            boolean losers = RevUtil.getBoolean("losers", req, false);
             List<ReceiverFunctionResult> result = RecFuncDB.getSingleton()
                     .getSuccessful(net.getWrapped(),
                                    staCode,
                                    gaussianWidth);
+            if (losers) {
+                List<ReceiverFunctionResult> loserResults = 
+                    RecFuncDB.getSingleton().getUnsuccessful(net.getWrapped(),
+                                                             staCode,
+                                                             gaussianWidth);
+                List<ReceiverFunctionResult> out = new ArrayList<ReceiverFunctionResult>();
+                out.addAll(result);
+                for(ReceiverFunctionResult rfr : loserResults) {
+                    if (rfr.getRadialMatch() >= minPercentMatch) {
+                        out.add(rfr);
+                    }
+                }
+                result = out;
+            }
             String netCode = "";
             if(result.size() != 0) {
                 netCode = result.get(0)

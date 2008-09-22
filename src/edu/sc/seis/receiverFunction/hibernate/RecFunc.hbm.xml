@@ -28,7 +28,7 @@
 		<property name="gwidth" type="float"/>
 		<property name="maxBumps" type="integer"/>
 		<property name="tol" type="float"/>
-		<many-to-one name="sodconfig" class="edu.sc.seis.sod.SodConfig" foreign-key="FK_rf_sodconfig" />
+		<many-to-one name="sodConfig" class="edu.sc.seis.sod.SodConfig" foreign-key="FK_rf_sodconfig" />
 		<property name="insertTime" type="timestamp"/>
 		<component name="qc" class="edu.sc.seis.receiverFunction.hibernate.RecFuncQCResult">
 			<property name="keep" type="boolean"  />

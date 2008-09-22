@@ -37,7 +37,7 @@ public class ReceiverFunctionResult {
         this.gwidth = gwidth;
         this.maxBumps = maxBumps;
         this.tol = tol;
-        this.config = config;
+        this.sodConfig = config;
         this.insertTime = ClockUtil.now().getTimestamp();
     }
 
@@ -231,8 +231,8 @@ public class ReceiverFunctionResult {
         return tol;
     }
 
-    public SodConfig getConfig() {
-        return config;
+    public SodConfig getSodConfig() {
+        return sodConfig;
     }
 
     protected void setDbid(int dbid) {
@@ -295,8 +295,8 @@ public class ReceiverFunctionResult {
         this.tol = tol;
     }
 
-    protected void setConfig(SodConfig config) {
-        this.config = config;
+    protected void setSodConfig(SodConfig config) {
+        this.sodConfig = config;
     }
 
     public LocalSeismogramImpl getRadial() {
@@ -415,7 +415,7 @@ public class ReceiverFunctionResult {
 
     float tol;
 
-    SodConfig config;
+    SodConfig sodConfig;
 
     Timestamp insertTime;
 

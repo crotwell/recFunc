@@ -37,7 +37,7 @@ public class VelocityCachedResult {
     }
     
     public String getsodConfigId() {
-        return ""+result.getConfig().getDbid();
+        return ""+result.getSodConfig().getDbid();
     }
     
     public String getinsertTime() {

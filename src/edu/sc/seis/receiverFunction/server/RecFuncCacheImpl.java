@@ -177,7 +177,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                     result.getTransverse(),
                                                     result.getTransverseMatch(),
                                                     result.getTransverseBump(),
-                                                    result.getConfig()
+                                                    result.getSodConfig()
                                                             .getDbid(),
                                                     new MicroSecondDate(result.getInsertTime()).getFissuresTime());
                 return out;

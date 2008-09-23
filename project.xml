@@ -145,15 +145,11 @@
             <artifactId>isti.util.toplevel</artifactId>
             <version>1.0USC</version>
             <url>http://www.isti.com</url>
-        </dependency>        <dependency>
-           <artifactId>hibernate</artifactId>
-           <groupId>hibernate</groupId>
-           <version>3.2.6</version>
         </dependency>
         <dependency>
-           <artifactId>hibernate-tools</artifactId>
+           <artifactId>hibernate</artifactId>
            <groupId>hibernate</groupId>
-           <version>3.2.0beta9a</version>
+           <version>3.3.1</version>
         </dependency>
         <dependency>
            <artifactId>antlr</artifactId>
@@ -163,17 +159,22 @@
         <dependency>
            <artifactId>jta</artifactId>
            <groupId>hibernate</groupId>
-           <version>unknown_USC1</version>
+           <version>1.1</version>
         </dependency>
         <dependency>
-           <artifactId>cglib</artifactId>
+           <artifactId>javassist</artifactId>
            <groupId>hibernate</groupId>
-           <version>2.1.3</version>
+           <version>3.4.GA</version>
         </dependency>
         <dependency>
-           <artifactId>asm</artifactId>
+           <artifactId>slf4j-api</artifactId>
            <groupId>hibernate</groupId>
-           <version>unknown_USC1</version>
+           <version>1.5.3</version>
+        </dependency>
+        <dependency>
+           <artifactId>slf4j-log4j12</artifactId>
+           <groupId>hibernate</groupId>
+           <version>1.5.3</version>
         </dependency>
         <dependency>
            <artifactId>ehcache</artifactId>

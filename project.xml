@@ -4,7 +4,7 @@
     <groupId>recFunc</groupId>
     <artifactId>recFunc</artifactId>
     <name>recFunc</name>
-    <currentVersion>1.0beta</currentVersion>
+    <currentVersion>2.0beta</currentVersion>
     <organization>
         <name>Seismology at the University of South Carolina</name>
         <url>http://www.seis.sc.edu</url>

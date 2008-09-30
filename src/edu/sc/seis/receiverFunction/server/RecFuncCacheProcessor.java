@@ -12,6 +12,7 @@ import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
+import edu.sc.seis.IfReceiverFunction.SodConfigNotFound;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
@@ -28,6 +29,7 @@ import edu.sc.seis.receiverFunction.RecFunc;
 import edu.sc.seis.sod.CommonAccess;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
+import edu.sc.seis.sod.SodConfig;
 import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.Threadable;
 import edu.sc.seis.sod.hibernate.SodDB;
@@ -62,7 +64,9 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
         recFunc = new RecFunc(taup,
                               new IterDecon(maxBumps, true, tol, gwidth),
                               pWave);
-        cache = new NSRecFuncCache(dns, serverName, CommonAccess.getNameService());
+        cache = new NSRecFuncCache(dns,
+                                   serverName,
+                                   CommonAccess.getNameService());
     }
 
     public static IterDeconConfig parseIterDeconConfig(Element config) {
@@ -99,11 +103,25 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
         try {
             if(sodconfig_id == -1) {
                 try {
-                    SodDB sodDb = new SodDB();
-                    sodconfig_id = sodDb.getCurrentConfig().getDbid();
+                    SodDB sodDb = SodDB.getSingleton();
+                    SodConfig config = sodDb.getCurrentConfig();
+                    int testId = 1;
+                    try {
+                        while(true) {
+                            if(cache.getSodConfig(testId).equals(config.getConfig())) {
+                                sodconfig_id = testId;
+                                break;
+                            }
+                            testId++;
+                        }
+                    } catch(SodConfigNotFound ee) {
+                        // must have gone past the end without find our config
+                        sodconfig_id = cache.insertSodConfig(config.getConfig());
+                    }
                 } catch(Throwable e) {
                     // oh well
-                    GlobalExceptionHandler.handle("Unable to get configuration from database, using id=-2", e);
+                    GlobalExceptionHandler.handle("Unable to get configuration from database, using id=-2",
+                                                  e);
                     sodconfig_id = -2;
                 }
             }
@@ -129,9 +147,8 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
                                                     singleSeismograms);
             String[] phaseName = pWave ? new String[] {"ttp"}
                     : new String[] {"tts"};
-            Arrival[] pPhases = taup.calcTravelTimes(chan.getSite().getStation(),
-                                                     origin,
-                                                     phaseName);
+            Arrival[] pPhases = taup.calcTravelTimes(chan.getSite()
+                    .getStation(), origin, phaseName);
             MicroSecondDate firstP = new MicroSecondDate(origin.getOriginTime());
             firstP = firstP.add(new TimeInterval(pPhases[0].getTime(),
                                                  UnitImpl.SECOND));

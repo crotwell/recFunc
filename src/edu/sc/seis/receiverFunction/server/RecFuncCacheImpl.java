@@ -367,7 +367,11 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
 
     public String getSodConfig(int sodConfig_id) throws SodConfigNotFound {
         try {
-            return SodDB.getSingleton().getConfig(sodConfig_id).getConfig();
+            SodConfig sc = SodDB.getSingleton().getConfig(sodConfig_id);
+            if (sc == null) {throw new SodConfigNotFound();}
+            return sc.getConfig();
+        } catch(SodConfigNotFound e) {
+            throw e;
         } catch(Throwable t) {
             GlobalExceptionHandler.handle(t);
             throw new UNKNOWN(t.getMessage(),

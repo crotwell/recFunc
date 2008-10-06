@@ -34,6 +34,7 @@ import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.exceptionHandler.SystemOutReporter;
 import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
@@ -445,6 +446,7 @@ public class StackSummary {
     }
 
     public static void main(String[] args) {
+        GlobalExceptionHandler.add(new SystemOutReporter());
         if(args.length == 0) {
             System.out.println("Usage: StackSummary -net netCode [ -sta staCode ] or --needRecalc");
             return;

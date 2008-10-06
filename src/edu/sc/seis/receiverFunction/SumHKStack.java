@@ -634,6 +634,8 @@ public class SumHKStack {
         best.setNet(getNet());
         best.setStaCode(getStaCode());
         best.setVp(getSum().getAlpha());
+        best.setHStdDev(getHStdDev());
+        best.setKStdDev(getKStdDev());
     }
 
     public void recalcBest() {

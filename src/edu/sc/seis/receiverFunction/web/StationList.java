@@ -103,7 +103,7 @@ public class StationList extends Revlet {
      * @throws SQLException
      * @throws IOException
      */
-    public HashMap getSummaries(ArrayList stationList,
+    public HashMap<VelocityStation, SumHKStack> getSummaries(ArrayList stationList,
                                 RevletContext context,
                                 HttpServletRequest req) throws SQLException,
             IOException, NotFound {
@@ -135,7 +135,7 @@ public class StationList extends Revlet {
                                       req,
                                       99999);
         Iterator it = stationList.iterator();
-        HashMap summary = new HashMap();
+        HashMap<VelocityStation, SumHKStack> summary = new HashMap<VelocityStation, SumHKStack>();
         while(it.hasNext()) {
             VelocityStation sta = (VelocityStation)it.next();
             SumHKStack sumStack = RecFuncDB.getSingleton().getSumStack((NetworkAttrImpl)sta.getWrapped().getNetworkAttr(),

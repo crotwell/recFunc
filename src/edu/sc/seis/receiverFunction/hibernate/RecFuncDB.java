@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -407,10 +408,10 @@ public class RecFuncDB extends AbstractHibernateDB {
         q.setString("stacode", staCode);
         q.setFloat("gw", gaussianWidth);
         q.setMaxResults(1);
-        List<SumHKStack> result = q.list();
-        if(result.size() > 0) {
+        Iterator<SumHKStack> result = q.iterate();
+        if(result.hasNext() ) {
             logger.debug("found sum stack");
-            return result.get(0);
+            return result.next();
         }
         logger.debug("Didn't find sum stack");
         return null;

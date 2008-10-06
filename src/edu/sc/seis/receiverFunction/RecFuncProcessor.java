@@ -255,7 +255,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                         File imageDir = lSeisTemplateGen.getOutputFile(event, zeroChannel).getParentFile();
                         imageDir.mkdirs();
                         File outImageFile  = new File(imageDir, FissuresFormatter.filize(prefix+channelIdString+".png"));
-                        BufferedImage bufImage = stack.createStackImage();
+                        BufferedImage bufImage = stack.createStackImage(channelIdString);
                         javax.imageio.ImageIO.write(bufImage, "png", outImageFile);
 
 

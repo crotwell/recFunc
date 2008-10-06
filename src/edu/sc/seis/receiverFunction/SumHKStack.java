@@ -18,6 +18,7 @@ import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.NetworkAttrImpl;
+import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
@@ -69,7 +70,7 @@ public class SumHKStack {
     }
 
     public BufferedImage createStackImage() {
-        return sum.createStackImage();
+        return sum.createStackImage(NetworkIdUtil.toStringNoDates(net)+"."+staCode);
     }
 
     public HKStack getSum() {

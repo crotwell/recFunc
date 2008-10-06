@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.fissuresUtil.display.BorderedDisplay;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.HKStackImage;
@@ -51,7 +52,7 @@ public class ComplexityResidualImage extends SummaryHKStackImageServlet {
                 HttpServletResponse res) throws IOException {
         BorderedDisplay comp = sumStack.getSum().getStackComponent(HKStack.ALL);
         ((HKStackImage)comp.get(BorderedDisplay.CENTER)).setColorMapMax(lastStackMax);
-        BufferedImage image = sumStack.getSum().toImage(comp);
+        BufferedImage image = sumStack.getSum().toImage(comp, "Complexity Residual "+NetworkIdUtil.toStringNoDates(sumStack.getNet())+"."+sumStack.getStaCode());
         logger.debug("finish create image");
         res.setContentType("image/png");
         ImageIO.write(image, "png", out);

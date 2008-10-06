@@ -607,16 +607,16 @@ public class HKStack implements Serializable {
         return bd;
     }
 
-    public BufferedImage createStackImage() {
-        return createStackImage(ALL);
+    public BufferedImage createStackImage(String title) {
+        return createStackImage(ALL, title);
     }
 
-    public BufferedImage createStackImage(String phase) {
+    public BufferedImage createStackImage(String phase, String title) {
         BorderedDisplay comp = getStackComponent(phase);
-        return toImage(comp);
+        return toImage(comp, title);
     }
 
-    public BufferedImage toImage(BorderedDisplay comp) {
+    public BufferedImage toImage(BorderedDisplay comp, String title ) {
         JFrame frame = null;
         Graphics2D g = null;
         BufferedImage bufImage = null;
@@ -636,7 +636,7 @@ public class HKStack implements Serializable {
             g.setColor(Color.darkGray);
             g.fillRect(0, 0, bufImage.getWidth(), bufImage.getHeight());
             g.translate(0, 5);
-            String title = ChannelIdUtil.toStringNoDates(getChannelId());
+            //String title = ChannelIdUtil.toStringNoDates(getChannelId());
             g.setColor(Color.white);
             g.drawString(title,
                          (fullWidth - fm.stringWidth(title)) / 2,

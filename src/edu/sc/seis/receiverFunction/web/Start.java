@@ -266,7 +266,7 @@ public class Start {
             throws SQLException, NotFound {
         int netDbId = RevUtil.getInt("netdbid", req, -1);
         if(netDbId != -1) {
-            return new VelocityNetwork(NetworkDB.getSingleton().getNetwork(netDbId), netDbId);
+            return new VelocityNetwork(NetworkDB.getSingleton().getNetwork(netDbId));
         }
         String netCode;
         // also check for netCode to keep google happy

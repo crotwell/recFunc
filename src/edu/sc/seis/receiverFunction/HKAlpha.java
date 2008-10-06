@@ -67,6 +67,10 @@ public class HKAlpha {
     }
 
     public QuantityImpl getH() {
+        if ( h == null) {
+            // side effect, this forces hibernate to load hkm from the database and call setHkm which sets h
+            getHkm();
+        }
         return h;
     }
 
@@ -83,6 +87,7 @@ public class HKAlpha {
     }
 
     public QuantityImpl getVs() {
+        if (getVp() == null) {throw new NullPointerException("getVp is null");}
         return getVp().divideBy(getVpVs());
     }
 

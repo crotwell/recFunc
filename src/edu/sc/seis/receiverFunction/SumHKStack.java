@@ -26,14 +26,17 @@ import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.receiverFunction.server.StackComplexityResult;
 
 public class SumHKStack {
     
+    private boolean viaHibernate = false;
+    
     /** for hibernate */
-    protected SumHKStack(){}
+    protected SumHKStack(){viaHibernate=true;}
 
     public SumHKStack(float minPercentMatch,
                       QuantityImpl smallestH,
@@ -48,7 +51,6 @@ public class SumHKStack {
         this.smallestH = smallestH;
         this.hVariance = hVariance;
         this.kVariance = kVariance;
-        this.numEQ = numEQ;
         this.individuals = individuals;
         this.setGaussianWidth(individuals.get(0).getGwidth());
         Station sta = individuals.iterator()
@@ -86,7 +88,10 @@ public class SumHKStack {
     }
 
     public int getNumEQ() {
-        return numEQ;
+        if (viaHibernate) {
+        return (Integer) RecFuncDB.getSession().createFilter( getIndividuals(), "select count(*)" ).uniqueResult();
+        }
+        return getIndividuals().size();
     }
     
     public Set<RejectedMaxima> getRejectedMaxima() {
@@ -654,8 +659,6 @@ public class SumHKStack {
     protected float gaussianWidth;
 
     protected List<ReceiverFunctionResult> individuals;
-
-    protected int numEQ;
 
     protected HKStack sum;
 

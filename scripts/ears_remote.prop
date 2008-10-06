@@ -34,7 +34,7 @@ cormorant.servers=ears
 cormorant.servers.ears.controller=edu.sc.seis.receiverFunction.server.RecFuncCacheController
 cormorant.servers.ears.name=Ears
 cormorant.servers.ears.dns=edu/sc/seis
-cormorant.servers.ears.databaseURL=jdbc:postgresql://hopalong.seis.sc.edu:5432/ears
+cormorant.servers.ears.databaseURL=jdbc:postgresql://eeyore.seis.sc.edu:5432/ears
 cormorant.servers.ears.dataloc=../Data
 
 #JacORB Props
@@ -53,4 +53,4 @@ jacorb.logfile.maxsize=1000
 #    for hsqldb
 #URL=jdbc:hsqldb:Ears/EarsDb
 #    for postgres
-URL=jdbc:postgresql://hopalong.seis.sc.edu:5432/ears
+URL=jdbc:postgresql://eeyore.seis.sc.edu:5432/ears

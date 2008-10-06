@@ -148,36 +148,11 @@ public class EarthquakeHKPlot extends HttpServlet {
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(EarthquakeHKPlot.class);
 }
 
-class HKMax {
-
-    HKMax(HKStack stack, QuantityImpl smallestH) {
-        this(stack.getMaxValueK(smallestH),
-             (float)stack.getMaxValueH(smallestH).getValue(UnitImpl.KILOMETER));
-    }
-
-    HKMax(float maxValueK, float maxValueH) {
-        this.maxValueK = maxValueK;
-        this.maxValueH = maxValueH;
-    }
-
-    float maxValueK;
-
-    float maxValueH;
-
-    public float getMaxValueH() {
-        return maxValueH;
-    }
-
-    public float getMaxValueK() {
-        return maxValueK;
-    }
-}
-
 class HKXYDataset extends AbstractXYDataset {
 
-    private List items;
+    private List<ReceiverFunctionResult> items;
 
-    public HKXYDataset(List items) {
+    public HKXYDataset(List<ReceiverFunctionResult> items) {
         this.items = items;
     }
 
@@ -186,13 +161,11 @@ class HKXYDataset extends AbstractXYDataset {
     }
 
     public Number getX(int series, int item) {
-        HKMax stack = (HKMax)items.get(item);
-        return new Float(stack.getMaxValueK());
+        return new Float(items.get(item).getHKstack().getMaxValueK());
     }
 
     public Number getY(int series, int item) {
-        HKMax stack = (HKMax)items.get(item);
-        return new Float(stack.getMaxValueH());
+        return new Float(items.get(item).getHKstack().getMaxValueH().getValue(UnitImpl.KILOMETER));
     }
 
     public int getSeriesCount() {

@@ -51,7 +51,7 @@ public class HKStackImageServlet  extends HttpServlet {
             logger.debug("doGet called");
             if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
             ReceiverFunctionResult result = getCachedResult(req);
-            HKStack stack = getStack(req);
+            HKStack stack = result.getHKstack();
             
             String phase = RevUtil.get("phase", req, "all");
             OutputStream out = res.getOutputStream();

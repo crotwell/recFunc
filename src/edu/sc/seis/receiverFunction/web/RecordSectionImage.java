@@ -83,6 +83,7 @@ public class RecordSectionImage extends HttpServlet {
                                        chan.getSite());
                 organizer.addChannel(chan, event, emptyAudit);
                 Channel outchan = itrDSS[i].getChannel();
+                i++;
             }
             int xdim = RevUtil.getInt("xdim", req, xdimDefault);
             int ydim = RevUtil.getInt("ydim", req, ydimDefault);

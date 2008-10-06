@@ -87,9 +87,9 @@ public class SumHKStack {
         this.individuals = individuals;
     }
 
-    public int getNumEQ() {
+    public long getNumEQ() {
         if (viaHibernate) {
-        return (Integer) RecFuncDB.getSession().createFilter( getIndividuals(), "select count(*)" ).uniqueResult();
+        return (Long) RecFuncDB.getSession().createFilter( getIndividuals(), "select count(*)" ).uniqueResult();
         }
         return getIndividuals().size();
     }

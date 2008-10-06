@@ -159,7 +159,7 @@ public class HKStackImage extends JComponent {
     
     String CPT_FILE;
     
-    static final String DEFAULT_CPT_FILE = "/seis/local/External/GMT/share/cpt/GMT_wysiwyg.cpt";
+    static final String DEFAULT_CPT_FILE = "site/GMT_wysiwyg.cpt";
     
     GMTColorPalette colorPallete;
     

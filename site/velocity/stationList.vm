@@ -23,8 +23,13 @@ window.onload=function(){
 <p>View as <a href="$!{revBase}stationList.txt?netdbid=${net.getDbId()}&gaussian=${gaussian}">text</a></p>
 
 <table cellpadding="0" cellspacing="0" id="stat_info">
-<tr><td class="headodd">Network</td><td class="headodd">Description</td><td class="headodd">Owner</td><td class="headodd">Dates</td></tr>
-<tr><td class="odd">$net.getCodeWithYear() - $net.name</td><td class="even">$net.getDescription()</td><td class="odd">$net.getOwner()</td><td class="even">$fissures.formatYMD($net.getStartDate()) / $fissures.formatYMD($net.getEndDate())</td></tr>	
+<tr><td class="headodd">Network</td>
+<td class="headodd">Description</td>
+<td class="headodd">Owner</td>
+<td class="headodd">Dates</td></tr>
+<tr><td class="odd">$net.getCodeWithYear() - $net.name</td>
+<td class="even">$net.getDescription()</td><td class="odd">$net.getOwner()</td>
+<td class="even">$fissures.formatYMD($net.getStartDate()) / $fissures.formatYMD($net.getEndDate())</td></tr>	
 
 
 </table>

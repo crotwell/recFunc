@@ -625,6 +625,10 @@ public class SumHKStack {
     
     protected void setBest(StationResult sr) {
         this.best = sr;
+        // these are not part of the StationResult stored in the db to avoid duplication
+        best.setNet(getNet());
+        best.setStaCode(getStaCode());
+        best.setVp(getSum().getAlpha());
     }
 
     public void recalcBest() {

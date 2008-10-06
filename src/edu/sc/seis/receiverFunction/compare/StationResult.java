@@ -144,7 +144,7 @@ public class StationResult extends HKAlpha {
     }
 
     
-    protected void setStaCode(String stationCode) {
+    public void setStaCode(String stationCode) {
         this.stationCode = stationCode;
     }
 
@@ -154,7 +154,7 @@ public class StationResult extends HKAlpha {
     }
 
     
-    protected void setNet(NetworkAttrImpl networkId) {
+    public void setNet(NetworkAttrImpl networkId) {
         this.networkId = networkId;
     }
     
@@ -172,7 +172,7 @@ public class StationResult extends HKAlpha {
     }
 
     
-    protected void setVp(QuantityImpl vp) {
+    public void setVp(QuantityImpl vp) {
         this.vp = vp;
     }
 

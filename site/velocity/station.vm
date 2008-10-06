@@ -51,7 +51,7 @@ window.onload=function(){
 <table class="station_page1" cellpadding="0" cellspacing="0">
 <tr><td class="bold">Crust2 Type:</td><td class="data">$crust2Type</td></tr>
 <tr><td class="bold">Thickness Estimate:</td><td class="data">$!summary.getBest().formatH()</td></tr>
-<tr><td class="bold">Thickness StdDev:</td><td class="data">$summary.getBest().formatHStdDev()</td></tr>
+<tr><td class="bold">Thickness StdDev:</td><td class="data">$!summary.getBest().formatHStdDev()</td></tr>
 <tr><td class="bold">Vp/Vs Estimate:</td><td class="data">$!summary.getBest().formatVpVs()</td></tr>
 <tr><td class="bold">Vp/Vs StdDev:</td><td class="data">$!summary.getBest().formatKStdDev()</td></tr>
 <tr><td class="bold">Vs Estimate:</td><td class="data">$!summary.getBest().formatVs()</td></tr>
@@ -113,9 +113,9 @@ window.onload=function(){
 
 <table class="station_page2" cellpadding="0" cellspacing="0">
 <tr><td class="headodd" colspan="2">Predicted Arrivals for vertical incidence <br />(zero ray parameter)</td></tr>
-<tr><td class="even">Ps</td><td class="odd">$timePs</td></tr>
-<tr><td class="even">PpPs</td><td class="odd">$timePpPs</td></tr>
-<tr><td class="even">PsPs/PpSs</td><td class="odd">$timePsPs</td></tr>
+<tr><td class="even">Ps</td><td class="odd">$!timePs</td></tr>
+<tr><td class="even">PpPs</td><td class="odd">$!timePpPs</td></tr>
+<tr><td class="even">PsPs/PpSs</td><td class="odd">$!timePsPs</td></tr>
 </table>
 
 

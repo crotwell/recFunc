@@ -636,7 +636,6 @@ public class HKStack implements Serializable {
             g.setColor(Color.darkGray);
             g.fillRect(0, 0, bufImage.getWidth(), bufImage.getHeight());
             g.translate(0, 5);
-            //String title = ChannelIdUtil.toStringNoDates(getChannelId());
             g.setColor(Color.white);
             g.drawString(title,
                          (fullWidth - fm.stringWidth(title)) / 2,

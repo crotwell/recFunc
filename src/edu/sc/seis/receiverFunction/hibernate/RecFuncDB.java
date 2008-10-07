@@ -342,14 +342,19 @@ public class RecFuncDB extends AbstractHibernateDB {
         return null;
     }
 
-    public List<RFInsertion> getOlderInsertions(TimeInterval age,
+    public RFInsertion getOlderInsertion(TimeInterval age,
                                                 float gaussianWidth) {
         Query q = getSession().createQuery("from "
                 + RFInsertion.class.getName()
-                + " where insertTime < :oldTime and gaussianWidth = :gaussianWidth");
+                + " where insertTime < :oldTime and gaussianWidth = :gaussianWidth order by insertTime");
         q.setTimestamp("oldTime", ClockUtil.now().subtract(age).getTimestamp());
         q.setFloat("gaussianWidth", gaussianWidth);
-        return q.list();
+        q.setMaxResults(1);
+        Iterator<RFInsertion> it = q.iterate();
+        if (it.hasNext()) {
+            return it.next();
+        }
+        return null;
     }
 
     public int put(SumHKStack sum) {

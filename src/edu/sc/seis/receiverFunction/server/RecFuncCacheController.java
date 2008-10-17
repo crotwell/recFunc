@@ -5,6 +5,7 @@ import org.omg.CORBA.ORB;
 import org.omg.PortableServer.Servant;
 import edu.sc.seis.cormorant.AbstractController;
 import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
+import edu.sc.seis.receiverFunction.SumHKStack;
 
 /**
  * @author crotwell Created on Jan 18, 2005
@@ -21,6 +22,17 @@ public class RecFuncCacheController extends AbstractController {
         impl = new RecFuncCacheImpl(confProps.getProperty(getPropertryPrefix()
                 + "databaseURL"), confProps.getProperty(getPropertryPrefix()
                 + "dataloc"), confProps);
+
+        float minPercentMatch = 80f;
+        boolean bootstrap = true;
+        boolean usePhaseWeight = true;
+        SumStackWorker worker = new SumStackWorker(minPercentMatch,
+                                                   usePhaseWeight,
+                                                   bootstrap,
+                                                   SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS);
+        Thread t = new Thread(worker);
+        t.setDaemon(true);
+        t.start();
     }
 
     public void destroy() throws Exception {

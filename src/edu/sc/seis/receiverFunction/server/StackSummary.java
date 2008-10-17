@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ import java.util.Set;
 import org.apache.log4j.PropertyConfigurator;
 
 import edu.iris.Fissures.FissuresException;
-import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.IfNetwork.StationId;
 import edu.iris.Fissures.model.QuantityImpl;
@@ -41,7 +41,6 @@ import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.StackComplexity;
 import edu.sc.seis.receiverFunction.SumHKStack;
-import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.hibernate.RFInsertion;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
@@ -130,57 +129,14 @@ public class StackSummary {
         } else {
             SumHKStack sum = RecFuncDB.getSingleton().getSumStack(net, staCode, gaussianWidth);
             if (sum != null) {
-                RecFuncDB.getSession().delete(sum);   
+                System.out.println("Old sumstack in db, deleting...");
+                RecFuncDB.getSession().delete(sum);
+                RecFuncDB.getSession().flush();
             }
-            calcComplexity(sumStack);
+            SumStackWorker.calcComplexity(sumStack);
             RecFuncDB.getSingleton().put(sumStack);
         }
         return sumStack;
-    }
-
-    public static float calcComplexity(SumHKStack sumStack) throws FissuresException,
-            TauModelException, SQLException {
-        Channel chan = sumStack.getIndividuals().get(0).getChannelGroup().getChannel1();
-        HKStack residual = sumStack.getResidual();
-        float complex = sumStack.getResidualPower();
-        float complex25 = sumStack.getResidualPower(.25f);
-        float complex50 = sumStack.getResidualPower(.50f);
-        float bestH = (float)sumStack.getSum()
-                .getMaxValueH(sumStack.getSmallestH())
-                .getValue(UnitImpl.KILOMETER);
-        float bestHStdDev = (float)sumStack.getHStdDev()
-                .getValue(UnitImpl.KILOMETER);
-        float bestK = sumStack.getSum().getMaxValueK(sumStack.getSmallestH());
-        float bestKStdDev = (float)sumStack.getKStdDev();
-        float bestVal = sumStack.getSum().getMaxValue(sumStack.getSmallestH());
-        float hkCorrelation = (float)sumStack.getMixedVariance();
-        float nextH = (float)residual.getMaxValueH(sumStack.getSmallestH())
-                .getValue(UnitImpl.KILOMETER);
-        float nextK = residual.getMaxValueK(sumStack.getSmallestH());
-        float nextVal = residual.getMaxValue(sumStack.getSmallestH());
-        StationResult crust2Result = HKStack.getCrust2()
-                .getStationResult(chan.getSite().getStation());
-        float crust2diff = bestH
-                - (float)crust2Result.getH().getValue(UnitImpl.KILOMETER);
-        sumStack.setComplexityResult( new StackComplexityResult(complex,
-                                complex25,
-                                complex50,
-                                bestH,
-                                bestHStdDev,
-                                bestK,
-                                bestKStdDev,
-                                bestVal,
-                                hkCorrelation,
-                                nextH,
-                                nextK,
-                                nextVal,
-                                crust2diff));
-        System.out.println(NetworkIdUtil.toStringNoDates(chan
-                .get_id().network_id)
-                + "."
-                + chan.get_id().station_code
-                + " Complexity: " + complex);
-        return complex;
     }
 
     public SumHKStack sum(NetworkAttrImpl net,
@@ -378,8 +334,8 @@ public class StackSummary {
         }
         if(neededOnly) {
             System.out.println("needed only");
-            List<RFInsertion> netSta = RecFuncDB.getSingleton().getOlderInsertions(RF_AGE_TIME, gaussianWidth);
-            for(RFInsertion insertion : netSta) {
+            RFInsertion insertion = RecFuncDB.getSingleton().getOlderInsertion(RF_AGE_TIME);
+            while(insertion != null) {
                 StationImpl oneStationByCode = NetworkDB.getSingleton().getStationForNet(insertion.getNet(),
                                                                                      insertion.getStaCode()).get(0);
                 summary.createSummary(insertion.getNet(),
@@ -390,6 +346,9 @@ public class StackSummary {
                                                                HKStack.getDefaultSmallestH()),
                                       bootstrap,
                                       usePhaseWeight);
+                RecFuncDB.getSession().delete(insertion);
+                RecFuncDB.commit();
+                insertion = RecFuncDB.getSingleton().getOlderInsertion(RF_AGE_TIME);
             }
         } else if(staArg.equals("")) {
             System.out.println("net arg " + netArg);

@@ -2,6 +2,7 @@ package edu.sc.seis.receiverFunction.server;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import edu.iris.Fissures.IfNetwork.Channel;
@@ -12,7 +13,9 @@ import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.TauP.TauModelException;
+import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.HKStack;
@@ -22,15 +25,14 @@ import edu.sc.seis.receiverFunction.hibernate.RFInsertion;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
+import edu.sc.seis.sod.hibernate.SodDB;
 
 public class SumStackWorker implements Runnable {
 
-    public SumStackWorker(QuantityImpl smallestH,
-                          float minPercentMatch,
+    public SumStackWorker(float minPercentMatch,
                           boolean usePhaseWeight,
                           boolean doBootstrap,
                           int bootstrapIterations) {
-        this.smallestH = smallestH;
         this.minPercentMatch = minPercentMatch;
         this.usePhaseWeight = usePhaseWeight;
         this.doBootstrap = doBootstrap;
@@ -38,22 +40,26 @@ public class SumStackWorker implements Runnable {
     }
 
     public void run() {
-        while(true) {
+        while(keepGoing) {
             RFInsertion insertion = getNext();
-            if (insertion != null) {
-            processNext(insertion);
+            if(insertion != null) {
+                processNext(insertion);
             } else {
                 try {
-                    Thread.sleep(5*60*1000);
-                } catch(InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                    System.out.println("No more insertions to process, sleeping a while");
+                    Thread.sleep(5 * 60 * 1000); // 5 minutes
+                } catch(InterruptedException e) {}
             }
         }
+        System.out.println("Work finished");
     }
-    
+
     void processNext(RFInsertion insertion) {
+        StationImpl oneStationByCode = NetworkDB.getSingleton()
+                .getStationForNet(insertion.getNet(), insertion.getStaCode())
+                .get(0);
+        QuantityImpl smallestH = HKStack.getBestSmallestH(oneStationByCode,
+                                                          HKStack.getDefaultSmallestH());
         List<ReceiverFunctionResult> individualHK = RecFuncDB.getSingleton()
                 .getSuccessful(insertion.getNet(),
                                insertion.getStaCode(),
@@ -86,27 +92,34 @@ public class SumStackWorker implements Runnable {
                                  insertion.getStaCode(),
                                  insertion.getGaussianWidth());
             try {
+                calcComplexity(sumStack);
                 if(sum != null) {
                     System.out.println("Old sumstack in db, deleting...");
                     RecFuncDB.getSession().delete(sum);
                     RecFuncDB.getSession().flush();
                 }
-                calcComplexity(sumStack);
                 RecFuncDB.getSingleton().put(sumStack);
-                RecFuncDB.getSession().delete(insertion);
                 RecFuncDB.commit();
             } catch(TauModelException e) {
                 GlobalExceptionHandler.handle(e);
                 RecFuncDB.rollback();
                 RecFuncDB.getSession().saveOrUpdate(insertion);
                 RecFuncDB.commit();
+                throw new RuntimeException(e);
+            } catch(RuntimeException e) {
+                GlobalExceptionHandler.handle(e);
+                RecFuncDB.rollback();
+                RecFuncDB.getSession().saveOrUpdate(insertion);
+                RecFuncDB.commit();
+                throw e;
             }
         }
     }
-    
+
     public synchronized RFInsertion getNext() {
-        RFInsertion insertion = (RFInsertion)RecFuncDB.getSingleton().getOlderInsertion(RF_AGE_TIME, 2.5f);
-        if (insertion == null) {
+        RFInsertion insertion = (RFInsertion)RecFuncDB.getSingleton()
+                .getOlderInsertion(RF_AGE_TIME);
+        if(insertion == null) {
             return null;
         }
         // side effect in case of lazy loading of fields by hibernate
@@ -116,6 +129,7 @@ public class SumStackWorker implements Runnable {
         insertion.getStaCode();
         RecFuncDB.getSession().delete(insertion);
         RecFuncDB.commit();
+        RecFuncDB.getSession().refresh(insertion.getNet());
         return insertion;
     }
 
@@ -164,8 +178,6 @@ public class SumStackWorker implements Runnable {
         return complex;
     }
 
-    QuantityImpl smallestH;
-
     float minPercentMatch;
 
     boolean usePhaseWeight;
@@ -174,11 +186,40 @@ public class SumStackWorker implements Runnable {
 
     int bootstrapIterations;
 
-    public static final TimeInterval RF_AGE_TIME = new TimeInterval(1, UnitImpl.HOUR);
+    static boolean keepGoing = true;
+
+    public static final TimeInterval RF_AGE_TIME = new TimeInterval(1,
+                                                                    UnitImpl.HOUR);
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumStackWorker.class);
-    
+
     public static void main(String[] args) {
+        float minPercentMatch = 80f;
+        boolean bootstrap = true;
+        boolean usePhaseWeight = true;
+        Properties props = StackSummary.loadProps(args);
+        RecFuncDB.setDataLoc("../Data");
+        ConnMgr.setURL("jdbc:postgresql:ears");
+        ConnMgr.installDbProperties(props, new String[0]);
+        logger.debug("before set up hibernate");
+        synchronized(HibernateUtil.class) {
+            HibernateUtil.setUpFromConnMgr(props);
+            SodDB.configHibernate(HibernateUtil.getConfiguration());
+            RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
+        }
+        SumStackWorker worker = new SumStackWorker(minPercentMatch,
+                                                   usePhaseWeight,
+                                                   bootstrap,
+                                                   SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS);
+        Thread t = new Thread(worker);
+        t.start();
         
+        // this is for testing, so thread will have time to start one sum but will not run forever
+        /*
+        try {
+            Thread.sleep(1*60*1000);
+        } catch(InterruptedException e) {}
+        SumStackWorker.keepGoing = false;
+        */
     }
 }

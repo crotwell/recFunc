@@ -17,6 +17,7 @@ import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.ConfigurationException;
@@ -56,7 +57,7 @@ public class StationLatLonBox extends StationList {
         context.put("maxLat", new Float(maxLat));
         context.put("maxLon", new Float(maxLon));
         ArrayList<VelocityStation> stationList = new ArrayList<VelocityStation>();
-        Station[] stations = jdbcChannel.getAllStations();
+        Station[] stations = NetworkDB.getSingleton().getAllStations();
         logger.info("getAllStations finished");
         for(int j = 0; j < stations.length; j++) {
             if(stations[j].getLocation().latitude >= minLat

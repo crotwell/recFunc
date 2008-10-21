@@ -195,11 +195,5 @@ public class StationList extends Revlet {
 
     String DATA_LOC;
 
-    EventDB jdbcEventAccess;
-
-    NetworkDB jdbcChannel;
-
-    SodDB jdbcSodConfig;
-
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(StationList.class);
 }

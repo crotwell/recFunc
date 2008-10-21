@@ -338,22 +338,33 @@ public class HKStack implements Serializable {
         return new int[] {maxIndexX, maxIndexY};
     }
 
+    private StackMaximum maxCache = null;
+    
     public StackMaximum getGlobalMaximum() {
-    	StackMaximum max = getLocalMaxima(0, 1)[0];
-    	peakH = max.getHValue();
-    	peakK = new Float(max.getKValue());
-    	return max;
+        if (maxCache == null) {
+            maxCache = getLocalMaxima(0, 1)[0];
+            peakH = maxCache.getHValue();
+            peakK = new Float(maxCache.getKValue());
+        }
+    	return maxCache;
     }
 
     public StackMaximum[] getLocalMaxima(QuantityImpl startH, int num) {
         return getLocalMaxima(getHIndex(startH), num);
     }
 
+    
+    private StackMaximum[] stackMaximumCache = new StackMaximum[0];
     /**
      * Finds the top num local maxuma that are not within minDeltaH and
      * minDeltaK of another local maxima.
      */
     public StackMaximum[] getLocalMaxima(int startHIndex, int num) {
+        if (stackMaximumCache.length >= num) {
+            StackMaximum[] out = new StackMaximum[num];
+            System.arraycopy(stackMaximumCache, 0, out, 0, out.length);
+            return out;
+        }
         int[] maxIndices = getMaxValueIndices(startHIndex);
         StackMaximum[] out = new StackMaximum[num];
         int maxIndexX = maxIndices[0];
@@ -391,6 +402,7 @@ public class HKStack implements Serializable {
             throw new RuntimeException("problem getting residual for local maxima",
                                        e);
         }
+        stackMaximumCache = out;
         return out;
     }
 
@@ -1202,6 +1214,11 @@ public class HKStack implements Serializable {
     
     protected void setAlphaKmps(float v) {
         alpha = new QuantityImpl(v, UnitImpl.KILOMETER_PER_SECOND);
+    }
+    
+    /** not actually stored in hibernate as is in ReceiverFunctionResult, passed down from RFR on call to getHKStack */
+    public void setGaussianWidth(float g) {
+        this.gwidth = g;
     }
     
     protected void setP(float p) {

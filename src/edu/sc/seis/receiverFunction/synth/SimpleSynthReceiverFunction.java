@@ -49,6 +49,9 @@ public class SimpleSynthReceiverFunction {
                                          TimeInterval lagZeroOffset,
                                          ChannelId chan,
                                          float gaussianWidth) {
+        if (gaussianWidth <= 0) {
+            throw new IllegalArgumentException("gaussian must be >= 0: "+gaussianWidth);
+        }
         float[] data = new float[num_points];
         LocalSeismogramImpl seis = new LocalSeismogramImpl("SimpleSynthReceiverFunction",
                                                            begin_time,
@@ -70,16 +73,19 @@ public class SimpleSynthReceiverFunction {
         double refTransPs = getAmpPs(flatRP);
         index = HKStack.getDataIndex(seis, timePs.add(lagZeroOffset));
         data[Math.round(index)] = scale * (float)refTransPs;
+
         // PpPs
         TimeInterval timePpPs = HKStack.getTimePpPs(flatRP, hka.getVp(), hka.getVpVs(), hka.getH());
         double refTransPpPs = getAmpPpPs(flatRP);
         index = HKStack.getDataIndex(seis, timePpPs.add(lagZeroOffset));
         data[Math.round(index)] = scale * (float)refTransPpPs;
+
         // PsPs+PpSs
         TimeInterval timePsPs = HKStack.getTimePsPs(flatRP, hka.getVp(), hka.getVpVs(), hka.getH());
         double refTransPsPs = getAmpPsPs(flatRP);
         index = HKStack.getDataIndex(seis, timePsPs.add(lagZeroOffset));
         data[Math.round(index)] = scale * (float)refTransPsPs;
+
         float[] tmp = IterDecon.gaussianFilter(data, gaussianWidth, (float)((SamplingImpl)seis.sampling_info).getPeriod()
                 .getValue(UnitImpl.SECOND));
         System.arraycopy(tmp, 0, data, 0, data.length);

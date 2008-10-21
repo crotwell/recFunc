@@ -72,10 +72,11 @@ public class SumHKStack {
     }
 
     public BufferedImage createStackImage() {
-        return sum.createStackImage(NetworkIdUtil.toStringNoDates(net)+"."+staCode);
+        return getSum().createStackImage(NetworkIdUtil.toStringNoDates(net)+"."+staCode);
     }
 
     public HKStack getSum() {
+        sum.setGaussianWidth(getGaussianWidth());// g width not stored in db for hkstack
         return sum;
     }
 
@@ -651,6 +652,9 @@ public class SumHKStack {
     }
     
     public float getGaussianWidth() {
+        if (viaHibernate && gaussianWidth <= 0) {
+            setGaussianWidth(getIndividuals().get(0).getGwidth());
+        }
         return gaussianWidth;
     }
     

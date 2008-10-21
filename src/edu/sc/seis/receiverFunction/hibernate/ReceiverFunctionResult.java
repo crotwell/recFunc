@@ -368,6 +368,7 @@ public class ReceiverFunctionResult {
     }
 
     public HKStack getHKstack() {
+        hkstack.setGaussianWidth(getGwidth());
         return hkstack;
     }
 

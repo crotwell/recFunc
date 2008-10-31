@@ -44,6 +44,7 @@ public class DateRangeResults  {
     }
     
     public void run() {
+        
         RecFuncDB rfdb = RecFuncDB.getSingleton();
         NetworkDB netdb = NetworkDB.getSingleton();
         List<SumHKStack> stacks = rfdb.getAllSumStack(gaussianWidth);
@@ -89,7 +90,8 @@ public class DateRangeResults  {
         boolean usePhaseWeight = true;
         Properties props = StackSummary.loadProps(args);
         RecFuncDB.setDataLoc("Data");
-        ConnMgr.setURL("jdbc:hsqldb:hsql://localhost:9003/ears");
+        //ConnMgr.setURL("jdbc:hsqldb:hsql://localhost:9003/ears");
+        ConnMgr.setURL("jdbc:postgresql:ears");
         ConnMgr.installDbProperties(props, new String[0]);
         logger.debug("before set up hibernate");
         synchronized(HibernateUtil.class) {

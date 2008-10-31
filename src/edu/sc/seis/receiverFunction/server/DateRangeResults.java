@@ -50,46 +50,56 @@ public class DateRangeResults {
     public void run() {
         RecFuncDB rfdb = RecFuncDB.getSingleton();
         NetworkDB netdb = NetworkDB.getSingleton();
+        List<Integer> inArea = new ArrayList();
         for(Iterator iterator = rfdb.getAllSumStack(gaussianWidth).iterator(); iterator.hasNext();) {
             SumHKStack sumHKStack = (SumHKStack)iterator.next();
             StationImpl sta = netdb.getStationForNet(sumHKStack.getNet(),
                                                      sumHKStack.getStaCode())
                     .get(0);
             if(AreaUtil.inArea(area, sta.getLocation())) {
-                List<ReceiverFunctionResult> individuals = sumHKStack.getIndividuals();
-                MicroSecondDate stepEnd = begin;
-                TimeInterval step = new TimeInterval(365, UnitImpl.DAY);
-                for(stepEnd = begin.add(step); stepEnd.before(end); stepEnd = stepEnd.add(step)) {
-                    List<ReceiverFunctionResult> byDate = new ArrayList<ReceiverFunctionResult>();
-                    for(ReceiverFunctionResult rf : individuals) {
-                        if(rf.getEvent().getOrigin().getTime().after(begin)
-                                && rf.getEvent()
-                                        .getOrigin()
-                                        .getTime()
-                                        .before(stepEnd)) {
-                            byDate.add(rf);
-                        }
+                inArea.add(new Integer(sumHKStack.getDbid()));
+            }
+        }
+        for(Iterator iterator = inArea.iterator(); iterator.hasNext();) {
+            SumHKStack sumHKStack = (SumHKStack)rfdb.getSession()
+                    .get(SumHKStack.class, (Integer)iterator.next());
+            StationImpl sta = (StationImpl)sumHKStack.getIndividuals()
+                    .get(0)
+                    .getChannelGroup()
+                    .getStation();
+            List<ReceiverFunctionResult> individuals = sumHKStack.getIndividuals();
+            MicroSecondDate stepEnd = begin;
+            TimeInterval step = new TimeInterval(365, UnitImpl.DAY);
+            for(stepEnd = begin.add(step); stepEnd.before(end); stepEnd = stepEnd.add(step)) {
+                List<ReceiverFunctionResult> byDate = new ArrayList<ReceiverFunctionResult>();
+                for(ReceiverFunctionResult rf : individuals) {
+                    if(rf.getEvent().getOrigin().getTime().after(begin)
+                            && rf.getEvent()
+                                    .getOrigin()
+                                    .getTime()
+                                    .before(stepEnd)) {
+                        byDate.add(rf);
                     }
-                    if(byDate.size() == 0) {
-                        continue;
-                    }
-                    QuantityImpl smallestH = HKStack.getBestSmallestH(sta,
-                                                                      HKStack.getDefaultSmallestH());
-                    SumHKStack sumStack = SumHKStack.calculateForPhase(byDate,
-                                                                       smallestH,
-                                                                       minPercentMatch,
-                                                                       usePhaseWeight,
-                                                                       // sumHKStack.getRejectedMaxima(),
-                                                                       new HashSet<RejectedMaxima>(),
-                                                                       doBootstrap,
-                                                                       SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS,
-                                                                       "all");
-                    System.out.println(stepEnd + " "
-                            + sta.getLocation().longitude + " "
-                            + sta.getLocation().latitude + " "
-                            + sumStack.getBest().formatH() + " "
-                            + StationIdUtil.toStringNoDates(sta));
                 }
+                if(byDate.size() == 0) {
+                    continue;
+                }
+                QuantityImpl smallestH = HKStack.getBestSmallestH(sta,
+                                                                  HKStack.getDefaultSmallestH());
+                SumHKStack sumStack = SumHKStack.calculateForPhase(byDate,
+                                                                   smallestH,
+                                                                   minPercentMatch,
+                                                                   usePhaseWeight,
+                                                                   // sumHKStack.getRejectedMaxima(),
+                                                                   new HashSet<RejectedMaxima>(),
+                                                                   doBootstrap,
+                                                                   SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS,
+                                                                   "all");
+                System.out.println(stepEnd + " " + sta.getLocation().longitude
+                        + " " + sta.getLocation().latitude + " "
+                        + sumStack.getBest().formatH() + " "
+                        + StationIdUtil.toStringNoDates(sta));
+                rfdb.getSession().evict(sumHKStack);
             }
         }
     }

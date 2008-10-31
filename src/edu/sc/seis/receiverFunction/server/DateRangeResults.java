@@ -48,18 +48,15 @@ public class DateRangeResults {
     public void run() {
         RecFuncDB rfdb = RecFuncDB.getSingleton();
         NetworkDB netdb = NetworkDB.getSingleton();
-        List<Integer> inArea = new ArrayList();
         for(Iterator iterator = rfdb.getAllSumStack(gaussianWidth).iterator(); iterator.hasNext();) {
             SumHKStack sumHKStack = (SumHKStack)iterator.next();
             StationImpl sta = netdb.getStationForNet(sumHKStack.getNet(),
                                                      sumHKStack.getStaCode())
                     .get(0);
             if(AreaUtil.inArea(area, sta.getLocation())) {
-                inArea.add(new Integer(sumHKStack.getDbid()));
+                DateRangeWorker worker = new DateRangeWorker(sumHKStack.getDbid());
+                pool.invokeLater(worker);
             }
-        }
-        for(Iterator iterator = inArea.iterator(); iterator.hasNext();) {
-            DateRangeWorker worker = new DateRangeWorker((Integer)iterator.next());
         }
         do {
             try {

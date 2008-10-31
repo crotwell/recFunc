@@ -1348,8 +1348,6 @@ public class HKStack implements Serializable {
                 modSmallestH = HKStack.getDefaultMinH();
             }
         }
-        System.out.println("getBestSmallestH in=" + smallestH + "  c2="
-                + crust2H + " out=" + modSmallestH);
         return modSmallestH;
     }
 

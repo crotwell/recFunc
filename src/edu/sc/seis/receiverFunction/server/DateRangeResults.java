@@ -3,6 +3,7 @@ package edu.sc.seis.receiverFunction.server;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -50,7 +51,8 @@ public class DateRangeResults  {
         RecFuncDB rfdb = RecFuncDB.getSingleton();
         NetworkDB netdb = NetworkDB.getSingleton();
         List<SumHKStack> stacks = rfdb.getAllSumStack(gaussianWidth);
-        for(SumHKStack sumHKStack : stacks) {
+        for(Iterator iterator = stacks.iterator(); iterator.hasNext();) {
+            SumHKStack sumHKStack = (SumHKStack)iterator.next();
             StationImpl sta = netdb.getStationForNet(sumHKStack.getNet(), sumHKStack.getStaCode()).get(0);
             if (AreaUtil.inArea(area, sta.getLocation())) {
                 List<ReceiverFunctionResult> byDate = new ArrayList<ReceiverFunctionResult>();
@@ -77,7 +79,6 @@ public class DateRangeResults  {
                                                                    "all");
                 System.out.println(sta.getLocation().longitude+" "+sta.getLocation().latitude+" "+sumStack.getBest().formatH()+" "+StationIdUtil.toString(sta));
             }
-            stacks.remove(sumHKStack);
         }
     }
     

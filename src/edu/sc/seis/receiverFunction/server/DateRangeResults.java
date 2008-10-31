@@ -61,12 +61,12 @@ public class DateRangeResults {
         for(Iterator iterator = inArea.iterator(); iterator.hasNext();) {
             DateRangeWorker worker = new DateRangeWorker((Integer)iterator.next());
         }
-        while( pool.isEmployed()) {
+        do {
             try {
                 Thread.sleep(5000);
             } catch(InterruptedException e) {
             }
-        }
+        } while( pool.isEmployed());
     }
     
     WorkerThreadPool pool = new WorkerThreadPool("dateRange", 4);

@@ -106,6 +106,7 @@ public class DateRangeResults  {
                                                    begin, end,
                                                    new BoxAreaImpl(25.0f, 50f, -126f, -66f),
                                                    2.5f);
+        worker.run();
 
     }
     

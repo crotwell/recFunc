@@ -2,6 +2,7 @@ package edu.sc.seis.receiverFunction.server;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -23,6 +24,7 @@ import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
+import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.sod.hibernate.SodDB;
 
 
@@ -50,8 +52,6 @@ public class DateRangeResults  {
         List<SumHKStack> stacks = rfdb.getAllSumStack(gaussianWidth);
         for(SumHKStack sumHKStack : stacks) {
             StationImpl sta = netdb.getStationForNet(sumHKStack.getNet(), sumHKStack.getStaCode()).get(0);
-            QuantityImpl smallestH = HKStack.getBestSmallestH(sta,
-                                                              HKStack.getDefaultSmallestH());
             if (AreaUtil.inArea(area, sta.getLocation())) {
                 List<ReceiverFunctionResult> byDate = new ArrayList<ReceiverFunctionResult>();
                 List<ReceiverFunctionResult> individuals = sumHKStack.getIndividuals();
@@ -61,11 +61,14 @@ public class DateRangeResults  {
                         byDate.add(rf);
                     }
                 }
+                QuantityImpl smallestH = HKStack.getBestSmallestH(sta,
+                                                                  HKStack.getDefaultSmallestH());
                 SumHKStack sumStack = SumHKStack.calculateForPhase(byDate,
                                                                    smallestH,
                                                                    minPercentMatch,
                                                                    usePhaseWeight,
-                                                                   sumHKStack.getRejectedMaxima(),
+                                                                   //sumHKStack.getRejectedMaxima(),
+                                                                   new HashSet<RejectedMaxima>(),
                                                                    doBootstrap,
                                                                    SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS,
                                                                    "all");

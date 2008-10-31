@@ -61,6 +61,9 @@ public class DateRangeResults  {
                         byDate.add(rf);
                     }
                 }
+                if (byDate.size() == 0) {
+                    continue;
+                }
                 QuantityImpl smallestH = HKStack.getBestSmallestH(sta,
                                                                   HKStack.getDefaultSmallestH());
                 SumHKStack sumStack = SumHKStack.calculateForPhase(byDate,

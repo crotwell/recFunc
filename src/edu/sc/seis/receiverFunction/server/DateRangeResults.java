@@ -13,6 +13,8 @@ import edu.iris.Fissures.Time;
 import edu.iris.Fissures.model.BoxAreaImpl;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.model.TimeInterval;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.fissuresUtil.bag.AreaUtil;
@@ -54,32 +56,40 @@ public class DateRangeResults {
                                                      sumHKStack.getStaCode())
                     .get(0);
             if(AreaUtil.inArea(area, sta.getLocation())) {
-                List<ReceiverFunctionResult> byDate = new ArrayList<ReceiverFunctionResult>();
                 List<ReceiverFunctionResult> individuals = sumHKStack.getIndividuals();
-                for(ReceiverFunctionResult rf : individuals) {
-                    if(rf.getEvent().getOrigin().getTime().after(begin)
-                            && rf.getEvent().getOrigin().getTime().before(end)) {
-                        byDate.add(rf);
+                MicroSecondDate stepEnd = begin;
+                TimeInterval step = new TimeInterval(1, UnitImpl.GREGORIAN_YEAR);
+                for(stepEnd = begin.add(step); stepEnd.before(end); stepEnd = stepEnd.add(step)) {
+                    List<ReceiverFunctionResult> byDate = new ArrayList<ReceiverFunctionResult>();
+                    for(ReceiverFunctionResult rf : individuals) {
+                        if(rf.getEvent().getOrigin().getTime().after(begin)
+                                && rf.getEvent()
+                                        .getOrigin()
+                                        .getTime()
+                                        .before(stepEnd)) {
+                            byDate.add(rf);
+                        }
                     }
+                    if(byDate.size() == 0) {
+                        continue;
+                    }
+                    QuantityImpl smallestH = HKStack.getBestSmallestH(sta,
+                                                                      HKStack.getDefaultSmallestH());
+                    SumHKStack sumStack = SumHKStack.calculateForPhase(byDate,
+                                                                       smallestH,
+                                                                       minPercentMatch,
+                                                                       usePhaseWeight,
+                                                                       // sumHKStack.getRejectedMaxima(),
+                                                                       new HashSet<RejectedMaxima>(),
+                                                                       doBootstrap,
+                                                                       SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS,
+                                                                       "all");
+                    System.out.println(stepEnd + " "
+                            + sta.getLocation().longitude + " "
+                            + sta.getLocation().latitude + " "
+                            + sumStack.getBest().formatH() + " "
+                            + StationIdUtil.toStringNoDates(sta));
                 }
-                if(byDate.size() == 0) {
-                    continue;
-                }
-                QuantityImpl smallestH = HKStack.getBestSmallestH(sta,
-                                                                  HKStack.getDefaultSmallestH());
-                SumHKStack sumStack = SumHKStack.calculateForPhase(byDate,
-                                                                   smallestH,
-                                                                   minPercentMatch,
-                                                                   usePhaseWeight,
-                                                                   // sumHKStack.getRejectedMaxima(),
-                                                                   new HashSet<RejectedMaxima>(),
-                                                                   doBootstrap,
-                                                                   SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS,
-                                                                   "all");
-                System.out.println(sta.getLocation().longitude + " "
-                        + sta.getLocation().latitude + " "
-                        + sumStack.getBest().formatH() + " "
-                        + StationIdUtil.toStringNoDates(sta));
             }
         }
     }
@@ -116,7 +126,7 @@ public class DateRangeResults {
         AbstractHibernateDB.deploySchema();
         MicroSecondDate begin = new MicroSecondDate(new Time("19900101T00:00:00Z",
                                                              -1));
-        MicroSecondDate end = new MicroSecondDate(new Time("20050101T00:00:00Z",
+        MicroSecondDate end = new MicroSecondDate(new Time("20090101T00:00:00Z",
                                                            -1));
         DateRangeResults worker = new DateRangeResults(minPercentMatch,
                                                        usePhaseWeight,

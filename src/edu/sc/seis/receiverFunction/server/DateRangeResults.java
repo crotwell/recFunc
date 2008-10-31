@@ -50,8 +50,7 @@ public class DateRangeResults  {
         
         RecFuncDB rfdb = RecFuncDB.getSingleton();
         NetworkDB netdb = NetworkDB.getSingleton();
-        List<SumHKStack> stacks = rfdb.getAllSumStack(gaussianWidth);
-        for(Iterator iterator = stacks.iterator(); iterator.hasNext();) {
+        for(Iterator iterator = rfdb.getAllSumStack(gaussianWidth).iterator(); iterator.hasNext();) {
             SumHKStack sumHKStack = (SumHKStack)iterator.next();
             StationImpl sta = netdb.getStationForNet(sumHKStack.getNet(), sumHKStack.getStaCode()).get(0);
             if (AreaUtil.inArea(area, sta.getLocation())) {

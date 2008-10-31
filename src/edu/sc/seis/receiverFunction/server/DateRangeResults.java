@@ -77,6 +77,7 @@ public class DateRangeResults  {
                                                                    "all");
                 System.out.println(sta.getLocation().longitude+" "+sta.getLocation().latitude+" "+sumStack.getBest().formatH()+" "+StationIdUtil.toString(sta));
             }
+            stacks.remove(sumHKStack);
         }
     }
     

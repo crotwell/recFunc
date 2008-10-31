@@ -28,8 +28,7 @@ import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.sod.hibernate.SodDB;
 
-
-public class DateRangeResults  {
+public class DateRangeResults {
 
     public DateRangeResults(float minPercentMatch,
                             boolean usePhaseWeight,
@@ -45,24 +44,25 @@ public class DateRangeResults  {
         this.area = area;
         this.gaussianWidth = gaussianWidth;
     }
-    
+
     public void run() {
-        
         RecFuncDB rfdb = RecFuncDB.getSingleton();
         NetworkDB netdb = NetworkDB.getSingleton();
         for(Iterator iterator = rfdb.getAllSumStack(gaussianWidth).iterator(); iterator.hasNext();) {
             SumHKStack sumHKStack = (SumHKStack)iterator.next();
-            StationImpl sta = netdb.getStationForNet(sumHKStack.getNet(), sumHKStack.getStaCode()).get(0);
-            if (AreaUtil.inArea(area, sta.getLocation())) {
+            StationImpl sta = netdb.getStationForNet(sumHKStack.getNet(),
+                                                     sumHKStack.getStaCode())
+                    .get(0);
+            if(AreaUtil.inArea(area, sta.getLocation())) {
                 List<ReceiverFunctionResult> byDate = new ArrayList<ReceiverFunctionResult>();
                 List<ReceiverFunctionResult> individuals = sumHKStack.getIndividuals();
                 for(ReceiverFunctionResult rf : individuals) {
-                    if (rf.getEvent().getOrigin().getTime().after(begin) &&
-                            rf.getEvent().getOrigin().getTime().before(end)) {
+                    if(rf.getEvent().getOrigin().getTime().after(begin)
+                            && rf.getEvent().getOrigin().getTime().before(end)) {
                         byDate.add(rf);
                     }
                 }
-                if (byDate.size() == 0) {
+                if(byDate.size() == 0) {
                     continue;
                 }
                 QuantityImpl smallestH = HKStack.getBestSmallestH(sta,
@@ -71,33 +71,40 @@ public class DateRangeResults  {
                                                                    smallestH,
                                                                    minPercentMatch,
                                                                    usePhaseWeight,
-                                                                   //sumHKStack.getRejectedMaxima(),
+                                                                   // sumHKStack.getRejectedMaxima(),
                                                                    new HashSet<RejectedMaxima>(),
                                                                    doBootstrap,
                                                                    SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS,
                                                                    "all");
-                System.out.println(sta.getLocation().longitude+" "+sta.getLocation().latitude+" "+sumStack.getBest().formatH()+" "+StationIdUtil.toString(sta));
+                System.out.println(sta.getLocation().longitude + " "
+                        + sta.getLocation().latitude + " "
+                        + sumStack.getBest().formatH() + " "
+                        + StationIdUtil.toStringNoDates(sta));
             }
         }
     }
-    
-    boolean doBootstrap = false;
-    
-    float minPercentMatch;
-    boolean usePhaseWeight;
-    MicroSecondDate begin;
-    MicroSecondDate end;
-    Area area;
-    float gaussianWidth;
-    
-    public static void main(String[] args) {
 
+    boolean doBootstrap = false;
+
+    float minPercentMatch;
+
+    boolean usePhaseWeight;
+
+    MicroSecondDate begin;
+
+    MicroSecondDate end;
+
+    Area area;
+
+    float gaussianWidth;
+
+    public static void main(String[] args) {
         float minPercentMatch = 80f;
         boolean bootstrap = true;
         boolean usePhaseWeight = true;
         Properties props = StackSummary.loadProps(args);
         RecFuncDB.setDataLoc("Data");
-        //ConnMgr.setURL("jdbc:hsqldb:hsql://localhost:9003/ears");
+        // ConnMgr.setURL("jdbc:hsqldb:hsql://localhost:9003/ears");
         ConnMgr.setURL("jdbc:postgresql:ears");
         ConnMgr.installDbProperties(props, new String[0]);
         logger.debug("before set up hibernate");
@@ -107,18 +114,21 @@ public class DateRangeResults  {
             RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
         }
         AbstractHibernateDB.deploySchema();
-        MicroSecondDate begin = new MicroSecondDate(new Time("19900101T00:00:00Z", -1));
-        MicroSecondDate end = new MicroSecondDate(new Time("20050101T00:00:00Z", -1));
-
+        MicroSecondDate begin = new MicroSecondDate(new Time("19900101T00:00:00Z",
+                                                             -1));
+        MicroSecondDate end = new MicroSecondDate(new Time("20050101T00:00:00Z",
+                                                           -1));
         DateRangeResults worker = new DateRangeResults(minPercentMatch,
-                                                   usePhaseWeight,
-                                                   begin, end,
-                                                   new BoxAreaImpl(25.0f, 50f, -126f, -66f),
-                                                   2.5f);
+                                                       usePhaseWeight,
+                                                       begin,
+                                                       end,
+                                                       new BoxAreaImpl(25.0f,
+                                                                       50f,
+                                                                       -126f,
+                                                                       -66f),
+                                                       2.5f);
         worker.run();
-
     }
-    
-    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DateRangeResults.class);
 
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DateRangeResults.class);
 }

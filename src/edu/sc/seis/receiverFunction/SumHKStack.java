@@ -385,7 +385,7 @@ public class SumHKStack {
                                                     smallestH,
                                                     minPercentMatch,
                                                     usePhaseWeight,
-                                                    rejects,
+                                                    getRejectedMaxima(),
                                                     false,
                                                     0,
                                                     "all");
@@ -584,7 +584,7 @@ public class SumHKStack {
         for(int i = 0; i < localMaxima.length; i++) {
             if(inAnalystReject(localMaxima[i].getHValue(),
                                      localMaxima[i].getKValue(),
-                                     rejects) == null) {
+                                     getRejectedMaxima()) == null) {
                 String extra = "amp=" + localMaxima[i].getMaxValue();
                 String name = i == 0 ? "Global Maxima" : "Local Maxima " + i;
                 return makeStationResult(localMaxima[i], name, extra);

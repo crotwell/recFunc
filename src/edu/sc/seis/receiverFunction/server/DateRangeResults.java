@@ -58,7 +58,7 @@ public class DateRangeResults {
             if(AreaUtil.inArea(area, sta.getLocation())) {
                 List<ReceiverFunctionResult> individuals = sumHKStack.getIndividuals();
                 MicroSecondDate stepEnd = begin;
-                TimeInterval step = new TimeInterval(1, UnitImpl.GREGORIAN_YEAR);
+                TimeInterval step = new TimeInterval(365, UnitImpl.DAY);
                 for(stepEnd = begin.add(step); stepEnd.before(end); stepEnd = stepEnd.add(step)) {
                     List<ReceiverFunctionResult> byDate = new ArrayList<ReceiverFunctionResult>();
                     for(ReceiverFunctionResult rf : individuals) {

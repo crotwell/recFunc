@@ -82,7 +82,7 @@ public class ComparePriorResult extends StationList {
                 prior.put(station, resultList);
             }
         } else {
-            results = jdbcStationResult.getPriorResults(name);
+            results = RecFuncDB.getSingleton().getPriorResults(name);
             for(StationResult stationResult : results) {
                 List<StationImpl> staList = NetworkDB.getSingleton()
                 .getStationForNet(stationResult.getNet(),
@@ -196,8 +196,6 @@ public class ComparePriorResult extends StationList {
     private HashMap cache = new HashMap();
 
     static Crust2 crust2 = null;
-
-    RecFuncDB jdbcStationResult;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ComparePriorResult.class);
 }

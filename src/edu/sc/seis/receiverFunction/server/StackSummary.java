@@ -64,7 +64,7 @@ public class StackSummary {
         ConnMgr.installDbProperties(props, new String[0]);
         logger.debug("before set up hibernate");
         synchronized(HibernateUtil.class) {
-            HibernateUtil.setUpFromConnMgr(props);
+            HibernateUtil.setUpFromConnMgr(props, edu.sc.seis.sod.Start.EHCACHE_CONFIG);
             SodDB.configHibernate(HibernateUtil.getConfiguration());
             RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
         }

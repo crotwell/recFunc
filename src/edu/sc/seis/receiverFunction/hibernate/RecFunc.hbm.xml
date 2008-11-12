@@ -72,7 +72,8 @@
 		<id name="dbid" type="integer">
 			<generator class="native" />
 		</id>
-		<property name="username"/>
+		<property name="name"/>
+		<property name="email" unique-key="user_email"/>
 		<property name="passwordHash"/>
 	</class>
 	

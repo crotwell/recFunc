@@ -119,7 +119,7 @@ public class RecFuncDB extends AbstractHibernateDB {
             if (stack.getStackFile() == null || stack.getStackFile().length() == 0) {
                 throw new RuntimeException("stack does not have a stackFile set");
             }
-            DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(stack.getStackFile())));
+            DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(new File(dataDir, stack.getStackFile()))));
             float[][] loadStack = HKStack.createArray(stack.getNumH(),
                                                       stack.getNumK());
             for(int i = 0; i < loadStack.length; i++) {
@@ -355,14 +355,14 @@ public class RecFuncDB extends AbstractHibernateDB {
         return null;
     }
 
-    public int put(SumHKStack sum) {
+    public void put(SumHKStack sum) {
         File stackFile = new File(getStationDir(sum.getNet(),
                                                 sum.getStaCode(),
                                                 sum.getGaussianWidth()),
                                   SUM_STACK_FILENAME);
         writeHKStackData(sum.getSum(), stackFile);
-        sum.getSum().setStackFile(stackFile.getPath());
-        return ((Integer)getSession().save(sum)).intValue();
+        sum.getSum().setStackFile(stackFile.getPath().substring(getDataLoc().length()+1)); // +1 to get the /
+        getSession().saveOrUpdate(sum);
     }
 
     public int putAzimuthSummary(AzimuthSumHKStack sum) {
@@ -436,15 +436,20 @@ public class RecFuncDB extends AbstractHibernateDB {
         q.setFloat("gaussianWidth", gaussianWidth);
         return q.list();
     }
-
-    public static File getDir(CacheEvent cacheEvent,
-                              Channel chan,
-                              float gaussianWidth) {
+    
+    public static File getDataDir() {
         if(dataDir == null) {
             dataDir = new File(getDataLoc());
             dataDir.mkdirs();
         }
-        File gaussDir = new File(dataDir, "gauss_" + gaussianWidth);
+        return dataDir;
+    }
+
+    public static File getDir(CacheEvent cacheEvent,
+                              Channel chan,
+                              float gaussianWidth) {
+        
+        File gaussDir = new File(getDataDir(), "gauss_" + gaussianWidth);
         File eventDir = new File(gaussDir, eventFormatter.getResult(cacheEvent));
         File netDir = new File(eventDir, chan.get_id().network_id.network_code);
         File stationDir = new File(netDir, chan.get_id().station_code);
@@ -481,11 +486,7 @@ public class RecFuncDB extends AbstractHibernateDB {
     public static File getStationDir(NetworkAttr net,
                                      String staCode,
                                      float gaussianWidth) {
-        if(dataDir == null) {
-            dataDir = new File(getDataLoc());
-            dataDir.mkdirs();
-        }
-        File summaryDir = new File(dataDir, "Summary");
+        File summaryDir = new File(getDataDir(), "Summary");
         File gaussDir = new File(summaryDir, "gauss_" + gaussianWidth);
         File netDir = new File(gaussDir, NetworkIdUtil.toStringNoDates(net));
         File stationDir = new File(netDir, staCode);

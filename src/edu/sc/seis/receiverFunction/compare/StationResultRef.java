@@ -4,6 +4,9 @@ package edu.sc.seis.receiverFunction.compare;
  * @author crotwell Created on Mar 28, 2005
  */
 public class StationResultRef {
+    
+    /** hibernate */
+    protected StationResultRef() {}
 
     public StationResultRef(String name, String reference, String method) {
         this(name, reference, method, null);

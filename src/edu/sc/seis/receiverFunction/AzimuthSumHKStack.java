@@ -9,6 +9,9 @@ import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 
 public class AzimuthSumHKStack extends SumHKStack {
 
+    /** hibernate */
+    protected AzimuthSumHKStack() {}
+    
     public AzimuthSumHKStack(float minPercentMatch,
                              QuantityImpl smallestH,
                              HKStack sum,

@@ -7,6 +7,10 @@ import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 
 public class RejectedMaxima {
 
+    
+    /** hibernate */
+    protected RejectedMaxima() {}
+    
     public RejectedMaxima(NetworkAttrImpl net,
                           String staCode,
                           float hMin,

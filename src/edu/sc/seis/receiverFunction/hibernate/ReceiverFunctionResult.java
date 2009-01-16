@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
+import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
@@ -12,6 +13,7 @@ import edu.sc.seis.fissuresUtil.sac.SacToFissures;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import edu.sc.seis.sod.SodConfig;
+import edu.sc.seis.sod.velocity.event.VelocityEvent;
 
 public class ReceiverFunctionResult {
 
@@ -111,6 +113,14 @@ public class ReceiverFunctionResult {
 
     public CacheEvent getEvent() {
         return event;
+    }
+    
+    public VelocityEvent getVelocityEvent() {
+        return new VelocityEvent(getEvent());
+    }
+    
+    public DistAz getDistAz() {
+        return new DistAz(getChannelGroup().getStation(), getEvent());
     }
 
     public ChannelGroup getChannelGroup() {

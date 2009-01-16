@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.sql.SQLException;
@@ -123,7 +124,7 @@ public class HKLatLonPlot extends HttpServlet {
         }
         GMTColorPalette colorPallete;
         try {
-            BufferedReader buf = new BufferedReader(new FileReader(HKStackImage.getCPTFile()));
+            BufferedReader buf = new BufferedReader(new InputStreamReader(HKStackImage.getCPTFile().openStream()));
             colorPallete = GMTColorPalette.load(buf).renormalize(minZ, maxZ, Color.BLACK, Color.MAGENTA, Color.CYAN);
             buf.close();
         } catch (IOException e) {

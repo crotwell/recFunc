@@ -4,49 +4,66 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.SocketException;
 import java.sql.SQLException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.sod.ConfigurationException;
 
-
 /**
- * @author crotwell
- * Created on Sep 2, 2005
+ * @author crotwell Created on Sep 2, 2005
  */
 public class SumHKStackAsXYZ extends SummaryHKStackImageServlet {
 
-    public SumHKStackAsXYZ() throws SQLException, ConfigurationException, Exception {
+    public SumHKStackAsXYZ() throws SQLException, ConfigurationException,
+            Exception {
         super();
     }
 
-    void output(SumHKStack sumStack, OutputStream out, HttpServletRequest req, HttpServletResponse res) throws IOException {
+    void output(SumHKStack sumStack,
+                OutputStream out,
+                HttpServletRequest req,
+                HttpServletResponse res) throws IOException {
         doXYZOutput(sumStack, out, req, res);
     }
-    
-    public static void doXYZOutput(SumHKStack sumStack, OutputStream out, HttpServletRequest req, HttpServletResponse res) throws IOException {
+
+    public static void doXYZOutput(SumHKStack sumStack,
+                                   OutputStream out,
+                                   HttpServletRequest req,
+                                   HttpServletResponse res) throws IOException {
         res.setContentType("text/plain");
         OutputStreamWriter writer = new OutputStreamWriter(out);
-        float[][] stack = sumStack.getSum().getStack();
         try {
-            writer.write("# Vp/Vs  H  value\n");
-            for(int i = 0; i < stack.length; i++) {
-                String h = ""+sumStack.getSum().getHFromIndex(i).getValue(UnitImpl.KILOMETER);
-                for(int j = 0; j < stack[0].length; j++) {
-                    writer.write(sumStack.getSum().getKFromIndex(j)+" "+h+" "+stack[i][j]+"\n");
-                }
-            }
-        }catch(SocketException e) {
+            printXYZ(sumStack, writer);
+        } catch(SocketException e) {
             // oh well, client has closed connection
-        }catch(EOFException e) {
+        } catch(EOFException e) {
             // oh well, client has closed connection
         } finally {
             writer.close();
         }
     }
-    
+
+    public static void printXYZ(SumHKStack sumStack, Writer writer)
+            throws IOException {
+        float[][] stack = sumStack.getSum().getStack();
+        writer.write("# Vp/Vs  H  value\n");
+        for(int i = 0; i < stack.length; i++) {
+            String h = ""
+                    + sumStack.getSum()
+                            .getHFromIndex(i)
+                            .getValue(UnitImpl.KILOMETER);
+            for(int j = 0; j < stack[0].length; j++) {
+                writer.write(sumStack.getSum().getKFromIndex(j) + " " + h + " "
+                        + stack[i][j] + "\n");
+            }
+        }
+    }
+
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumHKStackAsXYZ.class);
 }

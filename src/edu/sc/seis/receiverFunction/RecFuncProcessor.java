@@ -46,6 +46,7 @@ import edu.sc.seis.fissuresUtil.xml.SeismogramFileTypes;
 import edu.sc.seis.fissuresUtil.xml.URLDataSetSeismogram;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
+import edu.sc.seis.sod.MotionVectorArm;
 import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.Start;
 import edu.sc.seis.sod.process.waveform.LocalSeismogramTemplateGenerator;
@@ -208,7 +209,7 @@ public class RecFuncProcessor extends SaveSeismogramToFile implements WaveformVe
                     // find template generator to get directory to output rec func
                     // images
                     if (lSeisTemplateGen == null) {
-                        WaveformVectorProcess[] processes = Start.getWaveformArm().getMotionVectorArm().getProcesses();
+                        WaveformVectorProcess[] processes = ((MotionVectorArm)Start.getWaveformRecipe()).getProcesses();
                         for (int j = 0; j < processes.length; j++) {
                             if (processes[j] instanceof ANDWaveformProcessWrapper) {
                                 ANDWaveformProcessWrapper wrapper =

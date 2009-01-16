@@ -104,7 +104,8 @@
 		</component>
 		<list name="individuals" table="summaryStacks">
 			<key column="stackid"/> 
-		    <list-index column="pos"/>
+                    <!-- warning, position is reserved in hsql -->
+		    <list-index column="position"/>
 		    <many-to-many class="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult" column="rfResult"></many-to-many>
 		</list>
 		<property name="HVariance" type="float"/>
@@ -159,7 +160,8 @@
 		</component>
 		<list name="individuals" table="azsummaryStacks">
 			<key column="stackid"/> 
-		    <list-index column="pos"/>
+                    <!-- warning, position is reserved in hsql -->
+		    <list-index column="position"/>
 		    <many-to-many class="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult" column="rfResult"></many-to-many>
 		</list>
 		<property name="HVariance" type="float"/>

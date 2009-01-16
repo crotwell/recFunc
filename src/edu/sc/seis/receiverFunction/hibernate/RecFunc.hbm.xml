@@ -104,7 +104,7 @@
 		</component>
 		<list name="individuals" table="summaryStacks">
 			<key column="stackid"/> 
-		    <list-index column="position"/>
+		    <list-index column="pos"/>
 		    <many-to-many class="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult" column="rfResult"></many-to-many>
 		</list>
 		<property name="HVariance" type="float"/>
@@ -159,7 +159,7 @@
 		</component>
 		<list name="individuals" table="azsummaryStacks">
 			<key column="stackid"/> 
-		    <list-index column="position"/>
+		    <list-index column="pos"/>
 		    <many-to-many class="edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult" column="rfResult"></many-to-many>
 		</list>
 		<property name="HVariance" type="float"/>

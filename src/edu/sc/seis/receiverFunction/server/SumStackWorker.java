@@ -15,6 +15,7 @@ import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
+import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
 import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
@@ -94,9 +95,8 @@ public class SumStackWorker implements Runnable {
             try {
                 calcComplexity(sumStack);
                 if(sum != null) {
-                    System.out.println("Old sumstack in db, deleting...");
-                    RecFuncDB.getSession().delete(sum);
-                    RecFuncDB.getSession().flush();
+                    System.out.println("Old sumstack in db, replacing...");
+                    sumStack.setDbid(sum.getDbid());
                 }
                 RecFuncDB.getSingleton().put(sumStack);
                 RecFuncDB.commit();
@@ -203,10 +203,11 @@ public class SumStackWorker implements Runnable {
         ConnMgr.installDbProperties(props, new String[0]);
         logger.debug("before set up hibernate");
         synchronized(HibernateUtil.class) {
-            HibernateUtil.setUpFromConnMgr(props);
+            HibernateUtil.setUpFromConnMgr(props, HibernateUtil.DEFAULT_EHCACHE_CONFIG);
             SodDB.configHibernate(HibernateUtil.getConfiguration());
             RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
         }
+        AbstractHibernateDB.deploySchema();
         SumStackWorker worker = new SumStackWorker(minPercentMatch,
                                                    usePhaseWeight,
                                                    bootstrap,

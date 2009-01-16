@@ -1,6 +1,9 @@
 package edu.sc.seis.receiverFunction;
 
+import java.text.DecimalFormat;
+
 import edu.iris.Fissures.model.QuantityImpl;
+import edu.sc.seis.sod.status.FissuresFormatter;
 
 
 public class StackMaximum {
@@ -60,4 +63,14 @@ public class StackMaximum {
     public float getMaxValue() {
         return maxValue;
     }
+
+    public String formatHValue() {
+        return FissuresFormatter.formatQuantity(getHValue());
+    }
+
+    public String formatMaxValueK() {
+        return vpvsFormat.format(getKValue());
+    }
+    
+    private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
 }

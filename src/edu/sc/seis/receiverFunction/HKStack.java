@@ -493,7 +493,7 @@ public class HKStack implements Serializable {
     }
 
     public String formatMaxValueH() {
-        return FissuresFormatter.formatQuantity(getMaxValueH());
+        return getGlobalMaximum().formatHValue();
     }
 
     public float getMaxValueK() {
@@ -515,7 +515,7 @@ public class HKStack implements Serializable {
     }
 
     public String formatMaxValueK() {
-        return vpvsFormat.format(getMaxValueK());
+        return getGlobalMaximum().formatHValue();
     }
 
     public float getMaxValue() {

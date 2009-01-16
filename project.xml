@@ -432,6 +432,7 @@
                     <include>*.prop</include>
                     <include>*.vm</include>
                     <include>*.xml</include>
+                    <include>*.cpt</include>
                 </includes>
             </resource>
             <resource>

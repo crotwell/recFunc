@@ -84,7 +84,7 @@
         <dependency>
             <groupId>jetty</groupId>
             <artifactId>jetty</artifactId>
-            <version>4.2.22</version>
+            <version>4.2.27</version>
         </dependency>
         <dependency>
             <id>servletapi</id>

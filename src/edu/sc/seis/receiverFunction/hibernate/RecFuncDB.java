@@ -119,7 +119,7 @@ public class RecFuncDB extends AbstractHibernateDB {
             if (stack.getStackFile() == null || stack.getStackFile().length() == 0) {
                 throw new RuntimeException("stack does not have a stackFile set");
             }
-            DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(new File(dataDir, stack.getStackFile()))));
+            DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(new File(getDataDir(), stack.getStackFile()))));
             float[][] loadStack = HKStack.createArray(stack.getNumH(),
                                                       stack.getNumK());
             for(int i = 0; i < loadStack.length; i++) {

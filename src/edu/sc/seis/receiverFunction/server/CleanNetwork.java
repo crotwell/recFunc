@@ -268,12 +268,12 @@ public class CleanNetwork {
                             // go ahead and fix:
                             Channel irisChan = (Channel)overlapChans.get(0);
                             MicroSecondTimeRange irisTR = fixFuture(irisChan.getEffectiveTime());
-                            chan.setBeginTime(irisChan.getEffectiveTime().start_time);
-                            chan.setEndTime(irisChan.getEffectiveTime().end_time);
-                            NetworkDB.getSession().saveOrUpdate(chan);
-                            NetworkDB.commit();
-                            numFixed++;
-                            System.out.println("Single overlap, fixed "
+                           // chan.setBeginTime(irisChan.getEffectiveTime().start_time);
+                          // chan.setEndTime(irisChan.getEffectiveTime().end_time);
+                            //NetworkDB.getSession().saveOrUpdate(chan);
+                           // NetworkDB.commit();
+                           // numFixed++;
+                            System.out.println("Single overlap,  "
                                                + irisTR
                                                + "  "
                                                + ChannelIdUtil.toStringNoDates(chan.get_id()));

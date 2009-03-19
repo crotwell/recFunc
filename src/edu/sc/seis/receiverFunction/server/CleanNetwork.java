@@ -1,8 +1,5 @@
 package edu.sc.seis.receiverFunction.server;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -10,7 +7,6 @@ import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
 
-import edu.iris.Fissures.Time;
 import edu.iris.Fissures.TimeRange;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
@@ -19,6 +15,7 @@ import edu.iris.Fissures.IfNetwork.NetworkAccess;
 import edu.iris.Fissures.IfNetwork.NetworkAttr;
 import edu.iris.Fissures.IfNetwork.NetworkDCOperations;
 import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.IfNetwork.NetworkNotFound;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.AllVTFactory;
 import edu.iris.Fissures.model.MicroSecondDate;
@@ -28,6 +25,7 @@ import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.iris.Fissures.network.StationIdUtil;
+import edu.sc.seis.fissuresUtil.cache.ProxyNetworkDC;
 import edu.sc.seis.fissuresUtil.cache.VestingNetworkDC;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.NotFound;
@@ -37,28 +35,11 @@ import edu.sc.seis.fissuresUtil.namingService.FissuresNamingService;
 
 public class CleanNetwork {
 
-    public CleanNetwork(NetworkDCOperations netDC, Connection conn)
-            throws SQLException {
+    public CleanNetwork(ProxyNetworkDC netDC) {
         this.netDC = netDC;
-        updateNetBegin = conn.prepareStatement("UPDATE network SET net_begin_id = ? "
-                + "WHERE net_id = ?");
-        updateNetEnd = conn.prepareStatement("UPDATE network SET net_end_id = ? "
-                + "WHERE net_id = ?");
-        updateStaBegin = conn.prepareStatement("UPDATE station SET sta_begin_id = ? "
-                + "WHERE sta_id = ?");
-        updateStaEnd = conn.prepareStatement("UPDATE station SET sta_end_id = ? "
-                + "WHERE sta_id = ?");
-        updateSiteBegin = conn.prepareStatement("UPDATE site SET site_begin_id = ? "
-                + "WHERE site_id = ?");
-        updateSiteEnd = conn.prepareStatement("UPDATE site SET site_end_id = ? "
-                + "WHERE site_id = ?");
-        updateChanBegin = conn.prepareStatement("UPDATE channel SET chan_begin_id = ? "
-                + "WHERE chan_id = ?");
-        updateChanEnd = conn.prepareStatement("UPDATE channel SET chan_end_id = ? "
-                + "WHERE chan_id = ?");
     }
 
-    public void checkNetworks() throws SQLException,
+    public void checkNetworks() throws
             edu.sc.seis.fissuresUtil.database.NotFound {
         List<NetworkAttrImpl> attrs = NetworkDB.getSingleton().getAllNetworks();
         NetworkAccess[] irisNets = netDC.a_finder().retrieve_all();
@@ -68,7 +49,7 @@ public class CleanNetwork {
     }
 
     public void checkNetwork(NetworkAttrImpl attr, NetworkAccess[] irisNets)
-            throws SQLException, NotFound {
+            throws NotFound {
         NetworkAccess irisNA = bestMatch(attr.get_id(), irisNets);
         if(irisNA == null) {
             System.out.println("Not found for: "
@@ -114,7 +95,7 @@ public class CleanNetwork {
         return null;
     }
 
-    public void checkStations() throws SQLException,
+    public void checkStations() throws NetworkNotFound,
             edu.sc.seis.fissuresUtil.database.NotFound {
         Station[] stations = NetworkDB.getSingleton().getAllStations();
         for(int i = 0; i < stations.length; i++) {
@@ -122,8 +103,8 @@ public class CleanNetwork {
         }
     }
 
-    public boolean checkStation(Station station) throws SQLException, NotFound {
-        NetworkAccess[] irisNets = netDC.a_finder().retrieve_all();
+    public boolean checkStation(Station station) throws NotFound, NetworkNotFound {
+        NetworkAccess[] irisNets = netDC.a_finder().retrieve_by_code(station.get_id().network_id.network_code);
         ArrayList iris = new ArrayList();
         NetworkAccess bestNet = bestMatch(station.get_id().network_id, irisNets);
         if(bestNet == null) {
@@ -210,7 +191,7 @@ public class CleanNetwork {
         return false;
     }
 
-    public void checkChannels() throws NotFound, SQLException {
+    public void checkChannels() throws NotFound {
         List<ChannelImpl> channels = NetworkDB.getSingleton().getAllChannels();
         int numGood = 0;
         int numFixed = 0;
@@ -307,14 +288,6 @@ public class CleanNetwork {
 
     NetworkDCOperations netDC;
 
-    PreparedStatement updateNetBegin, updateNetEnd;
-
-    PreparedStatement updateStaBegin, updateStaEnd;
-
-    PreparedStatement updateSiteBegin, updateSiteEnd;
-
-    PreparedStatement updateChanBegin, updateChanEnd;
-
     static MicroSecondDate now = ClockUtil.now();
 
     /**
@@ -323,7 +296,7 @@ public class CleanNetwork {
     public static void main(String[] args) {
         try {
             Properties props = StackSummary.loadProps(args);
-            Connection conn = StackSummary.initDB(props);
+            StackSummary.initDB(props);
             BasicConfigurator.configure();
             org.omg.CORBA_2_3.ORB orb = (org.omg.CORBA_2_3.ORB)org.omg.CORBA.ORB.init(new String[] {},
                                                                                       new Properties());
@@ -332,10 +305,10 @@ public class CleanNetwork {
             // Pick a name server to get FISSURES servers.
             FissuresNamingService namingService = new FissuresNamingService(orb);
             namingService.setNameServiceCorbaLoc("corbaloc:iiop:dmc.iris.washington.edu:6371/NameService");
-            NetworkDCOperations netDC = new VestingNetworkDC("edu/iris/dmc",
+            ProxyNetworkDC netDC = new VestingNetworkDC("edu/iris/dmc",
                                                              "IRIS_NetworkDC",
                                                              namingService);
-            CleanNetwork cleaner = new CleanNetwork(netDC, conn);
+            CleanNetwork cleaner = new CleanNetwork(netDC);
             // cleaner.checkNetworks();
             // cleaner.checkStations();
             cleaner.checkChannels();

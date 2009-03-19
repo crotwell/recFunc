@@ -175,8 +175,8 @@ public class CleanNetwork {
                     // end matches but begin doesn't
                     System.out.println("Found for "
                             + StationIdUtil.toStringFormatDates(station)
-                            + " but begin times don't match: "
-                            + irisTR.getBeginTime() + " "
+                            + " but begin times don't match: iris= "
+                            + irisTR.getBeginTime() + " db= "
                             + local.getBeginTime());
                     found = true;
                 } else if(irisTR.intersects(local)) {
@@ -192,9 +192,9 @@ public class CleanNetwork {
             }
             if(overlaps.size() != 0) {
                 Iterator overlapIt = overlaps.iterator();
-                System.out.println("Overlaps for "
+                System.out.println("Station Overlaps for "
                         + StationIdUtil.toStringFormatDates(station)
-                        + "   iris   " + "        local");
+                        + "   iris   " + "        db");
                 while(overlapIt.hasNext()) {
                     Station s = (Station)overlapIt.next();
                     System.out.println("   "
@@ -248,7 +248,7 @@ public class CleanNetwork {
                             && localTR.getEndTime().equals(TimeUtils.future)) {
                         System.out.println("found ended channel: "
                                 + ChannelIdUtil.toStringFormatDates(chan.get_id())
-                                + "\n  iris=" + irisTR + "\n  local=" + localTR);
+                                + "\n  iris=" + irisTR + "\n  db=" + localTR);
                         chan.setEndTime(irisChan.getEffectiveTime().end_time);
                         NetworkDB.getSession().saveOrUpdate(chan);
                         NetworkDB.commit();
@@ -274,25 +274,25 @@ public class CleanNetwork {
                             //NetworkDB.getSession().saveOrUpdate(chan);
                            // NetworkDB.commit();
                            // numFixed++;
-                            System.out.println("Single overlap,  "
-                                               + irisTR
+                            System.out.println("Single overlap,  db=" + fixFuture(chan.getEffectiveTime())
                                                + "  "
-                                               + ChannelIdUtil.toStringNoDates(chan.get_id()));
+                                               + ChannelIdUtil.toStringNoDates(chan.get_id())
+                                               + "  iris="+ irisTR);
                             found = true;
                         } else {
                             Iterator it = overlaps.iterator();
-                            System.out.println("Overlaps "
+                            System.out.println("Overlaps db="
                                     + localTR
                                     + "  "
                                     + ChannelIdUtil.toStringNoDates(chan.get_id()));
                             while(it.hasNext()) {
-                                System.out.println("         " + it.next());
+                                System.out.println("   iris= " + it.next());
                             }
                         }
                     } else {
                         System.out.println("No overlaps: "
                                 + ChannelIdUtil.toStringNoDates(chan.get_id())
-                                + ": " + localTR);
+                                + " db= " + localTR);
                     }
                     if (!found){numBad++;}
                 }

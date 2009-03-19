@@ -68,6 +68,8 @@ public class CleanNetwork {
                 // if permanent net or same year, fix begin, best only finds
                 // temp nets in same year
                 attr.updateBeginTime(irisAttr.getEffectiveTime().start_time);
+                NetworkDB.getSession().saveOrUpdate(attr);
+                NetworkDB.commit();
                 System.out.println("fixed net begin...");
             }
         }
@@ -152,6 +154,9 @@ public class CleanNetwork {
                         // looks like station ended after we received it, safe
                         // to fix
                         station.setEndTime(irisSta.getEffectiveTime().end_time);
+                        NetworkDB.getSession().saveOrUpdate(station);
+                        NetworkDB.commit();
+                        NetworkDB.commit();
                         System.out.println("fixed...");
                         return true;
                     }
@@ -234,6 +239,8 @@ public class CleanNetwork {
                                 + ChannelIdUtil.toStringFormatDates(chan.get_id())
                                 + "\n  iris=" + irisTR + "\n  local=" + localTR);
                         chan.setEndTime(irisChan.getEffectiveTime().end_time);
+                        NetworkDB.getSession().saveOrUpdate(chan);
+                        NetworkDB.commit();
                         numFixed++;
                         found = true;
                         System.out.println("fixed...");
@@ -253,6 +260,8 @@ public class CleanNetwork {
                             MicroSecondTimeRange irisTR = fixFuture(irisChan.getEffectiveTime());
                             chan.setBeginTime(irisChan.getEffectiveTime().start_time);
                             chan.setEndTime(irisChan.getEffectiveTime().end_time);
+                            NetworkDB.getSession().saveOrUpdate(chan);
+                            NetworkDB.commit();
                             numFixed++;
                             System.out.println("Single overlap, fixed "
                                                + irisTR

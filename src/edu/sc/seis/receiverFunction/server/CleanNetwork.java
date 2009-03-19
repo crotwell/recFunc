@@ -225,6 +225,7 @@ public class CleanNetwork {
                 if(net == null) {
                     System.out.println("Can't find network for channel: "
                             + ChannelIdUtil.toString(chan.get_id()));
+                    continue;
                 }
                 ChannelId chanId = chan.get_id();
                 Channel[] matchChan = net.retrieve_channels_by_code(chanId.station_code,

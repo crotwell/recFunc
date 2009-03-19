@@ -1,11 +1,13 @@
 package edu.sc.seis.receiverFunction.server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
 
 import edu.iris.Fissures.TimeRange;
 import edu.iris.Fissures.IfNetwork.Channel;
@@ -28,10 +30,18 @@ import edu.iris.Fissures.network.StationIdUtil;
 import edu.sc.seis.fissuresUtil.cache.ProxyNetworkDC;
 import edu.sc.seis.fissuresUtil.cache.VestingNetworkDC;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
+import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.display.MicroSecondTimeRange;
+import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.namingService.FissuresNamingService;
+import edu.sc.seis.fissuresUtil.simple.Initializer;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
+import edu.sc.seis.rev.admin.Args;
+import edu.sc.seis.rev.hibernate.RevDB;
+import edu.sc.seis.sod.Start;
+import edu.sc.seis.sod.hibernate.SodDB;
 
 public class CleanNetwork {
 
@@ -302,11 +312,31 @@ public class CleanNetwork {
     /**
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] inArgs) {
+        Properties props = System.getProperties();
         try {
-            Properties props = StackSummary.loadProps(args);
-            StackSummary.initDB(props);
-            BasicConfigurator.configure();
+            Args args = new Args(inArgs);
+            // get some defaults
+            //Initializer.loadProps((Start.class).getClassLoader()
+            //        .getResourceAsStream(DEFAULT_PROPS), props);
+            if(args.hasProps()) {
+                try {
+                    Initializer.loadProps(args.getProps(), props);
+                } catch(IOException io) {
+                    System.err.println("Unable to load props file: "
+                            + io.getMessage());
+                    System.err.println("Quitting until the error is corrected");
+                    System.exit(1);
+                }
+            }
+            PropertyConfigurator.configure(props);
+            ConnMgr.installDbProperties(props, args.getInitialArgs());
+            synchronized(HibernateUtil.class) {
+                HibernateUtil.setUpFromConnMgr(props, HibernateUtil.DEFAULT_EHCACHE_CONFIG);
+                SodDB.configHibernate(HibernateUtil.getConfiguration());
+                RevDB.configHibernate(HibernateUtil.getConfiguration());
+                RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
+            }
             org.omg.CORBA_2_3.ORB orb = (org.omg.CORBA_2_3.ORB)org.omg.CORBA.ORB.init(new String[] {},
                                                                                       new Properties());
             // Registers the FISSURES classes with the ORB

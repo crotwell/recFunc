@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
+import org.hibernate.exception.ConstraintViolationException;
 
 import edu.iris.Fissures.TimeRange;
 import edu.iris.Fissures.IfNetwork.Channel;
@@ -22,6 +23,7 @@ import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.AllVTFactory;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.TimeUtils;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.network.NetworkAttrImpl;
@@ -208,11 +210,8 @@ public class CleanNetwork {
 
     public void checkChannels() throws NotFound {
         List<ChannelImpl> channels = NetworkDB.getSingleton().getAllChannels();
-        int numGood = 0;
-        int numFixed = 0;
-        int numBad = 0;
         NetworkAccess[] nets = netDC.a_finder().retrieve_all();
-        for(Channel chan : channels) {
+        for(ChannelImpl chan : channels) {
             try {
                 MicroSecondTimeRange localTR = fixFuture(chan.getEffectiveTime());
                 NetworkAccess net = null;
@@ -242,25 +241,41 @@ public class CleanNetwork {
                         found = true;
                         break;
                     } else if(irisTR.getBeginTime()
-                            .equals(localTR.getBeginTime())
-                            && !irisTR.getEndTime()
-                                    .equals(localTR.getEndTime())
-                            && localTR.getEndTime().equals(TimeUtils.future)) {
-                        System.out.println("found ended channel: "
-                                + ChannelIdUtil.toStringFormatDates(chan.get_id())
-                                + "\n  iris=" + irisTR + "\n  db=" + localTR);
-                        chan.setEndTime(irisChan.getEffectiveTime().end_time);
-                        NetworkDB.getSession().saveOrUpdate(chan);
-                        NetworkDB.commit();
-                        numFixed++;
-                        found = true;
-                        System.out.println("fixed...");
-                        break;
-                    } else {
-                        if(irisTR.intersects(localTR)) {
-                            overlaps.add(irisTR);
-                            overlapChans.add(irisChan);
+                            .equals(localTR.getBeginTime())) {
+                        if( !irisTR.getEndTime()
+                                .equals(localTR.getEndTime())) {
+                            if (localTR.getEndTime().equals(TimeUtils.future)) {
+                                // easy ended channel
+                                chan.setEndTime(irisChan.getEffectiveTime().end_time);
+                                updateDb(chan, "found ended channel: "
+                                         + "\n  iris=" + irisTR + "\n  db=" + localTR);
+                                found = true;
+                                break;
+                            } else if (localTR.getEndTime().difference(irisTR.getEndTime()).getValue(UnitImpl.DAY) < 1) {
+                                // end times are not very different
+                                chan.setEndTime(irisChan.getEffectiveTime().end_time);
+                                updateDb(chan, "move channel end less than 1 day: "
+                                         + "\n  iris=" + irisTR + "\n  db=" + localTR);
+                                found = true;
+                                break;
+                            } 
                         }
+                    } else if(irisTR.getEndTime()
+                            .equals(localTR.getEndTime())) {
+                        // begintimes not equal, endtimes are
+                        if (localTR.getBeginTime().difference(irisTR.getBeginTime()).getValue(UnitImpl.DAY) < 1) {
+                            // begin times are not very different
+                            chan.setBeginTime(irisChan.getEffectiveTime().start_time);
+                            updateDb(chan, "move channel begin less than 1 day: "
+                                     + "\n  iris=" + irisTR + "\n  db=" + localTR);
+                            found = true;
+                            break;
+                        } 
+                        
+                    }
+                    if(irisTR.intersects(localTR)) {
+                        overlaps.add(irisTR);
+                        overlapChans.add(irisChan);
                     }
                 }
                 if(!found) {
@@ -305,9 +320,26 @@ public class CleanNetwork {
         System.out.println("total=" + channels.size() + " good=" + numGood
                 + " fixed=" + numFixed + "  bad=" + numBad);
     }
+    
+    void updateDb(ChannelImpl chan, String reason) {
+        try {
+            System.out.println(ChannelIdUtil.toStringNoDates(chan.get_id())+"  "+reason);
+            NetworkDB.getSession().saveOrUpdate(chan);
+            NetworkDB.commit();
+            numFixed++;
+            System.out.println("fixed...");
+        } catch (ConstraintViolationException e) {
+            System.out.println("must be another chan in db that matches begintime "+ ChannelIdUtil.toStringNoDates(chan.get_id()));
+            NetworkDB.rollback();            
+        }
+    }
 
     NetworkDCOperations netDC;
 
+    int numGood = 0;
+    int numFixed = 0;
+    int numBad = 0;
+    
     static MicroSecondDate now = ClockUtil.now();
 
     /**

@@ -251,7 +251,7 @@ public class CleanNetwork {
                                          + "\n  iris=" + irisTR + "\n  db=" + localTR);
                                 found = true;
                                 break;
-                            } else if (localTR.getEndTime().difference(irisTR.getEndTime()).getValue(UnitImpl.DAY) < 1) {
+                            } else if (localTR.getEndTime().difference(irisTR.getEndTime()).getValue(UnitImpl.DAY) < 1.01) {
                                 // end times are not very different
                                 chan.setEndTime(irisChan.getEffectiveTime().end_time);
                                 updateDb(chan, "move channel end less than 1 day: "
@@ -260,11 +260,12 @@ public class CleanNetwork {
                                 break;
                             } 
                         }
-                    } else if(irisTR.getEndTime()
-                            .equals(localTR.getEndTime())) {
-                        // begintimes not equal, endtimes are
-                        if (localTR.getBeginTime().difference(irisTR.getBeginTime()).getValue(UnitImpl.DAY) < 1) {
+                    } else if(irisTR.getEndTime().equals(localTR.getEndTime()) ||
+                            localTR.getEndTime().equals(TimeUtils.future)) {
+                        // begintimes not equal, endtimes are or db ends in future
+                        if (localTR.getBeginTime().difference(irisTR.getBeginTime()).getValue(UnitImpl.DAY) < 1.01) {
                             // begin times are not very different
+                            chan.setEndTime(irisChan.getEffectiveTime().end_time);
                             chan.setBeginTime(irisChan.getEffectiveTime().start_time);
                             updateDb(chan, "move channel begin less than 1 day: "
                                      + "\n  iris=" + irisTR + "\n  db=" + localTR);

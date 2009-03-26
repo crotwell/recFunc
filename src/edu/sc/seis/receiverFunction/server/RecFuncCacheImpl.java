@@ -222,6 +222,9 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                 EventDB.getSingleton().put(event);
             }
             ChannelImpl[] channelImpls = ChannelImpl.implize(channels);
+            for (int i = 0; i < channelImpls.length; i++) {
+                CleanNetwork.fixFuture(channelImpls[i].getEffectiveTime());
+            }
             NetworkDB ndb = NetworkDB.getSingleton();
             ndb.put(channelImpls[0]);
             ndb.put(channelImpls[1]);
@@ -334,11 +337,18 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                             ChannelId[] channel,
                             IterDeconConfig config) {
         try {
-            ReceiverFunctionResult result = getResult(prefOrigin,
-                                                      channel,
-                                                      config);
-            if(result != null) {
-                return true;
+            List<CacheEvent> similar = EventDB.getSingleton()
+            .getSimilarEvents(new CacheEvent(new EventAttrImpl("dummy"),
+                                             prefOrigin),
+                              timeTol,
+                              positionTol);
+            for(CacheEvent cacheEvent : similar) {
+                if (RecFuncDB.getSingleton().isResultInDB(cacheEvent, 
+                                                          channel[0].network_id.network_code,
+                                                          channel[0].station_code, 
+                                                          config.gwidth)) {
+                    return true;
+                }
             }
             return false;
         } catch(Throwable e) {

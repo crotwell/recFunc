@@ -98,7 +98,7 @@ public class QualityControl {
             SQLException, NoPreferredOrigin {
         float tToR = transverseToRadial(result);
         float pAmp = radialPAmp(result);
-        if(tToR > MAX_T_TO_R_RATIO || pAmp < MIN_P_TO_MAX_AMP_RATIO) {
+        if(result.getRadialMatch() < 80 || tToR > MAX_T_TO_R_RATIO || pAmp < MIN_P_TO_MAX_AMP_RATIO) {
             result.setQc(new RecFuncQCResult(false,
                                              false,
                                              tToR,

@@ -65,7 +65,7 @@ public class RFStationEvent extends Revlet {
                 int rfid = RevUtil.getInt("rf", req);
                 result = RecFuncDB.getSingleton().getReceiverFunctionResult(rfid);
                 if (result == null) {
-                    handleNotFound(req, res, new NotFound());
+                    return handleNotFound(req, res, new NotFound());
                 }
             }
             CacheEvent eq = result.getEvent();

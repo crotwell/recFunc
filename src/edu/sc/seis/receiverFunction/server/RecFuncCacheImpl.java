@@ -66,7 +66,8 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                             String dataloc,
                             Properties confProps) throws IOException,
             SQLException, ConfigurationException, TauModelException, Exception {
-        ConnMgr.setDB(ConnMgr.POSTGRES);
+        //ConnMgr.setDB(ConnMgr.POSTGRES);
+        ConnMgr.setDB(ConnMgr.HSQL);
         ConnMgr.setURL(databaseURL);
         RecFuncDB.setDataLoc(dataloc);
         synchronized(HibernateUtil.class) {
@@ -122,7 +123,11 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                            channel[2].site_code,
                                            channel[2].channel_code,
                                            begin);
-        return ndb.getChannelGroup(chanA, chanB, chanC);
+        ChannelGroup cg = ndb.getChannelGroup(chanA, chanB, chanC);
+        if (cg == null) {
+            throw new NotFound();
+        }
+        return cg;
     }
     
     protected ReceiverFunctionResult getResult(Origin prefOrigin,

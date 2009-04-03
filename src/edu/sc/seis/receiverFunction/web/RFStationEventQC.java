@@ -33,7 +33,7 @@ public class RFStationEventQC extends RFStationEvent {
             int rfid = RevUtil.getInt("rf", req);
             result = RecFuncDB.getSingleton().getReceiverFunctionResult(rfid);
             if(result == null) {
-                handleNotFound(req, res, new NotFound());
+                return handleNotFound(req, res, new NotFound());
             }
             QCUser qcUser = RecFuncDB.getSingleton().getQCUser(RevUtil.get("userHash", req));
             UserReceiverFunctionQC qc = new UserReceiverFunctionQC(qcUser,

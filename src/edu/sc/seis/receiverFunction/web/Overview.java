@@ -31,11 +31,15 @@ public class Overview extends StationList {
 	public ArrayList getStations(HttpServletRequest req, RevletContext context)
 			throws SQLException, NotFound {
 		checkDataLoaded(req);
+        Float gaussianWidth = RevUtil.getFloat("gaussian",
+                                               req,
+                                               Start.getDefaultGaussian());
 		int minEQ = RevUtil.getInt("minEQ", req, 2);
 		HashMap out = new HashMap();
-		for (Iterator iter = data.keySet().iterator(); iter.hasNext();) {
+		HashMap dataMap = data.get(gaussianWidth);
+		for (Iterator iter = dataMap.keySet().iterator(); iter.hasNext();) {
 			VelocityStation key = (VelocityStation) iter.next();
-			SumHKStack stack = (SumHKStack) data.get(key);
+			SumHKStack stack = (SumHKStack) dataMap.get(key);
 			if (stack.getNumEQ() >= minEQ) {
 				out.put(key, stack);
 			}
@@ -43,13 +47,19 @@ public class Overview extends StationList {
 		return new ArrayList(out.keySet());
 	}
 
-	public HashMap getSummaries(HttpServletRequest req, ArrayList stationList,
-			RevletContext context) throws SQLException, IOException {
+    public HashMap<VelocityStation, SumHKStack> getSummaries(ArrayList stationList,
+                                RevletContext context,
+                                HttpServletRequest req) throws SQLException,
+            IOException, NotFound {
 		checkDataLoaded(req);
+        Float gaussianWidth = RevUtil.getFloat("gaussian",
+                                               req,
+                                               Start.getDefaultGaussian());
+        HashMap dataMap = data.get(gaussianWidth);
 		HashMap out = new HashMap();
 		for (Iterator iter = stationList.iterator(); iter.hasNext();) {
 			Object key = iter.next();
-			out.put(key, data.get(key));
+			out.put(key, dataMap.get(key));
 		}
 		return out;
 	}
@@ -65,25 +75,33 @@ public class Overview extends StationList {
 	}
 
 	synchronized void checkDataLoaded(HttpServletRequest req) {
-		if (data == null
-				|| loadtime.subtract(ClockUtil.now()).greaterThan(CACHE_TIME)) {
-	        float gaussianWidth = RevUtil.getFloat("gaussian",
-	                                               req,
-	                                               Start.getDefaultGaussian());
-			data = new HashMap<VelocityStation, SumHKStack>();
-			loadtime = ClockUtil.now();
-			List<SumHKStack> summaryList = RecFuncDB.getSingleton().getAllSumStack(gaussianWidth);
-            for (Iterator<SumHKStack> iter = summaryList.iterator(); iter.hasNext();) {
-            	SumHKStack stack = (SumHKStack) iter.next();
-            	data.put(new VelocityStation(NetworkDB.getSingleton().getStationForNet(stack.getNet(), stack.getStaCode()).get(0))
-            			, stack);
-            }
+        Float gaussianWidth = RevUtil.getFloat("gaussian",
+                                               req,
+                                               Start.getDefaultGaussian());
+		if (data.get(gaussianWidth) == null
+				|| ClockUtil.now().difference(loadtime.get(gaussianWidth)).greaterThan(CACHE_TIME)) {
+			loadData(gaussianWidth);
 		}
 	}
+	
+	void loadData(float gaussianWidth) {
+	    HashMap<VelocityStation, SumHKStack> loadData = new HashMap<VelocityStation, SumHKStack>();
+        List<SumHKStack> summaryList = RecFuncDB.getSingleton().getAllSumStack(gaussianWidth);
+        for (Iterator<SumHKStack> iter = summaryList.iterator(); iter.hasNext();) {
+            SumHKStack stack = (SumHKStack) iter.next();
+            loadData.put(new VelocityStation(NetworkDB.getSingleton().getStationForNet(stack.getNet(), stack.getStaCode()).get(0))
+                    , stack);
+            stack.getNumEQ();
+        }
+        loadtime.put(gaussianWidth, ClockUtil.now());
+        data.put(gaussianWidth, loadData);
+	}
+	
+	
 
-	HashMap<VelocityStation, SumHKStack> data = null;
+	HashMap<Float, HashMap<VelocityStation, SumHKStack>> data = new HashMap<Float, HashMap<VelocityStation, SumHKStack>>();
 
-	MicroSecondDate loadtime;
+	HashMap<Float, MicroSecondDate> loadtime = new HashMap<Float, MicroSecondDate>();
 
 	public static TimeInterval CACHE_TIME = new TimeInterval(24, UnitImpl.HOUR);
 }

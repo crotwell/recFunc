@@ -26,17 +26,18 @@ public class RecFuncCacheController extends AbstractController {
         float minPercentMatch = 80f;
         boolean bootstrap = true;
         boolean usePhaseWeight = true;
-        SumStackWorker worker = new SumStackWorker(minPercentMatch,
+        worker = new SumStackWorker(minPercentMatch,
                                                    usePhaseWeight,
                                                    bootstrap,
                                                    SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS);
-        Thread t = new Thread(worker);
+        Thread t = new Thread(worker, "SumStackCalc Worker");
         t.setDaemon(true);
         t.start();
     }
 
     public void destroy() throws Exception {
         super.destroy();
+        worker.keepGoing = false;
         // maybe should have something like?
         // AbstractHibernateDB.close();
     }
@@ -48,6 +49,8 @@ public class RecFuncCacheController extends AbstractController {
     public String getInterfaceName() {
         return NSRecFuncCache.interfaceName;
     }
-
+    
+    private SumStackWorker worker;
+    
     private RecFuncCacheImpl impl;
 }

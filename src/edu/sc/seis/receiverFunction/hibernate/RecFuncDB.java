@@ -174,9 +174,9 @@ public class RecFuncDB extends AbstractHibernateDB {
     public boolean isResultInDB(CacheEvent cacheEvent, String netCode, String staCode, float gaussian) {
         Query q = getSession().createQuery("from "
                 + ReceiverFunctionResult.class.getName()
-                + " r where r.event = :event "
-                + " and r.gwidth = :gauss and r.channelGroup.channel1.id.station_code = :staCode "
-                + " and r.channelGroup.channel1.id.networkId = :netCode");
+                + " where event = :event "
+                + " and gwidth = :gauss and channelGroup.channel1.id.station_code = :staCode "
+                + " and channelGroup.channel1.id.networkId = :netCode");
         q.setEntity("event", cacheEvent);
         q.setFloat("gauss", gaussian);
         q.setString("staCode", staCode);

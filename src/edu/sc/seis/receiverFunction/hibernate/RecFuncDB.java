@@ -49,6 +49,7 @@ public class RecFuncDB extends AbstractHibernateDB {
                                                          .getStation()
                                                          .get_code(),
                                                  result.getGwidth());
+            insertion.setInsertTime(ClockUtil.now().getTimestamp());
             if(insertion == null) {
                 insertion = new RFInsertion((NetworkAttrImpl)result.getChannelGroup()
                                                     .getNetworkAttr(),

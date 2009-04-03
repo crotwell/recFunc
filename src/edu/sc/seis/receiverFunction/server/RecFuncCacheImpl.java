@@ -223,12 +223,9 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
             }
             ChannelImpl[] channelImpls = ChannelImpl.implize(channels);
             for (int i = 0; i < channelImpls.length; i++) {
-                CleanNetwork.fixFuture(channelImpls[i].getEffectiveTime());
+                CleanNetwork.cleanInsertChannel(channelImpls[i]);
             }
             NetworkDB ndb = NetworkDB.getSingleton();
-            ndb.put(channelImpls[0]);
-            ndb.put(channelImpls[1]);
-            ndb.put(channelImpls[2]);
             ChannelGroup cg = NetworkDB.getSingleton().getChannelGroup(channelImpls[0], channelImpls[1], channelImpls[2]);
             if (cg == null) {
                 cg = new ChannelGroup(channelImpls);
@@ -385,7 +382,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                               CompletionStatus.COMPLETED_MAYBE);
         }
     }
-
+    
     private TimeInterval timeTol = new TimeInterval(10, UnitImpl.SECOND);
 
     private QuantityImpl positionTol = new QuantityImpl(.5, UnitImpl.DEGREE);

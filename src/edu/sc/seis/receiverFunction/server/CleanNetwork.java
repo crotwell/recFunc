@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 import org.hibernate.exception.ConstraintViolationException;
 
@@ -42,7 +41,6 @@ import edu.sc.seis.fissuresUtil.simple.Initializer;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.rev.admin.Args;
 import edu.sc.seis.rev.hibernate.RevDB;
-import edu.sc.seis.sod.Start;
 import edu.sc.seis.sod.hibernate.SodDB;
 
 public class CleanNetwork {
@@ -75,9 +73,13 @@ public class CleanNetwork {
                 // if permanent net or same year, fix begin, best only finds
                 // temp nets in same year
                 attr.updateBeginTime(irisAttr.getEffectiveTime().start_time);
+                attr.setEndTime(irisAttr.getEffectiveTime().end_time);
                 NetworkDB.getSession().saveOrUpdate(attr);
                 NetworkDB.commit();
-                System.out.println("fixed net begin...");
+                System.out.println("fixed net begin..."+NetworkIdUtil.toStringNoDates(attr)+" db="+local+"  iris="+iris);
+            } catch(ConstraintViolationException e) {
+                NetworkDB.rollback();
+                System.out.println("ConstraintViolation, must already be a network "+NetworkIdUtil.toStringNoDates(attr)+" db="+local+"  iris="+iris);
             }
         }
     }
@@ -222,7 +224,7 @@ public class CleanNetwork {
                     } else if (irisTR.getBeginTime().equals(localTR.getBeginTime())) {
                         if (!irisTR.getEndTime().equals(localTR.getEndTime())) {
                             if (localTR.getEndTime().equals(TimeUtils.future)) {
-                                // easy ended channel
+                                // easy, ended channel
                                 chan.setEndTime(irisChan.getEffectiveTime().end_time);
                                 updateDb(chan, "found ended channel: " + "\n  iris=" + irisTR + "\n  db=" + localTR);
                                 found = true;
@@ -422,9 +424,9 @@ public class CleanNetwork {
             namingService.setNameServiceCorbaLoc("corbaloc:iiop:dmc.iris.washington.edu:6371/NameService");
             ProxyNetworkDC netDC = new VestingNetworkDC("edu/iris/dmc", "IRIS_NetworkDC", namingService);
             CleanNetwork cleaner = new CleanNetwork(netDC);
-            // cleaner.checkNetworks();
+             cleaner.checkNetworks();
             // cleaner.checkStations();
-            cleaner.checkChannels();
+            // cleaner.checkChannels();
         } catch(Exception e) {
             logger.error("problem in main", e);
         }

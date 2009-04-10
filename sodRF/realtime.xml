@@ -15,7 +15,7 @@
             <value>9</value>
             <unit>MINUTE</unit>
         </eventRefreshInterval>
-        <waveformWorkerThreads>4</waveformWorkerThreads>
+        <waveformWorkerThreads>2</waveformWorkerThreads>
         <maxRetryDelay>
             <value>6</value>
             <unit>WEEK</unit>
@@ -43,7 +43,7 @@
                 <max>1000</max>
             </originDepthRange>
             <originTimeRange>
-                <startTime>20050701T00:00:00.001Z</startTime>
+                <startTime>20080701T00:00:00.001Z</startTime>
                 <endTime>20201231T23:59:59.999Z</endTime>
             </originTimeRange>
             <magnitudeRange>

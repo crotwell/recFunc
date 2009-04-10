@@ -72,14 +72,16 @@ public class CleanNetwork {
                 // begin times different
                 // if permanent net or same year, fix begin, best only finds
                 // temp nets in same year
-                attr.updateBeginTime(irisAttr.getEffectiveTime().start_time);
-                attr.setEndTime(irisAttr.getEffectiveTime().end_time);
-                NetworkDB.getSession().saveOrUpdate(attr);
-                NetworkDB.commit();
-                System.out.println("fixed net begin..."+NetworkIdUtil.toStringNoDates(attr)+" db="+local+"  iris="+iris);
-            } catch(ConstraintViolationException e) {
-                NetworkDB.rollback();
-                System.out.println("ConstraintViolation, must already be a network "+NetworkIdUtil.toStringNoDates(attr)+" db="+local+"  iris="+iris);
+                try {
+                    attr.updateBeginTime(irisAttr.getEffectiveTime().start_time);
+                    attr.setEndTime(irisAttr.getEffectiveTime().end_time);
+                    NetworkDB.getSession().saveOrUpdate(attr);
+                    NetworkDB.commit();
+                    System.out.println("fixed net begin..."+NetworkIdUtil.toStringNoDates(attr)+" db="+local+"  iris="+iris);
+                } catch(ConstraintViolationException e) {
+                    NetworkDB.rollback();
+                    System.out.println("ConstraintViolation, must already be a network "+NetworkIdUtil.toStringNoDates(attr)+" db="+local+"  iris="+iris);
+                }
             }
         }
     }

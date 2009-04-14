@@ -55,10 +55,10 @@ public class RecFuncDB extends AbstractHibernateDB {
                                             result.getChannelGroup()
                                                     .getStation()
                                                     .get_code(),
-                                            result.getGwidth(),
-                                            ClockUtil.now().getTimestamp());
+                                            result.getGwidth());
+            } else {
+                insertion.setInsertTime(ClockUtil.now().getTimestamp());
             }
-            insertion.setInsertTime(ClockUtil.now().getTimestamp());
             getSession().saveOrUpdate(insertion);
         }
         if(result.getHKstack() != null) {

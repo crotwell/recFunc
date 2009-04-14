@@ -29,7 +29,7 @@ public class Admin extends Bag {
         systemState.ps1 = new PyString("ears> ");
         prompt = "Ears Admin";
         exec("from rev import *");
-        exec("from ears import *");
+        exec("from recFunc import *");
         if (args.getRecipe() != null && args.getRecipe().exists()) {
             try {
                 edu.sc.seis.sod.Start.setConfig(edu.sc.seis.rev.Start.loadXMLFile(args.getRecipe().getPath()));

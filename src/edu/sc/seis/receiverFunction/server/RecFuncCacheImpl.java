@@ -99,6 +99,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
             }
             return (IterDeconConfig[])configs.toArray(new IterDeconConfig[0]);
         } catch(Throwable e) {
+            RecFuncDB.rollback();
             GlobalExceptionHandler.handle(e);
             throw new org.omg.CORBA.UNKNOWN(e.toString(),
                                             14,
@@ -181,10 +182,13 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                     result.getSodConfig()
                                                             .getDbid(),
                                                     new MicroSecondDate(result.getInsertTime()).getFissuresTime());
+                RecFuncDB.commit();
                 return out;
             }
+            RecFuncDB.rollback();
             throw new RecFuncNotFound();
         } catch(Throwable e) {
+            RecFuncDB.rollback();
             GlobalExceptionHandler.handle(e);
             throw new org.omg.CORBA.UNKNOWN(e.toString(),
                                             13,
@@ -228,7 +232,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
             }
             ChannelImpl[] channelImpls = ChannelImpl.implize(channels);
             for (int i = 0; i < channelImpls.length; i++) {
-                CleanNetwork.cleanInsertChannel(channelImpls[i]);
+                channelImpls[i] = CleanNetwork.cleanInsertChannel(channelImpls[i]);
             }
             NetworkDB ndb = NetworkDB.getSingleton();
             ChannelGroup cg = NetworkDB.getSingleton().getChannelGroup(channelImpls[0], channelImpls[1], channelImpls[2]);
@@ -326,10 +330,14 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                   12,
                                   CompletionStatus.COMPLETED_MAYBE);
             }
+        } catch(UNKNOWN e) {
+            // pass it on from previous catch
+            throw e;
         } catch(Throwable t) {
+            RecFuncDB.rollback();
             GlobalExceptionHandler.handle(t);
             throw new UNKNOWN(t.getMessage());
-        }
+        } 
     }
 
     /**
@@ -349,11 +357,14 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                           channel[0].network_id.network_code,
                                                           channel[0].station_code, 
                                                           config.gwidth)) {
+                    RecFuncDB.commit();
                     return true;
                 }
             }
+            RecFuncDB.commit();
             return false;
         } catch(Throwable e) {
+            RecFuncDB.rollback();
             GlobalExceptionHandler.handle(e);
             throw new UNKNOWN(e.getMessage());
         }
@@ -366,6 +377,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
             SodDB.commit();
             return sc.getDbid();
         } catch(Throwable t) {
+            SodDB.rollback();
             GlobalExceptionHandler.handle(t);
             throw new UNKNOWN(t.getMessage(),
                               10,
@@ -376,8 +388,13 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
     public String getSodConfig(int sodConfig_id) throws SodConfigNotFound {
         try {
             SodConfig sc = SodDB.getSingleton().getConfig(sodConfig_id);
-            if (sc == null) {throw new SodConfigNotFound();}
-            return sc.getConfig();
+            if (sc == null) {
+                SodDB.rollback();
+                throw new SodConfigNotFound();
+            }
+            String s = sc.getConfig();
+            SodDB.commit();
+            return s;
         } catch(SodConfigNotFound e) {
             throw e;
         } catch(Throwable t) {
@@ -385,6 +402,8 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
             throw new UNKNOWN(t.getMessage(),
                               11,
                               CompletionStatus.COMPLETED_MAYBE);
+        } finally {
+            SodDB.rollback();
         }
     }
     

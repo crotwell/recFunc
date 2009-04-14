@@ -49,7 +49,6 @@ public class RecFuncDB extends AbstractHibernateDB {
                                                          .getStation()
                                                          .get_code(),
                                                  result.getGwidth());
-            insertion.setInsertTime(ClockUtil.now().getTimestamp());
             if(insertion == null) {
                 insertion = new RFInsertion((NetworkAttrImpl)result.getChannelGroup()
                                                     .getNetworkAttr(),
@@ -59,6 +58,7 @@ public class RecFuncDB extends AbstractHibernateDB {
                                             result.getGwidth(),
                                             ClockUtil.now().getTimestamp());
             }
+            insertion.setInsertTime(ClockUtil.now().getTimestamp());
             getSession().saveOrUpdate(insertion);
         }
         if(result.getHKstack() != null) {
@@ -177,7 +177,7 @@ public class RecFuncDB extends AbstractHibernateDB {
                 + ReceiverFunctionResult.class.getName()
                 + " where event = :event "
                 + " and gwidth = :gauss and channelGroup.channel1.id.station_code = :staCode "
-                + " and channelGroup.channel1.id.networkId = :netCode");
+                + " and channelGroup.channel1.site.station.networkAttr.id.network_code = :netCode");
         q.setEntity("event", cacheEvent);
         q.setFloat("gauss", gaussian);
         q.setString("staCode", staCode);

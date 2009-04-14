@@ -76,7 +76,9 @@ public class SumHKStack {
     }
 
     public HKStack getSum() {
-        sum.setGaussianWidth(getGaussianWidth());// g width not stored in db for hkstack
+        if (sum != null) {
+            sum.setGaussianWidth(getGaussianWidth());// g width not stored in db for hkstack
+        }
         return sum;
     }
 
@@ -398,7 +400,7 @@ public class SumHKStack {
             hErrors[i] = (float)bestBoot.getH().getValue(UnitImpl.KILOMETER);
             kErrors[i] = bestBoot.getVpVs();
             if(i % 10 == 0) {
-                System.out.println("calcVarianceBootstrap:  " + i + " "
+                logger.info("calcVarianceBootstrap:  " + i + " "+getNet().get_code()+"."+getStaCode()+" "
                         + hErrors[i] + "  " + kErrors[i]);
             }
         }

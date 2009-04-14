@@ -3,11 +3,18 @@ package edu.sc.seis.receiverFunction.hibernate;
 import java.sql.Timestamp;
 
 import edu.iris.Fissures.network.NetworkAttrImpl;
+import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 
 public class RFInsertion {
 
     /** for hibernate */
     protected RFInsertion() {}
+
+    public RFInsertion(NetworkAttrImpl net,
+                       String staCode,
+                       float gaussianWidth) {
+        this(net, staCode, gaussianWidth, ClockUtil.now().getTimestamp());
+    }
     
     public RFInsertion(NetworkAttrImpl net,
                        String staCode,

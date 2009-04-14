@@ -304,10 +304,11 @@ public class CleanNetwork {
      * 
      * @param chan
      */
-    public static void cleanInsertChannel(ChannelImpl chan) {
+    public static ChannelImpl cleanInsertChannel(ChannelImpl chan) {
         NetworkDB ndb = NetworkDB.getSingleton();
         try {
             ChannelImpl dbchannel = ndb.getChannel(chan.get_id());
+            return dbchannel;
         } catch(NotFound e) {
             // no code/begintime match in db
             List<ChannelImpl> dbchanList = ndb.getChannelsByCode(chan.get_id().network_id,
@@ -322,7 +323,7 @@ public class CleanNetwork {
                     ndb.getSession().evict(dbchannel);
                     chan.associateInDB(dbchannel);
                     ndb.getSession().saveOrUpdate(chan);
-                    return;
+                    return chan;
                 }
             }
             // no match found, check for overlaps
@@ -337,8 +338,9 @@ public class CleanNetwork {
                                 +ChannelIdUtil.toString(chan.get_id())
                                 +dateString);
                 }
-                ndb.put(chan);
             }
+            ndb.put(chan);
+            return chan;
         }
     }
     

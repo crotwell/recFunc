@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.receiverFunction.BazIterator;
@@ -78,9 +79,12 @@ public class SummaryHKStackImageServlet extends HttpServlet {
         String phase = RevUtil.get("phase", req, "all");
         float minBaz = RevUtil.getFloat("minBaz", req, 0);
         float maxBaz = RevUtil.getFloat("maxBaz", req, 360);
-        edu.iris.Fissures.IfNetwork.Station station = NetworkDB.getSingleton()
-                .getStationForNet(net.getWrapped(), staCode)
-                .get(0);
+        List<StationImpl> staList = NetworkDB.getSingleton()
+                .getStationForNet(net.getWrapped(), staCode);
+        if (staList.size() == 0) {
+            throw new NotFound("No station '"+staCode+"' in network.");
+        }
+        StationImpl station = staList.get(0);
         QuantityImpl smallestH = new QuantityImpl(RevUtil.getFloat("smallestH",
                                                                    req,
                                                                    (float)HKStack.getBestSmallestH(station)

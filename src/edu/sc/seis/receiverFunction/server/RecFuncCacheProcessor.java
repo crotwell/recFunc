@@ -3,6 +3,8 @@ package edu.sc.seis.receiverFunction.server;
 import org.omg.CORBA.UNKNOWN;
 import org.w3c.dom.Element;
 
+import edu.iris.Fissures.FissuresException;
+import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
@@ -26,6 +28,8 @@ import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.receiverFunction.IterDecon;
 import edu.sc.seis.receiverFunction.IterDeconResult;
 import edu.sc.seis.receiverFunction.RecFunc;
+import edu.sc.seis.receiverFunction.RecFuncException;
+import edu.sc.seis.receiverFunction.ZeroPowerException;
 import edu.sc.seis.sod.CommonAccess;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
@@ -92,6 +96,8 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
     }
 
     /**
+     * @throws NoPreferredOrigin probably should never happen
+     * @throws TauModelException probably should never happen
      * 
      */
     public WaveformVectorResult process(CacheEvent event,
@@ -99,7 +105,7 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
                                         RequestFilter[][] original,
                                         RequestFilter[][] available,
                                         LocalSeismogramImpl[][] seismograms,
-                                        CookieJar cookieJar) throws Exception {
+                                        CookieJar cookieJar) throws NoPreferredOrigin, TauModelException {
         try {
             if(sodconfig_id == -1) {
                 try {
@@ -209,17 +215,27 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
                     }
                 }
             }
-            WaveformVectorResult result = new WaveformVectorResult(seismograms,
-                                                                   new StringTreeLeaf(this,
-                                                                                      true));
-            return result;
+            return new WaveformVectorResult(seismograms,
+                                            new StringTreeLeaf(this,
+                                                               true));
         } catch(IncompatibleSeismograms e) {
-            WaveformVectorResult result = new WaveformVectorResult(seismograms,
-                                                                   new StringTreeLeaf(this,
-                                                                                      false,
-                                                                                      "Seismograms not compatble",
-                                                                                      e));
-            return result;
+            return new WaveformVectorResult(seismograms,
+                                            new StringTreeLeaf(this,
+                                                               false,
+                                                               "Seismograms not compatble",
+                                                               e));
+        } catch(FissuresException e) {
+            return new WaveformVectorResult(seismograms,
+                                            new StringTreeLeaf(this,
+                                                               false,
+                                                               "Data problem",
+                                                               e));
+        } catch(ZeroPowerException e) {
+            return new WaveformVectorResult(seismograms,
+                                            new StringTreeLeaf(this,
+                                                               false,
+                                                               "Zero power in numerator or demoninator",
+                                                               e));
         }
     }
 

@@ -11,7 +11,7 @@ import edu.sc.seis.fissuresUtil.freq.Cmplx;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 18535 2006-11-27 21:24:25Z crotwell $
+ * @version $Id: IterDecon.java 20451 2009-04-17 14:44:45Z crotwell $
  */
 
 public class IterDecon {
@@ -27,7 +27,7 @@ public class IterDecon {
 
     public IterDeconResult process(float[] numerator,
                                    float[] denominator,
-                                   float dt) throws RecFuncException {
+                                   float dt) throws ZeroPowerException {
         float[] amps = new float[maxBumps];
         int[] shifts = new int[maxBumps];
 
@@ -45,7 +45,7 @@ public class IterDecon {
         float prevPower = fPower;
         float gPower = power(g);
         if (fPower == 0 || gPower == 0) {
-            throw new RecFuncException("Power of numerator and denominator must be non-zero: num="+fPower+" denom="+gPower);
+            throw new ZeroPowerException("Power of numerator and denominator must be non-zero: num="+fPower+" denom="+gPower);
         }
         float[] residual = f;
         float[] predicted = new float[0];

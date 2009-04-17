@@ -115,7 +115,7 @@ return mortality;
 <td class="odd">$eq.getDepth()</td>
 <td class="even">$eq.getAllMagnitudes()</td>
 #if($isLoser)
-<td class="odd">$eq.getParam("reason")</td>
+<td class="odd">$!eq.getParam("reason")</td>
 #end
 </tr>
 #end

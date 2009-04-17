@@ -4,6 +4,7 @@ from edu.sc.seis.fissuresUtil.hibernate import NetworkDB
 from edu.sc.seis.fissuresUtil.display import MicroSecondTimeRange
 from edu.sc.seis.fissuresUtil.chooser import ClockUtil
 from edu.iris.Fissures.model import UnitImpl, MicroSecondDate, TimeInterval
+from edu.iris.Fissures.network import ChannelImpl, SiteImpl, StationImpl, NetworkAttrImpl, ChannelIdUtil
 from edu.iris.Fissures import Time
 from edu.sc.seis.fissuresUtil.hibernate import EventDB, NetworkDB
 from edu.sc.seis.sod import Status, Stage, Standing
@@ -42,7 +43,8 @@ __all__ = ['soddb',
 	   'stationTable',
 	   'channelTable',
 	   'hql',
-	   'etName', 'ntName','stName','ctName', 'checkDuplicates']
+	   'etName', 'ntName','stName','ctName',
+	   'checkDuplicates', 'checkDuplicateChannels']
 	
 
 def hql(query):
@@ -130,6 +132,13 @@ def deleteEvent(event):
 	eventdb.getSession().delete(ecp)
     eventdb.getSession().delete(event)
     eventdb.commit()
+
+def checkDuplicateChannels(netCode, staCode, siteCode, chanCode):
+    l = hql('select A from %s as A ,  %s  as B where A.site.station.networkAttr.id.network_code = B.site.station.networkAttr.id.network_code and A.id.station_code = B.id.station_code  and A.id.site_code = B.id.site_code and A.id.channel_code = B.id.channel_code and A.dbid < B.dbid and A.site.station.networkAttr.id.network_code = \'%s\' and A.id.station_code = \'%s\' and A.id.site_code = \'%s\'  and A.id.channel_code = \'%s\''%(ctName, ctName, netCode, staCode, siteCode, chanCode))
+    print 'found %d duplicates for %s.%s.%s.%s'%(len(l), netCode, staCode,siteCode, chanCode)
+    for c in l:
+	print '%s %d'%(MicroSecondTimeRange(c.getEffectiveTime()), c.dbid)
+
 
 def checkDuplicates(netCode, staCode):
     l = hql('select A from '+ReceiverFunctionResult.getName()+' as A ,  '+ReceiverFunctionResult.getName()+'  as B where A.channelGroup.channel1.site.station.networkAttr.id.network_code = B.channelGroup.channel1.site.station.networkAttr.id.network_code and A.channelGroup.channel1.id.station_code = B.channelGroup.channel1.id.station_code and A.event = B.event and A.dbid < B.dbid and A.channelGroup.channel1.id.station_code = \'%s\' and A.channelGroup.channel1.site.station.networkAttr.id.network_code = \'%s\''%(staCode, netCode))

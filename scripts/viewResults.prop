@@ -7,7 +7,7 @@ rev.resources=site
 rev.host=eeyore.seis.sc.edu
 #rev.host=localhost
 rev.port=8084
-rev.visibleURL=http://earsdev.seis.sc.edu/
+rev.visibleURL=http://ears.seis.sc.edu/
 rev.base=/
 rev.jettylogs=logs/jetty
 

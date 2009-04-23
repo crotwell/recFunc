@@ -7,6 +7,8 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +23,7 @@ import edu.iris.Fissures.IfNetwork.NetworkAttr;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.IfParameterMgr.ParameterRef;
 import edu.iris.Fissures.model.TimeInterval;
+import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
@@ -90,6 +93,24 @@ public class RecFuncDB extends AbstractHibernateDB {
             for(int i = 0; i < stackData.length; i++) {
                 for(int j = 0; j < stackData[0].length; j++) {
                     out.writeFloat(stackData[i][j]);
+                }
+            }
+            out.close();
+        } catch(Exception e) {
+            throw new RuntimeException("Unable to save stack to file: "
+                    + outFile, e);
+        }
+    }
+
+    protected void writeHKStackDataTxt(HKStack stack, File outFile) {
+        try {
+            float[][] stackData = stack.getStack();
+            Writer out = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(outFile)));
+            for(int i = 0; i < stackData.length; i++) {
+                for(int j = 0; j < stackData[0].length; j++) {
+                    String h = ""+ stack.getHFromIndex(i).getValue(UnitImpl.KILOMETER);
+                    out.write(stack.getKFromIndex(j) + " " + h + " "
+                              + stackData[i][j] + "\n");
                 }
             }
             out.close();
@@ -383,6 +404,11 @@ public class RecFuncDB extends AbstractHibernateDB {
                                   SUM_STACK_FILENAME);
         writeHKStackData(sum.getSum(), stackFile);
         sum.getSum().setStackFile(stackFile.getPath().substring(getDataLoc().length()+1)); // +1 to get the /
+        stackFile = new File(getStationDir(sum.getNet(),
+                                           sum.getStaCode(),
+                                           sum.getGaussianWidth()),
+                                           SUM_STACK_FILENAME_TXT);
+        writeHKStackDataTxt(sum.getSum(), stackFile);
         getSession().saveOrUpdate(sum);
     }
 
@@ -544,6 +570,8 @@ public class RecFuncDB extends AbstractHibernateDB {
     public static final String ANALYTIC_FILENAME = "Analytic_";
 
     public static final String SUM_STACK_FILENAME = "SumHKStack.xy";
+    
+    public static final String SUM_STACK_FILENAME_TXT = "SumHKStackTxt.xyz";
     
     public static File dataDir = null;
 

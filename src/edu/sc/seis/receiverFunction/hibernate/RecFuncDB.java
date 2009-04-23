@@ -123,9 +123,15 @@ public class RecFuncDB extends AbstractHibernateDB {
             DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(new File(getDataDir(), stack.getStackFile()))));
             float[][] loadStack = HKStack.createArray(stack.getNumH(),
                                                       stack.getNumK());
+            byte[] dataBytes = new byte[loadStack.length*loadStack[0].length*4];
+            in.readFully(dataBytes);
+            int bIndex=0;
             for(int i = 0; i < loadStack.length; i++) {
                 for(int j = 0; j < loadStack[0].length; j++) {
-                    loadStack[i][j] = in.readFloat();
+                    loadStack[i][j] = Float.intBitsToFloat(((dataBytes[bIndex++] & 0xff) << 24)
+                                                           + ((dataBytes[bIndex++] & 0xff) << 16)
+                                                           + ((dataBytes[bIndex++] & 0xff) << 8)
+                                                           + ((dataBytes[bIndex++] & 0xff) << 0));
                 }
             }
             in.close();

@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -160,6 +161,24 @@ public class RecFuncDB extends AbstractHibernateDB {
         } catch(Exception e) {
             throw new RuntimeException("Unable to load stack from file: "
                     + stack.getStackFile(), e);
+        }
+    }
+    
+    public static BufferedInputStream loadHKStackFileText(NetworkAttrImpl net, String staCode, float gaussianWidth) {
+        try {
+            File txtStackFile = new File(getStationDir(net,
+                                                       staCode,
+                                                       gaussianWidth),
+                                                       SUM_STACK_FILENAME_TXT);
+            if (txtStackFile.exists() && txtStackFile.canRead()) {
+                BufferedInputStream txtInStream = new BufferedInputStream(new FileInputStream(txtStackFile));
+                return txtInStream;
+            } else {
+                return null;
+            }
+        } catch(Exception e) {
+            throw new RuntimeException("Unable to load text stack for: "
+                    + NetworkIdUtil.toStringNoDates(net)+"."+staCode+" "+gaussianWidth, e);
         }
     }
     

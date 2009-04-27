@@ -1,9 +1,14 @@
 package edu.sc.seis.receiverFunction.server;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+
+import javax.imageio.ImageIO;
 
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.model.QuantityImpl;
@@ -98,6 +103,14 @@ public class SumStackWorker implements Runnable {
                     System.out.println("Old sumstack in db, replacing...");
                     sumStack.setDbid(sum.getDbid());
                 }
+
+                BufferedImage image = sumStack.createStackImage();
+                File outFile = new File(RecFuncDB.getStationDir(insertion.getNet(),
+                               insertion.getStaCode(),
+                               insertion.getGaussianWidth()),
+                               SUM_HK_STACK_IMAGE);
+                ImageIO.write(image, "png", outFile);
+                
                 RecFuncDB.getSingleton().put(sumStack);
                 RecFuncDB.commit();
             } catch(TauModelException e) {
@@ -112,6 +125,11 @@ public class SumStackWorker implements Runnable {
                 RecFuncDB.getSession().saveOrUpdate(insertion);
                 RecFuncDB.commit();
                 throw e;
+            } catch(IOException e) {
+                GlobalExceptionHandler.handle(e);
+                RecFuncDB.rollback();
+                RecFuncDB.getSession().saveOrUpdate(insertion);
+                RecFuncDB.commit();
             }
         }
     }
@@ -191,6 +209,8 @@ public class SumStackWorker implements Runnable {
     public static final TimeInterval RF_AGE_TIME = new TimeInterval(1,
                                                                     UnitImpl.HOUR);
 
+    public static final String SUM_HK_STACK_IMAGE = "SumHKStackImage.png";
+    
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumStackWorker.class);
 
     public static void main(String[] args) {

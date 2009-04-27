@@ -265,7 +265,7 @@ public class Start {
     }
 
     public static VelocityNetwork getNetwork(HttpServletRequest req)
-            throws SQLException, NotFound {
+            throws NotFound {
         int netDbId = RevUtil.getInt("netdbid", req, -1);
         if(netDbId != -1) {
             return new VelocityNetwork(NetworkDB.getSingleton().getNetwork(netDbId));
@@ -281,7 +281,7 @@ public class Start {
         return getNetwork(netCode);
     }
 
-    public static VelocityNetwork getNetwork(String netCode) throws SQLException, NotFound {
+    public static VelocityNetwork getNetwork(String netCode) throws NotFound {
         int netDbId = -1;
         String netCodeNoYear = netCode;
         if(netCodeNoYear != null) {

@@ -79,7 +79,7 @@ public class SumStackWorker implements Runnable {
 
     public void run() {
         while(keepGoing) {
-            RFInsertion insertion = getNext();
+            RFInsertion insertion = RecFuncDB.getSingleton().popInsertion(RF_AGE_TIME);
             if(insertion != null) {
                 processNext(insertion);
             } else {
@@ -186,23 +186,6 @@ public class SumStackWorker implements Runnable {
         }
     }
 
-    public synchronized RFInsertion getNext() {
-        RFInsertion insertion = (RFInsertion)RecFuncDB.getSingleton()
-                .getOlderInsertion(RF_AGE_TIME);
-        if(insertion == null) {
-            return null;
-        }
-        // side effect in case of lazy loading of fields by hibernate
-        insertion.getGaussianWidth();
-        insertion.getNet();
-        insertion.getInsertTime();
-        insertion.getStaCode();
-        RecFuncDB.getSession().delete(insertion);
-        RecFuncDB.commit();
-        RecFuncDB.getSession().refresh(insertion.getNet());
-        return insertion;
-    }
-
     public static float calcComplexity(SumHKStack sumStack)
             throws TauModelException {
         Channel chan = sumStack.getIndividuals()
@@ -290,6 +273,8 @@ public class SumStackWorker implements Runnable {
             RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
         }
         AbstractHibernateDB.deploySchema();
+        boolean testing = false;
+        if (testing) {
         SumStackWorker worker = new SumStackWorker(minPercentMatch,
                                                    usePhaseWeight,
                                                    bootstrap,
@@ -300,7 +285,14 @@ public class SumStackWorker implements Runnable {
         // this is for testing, so thread will have time to start one sum but will not run forever
         RFInsertion insertion = new RFInsertion(NetworkDB.getSingleton().getNetworkByCode("SP").get(0), "LGELG", 2.5f);
         worker.processNext(insertion);
-        
+        } else {
+            SumStackWorker worker = new SumStackWorker(minPercentMatch,
+                                                       usePhaseWeight,
+                                                       bootstrap,
+                                                       SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS,
+                                                       props);
+            worker.run();
+        }
         
     }
 }

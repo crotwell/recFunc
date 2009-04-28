@@ -11,10 +11,13 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.hibernate.Query;
+import org.hibernate.StaleStateException;
 import org.hibernate.cfg.Configuration;
 import org.omg.CORBA.UNKNOWN;
 
@@ -29,6 +32,7 @@ import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
+import edu.sc.seis.fissuresUtil.cache.EventUtil;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
@@ -415,6 +419,37 @@ public class RecFuncDB extends AbstractHibernateDB {
         }
         return null;
     }
+    
+    public synchronized RFInsertion popInsertion(TimeInterval age) {
+        return popInsertion(age, 5);
+    }
+
+    public synchronized RFInsertion popInsertion(TimeInterval age, int maxRecur) {
+        RFInsertion insertion = (RFInsertion)RecFuncDB.getSingleton()
+                .getOlderInsertion(age);
+        if(insertion == null) {
+            return null;
+        }
+        // side effect in case of lazy loading of fields by hibernate
+        insertion.getGaussianWidth();
+        insertion.getNet();
+        insertion.getInsertTime();
+        insertion.getStaCode();
+        RecFuncDB.getSession().delete(insertion);
+        try {
+        RecFuncDB.commit();
+        RecFuncDB.getSession().refresh(insertion.getNet());
+        return insertion;
+        } catch (StaleStateException e) {
+            // means another process has pulled this out from underneath us
+            // try one more time
+            RecFuncDB.rollback();
+            if (maxRecur == 0) {
+                return null;
+            }
+            return popInsertion(age, maxRecur-1);
+        }
+    }
 
     public void put(SumHKStack sum) {
         File stackFile = new File(getStationDir(sum.getNet(),
@@ -516,6 +551,9 @@ public class RecFuncDB extends AbstractHibernateDB {
                               float gaussianWidth) {
         
         File gaussDir = new File(getDataDir(), "gauss_" + gaussianWidth);
+        //Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        //cal.setTime(EventUtil.extractOrigin(cacheEvent).getTime());
+        //File yearDir = new File(gaussDir, ""+cal.get(Calendar.YEAR));
         File eventDir = new File(gaussDir, eventFormatter.getResult(cacheEvent));
         File netDir = new File(eventDir, chan.get_id().network_id.network_code);
         File stationDir = new File(netDir, chan.get_id().station_code);

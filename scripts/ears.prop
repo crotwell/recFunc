@@ -56,3 +56,19 @@ jacorb.logfile.maxsize=1000
 #URL=jdbc:hsqldb:Ears/EarsDb
 #    for postgres
 URL=jdbc:postgresql:ears
+
+# Velocity
+file.resource.loader.path=site/velocity
+file.resource.loader.cache=true
+file.resource.loader.modificationCheckInterval=2
+rev.sodoutputbase=status
+rev.resources=site
+rev.host=eeyore.seis.sc.edu
+#rev.host=localhost
+rev.port=8084
+rev.visibleURL=http://ears.seis.sc.edu/
+rev.base=/
+rev.jettylogs=logs/jetty
+
+velocimacro.library.autoreload = false
+

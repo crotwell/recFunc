@@ -10,7 +10,7 @@
 	#set($net = $sta.net)
 
 	<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <a href="networkList.html">Network List</a> > <a href="stationList.html?netcode=$sta.getNet().getCodeWithYear()&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name Stations List</a>
-		> <a href="station.html?netcode=$sta.getNet().getCodeWithYear()&stacode=$sta.getCode()&gaussian=${gaussian}">Station $sta.getCode() $sta.getName()</a> > <b>Earthquake Result Viewer</b></p>	
+		> <a href="${revBase}Data/Summary/gauss_${gaussian}/$sta.getNet().getCodeWithYear()/$sta.getCode()/station.html">Station $sta.getCode() $sta.getName()</a> > <b>Earthquake Result Viewer</b></p>	
 	
 	<h1>$sta.getCode() $sta.getName() - Earthquake Result Viewer</h1>
 	

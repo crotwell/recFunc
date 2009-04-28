@@ -45,8 +45,8 @@ window.onload=function(){
 </tr>
 #foreach($sta in $stationList)
 <tr>
-	<td class="odd"><a href="station.html?netdbid=$net.getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getCode()</a></td>
-    <td class="stat_name"><a href="station.html?netdbid=$net.getDbId()&stacode=$sta.getCode()&gaussian=${gaussian}">$sta.getName()</a></td>
+	<td class="odd"><a href="${revBase}Data/Summary/gauss_${gaussian}/$sta.getNet().getCodeWithYear()/$sta.getCode()/station.html">$sta.getCode()</a></td>
+    <td class="stat_name"><a href="${revBase}Data/Summary/gauss_${gaussian}/$sta.getNet().getCodeWithYear()/$sta.getCode()/station.html">$sta.getName()</a></td>
     <td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
 	<td class="even">$sta.getElevation()</td>
 	#set( $eqrate = $eqrates.get( $sta.getCode() ) )

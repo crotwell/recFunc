@@ -1,7 +1,6 @@
 package edu.sc.seis.receiverFunction.web;
 
-import java.io.InputStream;
-import java.sql.SQLException;
+import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -9,8 +8,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-
-import net.sf.ehcache.CacheManager;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.VelocityContext;
@@ -20,6 +17,8 @@ import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.exceptionHandler.ExceptionInterceptor;
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
@@ -29,13 +28,25 @@ import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.rev.ServletFromSet;
-import edu.sc.seis.sod.hibernate.SodDB;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
 /**
  * @author crotwell Created on Feb 10, 2005
  */
 public class Start {
+    
+    static {
+        GlobalExceptionHandler.add(new ExceptionInterceptor() {
+            public boolean handle(String message, Throwable t) {
+                if(t instanceof EOFException) {
+                    logger.debug("EOFException, ignoring.");
+                    return true;
+                }
+                return false;
+            }
+            
+        });
+    }
 
     public static void main(String[] args) throws Exception {
         Properties props = Initializer.loadProperties(args);

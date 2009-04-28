@@ -25,6 +25,7 @@ ctName = 'edu.iris.Fissures.network.ChannelImpl'
 __all__ = ['soddb',
 	   'revdb',
 	   'eventdb',
+	   'rfdb',
 	   'networkdb',
 	   'recentevents',
 	   'events',
@@ -44,7 +45,8 @@ __all__ = ['soddb',
 	   'channelTable',
 	   'hql',
 	   'etName', 'ntName','stName','ctName',
-	   'checkDuplicates', 'checkDuplicateChannels']
+	   'checkDuplicates', 'checkDuplicateChannels',
+	   'redoAllSummary']
 	
 
 def hql(query):
@@ -158,3 +160,13 @@ def checkDuplicates(netCode, staCode):
 	insertion.setInsertTime(ClockUtil.now().getTimestamp())
     soddb.getSession().saveOrUpdate(insertion)
     soddb.commit()
+
+def redoAllSummary():
+    slist = rfdb.getAllSumStack(2.5)
+    for s in slist:
+	insertion = rfdb.getInsertion(s.getNet(), s.getStaCode(), 2.5)
+	if insertion == None:
+	    insertion = RFInsertion(s.getNet(), s.getStaCode(), 2.5)
+	insertion.setInsertTime(ClockUtil.wayPast().getTimestamp())
+	rfdb.getSession().saveOrUpdate(insertion)
+    rfdb.commit()

@@ -39,7 +39,7 @@ public class RFInsertion {
         this.staCode = staCode;
     }
 
-    protected void setInsertTime(Timestamp insertTime) {
+    public void setInsertTime(Timestamp insertTime) {
         this.insertTime = insertTime;
     }
 

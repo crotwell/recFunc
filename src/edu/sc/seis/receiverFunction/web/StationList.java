@@ -3,6 +3,8 @@ package edu.sc.seis.receiverFunction.web;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -43,10 +45,17 @@ public class StationList extends Revlet {
         RevletContext context = new RevletContext(getVelocityTemplate(req),
                                                   Start.getDefaultContext());
         Revlet.loadStandardQueryParams(req, context);
-        ArrayList stationList = getStations(req, context);
+        ArrayList<VelocityStation> stationList = getStations(req, context);
         cleanStations(stationList);
+        Collections.sort(stationList, new Comparator<VelocityStation>() {
+            public int compare(VelocityStation n1, VelocityStation n2) {
+                if (n1.get_code().equals(n2.get_code())) {
+                    return n1.getId().begin_time.date_time.compareTo(n2.getId().begin_time.date_time);
+                }
+                return n1.getCode().compareTo(n2.getCode());
+            }});
         logger.debug("getStations done: " + stationList.size());
-        HashMap summary = getSummaries(stationList, context, req);
+        HashMap<VelocityStation, SumHKStack> summary = getSummaries(stationList, context, req);
         logger.debug("getSummaries done: " + summary.keySet().size());
         logger.debug("count successful events done");
         context.put("stationList", stationList);

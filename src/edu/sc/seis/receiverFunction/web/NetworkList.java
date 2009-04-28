@@ -2,6 +2,8 @@ package edu.sc.seis.receiverFunction.web;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +34,13 @@ public class NetworkList extends Revlet {
         for(NetworkAttrImpl networkAttrImpl : nets) {
             netList.add(new VelocityNetwork(networkAttrImpl));
         }
+        Collections.sort(netList, new Comparator<VelocityNetwork>() {
+            public int compare(VelocityNetwork n1, VelocityNetwork n2) {
+                if (n1.get_code().equals(n2.get_code())) {
+                    return n1.getId().begin_time.date_time.compareTo(n2.getId().begin_time.date_time);
+                }
+                return n1.getCode().compareTo(n2.getCode());
+            }});
         context.put("networkList", netList);
         return context;
     }

@@ -3,6 +3,7 @@ package edu.sc.seis.receiverFunction.hibernate;
 import java.io.File;
 import java.sql.Timestamp;
 
+import edu.iris.Fissures.IfParameterMgr.ParameterRef;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
@@ -388,6 +389,17 @@ public class ReceiverFunctionResult {
         this.hkstack = hkstack;
     }
 
+    public VelocityEvent createVelocityEvent() {
+        VelocityEvent ve = new VelocityEvent(getEvent());
+        ParameterRef[] p = ve.getOrigin().getParmIds();
+        ParameterRef[] tmp = new ParameterRef[p.length+2];
+        System.arraycopy(p, 0, tmp, 0, p.length);
+        tmp[p.length] = new ParameterRef("itr_match", ""+getRadialMatch());
+        tmp[p.length+1] = new ParameterRef("recFunc_id", ""+getDbid());
+        ve.getOrigin().setParmIds(tmp);
+        return ve;
+    }
+    
     int dbid;
 
     CacheEvent event;

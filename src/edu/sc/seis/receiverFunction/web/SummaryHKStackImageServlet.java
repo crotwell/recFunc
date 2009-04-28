@@ -1,8 +1,8 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +35,11 @@ public class SummaryHKStackImageServlet extends HttpServlet {
     public synchronized void doGet(HttpServletRequest req,
                                    HttpServletResponse res) throws IOException {
         try {
-            logger.debug("doGet called");
+            logger.debug("SummaryHKStackImageServlet.doGet() called");
             VelocityNetwork net = Start.getNetwork(req);
             String staCode = RevUtil.get("stacode", req);
             SumHKStack sumStack = getSumStack(req, net, staCode);
             logger.info("before check for null");
-            OutputStream out = res.getOutputStream();
             if(sumStack == null) {
                 logger.warn("summary stack is null for " + net.getCode() + "."
                         + staCode);
@@ -51,12 +50,14 @@ public class SummaryHKStackImageServlet extends HttpServlet {
                 logger.warn("summary hkstack is null for " + net.getCode()
                         + "." + staCode);
             }
+            BufferedOutputStream out = new BufferedOutputStream(res.getOutputStream());
             output(sumStack, out, req, res);
+            logger.debug("SummaryHKStackImageServlet.doGet() end");
         } catch(NotFound e) {
             OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
             writer.write("<html><body><p>No HK stack foundfor  "
                     + req.getParameter("staCode") + "</p></body></html>");
-            writer.flush();
+            writer.close();
         } catch(Throwable e) {
             Revlet.sendToGlobalExceptionHandler(req, e);
             throw new RuntimeException(e);
@@ -79,8 +80,16 @@ public class SummaryHKStackImageServlet extends HttpServlet {
         String phase = RevUtil.get("phase", req, "all");
         float minBaz = RevUtil.getFloat("minBaz", req, 0);
         float maxBaz = RevUtil.getFloat("maxBaz", req, 360);
-        List<StationImpl> staList = NetworkDB.getSingleton()
-                .getStationForNet(net.getWrapped(), staCode);
+        if(phase.equals("all") && minBaz == 0 && maxBaz == 360 && usePhaseWeight) {
+            // phase weight stacks are stored, so don't need to
+            // calculate
+            logger.debug("default get sumStack");
+            sumStack = RecFuncDB.getSingleton().getSumStack(net.getWrapped(), staCode, gaussianWidth);
+            logger.debug("Got summary plot from database "
+                               + net.getCode() + "." + staCode);
+            return sumStack;
+        }
+        List<StationImpl> staList = NetworkDB.getSingleton().getStationForNet(net.getWrapped(), staCode);
         if (staList.size() == 0) {
             throw new NotFound("No station '"+staCode+"' in network.");
         }
@@ -88,59 +97,47 @@ public class SummaryHKStackImageServlet extends HttpServlet {
         QuantityImpl smallestH = new QuantityImpl(RevUtil.getFloat("smallestH",
                                                                    req,
                                                                    (float)HKStack.getBestSmallestH(station)
-                                                                           .getValue(UnitImpl.KILOMETER)),
-                                                  UnitImpl.KILOMETER);
-        if(phase.equals("all") && minBaz == 0 && maxBaz == 360) {
-            if(usePhaseWeight) {
-                // phase weight stacks are stored, so don't need to
-                // calculate
-                sumStack = RecFuncDB.getSingleton()
-                        .getSumStack(net.getWrapped(), staCode, gaussianWidth);
-                System.out.println("Got summary plot from database "
-                        + net.getCode() + "." + staCode);
-            } else {
-                sumStack = stackSummary.sum(net.getWrapped(),
+                                                                   .getValue(UnitImpl.KILOMETER)),
+                                                                   UnitImpl.KILOMETER);
+        if (phase.equals("all") && minBaz == 0 && maxBaz == 360 && ! usePhaseWeight) {
+            return stackSummary.sum(net.getWrapped(),
+                                        staCode,
+                                        gaussianWidth,
+                                        minPercentMatch,
+                                        smallestH,
+                                        doBootstrap,
+                                        usePhaseWeight);
+        } else if(minBaz == 0 && maxBaz == 360) {
+            return stackSummary.sumForPhase(station.get_id().network_id.network_code,
                                             staCode,
                                             gaussianWidth,
                                             minPercentMatch,
                                             smallestH,
-                                            doBootstrap,
+                                            phase,
                                             usePhaseWeight);
-            }
         } else {
-            if(minBaz == 0 && maxBaz == 360) {
-                sumStack = stackSummary.sumForPhase(station.get_id().network_id.network_code,
-                                                    staCode,
-                                                    gaussianWidth,
-                                                    minPercentMatch,
-                                                    smallestH,
-                                                    phase,
-                                                    usePhaseWeight);
-            } else {
-                // subset based on Baz
-                List<ReceiverFunctionResult> resutsInBaz = new ArrayList<ReceiverFunctionResult>();
-                List<ReceiverFunctionResult> results = RecFuncDB.getSingleton()
-                        .getSuccessful(net.getWrapped(),
-                                       staCode,
-                                       gaussianWidth);
-                BazIterator bazIt = new BazIterator(results.iterator(),
-                                                    minBaz,
-                                                    maxBaz);
-                while(bazIt.hasNext()) {
-                    resutsInBaz.add(bazIt.next());
-                }
-                sumStack = stackSummary.sumForPhase(resutsInBaz,
-                                                    minPercentMatch,
-                                                    smallestH,
-                                                    phase,
-                                                    usePhaseWeight);
+            // subset based on Baz
+            List<ReceiverFunctionResult> resutsInBaz = new ArrayList<ReceiverFunctionResult>();
+            List<ReceiverFunctionResult> results = RecFuncDB.getSingleton()
+            .getSuccessful(net.getWrapped(),
+                           staCode,
+                           gaussianWidth);
+            BazIterator bazIt = new BazIterator(results.iterator(),
+                                                minBaz,
+                                                maxBaz);
+            while(bazIt.hasNext()) {
+                resutsInBaz.add(bazIt.next());
             }
+            return stackSummary.sumForPhase(resutsInBaz,
+                                                minPercentMatch,
+                                                smallestH,
+                                                phase,
+                                                usePhaseWeight);
         }
-        return sumStack;
     }
 
     void output(SumHKStack sumStack,
-                OutputStream out,
+                BufferedOutputStream out,
                 HttpServletRequest req,
                 HttpServletResponse res) throws IOException {
         BufferedImage image = sumStack.createStackImage();

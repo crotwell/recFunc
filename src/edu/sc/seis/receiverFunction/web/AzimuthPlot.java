@@ -2,6 +2,8 @@ package edu.sc.seis.receiverFunction.web;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 import edu.sc.seis.fissuresUtil.gmt.ConvertExecute;
 import edu.sc.seis.fissuresUtil.gmt.MapCropper;
@@ -16,12 +18,11 @@ public class AzimuthPlot {
         
     }
 
-    public static String plot(VelocityStation station,
-                              VelocityEvent[] events,
-                              HttpSession session) throws InterruptedException,
-            IOException {
-        String prefix = "azplot-";
-        File psFile = File.createTempFile(prefix, ".ps", getTempDir());
+    public static File plot(VelocityStation station,
+                            List<VelocityEvent> events,
+                            File dir,
+                            String prefix) throws IOException, InterruptedException {
+        File psFile = new File(dir, prefix+ ".ps");
         float staLat = station.getLocation().latitude;
         // -JE proj has trouble at pole
         if (staLat == -90) {staLat = -89.999f;}
@@ -29,11 +30,13 @@ public class AzimuthPlot {
         String proj = "E" + station.getLongitude() + "/"
                 + staLat + "/5i";
         String region = "g";
-        PSCoastExecute.createMap(psFile, proj, region, "60g30", "220/220/220", false, 0, .1f);
-        double[][] data = new double[events.length][2];
-        for(int i = 0; i < data.length; i++) {
-            data[i][0] = events[i].getFloatLongitude().floatValue();
-            data[i][1] = events[i].getFloatLatitude().floatValue();
+        PSCoastExecute.createMap(psFile, proj, region, "60g30", "200/200/200", false, 0, .1f);
+        double[][] data = new double[events.size()][2];
+        int i=0;
+        for (VelocityEvent e : events) {
+            data[i][0] = e.getFloatLongitude().floatValue();
+            data[i][1] = e.getFloatLatitude().floatValue();
+            i++;
         }
         PSXYExecute.addPoints(psFile, proj, region, "c.1i", "0", "0", data);
         // plot station location
@@ -45,18 +48,27 @@ public class AzimuthPlot {
         String pngFilename = psFile.getName()
                 .substring(0, psFile.getName().indexOf(".ps"))
                 + ".png";
-        File pngFile = new File( getTempDir(), pngFilename);
+        File pngFile = new File( dir, pngFilename);
         ConvertExecute.convert(psFile,
                                pngFile,
                                "-antialias -rotate 90");
         psFile.delete();
         MapCropper cropper = new MapCropper(500, 650, 0, 0, 250, 125, 0, 0);
         cropper.crop(pngFile.getAbsolutePath());
+        return pngFile;
+    }
+    
+    public static String plot(VelocityStation station,
+                              List<VelocityEvent> events,
+                              HttpSession session) throws InterruptedException,
+            IOException {
+        String prefix = "azplot-";
+        File pngFile = plot(station, events, getTempDir(), prefix);
         if(session != null) {
             JFreeChartServletUtilities.registerForDeletion(pngFile,
                                                       session);
         }
-        return makeDisplayFilename(pngFilename);
+        return makeDisplayFilename(pngFile.getName());
     }
     
     public static String makeDisplayFilename(String name) {

@@ -1,14 +1,21 @@
 package edu.sc.seis.receiverFunction.server;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.velocity.app.VelocityEngine;
 
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.model.QuantityImpl;
@@ -16,9 +23,12 @@ import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
+import edu.iris.Fissures.network.StationIdUtil;
 import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.TauP.TauModelException;
+import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
+import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
 import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
@@ -31,18 +41,40 @@ import edu.sc.seis.receiverFunction.hibernate.RFInsertion;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
+import edu.sc.seis.receiverFunction.web.AzimuthPlot;
+import edu.sc.seis.receiverFunction.web.Start;
+import edu.sc.seis.receiverFunction.web.Station;
+import edu.sc.seis.rev.RevUtil;
+import edu.sc.seis.rev.Revlet;
+import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.hibernate.SodDB;
+import edu.sc.seis.sod.velocity.event.VelocityEvent;
+import edu.sc.seis.sod.velocity.network.VelocityNetwork;
+import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 public class SumStackWorker implements Runnable {
 
     public SumStackWorker(float minPercentMatch,
                           boolean usePhaseWeight,
                           boolean doBootstrap,
-                          int bootstrapIterations) {
+                          int bootstrapIterations,
+                          Properties props) throws Exception {
         this.minPercentMatch = minPercentMatch;
         this.usePhaseWeight = usePhaseWeight;
         this.doBootstrap = doBootstrap;
         this.bootstrapIterations = bootstrapIterations;
+        velocity = new VelocityEngine();
+        velocity.init(props);
+        stationServlet = new Station();
+
+        RevletContext.putDefault("visibleURL", props.getProperty(edu.sc.seis.rev.Start.REV_VISIBLEURL));
+        Boolean debug = Boolean.valueOf(props.getProperty(edu.sc.seis.rev.Start.REV_DEBUG, "false"));
+        RevletContext.putDefault(edu.sc.seis.rev.Start.CONTEXT_DEBUG, debug);
+        RevletContext.putDefault(edu.sc.seis.rev.Start.CONTEXT_TITLE, props.getProperty(edu.sc.seis.rev.Start.REV_TITLE,
+                                                                  "REV"));
+        RevletContext.putDefault("revBase", props.getProperty(edu.sc.seis.rev.Start.REV_BASE, "/"));
+        RevletContext.putDefault(edu.sc.seis.rev.Start.CONTEXT_STATICFILES,
+                                 props.getProperty(edu.sc.seis.rev.Start.REV_BASE, "/"));
     }
 
     public void run() {
@@ -52,8 +84,8 @@ public class SumStackWorker implements Runnable {
                 processNext(insertion);
             } else {
                 try {
-                    System.out.println("No more insertions to process, sleeping a while");
-                    Thread.sleep(5 * 60 * 1000); // 5 minutes
+                    logger.info(ClockUtil.now()+" No more insertions to process, sleeping for "+SLEEP_MINUTES+" minutes.");
+                    Thread.sleep(SLEEP_MINUTES * 60 * 1000); // 5 minutes
                 } catch(InterruptedException e) {}
             }
         }
@@ -64,6 +96,7 @@ public class SumStackWorker implements Runnable {
         StationImpl oneStationByCode = NetworkDB.getSingleton()
                 .getStationForNet(insertion.getNet(), insertion.getStaCode())
                 .get(0);
+        logger.debug("Start on "+StationIdUtil.toStringNoDates(oneStationByCode));
         QuantityImpl smallestH = HKStack.getBestSmallestH(oneStationByCode,
                                                           HKStack.getDefaultSmallestH());
         List<ReceiverFunctionResult> individualHK = RecFuncDB.getSingleton()
@@ -77,10 +110,8 @@ public class SumStackWorker implements Runnable {
                 .getRejectedMaxima((NetworkAttrImpl)stations.get(0)
                                            .getNetworkAttr(),
                                    insertion.getStaCode()));
-        logger.info("in sum for " + insertion.getNet().get_code() + "."
-                + insertion.getStaCode() + " numeq=" + individualHK.size());
-        System.out.println("in sum for " + insertion.getNet().get_code() + "."
-                + insertion.getStaCode() + " numeq=" + individualHK.size());
+        logger.info("in sum for " + StationIdUtil.toStringNoDates(oneStationByCode) + " numeq=" + individualHK.size());
+        System.out.println("in sum for " + StationIdUtil.toStringNoDates(oneStationByCode) + " numeq=" + individualHK.size());
         // if there is only 1 eq that matches, then we can't really do a stack
         if(individualHK.size() > 1) {
             SumHKStack sumStack = SumHKStack.calculateForPhase(individualHK,
@@ -89,7 +120,7 @@ public class SumStackWorker implements Runnable {
                                                                usePhaseWeight,
                                                                rejects,
                                                                doBootstrap,
-                                                               SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS,
+                                                               bootstrapIterations,
                                                                "all");
             TimeOMatic.print("sum for " + insertion.getNet().get_code() + "."
                     + insertion.getStaCode());
@@ -102,34 +133,55 @@ public class SumStackWorker implements Runnable {
                 if(sum != null) {
                     System.out.println("Old sumstack in db, replacing...");
                     sumStack.setDbid(sum.getDbid());
+                    RecFuncDB.getSession().evict(sum);
+                    sum = null;
                 }
+                File stationDir = RecFuncDB.getStationDir(insertion.getNet(),
+                                                          insertion.getStaCode(),
+                                                          insertion.getGaussianWidth());
 
                 BufferedImage image = sumStack.createStackImage();
-                File outFile = new File(RecFuncDB.getStationDir(insertion.getNet(),
-                               insertion.getStaCode(),
-                               insertion.getGaussianWidth()),
+                File outFile = new File(stationDir,
                                SUM_HK_STACK_IMAGE);
                 ImageIO.write(image, "png", outFile);
                 
+
+                ArrayList<VelocityEvent> eventList = new ArrayList<VelocityEvent>();
+                for(ReceiverFunctionResult result : individualHK) {
+                    eventList.add(result.createVelocityEvent());
+                }
+                File azplot = AzimuthPlot.plot(new VelocityStation(oneStationByCode), eventList, stationDir, AZ_PLOT_IMAGE);
+
+                RevletContext context = new RevletContext("station.vm",
+                                                          Start.getDefaultContext());
+                context.put("gaussian", ""+insertion.getGaussianWidth());
+                List<ReceiverFunctionResult> losers = RecFuncDB.getSingleton().getUnsuccessful(insertion.getNet(),
+                                                                                               insertion.getStaCode(),
+                                                                                               insertion.getGaussianWidth());
+                ArrayList<VelocityEvent> loserEventList = new ArrayList<VelocityEvent>();
+                for(ReceiverFunctionResult result : losers) {
+                    loserEventList.add(result.createVelocityEvent());
+                }
+                stationServlet.populateContext(context, new VelocityNetwork(insertion.getNet()),
+                                               insertion.getStaCode(), sumStack, individualHK, losers);
+                BufferedWriter stationOut = new BufferedWriter(new FileWriter(new File(stationDir, STATION_HTML)));
+                velocity.mergeTemplate("station.vm", context, stationOut);
+                stationOut.close();
+                
                 RecFuncDB.getSingleton().put(sumStack);
                 RecFuncDB.commit();
-            } catch(TauModelException e) {
-                GlobalExceptionHandler.handle(e);
-                RecFuncDB.rollback();
-                RecFuncDB.getSession().saveOrUpdate(insertion);
-                RecFuncDB.commit();
-                throw new RuntimeException(e);
             } catch(RuntimeException e) {
                 GlobalExceptionHandler.handle(e);
                 RecFuncDB.rollback();
                 RecFuncDB.getSession().saveOrUpdate(insertion);
                 RecFuncDB.commit();
                 throw e;
-            } catch(IOException e) {
+            } catch(Exception e) {
                 GlobalExceptionHandler.handle(e);
                 RecFuncDB.rollback();
                 RecFuncDB.getSession().saveOrUpdate(insertion);
                 RecFuncDB.commit();
+                throw new RuntimeException(e);
             }
         }
     }
@@ -196,6 +248,10 @@ public class SumStackWorker implements Runnable {
         return complex;
     }
 
+    VelocityEngine velocity;
+    
+    Station stationServlet;
+    
     float minPercentMatch;
 
     boolean usePhaseWeight;
@@ -209,11 +265,17 @@ public class SumStackWorker implements Runnable {
     public static final TimeInterval RF_AGE_TIME = new TimeInterval(1,
                                                                     UnitImpl.HOUR);
 
+    public static int SLEEP_MINUTES = 5;
+
+    public static final String STATION_HTML = "station.html";
+    
     public static final String SUM_HK_STACK_IMAGE = "SumHKStackImage.png";
     
+    public static final String AZ_PLOT_IMAGE = "eventAzPlot";
+
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumStackWorker.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         float minPercentMatch = 80f;
         boolean bootstrap = true;
         boolean usePhaseWeight = true;
@@ -231,16 +293,14 @@ public class SumStackWorker implements Runnable {
         SumStackWorker worker = new SumStackWorker(minPercentMatch,
                                                    usePhaseWeight,
                                                    bootstrap,
-                                                   SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS);
-        Thread t = new Thread(worker);
-        t.start();
+                                                   //SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS,
+                                                   10, 
+                                                   props);
         
         // this is for testing, so thread will have time to start one sum but will not run forever
-        /*
-        try {
-            Thread.sleep(1*60*1000);
-        } catch(InterruptedException e) {}
-        SumStackWorker.keepGoing = false;
-        */
+        RFInsertion insertion = new RFInsertion(NetworkDB.getSingleton().getNetworkByCode("SP").get(0), "LGELG", 2.5f);
+        worker.processNext(insertion);
+        
+        
     }
 }

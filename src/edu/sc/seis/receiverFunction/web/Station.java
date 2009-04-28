@@ -52,13 +52,10 @@ import edu.sc.seis.sod.velocity.network.VelocityStation;
  */
 public class Station extends Revlet {
 
-    public Station() throws SQLException, ConfigurationException, Exception {
-        DATA_LOC = Start.getDataLoc();
+    public Station() {
+        DATA_LOC = RecFuncDB.getDataLoc();
     }
 
-    /**
-     * 
-     */
     public synchronized RevletContext getContext(HttpServletRequest req,
                                                  HttpServletResponse res)
             throws Exception {
@@ -70,17 +67,44 @@ public class Station extends Revlet {
         }
         // possible that there are multiple stations with the same code
         String staCode = req.getParameter("stacode").toUpperCase();
-        ArrayList stationList = getStationList(net.getWrapped(), staCode);
         TimeOMatic.start();
         List<ReceiverFunctionResult> winners = getWinnerEvents(req);
         TimeOMatic.print("successful events");
         List<ReceiverFunctionResult> losers = getLoserEvents(req);
         TimeOMatic.print("go losers");
+        String fileType = RevUtil.getFileType(req);
+        String vmFile = "station.vm";
+        if(fileType.equals(RevUtil.MIME_CSV)
+                || fileType.equals(RevUtil.MIME_TEXT)) {
+            vmFile = "stationCSV.vm";
+        }
+        RevUtil.autoSetContentType(req, res);
+        RevletContext context = new RevletContext(vmFile,
+                                                  Start.getDefaultContext());
+        Revlet.loadStandardQueryParams(req, context);
+        SumHKStack summary = null;
+        try {
+            summary = getSummaryStack(req);
+        } catch(NotFound e) {
+            // no summary, oh well...
+            logger.warn("Got a not found: ", e);
+        }
+        populateContext(context, net, staCode, summary, winners, losers);
+        return context;
+    }
+
+    public synchronized void populateContext(RevletContext context,
+                                                      VelocityNetwork net, 
+                                                      String staCode, 
+                                                      SumHKStack summary,
+                                                      List<ReceiverFunctionResult> winners, 
+                                                      List<ReceiverFunctionResult> losers) {
+        ArrayList stationList = getStationList(net.getWrapped(), staCode);
         ArrayList<VelocityEvent> eventList = new ArrayList<VelocityEvent>();
         int numNinty = 0;
         int numEighty = 0;
         for(ReceiverFunctionResult result : winners) {
-            eventList.add(createVelocityEvent(result));
+            eventList.add(result.createVelocityEvent());
             if(result.getRadialMatch() >= 80) {
                 numEighty++;
                 if(result.getRadialMatch() >= 90) {
@@ -91,7 +115,7 @@ public class Station extends Revlet {
         TimeOMatic.print("numEighty");
         ArrayList<VelocityEvent> eventLoserList = new ArrayList<VelocityEvent>();
         for(ReceiverFunctionResult result : losers) {
-            eventLoserList.add(createVelocityEvent(result));
+            eventLoserList.add(result.createVelocityEvent());
         }
         Collections.sort(eventList, itrMatchComparator);
         Collections.reverse(eventList);
@@ -112,23 +136,10 @@ public class Station extends Revlet {
                                                         sta.get_code());
         markerList.addAll(results);
         TimeOMatic.print("other results");
-        String fileType = RevUtil.getFileType(req);
-        String vmFile = "station.vm";
-        if(fileType.equals(RevUtil.MIME_CSV)
-                || fileType.equals(RevUtil.MIME_TEXT)) {
-            vmFile = "stationCSV.vm";
-        }
-        RevUtil.autoSetContentType(req, res);
-        RevletContext context = new RevletContext(vmFile,
-                                                  Start.getDefaultContext());
         context.put("crust2Type", crust2Type);
-        Revlet.loadStandardQueryParams(req, context);
-        try {
-            SumHKStack summary = getSummaryStack(req);
-            if (summary != null) {
+        
+        if (summary != null) {
             context.put("summary", summary);
-            String sumHKPlot = makeHKPlot(summary, req.getSession());
-            context.put("sumHKPlot", sumHKPlot);
             StackMaximum[] localMaxima = summary.getSum()
                     .getLocalMaxima(smallestH, 5);
             for(int i = 0; i < localMaxima.length; i++) {
@@ -164,16 +175,8 @@ public class Station extends Revlet {
             TimeInterval timePsPs = summary.getSum().getTimePsPs();
             timePsPs.setFormat(arrivalTimeFormat);
             context.put("timePsPs", timePsPs);
-            }
-        } catch(NotFound e) {
-            // no summary, oh well...
-            logger.warn("Got a not found: ", e);
         }
         TimeOMatic.print("summary and local maxima");
-        String azPlotname = AzimuthPlot.plot((VelocityStation)stationList.get(0),
-                                             (VelocityEvent[])eventList.toArray(new VelocityEvent[0]),
-                                             req.getSession());
-        context.put("azPlot", azPlotname);
         context.put("stationList", stationList);
         context.put("stacode", staCode);
         context.put("net", net);
@@ -190,11 +193,9 @@ public class Station extends Revlet {
         context.put("markerList", markerList);
         context.put("smallestH", smallestH);
         TimeOMatic.print("done");
-        return context;
     }
 
-    public ArrayList getStationList(NetworkAttrImpl attr, String staCode)
-            throws SQLException, NotFound {
+    public ArrayList getStationList(NetworkAttrImpl attr, String staCode) {
         List<StationImpl> stations = NetworkDB.getSingleton().getStationForNet(attr, staCode);
         ArrayList stationList = new ArrayList();
         for(StationImpl sta : stations) {
@@ -239,33 +240,6 @@ public class Station extends Revlet {
         return RecFuncDB.getSingleton().getUnsuccessful(net.getWrapped(),
                                                       staCode,
                                                       gaussianWidth);
-    }
-    
-    public static VelocityEvent createVelocityEvent(ReceiverFunctionResult result) {
-        VelocityEvent ve = new VelocityEvent(result.getEvent());
-        ParameterRef[] p = ve.getOrigin().getParmIds();
-        ParameterRef[] tmp = new ParameterRef[p.length+2];
-        System.arraycopy(p, 0, tmp, 0, p.length);
-        tmp[p.length] = new ParameterRef("itr_match", ""+result.getRadialMatch());
-        tmp[p.length+1] = new ParameterRef("recFunc_id", ""+result.getDbid());
-        ve.getOrigin().setParmIds(tmp);
-        return ve;
-    }
-
-    public static String makeHKPlot(SumHKStack sumStack, HttpSession session)
-            throws IOException {
-        String prefix = "sumHKPlot-";
-        File pngFile = File.createTempFile(prefix,
-                                           ".png",
-                                           AzimuthPlot.getTempDir());
-        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(pngFile));
-        BufferedImage image = sumStack.createStackImage();
-        ImageIO.write(image, "png", out);
-        out.close();
-        if(session != null) {
-            JFreeChartServletUtilities.registerForDeletion(pngFile, session);
-        }
-        return AzimuthPlot.makeDisplayFilename(pngFile.getName());
     }
 
     static File tempDir = new File(System.getProperty("java.io.tmpdir"));

@@ -1,5 +1,6 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.io.BufferedWriter;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.EOFException;
@@ -72,14 +73,14 @@ public class SumHKStackAsXYZ extends SummaryHKStackImageServlet {
     }
     
     void output(SumHKStack sumStack,
-                OutputStream out,
+                BufferedOutputStream out,
                 HttpServletRequest req,
                 HttpServletResponse res) throws IOException {
         doXYZOutput(sumStack, out, req, res);
     }
     
     public static void doXYZOutput(SumHKStack sumStack,
-                                   OutputStream out,
+                                   BufferedOutputStream out,
                                    HttpServletRequest req,
                                    HttpServletResponse res) throws IOException {
         res.setContentType("text/plain");
@@ -90,9 +91,9 @@ public class SumHKStackAsXYZ extends SummaryHKStackImageServlet {
             // oh well, client has closed connection
         } catch(EOFException e) {
             // oh well, client has closed connection
-        } finally {
-            writer.close();
         }
+        writer.close();
+        
     }
 
     public static void printXYZ(SumHKStack sumStack, Writer writer)

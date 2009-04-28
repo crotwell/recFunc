@@ -1,8 +1,8 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.sql.SQLException;
 
 import javax.imageio.ImageIO;
@@ -47,7 +47,7 @@ public class ComplexityResidualImage extends SummaryHKStackImageServlet {
     }
 
     void output(SumHKStack sumStack,
-                OutputStream out,
+                BufferedOutputStream out,
                 HttpServletRequest req,
                 HttpServletResponse res) throws IOException {
         BorderedDisplay comp = sumStack.getSum().getStackComponent(HKStack.ALL);

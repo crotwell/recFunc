@@ -1,7 +1,7 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ public class SynthHKAsXYZ extends SynthHKImage {
         return null;
     }
 
-    void output(SumHKStack sumStack, OutputStream out, HttpServletRequest req, HttpServletResponse res) throws IOException {
+    void output(SumHKStack sumStack, BufferedOutputStream out, HttpServletRequest req, HttpServletResponse res) throws IOException {
         SumHKStackAsXYZ.doXYZOutput(sumStack, out, req, res);
     }
     

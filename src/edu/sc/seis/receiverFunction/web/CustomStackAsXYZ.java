@@ -1,5 +1,6 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.io.BufferedOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,7 +27,7 @@ public class CustomStackAsXYZ  extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
             SumHKStack sumStack = CustomStack.calcCustomStack(req);
-            OutputStream out = res.getOutputStream();
+            BufferedOutputStream out = new BufferedOutputStream(res.getOutputStream());
             SumHKStackAsXYZ.doXYZOutput(sumStack, out, req, res);
         } catch(EOFException e) {
             // oh well...

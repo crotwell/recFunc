@@ -29,7 +29,8 @@ public class RecFuncCacheController extends AbstractController {
         worker = new SumStackWorker(minPercentMatch,
                                                    usePhaseWeight,
                                                    bootstrap,
-                                                   SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS);
+                                                   SumHKStack.DEFAULT_BOOTSTRAP_ITERATONS,
+                                                   confProps);
         Thread t = new Thread(worker, "SumStackCalc Worker");
         t.setDaemon(true);
         t.start();

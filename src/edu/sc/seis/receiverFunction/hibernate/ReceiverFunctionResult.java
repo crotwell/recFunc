@@ -2,6 +2,7 @@ package edu.sc.seis.receiverFunction.hibernate;
 
 import java.io.File;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 
 import edu.iris.Fissures.IfParameterMgr.ParameterRef;
 import edu.iris.Fissures.model.UnitImpl;
@@ -399,6 +400,12 @@ public class ReceiverFunctionResult {
         ve.getOrigin().setParmIds(tmp);
         return ve;
     }
+    
+    public String formatRadialMatch() {
+        return oneDecimal.format(getRadialMatch());
+    }
+    
+    DecimalFormat oneDecimal = new DecimalFormat("0.0");
     
     int dbid;
 

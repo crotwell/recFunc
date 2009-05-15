@@ -26,7 +26,7 @@ window.onload=function(){
 #set ($firstSta = $stationList.get(0) )
 #set ($summaryDir = "${revBase}Data/Summary/gauss_$gaussian/$net.getCodeWithYear()/$stacode" )
 
-<p><b>Network: </b><a href="${revBase}stationList.html?netdbid=$net.getDbId()&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name</a></p>
+<p><b>Network: </b><a href="${revBase}stationList.html?netCode=$net.getCodeWithYear()&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name</a></p>
 <p><a href="${revBase}stationsNearBy.html?lat=$firstSta.getLatitude()&lon=$firstSta.getLongitude()&delta=2&gaussian=${gaussian}">Nearby stations (2 deg radius)</a></p>
 
 <img id="dataimg" class="dataimg" height="600" width="600" src="$summaryDir/SumHKStackImage.png"/>

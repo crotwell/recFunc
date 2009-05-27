@@ -112,8 +112,18 @@ public class SumStackWorker implements Runnable {
                                    insertion.getStaCode()));
         logger.info("in sum for " + StationIdUtil.toStringNoDates(oneStationByCode) + " numeq=" + individualHK.size());
         System.out.println("in sum for " + StationIdUtil.toStringNoDates(oneStationByCode) + " numeq=" + individualHK.size());
+        SumHKStack oldSumStack = RecFuncDB.getSingleton().getSumStack(insertion.getNet(),  
+                                                                      insertion.getStaCode(),
+                                                                      insertion.getGaussianWidth());
         // if there is only 1 eq that matches, then we can't really do a stack
-        if(individualHK.size() > 1) {
+        if(individualHK.size() <= 1) {
+            if(oldSumStack != null) {
+                logger.info("Old sumstack in db but not enough for a stack, deleting...");
+                RecFuncDB.getSession().delete(oldSumStack);
+                RecFuncDB.commit();
+                return;
+            }
+        } else {
             SumHKStack sumStack = SumHKStack.calculateForPhase(individualHK,
                                                                smallestH,
                                                                minPercentMatch,
@@ -124,17 +134,14 @@ public class SumStackWorker implements Runnable {
                                                                "all");
             TimeOMatic.print("sum for " + insertion.getNet().get_code() + "."
                     + insertion.getStaCode());
-            SumHKStack sum = RecFuncDB.getSingleton()
-                    .getSumStack(insertion.getNet(),
-                                 insertion.getStaCode(),
-                                 insertion.getGaussianWidth());
+            
             try {
                 calcComplexity(sumStack);
-                if(sum != null) {
+                if(oldSumStack != null) {
                     System.out.println("Old sumstack in db, replacing...");
-                    sumStack.setDbid(sum.getDbid());
-                    RecFuncDB.getSession().evict(sum);
-                    sum = null;
+                    sumStack.setDbid(oldSumStack.getDbid());
+                    RecFuncDB.getSession().evict(oldSumStack);
+                    oldSumStack = null;
                 }
                 File stationDir = RecFuncDB.getStationDir(insertion.getNet(),
                                                           insertion.getStaCode(),

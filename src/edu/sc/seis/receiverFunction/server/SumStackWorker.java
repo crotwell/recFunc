@@ -112,6 +112,10 @@ public class SumStackWorker implements Runnable {
                                    insertion.getStaCode()));
         logger.info("in sum for " + StationIdUtil.toStringNoDates(oneStationByCode) + " numeq=" + individualHK.size());
         System.out.println("in sum for " + StationIdUtil.toStringNoDates(oneStationByCode) + " numeq=" + individualHK.size());
+
+        File stationDir = RecFuncDB.getStationDir(insertion.getNet(),
+                                                  insertion.getStaCode(),
+                                                  insertion.getGaussianWidth());
         SumHKStack oldSumStack = RecFuncDB.getSingleton().getSumStack(insertion.getNet(),  
                                                                       insertion.getStaCode(),
                                                                       insertion.getGaussianWidth());
@@ -120,6 +124,13 @@ public class SumStackWorker implements Runnable {
             if(oldSumStack != null) {
                 logger.info("Old sumstack in db but not enough for a stack, deleting...");
                 RecFuncDB.getSession().delete(oldSumStack);
+                if (stationDir.exists()) { 
+                    String[] files = stationDir.list(); 
+                    for (int i = 0; i < files.length; i++) {
+                        new File(stationDir, files[i]).delete();
+                    }
+                }
+                stationDir.delete();
                 RecFuncDB.commit();
                 return;
             }
@@ -143,14 +154,10 @@ public class SumStackWorker implements Runnable {
                     RecFuncDB.getSession().evict(oldSumStack);
                     oldSumStack = null;
                 }
-                File stationDir = RecFuncDB.getStationDir(insertion.getNet(),
-                                                          insertion.getStaCode(),
-                                                          insertion.getGaussianWidth());
 
                 BufferedImage image = sumStack.createStackImage();
-                File outFile = new File(stationDir,
-                               SUM_HK_STACK_IMAGE);
-                ImageIO.write(image, "png", outFile);
+                File stackImageFile = new File(stationDir, SUM_HK_STACK_IMAGE);
+                ImageIO.write(image, "png", stackImageFile);
                 
 
                 ArrayList<VelocityEvent> eventList = new ArrayList<VelocityEvent>();

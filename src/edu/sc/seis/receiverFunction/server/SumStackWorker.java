@@ -93,9 +93,14 @@ public class SumStackWorker implements Runnable {
     }
 
     void processNext(RFInsertion insertion) {
-        StationImpl oneStationByCode = NetworkDB.getSingleton()
-                .getStationForNet(insertion.getNet(), insertion.getStaCode())
-                .get(0);
+        List<StationImpl> staList = NetworkDB.getSingleton()
+                .getStationForNet(insertion.getNet(), insertion.getStaCode());
+        if (staList.size() == 0) {
+            // can't find station?
+            logger.error("Can't find station: "+insertion.getNet()+"."+ insertion.getStaCode());
+            return;
+        }
+        StationImpl oneStationByCode = staList.get(0);
         logger.debug("Start on "+StationIdUtil.toStringNoDates(oneStationByCode));
         QuantityImpl smallestH = HKStack.getBestSmallestH(oneStationByCode,
                                                           HKStack.getDefaultSmallestH());

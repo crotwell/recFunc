@@ -53,20 +53,27 @@ public class DateRangeResults {
             StationImpl sta = netdb.getStationForNet(sumHKStack.getNet(),
                                                      sumHKStack.getStaCode())
                     .get(0);
-            if(AreaUtil.inArea(area, sta.getLocation())) {
+            if( ! (sta.getNetworkAttr().get_code().equals("II")
+                    || sta.getNetworkAttr().get_code().equals("IU")
+                    || sta.getNetworkAttr().get_code().equals("BK")
+                    || sta.getNetworkAttr().get_code().equals("CI")
+                    || sta.getNetworkAttr().get_code().equals("US"))
+                    && AreaUtil.inArea(area, sta.getLocation())) {
                 DateRangeWorker worker = new DateRangeWorker(sumHKStack.getDbid());
                 pool.invokeLater(worker);
             }
+            RecFuncDB.getSession().evict(sumHKStack);
+            RecFuncDB.getSession().evict(sta);
         }
+        rfdb.rollback();
         do {
             try {
                 Thread.sleep(5000);
-            } catch(InterruptedException e) {
-            }
-        } while( pool.isEmployed());
+            } catch(InterruptedException e) {}
+        } while(pool.isEmployed());
     }
-    
-    WorkerThreadPool pool = new WorkerThreadPool("dateRange", 4);
+
+    WorkerThreadPool pool = new WorkerThreadPool("dateRange", 1);
 
     boolean doBootstrap = false;
 
@@ -119,14 +126,14 @@ public class DateRangeResults {
     class DateRangeWorker implements Runnable {
 
         DateRangeWorker(Integer i) {
-         this.dbid = i;   
+            this.dbid = i;
         }
 
         int dbid;
 
         public void run() {
             SumHKStack sumHKStack = (SumHKStack)RecFuncDB.getSession()
-            .get(SumHKStack.class, dbid);
+                    .get(SumHKStack.class, dbid);
             StationImpl sta = (StationImpl)sumHKStack.getIndividuals()
                     .get(0)
                     .getChannelGroup()
@@ -164,6 +171,7 @@ public class DateRangeResults {
                         + sumStack.getBest().formatH() + " "
                         + StationIdUtil.toStringNoDates(sta));
                 RecFuncDB.getSession().evict(sumHKStack);
+                RecFuncDB.rollback();
             }
         }
     }

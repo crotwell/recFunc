@@ -66,8 +66,6 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                             String dataloc,
                             Properties confProps) throws IOException,
             SQLException, ConfigurationException, TauModelException, Exception {
-        //ConnMgr.setDB(ConnMgr.POSTGRES);
-        ConnMgr.setDB(ConnMgr.HSQL);
         ConnMgr.setURL(databaseURL);
         RecFuncDB.setDataLoc(dataloc);
         synchronized(HibernateUtil.class) {

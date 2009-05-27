@@ -10,6 +10,7 @@ from edu.sc.seis.fissuresUtil.hibernate import EventDB, NetworkDB
 from edu.sc.seis.sod import Status, Stage, Standing
 from edu.sc.seis.sod import EventChannelPair
 from edu.sc.seis.receiverFunction.hibernate import ReceiverFunctionResult, RFInsertion,  RecFuncDB
+import os, shutil
 
 soddb = SodDB()
 networkdb = NetworkDB()
@@ -46,7 +47,8 @@ __all__ = ['soddb',
 	   'hql',
 	   'etName', 'ntName','stName','ctName',
 	   'checkDuplicates', 'checkDuplicateChannels',
-	   'redoAllSummary']
+	   'redoAllSummary', 'redoSummary',
+	   'insertionTable', 'fixHKStackPath', 'moveDataDirs']
 	
 
 def hql(query):
@@ -170,3 +172,57 @@ def redoAllSummary():
 	insertion.setInsertTime(ClockUtil.wayPast().getTimestamp())
 	rfdb.getSession().saveOrUpdate(insertion)
     rfdb.commit()
+
+def redoSummary(netCode, staCode):
+    nlist = networkdb.getNetworkByCode(netCode)
+    for n in nlist:
+	insertion = rfdb.getInsertion(n, staCode, 2.5)
+	if insertion == None:
+	    insertion = RFInsertion(n, staCode, 2.5)
+	insertion.setInsertTime(ClockUtil.wayPast().getTimestamp())
+	rfdb.getSession().saveOrUpdate(insertion)
+    rfdb.commit()
+
+def insertionTable():
+    ilist = hql('from '+RFInsertion.getName()+' where stackFile is not null')
+    for i in ilist:
+	print '%s.%s %3.2f %s\n'%(i.getNet().get_code(), i.getStaCode(), i.getGaussianWidth(), i.getInsertTime())
+
+def fixHKStackPath():
+    it = soddb.getSession().createQuery('from '+ReceiverFunctionResult.getName()).iterate()
+    for rfr in it:
+	newdir = rfdb.getDir(rfr.getEvent(), rfr.getChannelGroup().getChannel1(), rfr.getGwidth())
+	newfile = newdir.getPath()+'/HKStack.xy'
+	hkstack = rfr.getHKstack()
+	if hkstack == None:
+	    continue
+	oldfile = hkstack.getStackFile()
+	if oldfile != newfile:
+	    rfr.getHKstack().setStackFile(newfile)
+	    soddb.getSession().saveOrUpdate(rfr)
+	    soddb.flush()
+	    print newfile
+    soddb.commit()
+
+def moveDataDirs():
+    year = '2008'
+    indir = '../Data/gauss_2.5/'
+    outdir = '../Data/Events/gauss_2.5/'+year
+    inlist = os.listdir(indir)
+    for inevent in inlist:
+	if inevent.find('_'+year) != -1:
+	    netlist = os.listdir(indir+'/'+inevent)
+	    for ndir in netlist:
+		slist =  os.listdir(indir+'/'+inevent+'/'+ndir)
+		for sdir in slist:
+		    movepath = inevent+'/'+ndir+'/'+sdir
+		    if not os.path.exists(outdir+'/'+movepath):
+			print 'move '+movepath
+			shutil.move(indir+'/'+movepath, outdir+'/'+movepath)
+		    else:
+			print 'already exists '+movepath
+		if len(os.listdir(indir+'/'+inevent+'/'+ndir)) == 0:
+		    os.rmdir(indir+'/'+inevent+'/'+ndir)
+	    if len(os.listdir(indir+'/'+inevent)) == 0:
+		os.rmdir(indir+'/'+inevent)
+    

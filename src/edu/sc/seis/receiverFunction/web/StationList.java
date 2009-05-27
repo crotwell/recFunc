@@ -18,6 +18,7 @@ import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.hibernate.EventDB;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.receiverFunction.SumHKStack;
@@ -50,7 +51,17 @@ public class StationList extends Revlet {
         Collections.sort(stationList, new Comparator<VelocityStation>() {
             public int compare(VelocityStation n1, VelocityStation n2) {
                 if (n1.get_code().equals(n2.get_code())) {
+                    try {
                     return n1.getId().begin_time.date_time.compareTo(n2.getId().begin_time.date_time);
+                    } catch(NullPointerException e) {
+                        String bad = "";
+                        if (n1 == null) {bad+= "n1 null";}
+                        if (n2 == null) {bad+= "n2 null";}
+                        if (n1 != null && n1.getId() == null) {bad+= "n1.getId() null";}
+                        if (n2 != null && n2.getId() == null) {bad+= "n2.getId() null";}
+                        GlobalExceptionHandler.handle(bad+" "+n1.get_code()+" "+n2.get_code(), e);
+                        throw e;
+                    }
                 }
                 return n1.getCode().compareTo(n2.getCode());
             }});

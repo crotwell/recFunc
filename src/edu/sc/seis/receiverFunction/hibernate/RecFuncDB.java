@@ -550,11 +550,11 @@ public class RecFuncDB extends AbstractHibernateDB {
                               Channel chan,
                               float gaussianWidth) {
         
-        File gaussDir = new File(getDataDir(), "gauss_" + gaussianWidth);
-        //Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        //cal.setTime(EventUtil.extractOrigin(cacheEvent).getTime());
-        //File yearDir = new File(gaussDir, ""+cal.get(Calendar.YEAR));
-        File eventDir = new File(gaussDir, eventFormatter.getResult(cacheEvent));
+        File gaussDir = new File(new File(getDataDir(), "Events"), "gauss_" + gaussianWidth);
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        cal.setTime(EventUtil.extractOrigin(cacheEvent).getTime());
+        File yearDir = new File(gaussDir, ""+cal.get(Calendar.YEAR));
+        File eventDir = new File(yearDir, eventFormatter.getResult(cacheEvent));
         File netDir = new File(eventDir, chan.get_id().network_id.network_code);
         File stationDir = new File(netDir, chan.get_id().station_code);
         boolean dirsCreated = stationDir.exists();

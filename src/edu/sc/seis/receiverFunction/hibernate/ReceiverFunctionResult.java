@@ -382,6 +382,15 @@ public class ReceiverFunctionResult {
     public HKStack getHKstack() {
         if (hkstack != null) {
             hkstack.setGaussianWidth(getGwidth());
+            if (getEvent() != null) {
+                // synth have null event
+                File dir = RecFuncDB.getDir(getEvent(),
+                                            getChannelGroup().getChannel1(),
+                                            getGwidth());
+                File stackFile = new File(dir,
+                                          RecFuncDB.STACK_FILENAME);
+                hkstack.setStackFile(stackFile.getPath());
+            }
         }
         return hkstack;
     }

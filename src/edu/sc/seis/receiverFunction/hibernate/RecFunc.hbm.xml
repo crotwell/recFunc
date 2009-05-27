@@ -84,8 +84,8 @@
 		</id>
 		<many-to-one name="net"
 			class="edu.iris.Fissures.network.NetworkAttrImpl"
-			foreign-key="FK_sumstack_net"  unique-key="sumstack_net_sta_gauss_uniq"/>
-		<property name="staCode" unique-key="sumstack_net_sta_gauss_uniq"/>
+			foreign-key="FK_sumstack_net"  unique-key="sumstack_net_sta_gauss_uniq"  index="shks_net_idx"/>
+		<property name="staCode" unique-key="sumstack_net_sta_gauss_uniq" index="shks_sta_idx"/>
 		<property name="gaussianWidth" type="float"  unique-key="sumstack_net_sta_gauss_uniq"/>
 		<component name="sum" class="edu.sc.seis.receiverFunction.HKStack" >
 			<property name="alphaKmps" type="float"/>

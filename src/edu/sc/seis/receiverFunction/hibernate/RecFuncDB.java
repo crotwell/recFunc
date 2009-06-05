@@ -49,6 +49,8 @@ import edu.sc.seis.sod.status.EventFormatter;
 
 public class RecFuncDB extends AbstractHibernateDB {
 
+    protected RecFuncDB() {}
+    
     public int put(ReceiverFunctionResult result) {
         if(result.getQc().isKeep()) {
             RFInsertion insertion = getInsertion((NetworkAttrImpl)result.getChannelGroup()

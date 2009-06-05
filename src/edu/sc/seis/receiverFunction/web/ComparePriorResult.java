@@ -66,7 +66,7 @@ public class ComparePriorResult extends StationList {
             if(cachedItem.stations != null
                     && ClockUtil.now()
                             .subtract(cachedItem.when)
-                            .lessThan(Overview.CACHE_TIME)) {
+                            .lessThan(SummaryCache.CACHE_TIME)) {
                 context.put("prior", cachedItem.prior);
                 return cachedItem.stations;
             }
@@ -134,7 +134,7 @@ public class ComparePriorResult extends StationList {
             if(cachedItem.summaries != null
                     && ClockUtil.now()
                             .subtract(cachedItem.when)
-                            .lessThan(Overview.CACHE_TIME)) {
+                            .lessThan(SummaryCache.CACHE_TIME)) {
                 return cachedItem.summaries;
             }
         }

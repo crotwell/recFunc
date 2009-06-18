@@ -515,7 +515,7 @@ public class HKStack implements Serializable {
     }
 
     public String formatMaxValueK() {
-        return getGlobalMaximum().formatHValue();
+        return getGlobalMaximum().formatKValue();
     }
 
     public float getMaxValue() {

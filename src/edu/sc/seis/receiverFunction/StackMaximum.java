@@ -68,7 +68,7 @@ public class StackMaximum {
         return FissuresFormatter.formatQuantity(getHValue());
     }
 
-    public String formatMaxValueK() {
+    public String formatKValue() {
         return vpvsFormat.format(getKValue());
     }
     

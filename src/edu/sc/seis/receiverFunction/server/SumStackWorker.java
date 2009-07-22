@@ -42,6 +42,7 @@ import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.receiverFunction.web.AzimuthPlot;
+import edu.sc.seis.receiverFunction.web.Overview;
 import edu.sc.seis.receiverFunction.web.Start;
 import edu.sc.seis.receiverFunction.web.Station;
 import edu.sc.seis.rev.RevUtil;
@@ -78,10 +79,35 @@ public class SumStackWorker implements Runnable {
     }
 
     public void run() {
+        boolean didProcess = false;
         while(keepGoing) {
             RFInsertion insertion = RecFuncDB.getSingleton().popInsertion(RF_AGE_TIME);
             if(insertion != null) {
                 processNext(insertion);
+                didProcess = true;
+            } else if (didProcess) {
+                try {
+                // caught up, redo summary pages
+                RevletContext context = new RevletContext("overview_html.vm",
+                                                          Start.getDefaultContext());
+                context.put("gaussian", ""+DEFAULT_GAUSSIAN);
+                MockHttpServletRequest req = new MockHttpServletRequest();
+                req.setParameter("filetype", "html");
+                req.setParameter("gaussian", ""+2.5f);
+                Overview overview = new Overview();
+                context = overview.getContext(req, null);
+                BufferedWriter overviewOut = new BufferedWriter(new FileWriter(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_HTML)));
+                velocity.mergeTemplate("overview_html.vm", context, overviewOut);
+                overviewOut.close();
+                req.setParameter("filetype", "html");
+                overviewOut = new BufferedWriter(new FileWriter(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV)));
+                velocity.mergeTemplate("overview_csv.vm", context, overviewOut);
+                overviewOut.close();
+                } catch (Exception e) {
+                    GlobalExceptionHandler.handle("Unable to generate summary html", e);
+                } finally {
+                    didProcess = false;
+                }
             } else {
                 try {
                     logger.info(ClockUtil.now()+" No more insertions to process, sleeping for "+SLEEP_MINUTES+" minutes.");
@@ -163,7 +189,7 @@ public class SumStackWorker implements Runnable {
                 BufferedImage image = sumStack.createStackImage();
                 File stackImageFile = new File(stationDir, SUM_HK_STACK_IMAGE);
                 ImageIO.write(image, "png", stackImageFile);
-                
+                image = null;
 
                 ArrayList<VelocityEvent> eventList = new ArrayList<VelocityEvent>();
                 for(ReceiverFunctionResult result : individualHK) {
@@ -271,9 +297,15 @@ public class SumStackWorker implements Runnable {
 
     public static final String STATION_HTML = "station.html";
     
+    public static final String SUMMARY_HTML = "summary.html";
+    
+    public static final String SUMMARY_CSV = "summary.csv";
+    
     public static final String SUM_HK_STACK_IMAGE = "SumHKStackImage.png";
     
     public static final String AZ_PLOT_IMAGE = "eventAzPlot";
+    
+    public static final float DEFAULT_GAUSSIAN = 2.5f;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumStackWorker.class);
 

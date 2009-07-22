@@ -589,11 +589,15 @@ public class RecFuncDB extends AbstractHibernateDB {
         return stationDir;
     }
 
+    public static File getSummaryDir(float gaussianWidth) {
+        File summaryDir = new File(getDataDir(), "Summary");
+        return new File(summaryDir, "gauss_" + gaussianWidth);
+    }
+
     public static File getStationDir(NetworkAttr net,
                                      String staCode,
                                      float gaussianWidth) {
-        File summaryDir = new File(getDataDir(), "Summary");
-        File gaussDir = new File(summaryDir, "gauss_" + gaussianWidth);
+        File gaussDir = getSummaryDir(gaussianWidth);
         File netDir = new File(gaussDir, NetworkIdUtil.toStringNoDates(net));
         File stationDir = new File(netDir, staCode);
         boolean dirsCreated = stationDir.exists();

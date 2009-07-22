@@ -18,7 +18,7 @@ window.onload=function(){
 <h1>Stations for Event: $eq.region ($stationList.size() stations)</h1>
 
 
-<table class="station_page1">
+<table class="station_page1 sortable">
 <tr>
 <td class="bold">Earthquake location:</td>
 <td class="data">$eq.region</td>

@@ -108,13 +108,12 @@ public class SumStackWorker implements Runnable {
     }
     
     void generateSummary() throws Exception {
-        RevletContext context = new RevletContext("overview_html.vm", Start.getDefaultContext());
-        context.put("gaussian", "" + DEFAULT_GAUSSIAN);
         MockHttpServletRequest req = new MockHttpServletRequest(new URL("http://ears.seis.sc.edu/overview.html"));
         req.setParameter("filetype", "html");
-        req.setParameter("gaussian", "" + 2.5f);
+        req.setParameter("gaussian", "" + DEFAULT_GAUSSIAN);
         Overview overview = new Overview();
-        context = overview.getContext(req, null);
+        RevletContext context = overview.getContext(req, null);
+        context.put("gaussian", "" + DEFAULT_GAUSSIAN);
         File outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_HTML + ".new");
         BufferedWriter overviewOut = new BufferedWriter(new FileWriter(outFile));
         velocity.mergeTemplate("overview_html.vm", context, overviewOut);
@@ -381,6 +380,6 @@ public class SumStackWorker implements Runnable {
                                                        props);
             worker.run();
         }
-        logger.info("Done!");
+        logger.info("SumStackWorker main Done!");
     }
 }

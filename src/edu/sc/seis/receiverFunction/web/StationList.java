@@ -127,33 +127,33 @@ public class StationList extends Revlet {
                                 RevletContext context,
                                 HttpServletRequest req) throws SQLException,
             IOException, NotFound {
-        float gaussianWidth = RevUtil.getFloat("gaussian",
+        float gaussianWidth = getFloat("gaussian",
                                                req,
-                                               Start.getDefaultGaussian());
-        float minPercentMatch = RevUtil.getFloat("minPercentMatch",
+                                               Start.getDefaultGaussian(), context);
+        float minPercentMatch = getFloat("minPercentMatch",
                                                  req,
-                                                 Start.getDefaultMinPercentMatch());
-        float maxComplexity = RevUtil.getFloat("maxComplexity",
+                                                 Start.getDefaultMinPercentMatch(), context);
+        float maxComplexity = getFloat("maxComplexity",
                                                req,
-                                               1.0f);
-        float minVpvs = RevUtil.getFloat("minVpvs",
+                                               1.0f, context);
+        float minVpvs = getFloat("minVpvs",
                                                req,
-                                               0.0f);
-        float maxVpvs = RevUtil.getFloat("maxVpvs",
+                                               0.0f, context);
+        float maxVpvs = getFloat("maxVpvs",
                                                req,
-                                               3.0f);
-        float minH = RevUtil.getFloat("minH",
+                                               3.0f, context);
+        float minH = getFloat("minH",
                                          req,
-                                         -90.0f);
-        float maxH = RevUtil.getFloat("maxH",
+                                         -90.0f, context);
+        float maxH = getFloat("maxH",
                                          req,
-                                         99999.0f);
-        int minEQ = RevUtil.getInt("minEQ",
+                                         99999.0f, context);
+        int minEQ = getInt("minEQ",
                                       req,
-                                      0);
-        int maxEQ = RevUtil.getInt("maxEQ",
+                                      0, context);
+        int maxEQ = getInt("maxEQ",
                                       req,
-                                      99999);
+                                      99999, context);
         Iterator it = stationList.iterator();
         HashMap<VelocityStation, SumHKStack> summary = new HashMap<VelocityStation, SumHKStack>();
         while(it.hasNext()) {
@@ -172,6 +172,23 @@ public class StationList extends Revlet {
         }
         logger.debug("found " + summary.size() + " summaries");
         return summary;
+    }
+    
+    public float getFloat(String name, 
+                          HttpServletRequest req, 
+                          float defaultValue, 
+                          RevletContext context) {
+        float val = RevUtil.getFloat(name,
+                                     req,
+                                     defaultValue);
+        context.put(name, ""+val);
+        return val;
+    }
+    
+    public int getInt(String name, HttpServletRequest req, int defaultValue, RevletContext context) {
+        int val = RevUtil.getInt(name, req, defaultValue);
+        context.put(name, "" + val);
+        return val;
     }
 
     /** weed out stations with same net and station code to avoid duplicates

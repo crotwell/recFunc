@@ -310,9 +310,16 @@ public class SumStackWorker implements Runnable {
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumStackWorker.class);
 
     public static void main(String[] args) throws Exception {
+        boolean testing = false;
         float minPercentMatch = 80f;
         boolean bootstrap = true;
         boolean usePhaseWeight = true;
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equalsIgnoreCase("-test")) {
+                testing = true;
+                break;
+            }
+        }
         Properties props = StackSummary.loadProps(args);
         RecFuncDB.setDataLoc("../Data");
         ConnMgr.setURL("jdbc:postgresql:ears");
@@ -324,7 +331,6 @@ public class SumStackWorker implements Runnable {
             RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
         }
         AbstractHibernateDB.deploySchema();
-        boolean testing = false;
         if (testing) {
         SumStackWorker worker = new SumStackWorker(minPercentMatch,
                                                    usePhaseWeight,

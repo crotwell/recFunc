@@ -341,7 +341,13 @@ public class SumStackWorker implements Runnable {
         
         // this is for testing, so thread will have time to start one sum but will not run forever
         RFInsertion insertion = new RFInsertion(NetworkDB.getSingleton().getNetworkByCode("SP").get(0), "LGELG", 2.5f);
-        worker.processNext(insertion);
+        RecFuncDB.getSession().saveOrUpdate(insertion);
+        RecFuncDB.commit();
+        //worker.processNext(insertion);
+        Thread t = new Thread(worker);
+        t.start();
+        Thread.sleep(10*1000);
+        keepGoing = false;
         } else {
             SumStackWorker worker = new SumStackWorker(minPercentMatch,
                                                        usePhaseWeight,
@@ -350,6 +356,6 @@ public class SumStackWorker implements Runnable {
                                                        props);
             worker.run();
         }
-        
+        logger.info("Done!");
     }
 }

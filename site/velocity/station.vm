@@ -17,13 +17,12 @@ window.onload=function(){
 	
 <div id="content">
 	
-<p id="breadcrumbs">You are here: <a href="${revBase}index.html">Home</a> > <a href="${revBase}networkList.html">Network List</a> > <a href="${revBase}stationList.html?netdbid=${net.getDbId()}&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name Stations List</a> > <b>Station $net.getCode() $stacode</b></p>	
+<p id="breadcrumbs">You are here: <a href="${revBase}index.html">Home</a> > <a href="${revBase}networkList.html">Network List</a> > <a href="${revBase}stationList.html?netdbid=${net.getDbId()}&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name Station List</a> > <b>Station $net.getCode() $stacode</b></p>	
 	
-<h1>Station $net.getCode() $stacode</h1>
-
-
-
 #set ($firstSta = $stationList.get(0) )
+
+<h1>Station $net.getCode() $stacode - $firstSta.name</h1>
+
 #set ($summaryDir = "${revBase}Data/Summary/gauss_$gaussian/$net.getCodeWithYear()/$stacode" )
 
 <p><b>Network: </b><a href="${revBase}stationList.html?netCode=$net.getCodeWithYear()&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name</a></p>

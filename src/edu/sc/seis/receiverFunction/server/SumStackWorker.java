@@ -314,9 +314,13 @@ public class SumStackWorker implements Runnable {
         float minPercentMatch = 80f;
         boolean bootstrap = true;
         boolean usePhaseWeight = true;
+        int keepWorkingSeconds = 15;
         for (int i = 0; i < args.length; i++) {
             if (args[i].equalsIgnoreCase("-test")) {
                 testing = true;
+                if (i+1<args.length && ! args[i+1].startsWith("-")) {
+                    keepWorkingSeconds = Integer.parseInt(args[i+1]);
+                }
                 break;
             }
         }
@@ -347,7 +351,7 @@ public class SumStackWorker implements Runnable {
                                                                       staCode,
                                                                       gaussian);
         if(insertion == null) {
-            insertion = new RFInsertion(spNet, staCode, 2.5f);
+            insertion = new RFInsertion(spNet, staCode, gaussian);
         }
         insertion.setInsertTime(ClockUtil.wayPast().getTimestamp());
         RecFuncDB.getSession().saveOrUpdate(insertion);
@@ -355,7 +359,7 @@ public class SumStackWorker implements Runnable {
         //worker.processNext(insertion);
         Thread t = new Thread(worker);
         t.start();
-        Thread.sleep(10*1000);
+        Thread.sleep(keepWorkingSeconds*1000);
         keepGoing = false;
         } else {
             SumStackWorker worker = new SumStackWorker(minPercentMatch,

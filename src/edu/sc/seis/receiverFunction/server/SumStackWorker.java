@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -89,24 +90,7 @@ public class SumStackWorker implements Runnable {
             } else if (didProcess) {
                 try {
                     // caught up, redo summary pages
-                    RevletContext context = new RevletContext("overview_html.vm", Start.getDefaultContext());
-                    context.put("gaussian", "" + DEFAULT_GAUSSIAN);
-                    MockHttpServletRequest req = new MockHttpServletRequest(new URL("http://ears.seis.sc.edu/overview.html"));
-                    req.setParameter("filetype", "html");
-                    req.setParameter("gaussian", "" + 2.5f);
-                    Overview overview = new Overview();
-                    context = overview.getContext(req, null);
-                    File outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_HTML + ".new");
-                    BufferedWriter overviewOut = new BufferedWriter(new FileWriter(outFile));
-                    velocity.mergeTemplate("overview_html.vm", context, overviewOut);
-                    overviewOut.close();
-                    outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_HTML));
-                    req.setParameter("filetype", "html");
-                    outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV + ".new");
-                    overviewOut = new BufferedWriter(new FileWriter(outFile));
-                    velocity.mergeTemplate("overview_txt.vm", context, overviewOut);
-                    overviewOut.close();
-                    outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV));
+                    generateSummary();
                 } catch(Exception e) {
                     GlobalExceptionHandler.handle("Unable to generate summary html", e);
                 } finally {
@@ -121,6 +105,29 @@ public class SumStackWorker implements Runnable {
             }
         }
         System.out.println("Work finished");
+    }
+    
+    void generateSummary() throws Exception {
+        RevletContext context = new RevletContext("overview_html.vm", Start.getDefaultContext());
+        context.put("gaussian", "" + DEFAULT_GAUSSIAN);
+        MockHttpServletRequest req = new MockHttpServletRequest(new URL("http://ears.seis.sc.edu/overview.html"));
+        req.setParameter("filetype", "html");
+        req.setParameter("gaussian", "" + 2.5f);
+        Overview overview = new Overview();
+        context = overview.getContext(req, null);
+        File outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_HTML + ".new");
+        BufferedWriter overviewOut = new BufferedWriter(new FileWriter(outFile));
+        velocity.mergeTemplate("overview_html.vm", context, overviewOut);
+        overviewOut.close();
+        outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_HTML));
+        logger.info("Done with summary html");
+        req.setParameter("filetype", "html");
+        outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV + ".new");
+        overviewOut = new BufferedWriter(new FileWriter(outFile));
+        velocity.mergeTemplate("overview_txt.vm", context, overviewOut);
+        overviewOut.close();
+        outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV));
+        logger.info("Done with summary csv");
     }
 
     void processNext(RFInsertion insertion) {

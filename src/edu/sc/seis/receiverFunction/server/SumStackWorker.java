@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -91,7 +92,7 @@ public class SumStackWorker implements Runnable {
                 RevletContext context = new RevletContext("overview_html.vm",
                                                           Start.getDefaultContext());
                 context.put("gaussian", ""+DEFAULT_GAUSSIAN);
-                MockHttpServletRequest req = new MockHttpServletRequest();
+                MockHttpServletRequest req = new MockHttpServletRequest(new URL("http://ears.seis.sc.edu/overview.html"));
                 req.setParameter("filetype", "html");
                 req.setParameter("gaussian", ""+2.5f);
                 Overview overview = new Overview();

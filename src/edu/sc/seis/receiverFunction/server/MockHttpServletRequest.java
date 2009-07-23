@@ -3,6 +3,7 @@ package edu.sc.seis.receiverFunction.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.security.Principal;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -18,6 +19,10 @@ import javax.servlet.http.HttpSession;
 
 public class MockHttpServletRequest implements HttpServletRequest {
 
+    public MockHttpServletRequest(URL url) {
+        this.url = url;
+    }
+    
     public String getAuthType() {
         throw new RuntimeException("Not implmented");
     }
@@ -75,7 +80,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     public StringBuffer getRequestURL() {
-        throw new RuntimeException("Not implmented");
+        return new StringBuffer(url.toString());
     }
 
     public String getRequestedSessionId() {
@@ -83,7 +88,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     public String getServletPath() {
-        throw new RuntimeException("Not implmented");
+        return url.getPath();
     }
 
     public HttpSession getSession() {
@@ -221,6 +226,8 @@ public class MockHttpServletRequest implements HttpServletRequest {
     public void setCharacterEncoding(String arg0) throws UnsupportedEncodingException {
         throw new RuntimeException("Not implmented");
     }
+    
+    URL url;
     
     protected HashMap<String, String> map = new HashMap<String, String>();
 }

@@ -15,13 +15,13 @@ window.onload=function(){
 #header()	
 
 <div id="content">
-<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <b>All Stations</b></p>
+<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <b>All Stations for gaussian=${gaussian}</b></p>
 
-<p>Download as a <a href="overview.txt?gaussian=${gaussian}">CSV file</a></p>
+<p>Download as a <a href="../gauss_${gaussian}/overview.csv">CSV file</a></p>
 
 <table cellpadding="0" cellspacing="0" class="ruler sortable" id="dumb">
 <tr  class="title">
-<td class="headodd initiallySorted ascending">Net</td>
+<td class="headodd">Net</td>
 <td class="headodd">Station</td>
 <td class="headodd">Name</td>
 <td class="headodd num">Lat</td>
@@ -39,7 +39,7 @@ window.onload=function(){
 </tr>
 #foreach($sta in $stationList)
 <tr>
-<td class="even"><a href="network.html?netcode=$sta.net.getCodeWithYear()&gaussian=${gaussian}">$sta.net.getCodeWithYear()</a></td>
+<td class="even"><a href="${revBase}network.html?netcode=$sta.net.getCodeWithYear()&gaussian=${gaussian}">$sta.net.getCodeWithYear()</a></td>
 <td class="odd"><a href="${revBase}Data/Summary/gauss_${gaussian}/$sta.getNet().getCodeWithYear()/$sta.getCode()/station.html">$sta.getCode()</a></td>
 <td class="stat_name"><a href="${revBase}Data/Summary/gauss_${gaussian}/$sta.getNet().getCodeWithYear()/$sta.getCode()/station.html">$sta.getName()</a></td>
 <td class="odd">$sta.getOrientedLatitude()</td>

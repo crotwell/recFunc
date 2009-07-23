@@ -104,7 +104,7 @@ public class SumStackWorker implements Runnable {
                     req.setParameter("filetype", "html");
                     outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV + ".new");
                     overviewOut = new BufferedWriter(new FileWriter(outFile));
-                    velocity.mergeTemplate("overview_csv.vm", context, overviewOut);
+                    velocity.mergeTemplate("overview_txt.vm", context, overviewOut);
                     overviewOut.close();
                     outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV));
                 } catch(Exception e) {

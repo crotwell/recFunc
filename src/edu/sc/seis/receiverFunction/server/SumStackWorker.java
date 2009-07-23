@@ -81,37 +81,41 @@ public class SumStackWorker implements Runnable {
 
     public void run() {
         boolean didProcess = false;
-        while(keepGoing) {
+        while (keepGoing) {
             RFInsertion insertion = RecFuncDB.getSingleton().popInsertion(RF_AGE_TIME);
-            if(insertion != null) {
+            if (insertion != null) {
                 processNext(insertion);
                 didProcess = true;
             } else if (didProcess) {
                 try {
-                // caught up, redo summary pages
-                RevletContext context = new RevletContext("overview_html.vm",
-                                                          Start.getDefaultContext());
-                context.put("gaussian", ""+DEFAULT_GAUSSIAN);
-                MockHttpServletRequest req = new MockHttpServletRequest(new URL("http://ears.seis.sc.edu/overview.html"));
-                req.setParameter("filetype", "html");
-                req.setParameter("gaussian", ""+2.5f);
-                Overview overview = new Overview();
-                context = overview.getContext(req, null);
-                BufferedWriter overviewOut = new BufferedWriter(new FileWriter(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_HTML)));
-                velocity.mergeTemplate("overview_html.vm", context, overviewOut);
-                overviewOut.close();
-                req.setParameter("filetype", "html");
-                overviewOut = new BufferedWriter(new FileWriter(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV)));
-                velocity.mergeTemplate("overview_csv.vm", context, overviewOut);
-                overviewOut.close();
-                } catch (Exception e) {
+                    // caught up, redo summary pages
+                    RevletContext context = new RevletContext("overview_html.vm", Start.getDefaultContext());
+                    context.put("gaussian", "" + DEFAULT_GAUSSIAN);
+                    MockHttpServletRequest req = new MockHttpServletRequest(new URL("http://ears.seis.sc.edu/overview.html"));
+                    req.setParameter("filetype", "html");
+                    req.setParameter("gaussian", "" + 2.5f);
+                    Overview overview = new Overview();
+                    context = overview.getContext(req, null);
+                    File outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_HTML + ".new");
+                    BufferedWriter overviewOut = new BufferedWriter(new FileWriter(outFile));
+                    velocity.mergeTemplate("overview_html.vm", context, overviewOut);
+                    overviewOut.close();
+                    outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_HTML));
+                    req.setParameter("filetype", "html");
+                    outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV + ".new");
+                    overviewOut = new BufferedWriter(new FileWriter(outFile));
+                    velocity.mergeTemplate("overview_csv.vm", context, overviewOut);
+                    overviewOut.close();
+                    outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV));
+                } catch(Exception e) {
                     GlobalExceptionHandler.handle("Unable to generate summary html", e);
                 } finally {
                     didProcess = false;
                 }
             } else {
                 try {
-                    logger.info(ClockUtil.now()+" No more insertions to process, sleeping for "+SLEEP_MINUTES+" minutes.");
+                    logger.info(ClockUtil.now() + " No more insertions to process, sleeping for " + SLEEP_MINUTES
+                            + " minutes.");
                     Thread.sleep(SLEEP_MINUTES * 60 * 1000); // 5 minutes
                 } catch(InterruptedException e) {}
             }

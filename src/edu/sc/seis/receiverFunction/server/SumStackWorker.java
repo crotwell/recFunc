@@ -340,7 +340,16 @@ public class SumStackWorker implements Runnable {
                                                    props);
         
         // this is for testing, so thread will have time to start one sum but will not run forever
-        RFInsertion insertion = new RFInsertion(NetworkDB.getSingleton().getNetworkByCode("SP").get(0), "LGELG", 2.5f);
+        NetworkAttrImpl spNet = NetworkDB.getSingleton().getNetworkByCode("SP").get(0);
+        String staCode = "LGELG";
+        float gaussian = 2.5f;
+        RFInsertion insertion = RecFuncDB.getSingleton().getInsertion(spNet,
+                                                                      staCode,
+                                                                      gaussian);
+        if(insertion == null) {
+            insertion = new RFInsertion(spNet, staCode, 2.5f);
+        }
+        insertion.setInsertTime(ClockUtil.wayPast().getTimestamp());
         RecFuncDB.getSession().saveOrUpdate(insertion);
         RecFuncDB.commit();
         //worker.processNext(insertion);

@@ -1,0 +1,17 @@
+
+group = 'edu.sc.seis'
+version = '2.0beta'
+
+dependencies {
+    compile project(':rev') { transitive = true }
+    compile project(':cormorant') { transitive = true }
+    compile project(':winkle') { transitive = true }
+    compile project(':mockFissures') { transitive = true }
+    compile: "recFunc:recFuncIDL:1.0beta"
+    compile: "mapData:vmap_po_thinned:"
+    compile: "jfreechart:jcommon:1.0.0"
+    compile: "jfreechart:jfreechart:1.0.1"
+    compile: "commons-cli:commons-cli:1.0"
+    compile: "Multivalent:Multivalent:R7_USC2"
+    compile: "easyMock:easyMock:1.0"
+}

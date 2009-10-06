@@ -6,11 +6,56 @@ dependencies {
     compile project(':rev') { transitive = true }
     compile project(':cormorant') { transitive = true }
     compile project(':winkle') { transitive = true }
-    compile "recFunc:recFuncIDL:1.0beta"
-    compile "mapData:vmap_po_thinned:"
+    compile "edu.sc.seis:recFuncIDL:1.0beta"
+    compile "edu.sc.seis.mapData:vmap_po_thinned:1.0"
     compile "jfreechart:jcommon:1.0.0"
     compile "jfreechart:jfreechart:1.0.1"
-    compile "commons-cli:commons-cli:1.0"
-    compile "Multivalent:Multivalent:R7_USC2"
-    compile "easyMock:easyMock:1.0"
+//    compile "commons-cli:commons-cli:1.0"
+//    compile "Multivalent:Multivalent:R7_USC2"
+    compile "easymock:easymock:1.0"
 }
+
+task makeScript(dependsOn: copyToLib) << { task ->
+    scriptBuild('sod', 'edu.sc.seis.sod.Start', task.project)
+    scriptBuild('viewResults', 'edu.sc.seis.receiverFunction.web.Start', task.project)
+    scriptBuild('admin', 'edu.sc.seis.receiverFunction.server.Admin', task.project)
+}
+
+task tarDist(type: Tar, dependsOn: ['makeScript', 'createBuildScript', 'wrapper'
+]) {
+    dirName = project.name+'-'+version
+    tarFileSet(dir: 'build') {
+        include('build.gradle')
+        prefix = dirName
+    }
+    tarFileSet(dir: 'build/output',fileMode: '755') {
+        include('bin/**')
+        prefix = dirName
+    }
+    tarFileSet(dir: 'build/output') {
+        include('lib/**')
+        prefix = dirName
+    }
+    tarFileSet(dir: 'build/docs') {
+        include('javadoc/**')
+        prefix = dirName
+    }
+    tarFileSet(dir: 'scripts') {
+        include('realtime.xml')
+        include('ears.prop')
+        include('ears_client.prop')
+        include('viewResults.prop')
+        prefix = dirName
+    }
+    tarFileSet(dir: '.') {
+        include('gpl-3.0.txt')
+        include('doc/**')
+        include('src/**')
+        include('gradleWrapper/**')
+        include('gradlew')
+        include('gradlew.bat')
+        exclude('**/*.svn')
+        prefix = dirName
+    }
+}
+

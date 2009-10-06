@@ -16,9 +16,10 @@ dependencies {
 }
 
 task makeScript(dependsOn: copyToLib) << { task ->
-    scriptBuild('sod', 'edu.sc.seis.sod.Start', task.project)
-    scriptBuild('viewResults', 'edu.sc.seis.receiverFunction.web.Start', task.project)
-    scriptBuild('admin', 'edu.sc.seis.receiverFunction.server.Admin', task.project)
+    dExtras = task.project.findProject(':sod').getDExtras()
+    scriptBuild('sod', 'edu.sc.seis.sod.Start', task.project, dExtras:dExtras, background:true)
+    scriptBuild('viewResults', 'edu.sc.seis.receiverFunction.web.Start', task.project, dExtras:dExtras, background:true)
+    scriptBuild('admin', 'edu.sc.seis.receiverFunction.server.Admin', task.project, dExtras:dExtras, background:false)
 }
 
 task tarDist(type: Tar, dependsOn: ['makeScript', 'createBuildScript', 'wrapper'
@@ -40,8 +41,11 @@ task tarDist(type: Tar, dependsOn: ['makeScript', 'createBuildScript', 'wrapper'
         include('javadoc/**')
         prefix = dirName
     }
-    tarFileSet(dir: 'scripts') {
+    tarFileSet(dir: 'sodRF') {
+        prefix = dirName
         include('realtime.xml')
+    }
+    tarFileSet(dir: 'scripts') {
         include('ears.prop')
         include('ears_client.prop')
         include('viewResults.prop')

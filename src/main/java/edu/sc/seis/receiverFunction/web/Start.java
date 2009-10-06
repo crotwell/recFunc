@@ -163,14 +163,6 @@ public class Start {
                               "edu.sc.seis.receiverFunction.web.ReceiverFunctionZip",
                               servletStrings,
                               rootHandler);
-        RevUtil.populateJetty("/overview.txt",
-                              "edu.sc.seis.receiverFunction.web.Overview",
-                              servletStrings,
-                              rootHandler);
-        RevUtil.populateJetty("/overview.html",
-                              "edu.sc.seis.receiverFunction.web.Overview",
-                              servletStrings,
-                              rootHandler);
         RevUtil.populateJetty("/recordSection.png",
                               "edu.sc.seis.receiverFunction.web.RecordSectionImage",
                               servletStrings,

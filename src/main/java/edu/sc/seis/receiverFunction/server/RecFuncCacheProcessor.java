@@ -61,8 +61,8 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
                 pWave = false;
             }
         }
-        String dns = DOMHelper.extractText(config, "dns", "edu/sc/seis");
-        String serverName = DOMHelper.extractText(config, "name", "Ears");
+        dns = DOMHelper.extractText(config, "dns", "edu/sc/seis");
+        serverName = DOMHelper.extractText(config, "name", "Ears");
         String modelName = "prem";
         taup = TauPUtil.getTauPUtil(modelName);
         recFunc = new RecFunc(taup,

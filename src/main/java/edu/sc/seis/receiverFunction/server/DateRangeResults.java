@@ -94,7 +94,7 @@ public class DateRangeResults {
         boolean bootstrap = true;
         boolean usePhaseWeight = true;
         Properties props = StackSummary.loadProps(args);
-        RecFuncDB.setDataLoc("Data");
+        //RecFuncDB.setDataLoc("..");
         // ConnMgr.setURL("jdbc:hsqldb:hsql://localhost:9003/ears");
         ConnMgr.setURL("jdbc:postgresql:ears");
         ConnMgr.installDbProperties(props, new String[0]);

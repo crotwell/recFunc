@@ -19,7 +19,9 @@ task makeScript(dependsOn: copyToLib) << { task ->
     dExtras = task.project.findProject(':sod').getDExtras()
     scriptBuild('sod', 'edu.sc.seis.sod.Start', task.project, dExtras:dExtras, background:true)
     scriptBuild('viewResults', 'edu.sc.seis.receiverFunction.web.Start', task.project, dExtras:dExtras, background:true)
+    scriptBuild('server', 'edu.sc.seis.cormorant.Start', task.project, dExtras:dExtras, background:true)
     scriptBuild('admin', 'edu.sc.seis.receiverFunction.server.Admin', task.project, dExtras:dExtras, background:false)
+    scriptBuild('dateStack', 'edu.sc.seis.receiverFunction.server.DateRangeResults', task.project, dExtras:dExtras, background:false)
 }
 
 task tarDist(type: Tar, dependsOn: ['makeScript', 'createBuildScript', 'wrapper'

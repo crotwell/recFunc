@@ -107,7 +107,7 @@ public class DateRangeResults {
         AbstractHibernateDB.deploySchema();
         MicroSecondDate begin = new MicroSecondDate(new Time("19900101T00:00:00Z",
                                                              -1));
-        MicroSecondDate end = new MicroSecondDate(new Time("20090101T00:00:00Z",
+        MicroSecondDate end = new MicroSecondDate(new Time("20100101T00:00:00Z",
                                                            -1));
         DateRangeResults worker = new DateRangeResults(minPercentMatch,
                                                        usePhaseWeight,

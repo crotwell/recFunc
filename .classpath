@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <classpath>
-	<classpathentry kind="src" output="target/test-classes" path="test/unit"/>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/rev"/>
-	<classpathentry kind="var" path="MAVEN_REPO/geeMac/jars/geeMac-1.3.jar"/>
-	<classpathentry exported="true" kind="var" path="MAVEN_REPO/recFunc/jars/recFuncIDL-1.0beta.jar"/>
-	<classpathentry exported="true" kind="var" path="MAVEN_REPO/jfreechart/jars/jfreechart-1.0.1.jar"/>
-	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-cli/jars/commons-cli-1.0.jar"/>
-	<classpathentry exported="true" kind="var" path="MAVEN_REPO/jfreechart/jars/jcommon-1.0.0.jar"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/winkle"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/cormorant1"/>
-	<classpathentry kind="output" path="build/classes"/>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="output" path="build/classes/main"/>
+  <classpathentry kind="src" path="src/test/java" output="build/classes/test"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="src" path="/winkle" combineaccessrules="false"/>
+  <classpathentry kind="src" path="/rev" combineaccessrules="false"/>
+  <classpathentry kind="src" path="/cormorant" combineaccessrules="false"/>
+  <classpathentry kind="lib" path="/home/crotwell/.gradle/cache/easymock/easymock/jars/easymock-1.0.jar"/>
+  <classpathentry kind="lib" path="/home/crotwell/.gradle/cache/edu.sc.seis.mapData/vmap_po_thinned/jars/vmap_po_thinned-1.0.jar"/>
+  <classpathentry kind="lib" path="/home/crotwell/.gradle/cache/edu.sc.seis/recFuncIDL/jars/recFuncIDL-1.0beta.jar"/>
+  <classpathentry kind="lib" path="/home/crotwell/.gradle/cache/jfreechart/jcommon/jars/jcommon-1.0.0.jar"/>
+  <classpathentry kind="lib" path="/home/crotwell/.gradle/cache/jfreechart/jfreechart/jars/jfreechart-1.0.1.jar"/>
+  <classpathentry kind="lib" path="/home/crotwell/.gradle/cache/junit/junit/jars/junit-4.4.jar"/>
 </classpath>

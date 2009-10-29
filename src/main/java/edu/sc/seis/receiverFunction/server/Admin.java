@@ -16,6 +16,7 @@ import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
+import edu.sc.seis.rev.admin.Admin;
 import edu.sc.seis.rev.admin.Args;
 import edu.sc.seis.rev.hibernate.RevDB;
 import edu.sc.seis.sod.Start;
@@ -28,7 +29,8 @@ public class Admin extends Bag {
         super();
         systemState.ps1 = new PyString("ears> ");
         prompt = "Ears Admin";
-        exec("from rev import *");
+        exec("import sys");
+        exec("sys.path.append('"+formatForJythonSysPath(Admin.class, "edu/sc/seis/receiverFunction/jython")+"')");
         exec("from recFunc import *");
         if (args.getRecipe() != null && args.getRecipe().exists()) {
             try {
@@ -65,7 +67,6 @@ public class Admin extends Bag {
             synchronized(HibernateUtil.class) {
                 HibernateUtil.setUpFromConnMgr(props, HibernateUtil.DEFAULT_EHCACHE_CONFIG);
                 SodDB.configHibernate(HibernateUtil.getConfiguration());
-                RevDB.configHibernate(HibernateUtil.getConfiguration());
                 RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
             }
             try {
@@ -94,7 +95,7 @@ public class Admin extends Bag {
 
     protected String historyFilename = ".jline-revAdmin.history";
     
-    public static final String DEFAULT_PROPS = "edu/sc/seis/rev/admin/admin.prop";
+    public static final String DEFAULT_PROPS = "edu/sc/seis/receiverFunction/admin/admin.prop";
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Admin.class);
 }

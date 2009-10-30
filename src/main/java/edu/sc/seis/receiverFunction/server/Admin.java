@@ -16,7 +16,6 @@ import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
-import edu.sc.seis.rev.admin.Admin;
 import edu.sc.seis.rev.admin.Args;
 import edu.sc.seis.rev.hibernate.RevDB;
 import edu.sc.seis.sod.Start;

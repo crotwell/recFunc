@@ -12,11 +12,10 @@ from edu.sc.seis.sod import EventChannelPair
 from edu.sc.seis.receiverFunction.hibernate import ReceiverFunctionResult, RFInsertion,  RecFuncDB
 import os, shutil
 
-soddb = SodDB()
-networkdb = NetworkDB()
-eventdb = StatefulEventDB()
-revdb = RevDB()
-rfdb = RecFuncDB()
+soddb = SodDB.getSingleton()
+networkdb = NetworkDB.getSingleton()
+eventdb = StatefulEventDB.getSingleton()
+rfdb = RecFuncDB.getSingleton()
 
 etName = 'edu.sc.seis.sod.hibernate.StatefulEvent'
 ntName = 'edu.iris.Fissures.network.NetworkAttrImpl'
@@ -24,7 +23,6 @@ stName = 'edu.iris.Fissures.network.StationImpl'
 ctName = 'edu.iris.Fissures.network.ChannelImpl'
 
 __all__ = ['soddb',
-	   'revdb',
 	   'eventdb',
 	   'rfdb',
 	   'networkdb',
@@ -59,8 +57,8 @@ def printAllStatus():
       for s in a:                        
         print '%d %s'%(s.getAsShort(), s)
 
-def recentevents(numEvents=10):
-    return revdb.getRecentEvents(numEvents)
+#def recentevents(numEvents=10):
+#    return revdb.getRecentEvents(numEvents)
     
 def eventTable(events):
     for e in events:

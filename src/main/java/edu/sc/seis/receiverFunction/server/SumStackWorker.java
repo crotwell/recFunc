@@ -1,8 +1,11 @@
 package edu.sc.seis.receiverFunction.server;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -127,6 +130,46 @@ public class SumStackWorker implements Runnable {
         overviewOut.close();
         outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV));
         logger.info("Done with summary csv");
+    }
+    
+    public static List<SummaryLine> loadSummaryFromCSV() throws IOException {
+        List<SummaryLine> out = new ArrayList<SummaryLine>();
+        File inFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV);
+        BufferedReader overviewIn = new BufferedReader(new FileReader(inFile));
+        String line = "";
+        while ((line = overviewIn.readLine()) != null) {
+            String[] split = line.split(",");
+            SummaryLine lineResult = new SummaryLine(split[0],
+                                                     split[1],
+                                                     Float.parseFloat(split[2]),
+                                                     Float.parseFloat(split[3]),
+                                                     extractQuantity(split[4]),
+                                                     extractQuantity(split[5]),
+                                                     extractQuantity(split[6]),
+                                                     Float.parseFloat(split[7]),
+                                                     Float.parseFloat(split[8]),
+                                                     extractQuantity(split[9]),
+                                                     extractQuantity(split[10]),
+                                                     Float.parseFloat(split[11]),
+                                                     Integer.parseInt(split[12]),
+                                                     split[13].equals("?")?1:Float.parseFloat(split[13]) // why complexity sometimes a '?'
+                                                             );
+            out.add(lineResult);
+        }
+        return out;
+    }
+    
+    public static QuantityImpl extractQuantity(String s) {
+        String[] split = s.split(" ");
+        if (split.length != 2) {
+            throw new IllegalArgumentException("Bad quantity ("+s+"), expect value space unit like '4.7 km'");
+        }
+        UnitImpl u;
+        if (split[1].equalsIgnoreCase("km")) { u = UnitImpl.KILOMETER; }
+        else if (split[1].equalsIgnoreCase("km/s")) { u = UnitImpl.KILOMETER_PER_SECOND; }
+        else if (split[1].equalsIgnoreCase("m")) { u = UnitImpl.METER; }
+        else throw new IllegalArgumentException("Bad unit, expect one of m, km, km/s");
+        return new QuantityImpl(Double.parseDouble(split[0]), u);
     }
 
     void processNext(RFInsertion insertion) {

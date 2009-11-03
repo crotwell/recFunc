@@ -16,6 +16,9 @@ jacorb.security.ssl.server.required_options=0
 log4j.rootCategory=debug, C, R
 log4j.logger.org.hibernate=ERROR
 log4j.logger.com.mchange=ERROR
+log4j.logger.net.sf.ehcache=ERROR
+log4j.logger.org.jacorb=ERROR
+log4j.logger.jacorb=ERROR
 log4j.logpath=logs
 
 log4j.appender.C=org.apache.log4j.ConsoleAppender

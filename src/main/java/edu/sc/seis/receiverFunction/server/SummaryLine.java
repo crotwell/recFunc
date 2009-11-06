@@ -1,9 +1,12 @@
 package edu.sc.seis.receiverFunction.server;
 
 import edu.iris.Fissures.model.QuantityImpl;
+import edu.sc.seis.receiverFunction.HKAlpha;
+import edu.sc.seis.sod.velocity.network.VelocityStation;
 
+/** also see macro(stationListCSV in VM_global_library.vm */
 
-public class SummaryLine {
+public class SummaryLine extends HKAlpha {
     
     
     public SummaryLine(String netCodeWithYear,
@@ -16,25 +19,16 @@ public class SummaryLine {
                        float crustalVpVs,
                        float crustalVpVsStdDev,
                        QuantityImpl vp,
-                       QuantityImpl vs,
-                       float poissonsRatio,
                        int numEarthquakes,
-                       float complexity) {
-        super();
+                       float complexityResidual) {
+        super(crustalThickness, crustalVpVs, vp, 1, crustalThicknessStdDev, crustalVpVsStdDev);
         this.netCodeWithYear = netCodeWithYear;
         this.staCode = staCode;
         this.lat = lat;
         this.lon = lon;
         this.elevation = elevation;
-        this.crustalThickness = crustalThickness;
-        this.crustalThicknessStdDev = crustalThicknessStdDev;
-        this.crustalVpVs = crustalVpVs;
-        this.crustalVpVsStdDev = crustalVpVsStdDev;
-        this.vp = vp;
-        this.vs = vs;
-        this.poissonsRatio = poissonsRatio;
         this.numEarthquakes = numEarthquakes;
-        this.complexity = complexity;
+        this.complexityResidual = complexityResidual;
     }
     
     String netCodeWithYear;
@@ -42,15 +36,8 @@ public class SummaryLine {
     float lat;
     float lon;
     QuantityImpl elevation;
-    QuantityImpl crustalThickness;
-    QuantityImpl crustalThicknessStdDev;
-    float crustalVpVs;
-    float crustalVpVsStdDev;
-    QuantityImpl vp;
-    QuantityImpl vs;
-    float poissonsRatio;
     int numEarthquakes;
-    float complexity;
+    float complexityResidual;
     
     public String getNetCodeWithYear() {
         return netCodeWithYear;
@@ -64,49 +51,31 @@ public class SummaryLine {
         return lat;
     }
     
+    public String getOrientedLatitude() {
+        return VelocityStation.getOrientedLatitude(getLat());
+    }
+    
     public float getLon() {
         return lon;
+    }
+
+    public String getOrientedLongitude() {
+        return VelocityStation.getOrientedLongitude(getLon());
     }
     
     public QuantityImpl getElevation() {
         return elevation;
     }
     
-    public QuantityImpl getCrustalThickness() {
-        return crustalThickness;
-    }
-    
-    public QuantityImpl getCrustalThicknessStdDev() {
-        return crustalThicknessStdDev;
-    }
-    
-    public float getCrustalVpVs() {
-        return crustalVpVs;
-    }
-    
-    public float getCrustalVpVsStdDev() {
-        return crustalVpVsStdDev;
-    }
-    
-    public QuantityImpl getVp() {
-        return vp;
-    }
-    
-    public QuantityImpl getVs() {
-        return vs;
-    }
-    
-    public float getPoissonsRatio() {
-        return poissonsRatio;
-    }
-    
     public int getNumEarthquakes() {
         return numEarthquakes;
     }
     
-    public float getComplexity() {
-        return complexity;
+    public float getComplexityResidual() {
+        return complexityResidual;
     }
-    
-    
+
+    public String formatComplexityResidual() {
+        return HKAlpha.vpvsFormat.format(getComplexityResidual());
+    }
 }

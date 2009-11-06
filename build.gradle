@@ -57,6 +57,7 @@ task tarDist(type: Tar, dependsOn: ['makeScript', 'createBuildScript', 'wrapper'
         include('gpl-3.0.txt')
         include('doc/**')
         include('src/**')
+        include('site/**')
         include('gradleWrapper/**')
         include('gradlew')
         include('gradlew.bat')

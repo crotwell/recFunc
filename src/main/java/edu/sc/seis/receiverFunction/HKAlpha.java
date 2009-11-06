@@ -120,9 +120,9 @@ public class HKAlpha {
 
     protected float kStdDev;
 
-    protected static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
+    public static final DecimalFormat vpvsFormat = new DecimalFormat("0.00");
 
-    protected static DecimalFormat depthFormat = new DecimalFormat("0.##");
+    public static final DecimalFormat depthFormat = new DecimalFormat("0.##");
 
     private static final QuantityImpl ZERO_KM = new QuantityImpl(0, UnitImpl.KILOMETER);
 }

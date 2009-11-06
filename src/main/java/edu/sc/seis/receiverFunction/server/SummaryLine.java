@@ -51,4 +51,62 @@ public class SummaryLine {
     float poissonsRatio;
     int numEarthquakes;
     float complexity;
+    
+    public String getNetCodeWithYear() {
+        return netCodeWithYear;
+    }
+    
+    public String getStaCode() {
+        return staCode;
+    }
+    
+    public float getLat() {
+        return lat;
+    }
+    
+    public float getLon() {
+        return lon;
+    }
+    
+    public QuantityImpl getElevation() {
+        return elevation;
+    }
+    
+    public QuantityImpl getCrustalThickness() {
+        return crustalThickness;
+    }
+    
+    public QuantityImpl getCrustalThicknessStdDev() {
+        return crustalThicknessStdDev;
+    }
+    
+    public float getCrustalVpVs() {
+        return crustalVpVs;
+    }
+    
+    public float getCrustalVpVsStdDev() {
+        return crustalVpVsStdDev;
+    }
+    
+    public QuantityImpl getVp() {
+        return vp;
+    }
+    
+    public QuantityImpl getVs() {
+        return vs;
+    }
+    
+    public float getPoissonsRatio() {
+        return poissonsRatio;
+    }
+    
+    public int getNumEarthquakes() {
+        return numEarthquakes;
+    }
+    
+    public float getComplexity() {
+        return complexity;
+    }
+    
+    
 }

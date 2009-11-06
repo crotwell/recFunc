@@ -31,6 +31,8 @@ import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.iris.Fissures.network.StationIdUtil;
 import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.TauP.TauModelException;
+import edu.sc.seis.fissuresUtil.bag.DistAz;
+import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.database.NotFound;
@@ -261,6 +263,11 @@ public class SumStackWorker implements Runnable {
                 for(ReceiverFunctionResult result : losers) {
                     loserEventList.add(result.createVelocityEvent());
                 }
+                
+                context.put("nearbyStats", getNearByStatistics(oneStationByCode.getLocation().latitude,
+                                                               oneStationByCode.getLocation().longitude,
+                                                               NEAR_BY_KM));
+                
                 stationServlet.populateContext(context, new VelocityNetwork(insertion.getNet()),
                                                insertion.getStaCode(), sumStack, individualHK, losers);
                 BufferedWriter stationOut = new BufferedWriter(new FileWriter(new File(stationDir, STATION_HTML)));
@@ -283,6 +290,27 @@ public class SumStackWorker implements Runnable {
                 throw new RuntimeException(e);
             }
         }
+    }
+    
+    public List<SummaryLine> getNearBy(float lat, float lon, float km) throws IOException {
+        List<SummaryLine> summaries = loadSummaryFromCSV();
+        List<SummaryLine> close = new ArrayList<SummaryLine>();
+        for (SummaryLine staResult : summaries) {
+            if (DistAz.degreesToKilometers(new DistAz(staResult.lat, staResult.lon,
+                           lat, lon).getDelta()) < km) {
+                close.add(staResult);
+            }
+        }
+        return close;
+    }
+    
+    public Statistics getNearByStatistics(float lat, float lon, float km) throws IOException {
+        List<SummaryLine> close = getNearBy(lat, lon, km);
+        List<QuantityImpl> thickness = new ArrayList<QuantityImpl>();
+        for (SummaryLine staResult : close) {
+            thickness.add(staResult.crustalThickness);
+        }
+        return new Statistics(thickness);
     }
 
     public static float calcComplexity(SumHKStack sumStack)
@@ -360,6 +388,8 @@ public class SumStackWorker implements Runnable {
     public static final String AZ_PLOT_IMAGE = "eventAzPlot";
     
     public static final float DEFAULT_GAUSSIAN = 2.5f;
+    
+    public static final float NEAR_BY_KM = 50f;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumStackWorker.class);
 

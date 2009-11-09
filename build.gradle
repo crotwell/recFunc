@@ -26,6 +26,7 @@ task makeScript(dependsOn: copyToLib) << { task ->
 
 task tarDist(type: Tar, dependsOn: ['makeScript', 'createBuildScript', 'wrapper'
 ]) {
+    compression = Compression.GZIP
     dirName = project.name+'-'+version
     tarFileSet(dir: 'build') {
         include('build.gradle')

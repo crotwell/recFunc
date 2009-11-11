@@ -44,12 +44,15 @@ import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.compare.StationResultRef;
 import edu.sc.seis.receiverFunction.hibernate.RFInsertion;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.receiverFunction.web.AzimuthPlot;
+import edu.sc.seis.receiverFunction.web.ComparePriorResult;
 import edu.sc.seis.receiverFunction.web.Overview;
+import edu.sc.seis.receiverFunction.web.PriorResultList;
 import edu.sc.seis.receiverFunction.web.Start;
 import edu.sc.seis.receiverFunction.web.Station;
 import edu.sc.seis.rev.RevUtil;
@@ -125,13 +128,46 @@ public class SumStackWorker implements Runnable {
         overviewOut.close();
         outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_HTML));
         logger.info("Done with summary html");
-        req.setParameter("filetype", "html");
+        req.setParameter("filetype", "txt");
         outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV + ".new");
         overviewOut = new BufferedWriter(new FileWriter(outFile));
         velocity.mergeTemplate("overview_txt.vm", context, overviewOut);
         overviewOut.close();
         outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV));
         logger.info("Done with summary csv");
+        // prior results
+        PriorResultList plist = new PriorResultList();
+        req = new MockHttpServletRequest(new URL("http://ears.seis.sc.edu/priorResultList.html"));
+        req.setParameter("filetype", "html");
+        req.setParameter("gaussian", "" + DEFAULT_GAUSSIAN);
+        context = plist.getContext(req, null);
+        context.put("gaussian", "" + DEFAULT_GAUSSIAN);
+        outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), PRIOR_RESULT_LIST + ".new");
+        overviewOut = new BufferedWriter(new FileWriter(outFile));
+        velocity.mergeTemplate("priorResultList.vm", context, overviewOut);
+        overviewOut.close();
+        outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), PRIOR_RESULT_LIST));
+        List<StationResultRef> refs = RecFuncDB.getSingleton().getAllPriorResultsRef();
+        for (StationResultRef stationResultRef : refs) {
+            ComparePriorResult cpr = new ComparePriorResult();
+            req = new MockHttpServletRequest(new URL("http://ears.seis.sc.edu/comparePriorResult.html"));
+            req.setParameter("filetype", "html");
+            req.setParameter("gaussian", "" + DEFAULT_GAUSSIAN);
+            req.setParameter("name", stationResultRef.getName());
+            context = cpr.getContext(req, null);
+            String filename = COMPARE_PRIOR_RESULT+"_" + stationResultRef.getName()+".html";
+            outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), filename + ".new");
+            overviewOut = new BufferedWriter(new FileWriter(outFile));
+            velocity.mergeTemplate("comparePriorResult.vm", context, overviewOut);
+            overviewOut.close();
+            outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), filename));
+            filename = COMPARE_PRIOR_RESULT+"_" + stationResultRef.getName()+".csv";
+            outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), filename + ".new");
+            overviewOut = new BufferedWriter(new FileWriter(outFile));
+            velocity.mergeTemplate("comparePriorResultTxt.vm", context, overviewOut);
+            overviewOut.close();
+            outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), filename));
+        }
     }
     
     public static List<SummaryLine> loadSummaryFromCSV() throws IOException {
@@ -151,8 +187,6 @@ public class SumStackWorker implements Runnable {
                                                      Float.parseFloat(split[7]),
                                                      Float.parseFloat(split[8]),
                                                      extractQuantity(split[9]),
-                                                     extractQuantity(split[10]),
-                                                     Float.parseFloat(split[11]),
                                                      Integer.parseInt(split[12]),
                                                      split[13].equals("?")?1:Float.parseFloat(split[13]) // why complexity sometimes a '?'
                                                              );
@@ -308,7 +342,7 @@ public class SumStackWorker implements Runnable {
         List<SummaryLine> close = getNearBy(lat, lon, km);
         List<QuantityImpl> thickness = new ArrayList<QuantityImpl>();
         for (SummaryLine staResult : close) {
-            thickness.add(staResult.crustalThickness);
+            thickness.add(staResult.getH());
         }
         return new Statistics(thickness);
     }
@@ -382,6 +416,10 @@ public class SumStackWorker implements Runnable {
     public static final String SUMMARY_HTML = "summary.html";
     
     public static final String SUMMARY_CSV = "summary.csv";
+
+    public static final String PRIOR_RESULT_LIST = "priorResultList.html";
+    
+    public static final String COMPARE_PRIOR_RESULT = "prior_";
     
     public static final String SUM_HK_STACK_IMAGE = "SumHKStackImage.png";
     

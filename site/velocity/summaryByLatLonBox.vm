@@ -1,0 +1,68 @@
+<html>
+<head>
+<title>Stations within latitude ($minLat, $maxLat) and longitude ($minLon, $maxLon)</title>
+<link rel="stylesheet" type="text/css" href="$!{staticFiles}station_list_style.css"/>
+<script src="$!{staticFiles}sorttable.js" type="text/javascript"> </script>
+<script src="$!{staticFiles}tableRuler.js" type="text/javascript"> </script>
+<script type="text/javascript">
+window.onload=function(){
+        tableruler();
+        set_img_dir('images/')
+}
+</script>
+</head>
+<body>
+
+#header()	
+	
+<div id="content">
+
+<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <b>Stations within latitude ($minLat, $maxLat) and longitude ($minLon, $maxLon)</b></p>
+
+<h1>Stations within latitude ($minLat, $maxLat) and longitude ($minLon, $maxLon)</h1>
+<img id="station_near_by"  src="DisplayChart?filename=${plotname}" usemap="#${plotname}" />
+$imagemap
+
+
+<ul id="stat_nearby_form">
+	<li>Change Results Criteria</li>
+<li>
+<form action="stationLatLonBox.html?gaussian=${gaussian}&xAxis=lon&yAxis=lat" method="get">
+
+<table>
+<tr><td class="label"><label for="minLat">Min Latitude: </label></td><td><input type="text" name="minLat" value="$minLat"/></td></tr>
+<tr><td class="label"><label for="maxLat">Max Latitude: </label></td><td><input type="text" name="maxLat" value="$maxLat"/></td></tr>
+<tr><td class="label"><label for="minLon">Min Longitude: </label></td><td><input type="text" name="minLon" value="$minLon"/></td></tr>
+<tr><td class="label"><label for="maxLon">Max Longitude: </label></td><td><input type="text" name="maxLon" value="$maxLon"/></td></tr>
+<tr><td class="label"><label for="xAxis">X Axis: </label></td><td><select name="xAxis">
+	<option value="H">Thickness</option>
+	<option value="vpvs">Vp/Vs</option>
+	<option value="lat">Latitude</option>
+	<option selected="true" value="lon">Longitude</option>
+</select></td></tr>
+<tr><td class="label"><label for="yAxis">Y Axis: </label></td><td><select name="yAxis">
+	<option selected="true"  value="H">Thickness</option>
+	<option value="vpvs">Vp/Vs</option>
+	<option value="lat">Latitude</option>
+	<option value="lon">Longitude</option>
+</select></td></tr>
+<tr><td class="label"><label for="zAxis">Color: </label></td><td><select name="zAxis">
+	<option value="H">Thickness</option>
+	<option selected="true"  value="vpvs">Vp/Vs</option>
+	<option value="lat">Latitude</option>
+	<option value="lon">Longitude</option>
+</select></td></tr>
+	
+<tr><td></td><td><input type="submit" value="Send"/></td></tr>
+  </table>
+ </form>
+</li>
+</ul>
+ 
+ 
+#summaryLineHTML($summary)
+
+
+</div>
+</body>
+</html>

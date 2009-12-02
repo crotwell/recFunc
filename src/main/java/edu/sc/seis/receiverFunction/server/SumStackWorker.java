@@ -49,6 +49,7 @@ import edu.sc.seis.receiverFunction.hibernate.RFInsertion;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
+import edu.sc.seis.receiverFunction.summaryFilter.SummaryLineFilter;
 import edu.sc.seis.receiverFunction.web.AzimuthPlot;
 import edu.sc.seis.receiverFunction.web.ComparePriorResult;
 import edu.sc.seis.receiverFunction.web.Overview;
@@ -170,7 +171,15 @@ public class SumStackWorker implements Runnable {
         }
     }
     
+
     public static List<SummaryLine> loadSummaryFromCSV() throws IOException {
+        return loadSummaryFromCSV(new SummaryLineFilter() {
+            public boolean accept(SummaryLine line) {
+                return true;
+            }});
+    }
+    
+    public static List<SummaryLine> loadSummaryFromCSV(SummaryLineFilter filter) throws IOException {
         List<SummaryLine> out = new ArrayList<SummaryLine>();
         File inFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV);
         BufferedReader overviewIn = new BufferedReader(new FileReader(inFile));
@@ -190,7 +199,9 @@ public class SumStackWorker implements Runnable {
                                                      Integer.parseInt(split[12]),
                                                      split[13].equals("?")?1:Float.parseFloat(split[13]) // why complexity sometimes a '?'
                                                              );
-            out.add(lineResult);
+            if (filter.accept(lineResult)) {
+                out.add(lineResult);
+            }
         }
         return out;
     }

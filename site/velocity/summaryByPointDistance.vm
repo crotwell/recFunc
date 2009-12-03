@@ -59,7 +59,7 @@ $imagemap
 </li>
 </ul>
 
-#summaryLineHTML($stationList $summary)
+#summaryLineHTML($summary)
 
 </div>
 #footer()

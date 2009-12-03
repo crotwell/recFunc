@@ -60,7 +60,7 @@ $imagemap
 </ul>
  
  
-#stationListHTML($stationList $summary)
+#stationLineHTML($summary)
 
 
 </div>

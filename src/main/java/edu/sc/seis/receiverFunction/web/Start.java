@@ -70,11 +70,11 @@ public class Start {
                               servletStrings,
                               rootHandler);
         RevUtil.populateJetty("/stationList.html",
-                              "edu.sc.seis.receiverFunction.web.StationList",
+                              "edu.sc.seis.receiverFunction.web.SummaryByNetwork",
                               servletStrings,
                               rootHandler);
         RevUtil.populateJetty("/stationList.txt",
-                              "edu.sc.seis.receiverFunction.web.StationList",
+                              "edu.sc.seis.receiverFunction.web.SummaryByNetwork",
                               servletStrings,
                               rootHandler);
         RevUtil.populateJetty("/stationCodeList.html",
@@ -82,15 +82,23 @@ public class Start {
                               servletStrings,
                               rootHandler);
         RevUtil.populateJetty("/stationsNearBy.html",
-                              "edu.sc.seis.receiverFunction.web.StationsNearBy",
+                              "edu.sc.seis.receiverFunction.web.SummaryByPointDistance",
+                              servletStrings,
+                              rootHandler);
+        RevUtil.populateJetty("/stationsNearBy.csv",
+                              "edu.sc.seis.receiverFunction.web.SummaryByPointDistance",
                               servletStrings,
                               rootHandler);
         RevUtil.populateJetty("/stationLatLonBox.html",
-                              "edu.sc.seis.receiverFunction.web.StationLatLonBox",
+                              "edu.sc.seis.receiverFunction.web.SummaryByLatLonBox",
                               servletStrings,
                               rootHandler);
         RevUtil.populateJetty("/stationLatLonBox.txt",
-                              "edu.sc.seis.receiverFunction.web.StationLatLonBox",
+                              "edu.sc.seis.receiverFunction.web.SummaryByLatLonBox",
+                              servletStrings,
+                              rootHandler);
+        RevUtil.populateJetty("/stationLatLonBox.csv",
+                              "edu.sc.seis.receiverFunction.web.SummaryByLatLonBox",
                               servletStrings,
                               rootHandler);
         RevUtil.populateJetty("/station.html",

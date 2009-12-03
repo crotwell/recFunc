@@ -1,22 +1,21 @@
 package edu.sc.seis.receiverFunction.web;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.data.xy.XYDataset;
-import edu.iris.Fissures.network.StationIdUtil;
-import edu.sc.seis.sod.velocity.network.VelocityStation;
+
+import edu.sc.seis.receiverFunction.server.SummaryLine;
 
 
 public class StationSummaryTooltipGenerator implements XYToolTipGenerator {
     
-    public StationSummaryTooltipGenerator(StationSummaryDataset dataset) {
-         this(dataset.stationList, dataset.summary, dataset.xAxis, dataset.yAxis, dataset.zAxis);
+    public StationSummaryTooltipGenerator(SummaryLineDataset dataset) {
+         this(dataset.summary, dataset.xAxis, dataset.yAxis, dataset.zAxis);
     }
     
-    public StationSummaryTooltipGenerator(ArrayList stationList, HashMap summary, String xAxis,
+    public StationSummaryTooltipGenerator(List<SummaryLine> summary, String xAxis,
                                 String yAxis, String zAxis) {
-                            this.stationList = stationList;
                             this.summary = summary;
                             this.xAxis = xAxis;
                             this.yAxis = yAxis;
@@ -24,13 +23,11 @@ public class StationSummaryTooltipGenerator implements XYToolTipGenerator {
                         }
     
     public String generateToolTip(XYDataset dataset, int series, int item) {
-        VelocityStation sta = (VelocityStation) stationList.get(item);
-        return StationIdUtil.toStringNoDates(sta);
+        SummaryLine sumLine = summary.get(item);
+        return sumLine.getNetCodeWithYear()+"."+sumLine.getStaCode();
     }
 
-    ArrayList stationList;
-
-    HashMap summary;
+    List<SummaryLine> summary;
 
     String xAxis, yAxis, zAxis;
 }

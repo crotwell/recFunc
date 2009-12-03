@@ -1,33 +1,28 @@
 package edu.sc.seis.receiverFunction.web;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+
 import org.jfree.chart.urls.XYURLGenerator;
 import org.jfree.data.xy.XYDataset;
-import edu.iris.Fissures.network.NetworkIdUtil;
-import edu.iris.Fissures.network.StationIdUtil;
-import edu.sc.seis.sod.velocity.network.VelocityNetwork;
-import edu.sc.seis.sod.velocity.network.VelocityStation;
+
+import edu.sc.seis.receiverFunction.server.SummaryLine;
 
 public class StationSummaryUrlGenerator implements XYURLGenerator {
 
-    public StationSummaryUrlGenerator(StationSummaryDataset dataset,
+    public StationSummaryUrlGenerator(SummaryLineDataset dataset,
                                       float gaussianWidth) {
-        this(dataset.stationList,
-             dataset.summary,
+        this(dataset.summary,
              dataset.xAxis,
              dataset.yAxis,
              dataset.zAxis,
              gaussianWidth);
     }
 
-    public StationSummaryUrlGenerator(ArrayList stationList,
-                                      HashMap summary,
+    public StationSummaryUrlGenerator(List<SummaryLine> summary,
                                       String xAxis,
                                       String yAxis,
                                       String zAxis,
                                       float gaussianWidth) {
-        this.stationList = stationList;
         this.summary = summary;
         this.xAxis = xAxis;
         this.yAxis = yAxis;
@@ -36,15 +31,13 @@ public class StationSummaryUrlGenerator implements XYURLGenerator {
     }
 
     public String generateURL(XYDataset dataset, int series, int item) {
-        VelocityStation sta = (VelocityStation)stationList.get(item);
+        SummaryLine sumLine = summary.get(item);
         return "station.html?netcode="
-                + NetworkIdUtil.toStringNoDates(sta.getNetworkAttr()) + "&stacode="
-                + sta.get_code()+"&gaussian="+gaussianWidth;
+                + sumLine.getNetCodeWithYear() + "&stacode="
+                + sumLine.getStaCode()+"&gaussian="+gaussianWidth;
     }
 
-    ArrayList stationList;
-
-    HashMap summary;
+    List<SummaryLine> summary;
 
     String xAxis, yAxis, zAxis;
 

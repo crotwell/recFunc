@@ -11,6 +11,8 @@ import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -26,6 +28,7 @@ import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.receiverFunction.HKStackImage;
 import edu.sc.seis.receiverFunction.SumHKStack;
+import edu.sc.seis.receiverFunction.server.SummaryLine;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
@@ -53,14 +56,12 @@ public class HKLatLonPlot extends HttpServlet {
     }
 
     public static JFreeChart getChart(HttpServletRequest req,
-                                      ArrayList stationList,
-                                      HashMap summary,
+                                      List<SummaryLine> summary,
                                       String titleString) {
         float gaussianWidth = RevUtil.getFloat("gaussian",
                                                req,
                                                Start.getDefaultGaussian());
-        StationSummaryDataset dataset = new StationSummaryDataset(stationList,
-                                                       summary,
+        SummaryLineDataset dataset = new SummaryLineDataset(summary,
                                                        RevUtil.get("xAxis",
                                                                    req,
                                                                    LONGITUDE),
@@ -156,7 +157,7 @@ public class HKLatLonPlot extends HttpServlet {
             String titleString = "Ears results near "
                     + RevUtil.get(LATITUDE, req) + ", "
                     + RevUtil.get(LONGITUDE, req);
-            JFreeChart chart = getChart(req, stationList, summary, titleString);
+            JFreeChart chart = getChart(req, summary, titleString);
             OutputStream out = res.getOutputStream();
             BufferedImage image = chart.createBufferedImage(xdim, ydim);
             res.setContentType("image/png");

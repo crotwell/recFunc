@@ -73,12 +73,16 @@ public class Start {
                               "edu.sc.seis.receiverFunction.web.SummaryByNetwork",
                               servletStrings,
                               rootHandler);
-        RevUtil.populateJetty("/stationList.txt",
+        RevUtil.populateJetty("/stationList.csv",
                               "edu.sc.seis.receiverFunction.web.SummaryByNetwork",
                               servletStrings,
                               rootHandler);
         RevUtil.populateJetty("/stationCodeList.html",
-                              "edu.sc.seis.receiverFunction.web.StationCodeList",
+                              "edu.sc.seis.receiverFunction.web.SummaryByStaCode",
+                              servletStrings,
+                              rootHandler);
+        RevUtil.populateJetty("/stationCodeList.csv",
+                              "edu.sc.seis.receiverFunction.web.SummaryByStaCode",
                               servletStrings,
                               rootHandler);
         RevUtil.populateJetty("/stationsNearBy.html",
@@ -90,10 +94,6 @@ public class Start {
                               servletStrings,
                               rootHandler);
         RevUtil.populateJetty("/stationLatLonBox.html",
-                              "edu.sc.seis.receiverFunction.web.SummaryByLatLonBox",
-                              servletStrings,
-                              rootHandler);
-        RevUtil.populateJetty("/stationLatLonBox.txt",
                               "edu.sc.seis.receiverFunction.web.SummaryByLatLonBox",
                               servletStrings,
                               rootHandler);
@@ -143,20 +143,8 @@ public class Start {
                               "edu.sc.seis.receiverFunction.web.ComparePriorResult",
                               servletStrings,
                               rootHandler);
-        RevUtil.populateJetty("/comparePriorResult.txt",
-                              "edu.sc.seis.receiverFunction.web.ComparePriorResultTxt",
-                              servletStrings,
-                              rootHandler);
         RevUtil.populateJetty("/analyticWaveforms.png",
                               "edu.sc.seis.receiverFunction.web.AnalyticPhaseSeismogramImage",
-                              servletStrings,
-                              rootHandler);
-        RevUtil.populateJetty("/hklatlon.png",
-                              "edu.sc.seis.receiverFunction.web.HKLatLonPlot",
-                              servletStrings,
-                              rootHandler);
-        RevUtil.populateJetty("/priorResultList.html",
-                              "edu.sc.seis.receiverFunction.web.PriorResultList",
                               servletStrings,
                               rootHandler);
         RevUtil.populateJetty("/earthquakeHKPlot.png",

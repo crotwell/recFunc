@@ -539,6 +539,13 @@ public class RecFuncDB extends AbstractHibernateDB {
         q.setFloat("gaussianWidth", gaussianWidth);
         return q.list();
     }
+
+    public Iterator<SumHKStack> getAllSumStackIterator(float gaussianWidth) {
+        Query q = getSession().createQuery("from " + SumHKStack.class.getName()
+                + " where gaussianWidth = :gaussianWidth");
+        q.setFloat("gaussianWidth", gaussianWidth);
+        return q.iterate();
+    }
     
     public static File getDataDir() {
         if(dataDir == null) {

@@ -1,29 +1,27 @@
 package edu.sc.seis.receiverFunction.web;
 
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
-import edu.sc.seis.receiverFunction.SumHKStack;
+import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
+import edu.sc.seis.receiverFunction.server.SumStackWorker;
+import edu.sc.seis.receiverFunction.server.SummaryLine;
+import edu.sc.seis.receiverFunction.summaryFilter.NumEQFilter;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
-import edu.sc.seis.sod.ConfigurationException;
-import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 
 public class Crust2TypeStats  extends Revlet {
-
-    public Crust2TypeStats() throws SQLException, ConfigurationException,
-            Exception {
-        comparePriorResult = new ComparePriorResult();
-    }
     
     public RevletContext getContext(HttpServletRequest req, HttpServletResponse res) throws Exception {
         int minEQ = RevUtil.getInt("minEQ",
@@ -36,47 +34,34 @@ public class Crust2TypeStats  extends Revlet {
                                                   Start.getDefaultContext());
         Revlet.loadStandardQueryParams(req, context);
         context.put("name","crust2.0");
-        ArrayList stations = comparePriorResult.getStations(req, context);
-        StationList.cleanStations(stations);
-        HashMap summary = comparePriorResult.getSummaries(stations, context, req);
-        comparePriorResult.cleanSummaries(stations, summary);
-        float[] allDiffs = new float[stations.size()];
-        HashMap typeDiffs = new HashMap();
-        Iterator typeIterator = oneLetterCodes.keySet().iterator();
+        
+        List<SummaryLine> summary = SumStackWorker.loadSummaryFromCSV(new NumEQFilter(minEQ));
+
+        Crust2 crust2 = new Crust2();
+        
+        float[] allDiffs = new float[summary.size()];
+        HashMap<String, List<Float>> typeDiffs = new HashMap<String, List<Float>>();
+        Iterator<String> typeIterator = oneLetterCodes.keySet().iterator();
         while(typeIterator.hasNext()) {
             Object key = typeIterator.next();
             if (typeDiffs.get(key) == null) {
-                typeDiffs.put(oneLetterCodes.get(key), new ArrayList());
+                typeDiffs.put(oneLetterCodes.get(key), new ArrayList<Float>());
             }
         }
-        Iterator it = stations.iterator();
-        while(it.hasNext()) {
-            VelocityStation sta = (VelocityStation)it.next();
-            SumHKStack sum = (SumHKStack)summary.get(sta);
-            if (sum.getNumEQ() <= minEQ) {
-                it.remove();
-                summary.remove(sta);
-            }
-        }
+        Iterator<SummaryLine> it = summary.iterator();
         int i=0;
-        it = stations.iterator();
         while(it.hasNext()) {
-            VelocityStation sta = (VelocityStation)it.next();
-            SumHKStack sum = (SumHKStack)summary.get(sta);
-            if (sum.getNumEQ() < 3) {it.remove();} else {
-            Crust2Profile profile = ComparePriorResult.crust2.getClosest(sta.getLocation().longitude, sta.getLocation().latitude);
-            allDiffs[i] = (float)profile.getCrustThickness().getValue(UnitImpl.KILOMETER)-sum.getComplexityResult().getBestH();
-            ArrayList typeDiffList = (ArrayList)typeDiffs.get(oneLetterCodes.get(profile.getCode().substring(0,1)));
-            typeDiffList.add(new Float(allDiffs[i]));
-            
+            SummaryLine sumLine = it.next();
+            Crust2Profile profile = crust2.getClosest(sumLine.getLon(), sumLine.getLat());
+            allDiffs[i] = (float)profile.getCrustThickness().subtract(sumLine.getH()).getValue(UnitImpl.KILOMETER);
+            typeDiffs.get(oneLetterCodes.get(profile.getCode().substring(0,1))).add(new Float(allDiffs[i]));
             i++;
-            }
         }
-        HashMap numSamps = new HashMap();
+        HashMap<String, String> numSamps = new HashMap<String, String>();
         context.put("numSamps", numSamps);
-        HashMap mean = new HashMap();
+        HashMap<String, String> mean = new HashMap<String, String>();
         context.put("mean", mean);
-        HashMap stddev = new HashMap();
+        HashMap<String, String> stddev = new HashMap<String, String>();
         context.put("stddev", stddev);
         Statistics allDiffStats = new Statistics(allDiffs);
         numSamps.put("all", ""+allDiffStats.getLength());
@@ -86,7 +71,7 @@ public class Crust2TypeStats  extends Revlet {
         typeIterator = oneLetterCodes.keySet().iterator();
         while(typeIterator.hasNext()) {
             Object key = typeIterator.next();
-            ArrayList typeDiffList = (ArrayList)typeDiffs.get(oneLetterCodes.get(key));
+            List<Float> typeDiffList = typeDiffs.get(oneLetterCodes.get(key));
             float[] floatDiffs = new float[typeDiffList.size()];
             for(int j = 0; j < floatDiffs.length; j++) {
                 floatDiffs[j] = ((Float)typeDiffList.get(j)).floatValue();
@@ -121,7 +106,7 @@ public class Crust2TypeStats  extends Revlet {
     static String ISLAND_ARC = "Island Arc";
     static String THINNED_CONT_CRUST = "thinned cont. crust/Black Sea/Caspian depression/Red Sea";
     
-    static HashMap oneLetterCodes = new HashMap();
+    static HashMap<String, String> oneLetterCodes = new HashMap<String, String>();
     
     static {
         oneLetterCodes.put("D", PLATFORM);
@@ -151,5 +136,4 @@ public class Crust2TypeStats  extends Revlet {
         oneLetterCodes.put("Y", THINNED_CONT_CRUST);
     }
     
-    ComparePriorResult comparePriorResult;
 }

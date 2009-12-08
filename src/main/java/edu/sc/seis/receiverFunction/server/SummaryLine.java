@@ -1,13 +1,33 @@
 package edu.sc.seis.receiverFunction.server;
 
 import edu.iris.Fissures.model.QuantityImpl;
+import edu.iris.Fissures.network.NetworkIdUtil;
+import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.receiverFunction.HKAlpha;
+import edu.sc.seis.receiverFunction.SumHKStack;
+import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 /** also see macro(stationListCSV in VM_global_library.vm */
 
 public class SummaryLine extends HKAlpha {
     
+    public SummaryLine(SumHKStack stack) {
+        super(stack.getBest().getH(), 
+              stack.getBest().getVpVs(), 
+              stack.getBest().getVp(), 
+              1, 
+              stack.getBest().getHStdDev(), 
+              stack.getBest().getKStdDev());
+        VelocityStation sta = new VelocityStation(NetworkDB.getSingleton().getStationByCodes(stack.getNet().get_code(), stack.getStaCode()).get(0));
+        this.netCodeWithYear = sta.getNet().getCodeWithYear();
+        this.staCode = sta.getCode();
+        this.lat = sta.getFloatLatitude();
+        this.lon = sta.getFloatLongitude();
+        this.elevation = QuantityImpl.createQuantityImpl(sta.getLocation().elevation);
+        this.numEarthquakes = stack.getNumEQ();
+        this.complexityResidual = stack.getComplexityResidual();
+    }
     
     public SummaryLine(String netCodeWithYear,
                        String staCode,
@@ -38,6 +58,7 @@ public class SummaryLine extends HKAlpha {
     QuantityImpl elevation;
     int numEarthquakes;
     float complexityResidual;
+    StationResult prior;
     
     public String getNetCodeWithYear() {
         return netCodeWithYear;
@@ -77,5 +98,13 @@ public class SummaryLine extends HKAlpha {
 
     public String formatComplexityResidual() {
         return HKAlpha.vpvsFormat.format(getComplexityResidual());
+    }
+    
+    public StationResult getPrior() {
+        return prior;
+    }
+    
+    public void setPrior(StationResult r) {
+        this.prior = r;
     }
 }

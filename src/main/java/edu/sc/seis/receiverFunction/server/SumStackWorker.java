@@ -4,22 +4,20 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
 
+import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import edu.iris.Fissures.IfNetwork.Channel;
@@ -35,7 +33,6 @@ import edu.sc.seis.fissuresUtil.bag.DistAz;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
-import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
 import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
@@ -45,19 +42,16 @@ import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
+import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.receiverFunction.hibernate.RFInsertion;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
+import edu.sc.seis.receiverFunction.summaryFilter.DistanceFilter;
 import edu.sc.seis.receiverFunction.summaryFilter.SummaryLineFilter;
 import edu.sc.seis.receiverFunction.web.AzimuthPlot;
-import edu.sc.seis.receiverFunction.web.ComparePriorResult;
-import edu.sc.seis.receiverFunction.web.Overview;
-import edu.sc.seis.receiverFunction.web.PriorResultList;
 import edu.sc.seis.receiverFunction.web.Start;
 import edu.sc.seis.receiverFunction.web.Station;
-import edu.sc.seis.rev.RevUtil;
-import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.hibernate.SodDB;
 import edu.sc.seis.sod.velocity.event.VelocityEvent;
@@ -117,61 +111,71 @@ public class SumStackWorker implements Runnable {
     }
     
     void generateSummary() throws Exception {
-        MockHttpServletRequest req = new MockHttpServletRequest(new URL("http://ears.seis.sc.edu/overview.html"));
-        req.setParameter("filetype", "html");
-        req.setParameter("gaussian", "" + DEFAULT_GAUSSIAN);
-        Overview overview = new Overview();
-        RevletContext context = overview.getContext(req, null);
+        Iterator<SumHKStack> it = RecFuncDB.getSingleton().getAllSumStackIterator(DEFAULT_GAUSSIAN);
+        List<SummaryLine> sumLines = new ArrayList<SummaryLine>();
+        while (it.hasNext()) {
+            SumHKStack stack = it.next();
+            sumLines.add(new SummaryLine(stack));
+        }
+        VelocityContext context = new VelocityContext();
         context.put("gaussian", "" + DEFAULT_GAUSSIAN);
-        File outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_HTML + ".new");
-        BufferedWriter overviewOut = new BufferedWriter(new FileWriter(outFile));
-        velocity.mergeTemplate("overview_html.vm", context, overviewOut);
-        overviewOut.close();
-        outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_HTML));
-        logger.info("Done with summary html");
-        req.setParameter("filetype", "txt");
-        outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV + ".new");
-        overviewOut = new BufferedWriter(new FileWriter(outFile));
-        velocity.mergeTemplate("overview_txt.vm", context, overviewOut);
-        overviewOut.close();
-        outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV));
-        logger.info("Done with summary csv");
+        context.put("summary", sumLines);
+        
+        doPage(context, SUMMARY_CSV, "summaryAll_csv.vm");
+        doPage(context, SUMMARY_HTML, "summaryAll_html.vm");
+        
+
         // prior results
-        PriorResultList plist = new PriorResultList();
-        req = new MockHttpServletRequest(new URL("http://ears.seis.sc.edu/priorResultList.html"));
-        req.setParameter("filetype", "html");
-        req.setParameter("gaussian", "" + DEFAULT_GAUSSIAN);
-        context = plist.getContext(req, null);
-        context.put("gaussian", "" + DEFAULT_GAUSSIAN);
-        outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), PRIOR_RESULT_LIST + ".new");
-        overviewOut = new BufferedWriter(new FileWriter(outFile));
-        velocity.mergeTemplate("priorResultList.vm", context, overviewOut);
-        overviewOut.close();
-        outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), PRIOR_RESULT_LIST));
         List<StationResultRef> refs = RecFuncDB.getSingleton().getAllPriorResultsRef();
+        context.put("priorResults", refs);
+        doPage(context, PRIOR_RESULT_LIST, "priorResultList.vm");
+        
         for (StationResultRef stationResultRef : refs) {
-            ComparePriorResult cpr = new ComparePriorResult();
-            req = new MockHttpServletRequest(new URL("http://ears.seis.sc.edu/comparePriorResult.html"));
-            req.setParameter("filetype", "html");
-            req.setParameter("gaussian", "" + DEFAULT_GAUSSIAN);
-            req.setParameter("name", stationResultRef.getName());
-            context = cpr.getContext(req, null);
-            String filename = COMPARE_PRIOR_RESULT+"_" + stationResultRef.getName()+".html";
-            outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), filename + ".new");
-            overviewOut = new BufferedWriter(new FileWriter(outFile));
-            velocity.mergeTemplate("comparePriorResult.vm", context, overviewOut);
-            overviewOut.close();
-            outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), filename));
-            filename = COMPARE_PRIOR_RESULT+"_" + stationResultRef.getName()+".csv";
-            outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), filename + ".new");
-            overviewOut = new BufferedWriter(new FileWriter(outFile));
-            velocity.mergeTemplate("comparePriorResultTxt.vm", context, overviewOut);
-            overviewOut.close();
-            outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), filename));
+            context.put("ref", stationResultRef);
+            context.put("name", stationResultRef.getName());
+            List<StationResult> priors = getPriorResults(stationResultRef.getName());
+            List<SummaryLine> out = new ArrayList<SummaryLine>();
+            for (StationResult stationResult : priors) {
+                for (SummaryLine summaryLine : sumLines) {
+                    if (stationResult.getStaCode().equals(summaryLine.getStaCode()) &&
+                            NetworkIdUtil.toStringNoDates(stationResult.getNet()).equals(summaryLine.getNetCodeWithYear()) ) {
+                        summaryLine.setPrior(stationResult);
+                        out.add(summaryLine);
+                        break;
+                    }
+                }
+            }
+            context.put("summary", out);
+            doPage(context, COMPARE_PRIOR_RESULT+"_" + stationResultRef.getName()+".html", "comparePriorResult.vm");
+            doPage(context, COMPARE_PRIOR_RESULT+"_" + stationResultRef.getName()+".csv", "comparePriorResultTxt.vm");
+        }
+
+    }
+    
+    List<StationResult> getPriorResults(String name) {
+        if(name.equals("crust2.0") || name.equals("Crust2.0")) {
+            Crust2 crust2 = new Crust2();
+            List<StationResult> out = new ArrayList<StationResult>();
+            StationImpl[] allsta = NetworkDB.getSingleton().getAllStations();
+            for(int i = 0; i < allsta.length; i++) {
+                VelocityStation station = new VelocityStation(allsta[i]);
+                out.add(crust2.getStationResult(station));
+            } 
+            return out;
+        } else {
+            return RecFuncDB.getSingleton().getPriorResults(name);
         }
     }
     
-
+    
+    void doPage(VelocityContext context, String pageName, String template) throws Exception {
+        File outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), pageName + ".new");
+        BufferedWriter overviewOut = new BufferedWriter(new FileWriter(outFile));
+        velocity.mergeTemplate(template, context, overviewOut);
+        overviewOut.close();
+        outFile.renameTo(new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), pageName));
+    }
+    
     public static List<SummaryLine> loadSummaryFromCSV() throws IOException {
         return loadSummaryFromCSV(new SummaryLineFilter() {
             public boolean accept(SummaryLine line) {
@@ -185,6 +189,7 @@ public class SumStackWorker implements Runnable {
         BufferedReader overviewIn = new BufferedReader(new FileReader(inFile));
         String line = "";
         while ((line = overviewIn.readLine()) != null) {
+            if (line.startsWith("#")) {continue;}
             String[] split = line.split(",");
             SummaryLine lineResult = new SummaryLine(split[0],
                                                      split[1],
@@ -337,20 +342,8 @@ public class SumStackWorker implements Runnable {
         }
     }
     
-    public List<SummaryLine> getNearBy(float lat, float lon, float km) throws IOException {
-        List<SummaryLine> summaries = loadSummaryFromCSV();
-        List<SummaryLine> close = new ArrayList<SummaryLine>();
-        for (SummaryLine staResult : summaries) {
-            if (DistAz.degreesToKilometers(new DistAz(staResult.lat, staResult.lon,
-                           lat, lon).getDelta()) < km) {
-                close.add(staResult);
-            }
-        }
-        return close;
-    }
-    
     public Statistics getNearByStatistics(float lat, float lon, float km) throws IOException {
-        List<SummaryLine> close = getNearBy(lat, lon, km);
+        List<SummaryLine> close = loadSummaryFromCSV(new DistanceFilter(lat, lon, (float)DistAz.kilometersToDegrees(km)));
         List<QuantityImpl> thickness = new ArrayList<QuantityImpl>();
         for (SummaryLine staResult : close) {
             thickness.add(staResult.getH());

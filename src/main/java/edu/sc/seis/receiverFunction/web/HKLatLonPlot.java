@@ -47,7 +47,6 @@ public class HKLatLonPlot extends HttpServlet {
      */
     public HKLatLonPlot() throws SQLException, ConfigurationException,
             Exception {
-        stationsNearBy = new StationsNearBy();
     }
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
@@ -140,40 +139,6 @@ public class HKLatLonPlot extends HttpServlet {
         return chart;
     }
 
-    protected synchronized void doGet(HttpServletRequest req,
-                                      HttpServletResponse res)
-            throws ServletException, IOException {
-        try {
-            logger.debug("doGet called");
-            int xdim = RevUtil.getInt("xdim", req, xdimDefault);
-            int ydim = RevUtil.getInt("ydim", req, ydimDefault);
-            RevletContext context = new RevletContext("unused");
-            ArrayList stationList = stationsNearBy.getStations(req, context);
-            logger.debug(stationList.size() + " stations nearby");
-            HashMap summary = stationsNearBy.cleanSummaries(stationList,
-                                                            stationsNearBy.getSummaries(stationList,
-                                                                                        context,
-                                                                                        req));
-            String titleString = "Ears results near "
-                    + RevUtil.get(LATITUDE, req) + ", "
-                    + RevUtil.get(LONGITUDE, req);
-            JFreeChart chart = getChart(req, summary, titleString);
-            OutputStream out = res.getOutputStream();
-            BufferedImage image = chart.createBufferedImage(xdim, ydim);
-            res.setContentType("image/png");
-            ImageIO.write(image, "png", out);
-            out.close();
-        } catch(NotFound e) {
-            OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
-            writer.write("<html><body><p>No HK stack foundfor id "
-                    + req.getParameter("rf") + "</p></body></html>");
-            writer.flush();
-        } catch(Exception e) {
-            Revlet.sendToGlobalExceptionHandler(req, e);
-            throw new RuntimeException(e);
-        }
-    }
-
     static String getLabel(String key) {
         if(THICKNESS.equals(key)) {
             return "Thickness";
@@ -194,8 +159,6 @@ public class HKLatLonPlot extends HttpServlet {
     static final String LATITUDE = "lat";
 
     static final String LONGITUDE = "lon";
-
-    StationsNearBy stationsNearBy;
 
     public static final int xdimDefault = 600;
 

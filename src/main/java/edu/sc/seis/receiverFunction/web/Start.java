@@ -139,10 +139,6 @@ public class Start {
                               "edu.sc.seis.receiverFunction.web.SeismogramImage",
                               servletStrings,
                               rootHandler);
-        RevUtil.populateJetty("/comparePriorResult.html",
-                              "edu.sc.seis.receiverFunction.web.ComparePriorResult",
-                              servletStrings,
-                              rootHandler);
         RevUtil.populateJetty("/analyticWaveforms.png",
                               "edu.sc.seis.receiverFunction.web.AnalyticPhaseSeismogramImage",
                               servletStrings,

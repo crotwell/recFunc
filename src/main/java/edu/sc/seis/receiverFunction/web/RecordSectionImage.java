@@ -116,6 +116,9 @@ public class RecordSectionImage extends HttpServlet {
         } catch(EOFException e) {
             // silently eat these as they just mean remote user has closed
             // connection
+        } catch(javax.imageio.IIOException e) {
+            // silently eat these as they just mean remote user has closed
+            // connection
         } catch(Throwable e) {
             Revlet.sendToGlobalExceptionHandler(req, e);
             throw new ServletException(e);

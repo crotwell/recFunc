@@ -10,8 +10,6 @@ dependencies {
     compile "edu.sc.seis.mapData:vmap_po_thinned:1.0"
     compile "jfreechart:jcommon:1.0.0"
     compile "jfreechart:jfreechart:1.0.1"
-//    compile "commons-cli:commons-cli:1.0"
-//    compile "Multivalent:Multivalent:R7_USC2"
     compile "easymock:easymock:1.0"
 }
 

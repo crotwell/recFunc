@@ -1,6 +1,6 @@
 
 group = 'edu.sc.seis'
-version = '2.0beta'
+version = '2.0beta3'
 
 dependencies {
     compile project(':rev') { transitive = true }
@@ -19,7 +19,7 @@ task makeScript(dependsOn: copyToLib) << { task ->
     ScriptBuilder.create('viewResults', 'edu.sc.seis.receiverFunction.web.Start', task.project, dExtras:dExtras, background:true)
     ScriptBuilder.create('server', 'edu.sc.seis.cormorant.Start', task.project, dExtras:dExtras, background:true, mx:'2048m')
     ScriptBuilder.create('admin', 'edu.sc.seis.receiverFunction.server.Admin', task.project, dExtras:dExtras, background:false)
-    ScriptBuilder.create('dateStack', 'edu.sc.seis.receiverFunction.server.DateRangeResults', task.project, dExtras:dExtras, background:false)
+    //ScriptBuilder.create('dateStack', 'edu.sc.seis.receiverFunction.server.DateRangeResults', task.project, dExtras:dExtras, background:false)
 }
 
 task tarDist(type: Tar, dependsOn: ['makeScript', 'createBuildScript', 'wrapper'
@@ -46,11 +46,15 @@ task tarDist(type: Tar, dependsOn: ['makeScript', 'createBuildScript', 'wrapper'
     from('sodRF') {
         into dirName
         include('realtime.xml')
+        include('realtime_IIIU.xml')
     }
     from('scripts') {
-        include('ears.prop')
-        include('ears_client.prop')
-        include('viewResults.prop')
+        include('earsServer_sc.prop')
+        include('earsSod_sc.prop')
+        include('earsJetty_sc.prop')
+        include('earsServer_iris.prop')
+        include('earsSod_iris.prop')
+        include('earsJetty_iris.prop')
         into dirName
     }
     from('.') {

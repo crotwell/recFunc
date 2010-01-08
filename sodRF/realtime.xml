@@ -43,8 +43,8 @@
                 <max>1000</max>
             </originDepthRange>
             <originTimeRange>
-                <startTime>20080701T00:00:00.001Z</startTime>
-                <endTime>20201231T23:59:59.999Z</endTime>
+                <startTime>20090901T00:00:00.001Z</startTime>
+                <endTime>24991231T23:59:59.999Z</endTime>
             </originTimeRange>
             <magnitudeRange>
                 <min>5.5</min>
@@ -69,11 +69,11 @@
         </networkFinder>
         <networkEffectiveTimeOverlap>
             <startTime>20050101T00:00:00.001Z</startTime>
-            <endTime>20201231T23:59:59.999Z</endTime>
+            <endTime>24991231T23:59:59.999Z</endTime>
         </networkEffectiveTimeOverlap>
         <stationEffectiveTimeOverlap>
             <startTime>20050101T00:00:00.001Z</startTime>
-            <endTime>20201231T23:59:59.999Z</endTime>
+            <endTime>24991231T23:59:59.999Z</endTime>
         </stationEffectiveTimeOverlap>
         <channelOR>
             <siteCode>  </siteCode>
@@ -92,7 +92,7 @@
             </channelOR>
             <channelEffectiveTimeOverlap>
                 <startTime>20050101T00:00:00.001Z</startTime>
-                <endTime>20201231T23:59:59.999Z</endTime>
+                <endTime>24991231T23:59:59.999Z</endTime>
             </channelEffectiveTimeOverlap>
         </channelAND>
         <printlineChannelProcess/>

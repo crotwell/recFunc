@@ -52,7 +52,6 @@ public class Start {
         Properties props = Initializer.loadProperties(args);
         PropertyConfigurator.configure(props);
         RecFuncDB.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc", RecFuncDB.getDataLoc()));
-        ConnMgr.setDB(ConnMgr.POSTGRES);
         ConnMgr.setURL(props.getProperty("fissuresUtil.database.url"));
         HibernateUtil.setUpFromConnMgr(props, HibernateUtil.DEFAULT_EHCACHE_CONFIG);
         synchronized(HibernateUtil.class) {

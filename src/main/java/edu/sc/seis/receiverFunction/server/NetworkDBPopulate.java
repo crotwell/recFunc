@@ -28,7 +28,6 @@ public class NetworkDBPopulate {
         // register valuetype factories
         edu.iris.Fissures.model.AllVTFactory vt = new AllVTFactory();
         vt.register(orb);
-        ConnMgr.setDB(ConnMgr.POSTGRES);
         FissuresNamingService fisName = new FissuresNamingService(orb);
         fisName.setNameServiceCorbaLoc(props.getProperty(FissuresNamingService.CORBALOC_PROP));
         NetworkDCOperations netDC = new VestingNetworkDC("edu/iris/dmc",

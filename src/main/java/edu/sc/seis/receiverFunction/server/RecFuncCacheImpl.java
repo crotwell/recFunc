@@ -74,7 +74,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
             RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
         }
         AbstractHibernateDB.deploySchema();
-        logger.debug("Impl created, using " + databaseURL + " and POSTGRES");
+        logger.debug("Impl created, using " + databaseURL);
         qualityControl = new QualityControl();
     }
 

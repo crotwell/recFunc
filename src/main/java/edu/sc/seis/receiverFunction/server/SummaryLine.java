@@ -27,6 +27,8 @@ public class SummaryLine extends HKAlpha {
         this.elevation = QuantityImpl.createQuantityImpl(sta.getLocation().elevation);
         this.numEarthquakes = stack.getNumEQ();
         this.complexityResidual = stack.getComplexityResidual();
+        this.staName = csvClean(sta.getName());
+        this.netName = csvClean(sta.getNet().getName());
     }
     
     public SummaryLine(String netCodeWithYear,
@@ -40,7 +42,9 @@ public class SummaryLine extends HKAlpha {
                        float crustalVpVsStdDev,
                        QuantityImpl vp,
                        int numEarthquakes,
-                       float complexityResidual) {
+                       float complexityResidual,
+                       String staName,
+                       String netName) {
         super(crustalThickness, crustalVpVs, vp, 1, crustalThicknessStdDev, crustalVpVsStdDev);
         this.netCodeWithYear = netCodeWithYear;
         this.staCode = staCode;
@@ -49,10 +53,18 @@ public class SummaryLine extends HKAlpha {
         this.elevation = elevation;
         this.numEarthquakes = numEarthquakes;
         this.complexityResidual = complexityResidual;
+        this.staName = staName;
+        this.netName = netName;
+    }
+    
+    String csvClean(String in) {
+        return in.replaceAll(",", "");
     }
     
     String netCodeWithYear;
+    String netName;
     String staCode;
+    String staName;
     float lat;
     float lon;
     QuantityImpl elevation;

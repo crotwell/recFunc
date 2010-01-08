@@ -202,8 +202,9 @@ public class SumStackWorker implements Runnable {
                                                      Float.parseFloat(split[8]),
                                                      extractQuantity(split[9]),
                                                      Integer.parseInt(split[12]),
-                                                     split[13].equals("?")?1:Float.parseFloat(split[13]) // why complexity sometimes a '?'
-                                                             );
+                                                     split[13].equals("?")?1:Float.parseFloat(split[13]), // why complexity sometimes a '?'
+                                                     split[14],
+                                                     split[15]);
             if (filter.accept(lineResult)) {
                 out.add(lineResult);
             }

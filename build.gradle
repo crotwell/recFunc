@@ -1,6 +1,6 @@
 
 group = 'edu.sc.seis'
-version = '2.0beta3'
+version = '2.0beta4'
 
 dependencies {
     compile project(':rev') { transitive = true }

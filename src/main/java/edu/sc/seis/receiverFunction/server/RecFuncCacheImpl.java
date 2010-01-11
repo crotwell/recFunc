@@ -62,11 +62,9 @@ import edu.sc.seis.sod.hibernate.SodDB;
  */
 public class RecFuncCacheImpl extends RecFuncCachePOA {
 
-    public RecFuncCacheImpl(String databaseURL,
-                            String dataloc,
+    public RecFuncCacheImpl(String dataloc,
                             Properties confProps) throws IOException,
             SQLException, ConfigurationException, TauModelException, Exception {
-        ConnMgr.setURL(databaseURL);
         RecFuncDB.setDataLoc(dataloc);
         synchronized(HibernateUtil.class) {
             HibernateUtil.setUpFromConnMgr(confProps, HibernateUtil.DEFAULT_EHCACHE_CONFIG);
@@ -74,7 +72,6 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
             RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
         }
         AbstractHibernateDB.deploySchema();
-        logger.debug("Impl created, using " + databaseURL);
         qualityControl = new QualityControl();
     }
 

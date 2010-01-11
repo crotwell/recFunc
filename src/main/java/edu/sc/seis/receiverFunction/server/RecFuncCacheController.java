@@ -4,6 +4,7 @@ import java.util.Properties;
 import org.omg.CORBA.ORB;
 import org.omg.PortableServer.Servant;
 import edu.sc.seis.cormorant.AbstractController;
+import edu.sc.seis.fissuresUtil.database.ConnMgr;
 import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
 import edu.sc.seis.receiverFunction.SumHKStack;
 
@@ -19,9 +20,11 @@ public class RecFuncCacheController extends AbstractController {
                                   String serverPropName,
                                   ORB orb) throws Exception {
         super(confProps, serverPropName, orb);
+        String databaseURL = confProps.getProperty(getPropertryPrefix()+ "databaseURL");
+        ConnMgr.setURL(databaseURL);
         impl = new RecFuncCacheImpl(confProps.getProperty(getPropertryPrefix()
-                + "databaseURL"), confProps.getProperty(getPropertryPrefix()
                 + "dataloc"), confProps);
+        logger.debug("Impl created, using " + databaseURL);
 
         float minPercentMatch = 80f;
         boolean bootstrap = true;
@@ -54,4 +57,6 @@ public class RecFuncCacheController extends AbstractController {
     private SumStackWorker worker;
     
     private RecFuncCacheImpl impl;
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(RecFuncCacheController.class);
 }

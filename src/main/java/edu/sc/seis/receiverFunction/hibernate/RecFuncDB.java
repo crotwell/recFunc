@@ -7,7 +7,6 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import org.omg.CORBA.UNKNOWN;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.NetworkAttr;
-import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.IfParameterMgr.ParameterRef;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
@@ -44,7 +42,6 @@ import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.UserReceiverFunctionQC;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
-import edu.sc.seis.sod.hibernate.SodDB;
 import edu.sc.seis.sod.status.EventFormatter;
 
 public class RecFuncDB extends AbstractHibernateDB {

@@ -113,6 +113,8 @@
             <externalEventVectorSubsetter>
                 <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                 <gaussianWidth>2.5</gaussianWidth>
+                <dns>edu/iris/dmc</dns>
+                <name>Ears</name>
             </externalEventVectorSubsetter>
         </eventVectorNOT>
         <phaseRequest>
@@ -221,6 +223,8 @@
                 <externalEventVectorSubsetter>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                     <gaussianWidth>2.5</gaussianWidth>
+                    <dns>edu/iris/dmc</dns>
+                    <name>Ears</name>
                 </externalEventVectorSubsetter>
             </eventVectorNOT>
         </embeddedEventVector>
@@ -228,6 +232,8 @@
             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
             <workingDir>RT_recfunc</workingDir>
             <gaussianWidth>2.5</gaussianWidth>
+            <dns>edu/iris/dmc</dns>
+            <name>Ears</name>
         </externalWaveformVectorProcess>
         <printlineSeismogramProcess/>
     </waveformVectorArm>

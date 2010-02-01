@@ -14,6 +14,7 @@ import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
+import edu.sc.seis.IfReceiverFunction.RecFuncCacheOperations;
 import edu.sc.seis.IfReceiverFunction.SodConfigNotFound;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
@@ -257,11 +258,11 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
 
     String serverName = "Ears";
 
-    int sodconfig_id = -1;
+    protected int sodconfig_id = -1;
 
     boolean overwrite = false;
 
-    NSRecFuncCache cache;
+    protected RecFuncCacheOperations cache;
 
     TauPUtil taup;
 

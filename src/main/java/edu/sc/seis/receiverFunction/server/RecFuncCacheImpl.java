@@ -2,22 +2,16 @@ package edu.sc.seis.receiverFunction.server;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-
-import net.sf.ehcache.CacheManager;
 
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.UNKNOWN;
 
 import edu.iris.Fissures.Orientation;
 import edu.iris.Fissures.IfEvent.EventAttr;
-import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
@@ -37,8 +31,6 @@ import edu.sc.seis.IfReceiverFunction.RecFuncNotFound;
 import edu.sc.seis.IfReceiverFunction.SodConfigNotFound;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
-import edu.sc.seis.fissuresUtil.database.ConnMgr;
-import edu.sc.seis.fissuresUtil.database.DBUtil;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
@@ -54,7 +46,6 @@ import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.SodConfig;
-import edu.sc.seis.sod.Start;
 import edu.sc.seis.sod.hibernate.SodDB;
 
 /**
@@ -62,16 +53,21 @@ import edu.sc.seis.sod.hibernate.SodDB;
  */
 public class RecFuncCacheImpl extends RecFuncCachePOA {
 
+    public RecFuncCacheImpl(String dataloc) throws IOException,
+            SQLException, ConfigurationException, TauModelException, Exception {
+        RecFuncDB.setDataLoc(dataloc);
+        qualityControl = new QualityControl();
+    }
+
     public RecFuncCacheImpl(String dataloc,
                             Properties confProps) throws IOException,
             SQLException, ConfigurationException, TauModelException, Exception {
-        RecFuncDB.setDataLoc(dataloc);
+        this(dataloc);
         synchronized(HibernateUtil.class) {
             HibernateUtil.setUpFromConnMgr(confProps, HibernateUtil.DEFAULT_EHCACHE_CONFIG);
             RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
         }
         AbstractHibernateDB.deploySchema();
-        qualityControl = new QualityControl();
     }
 
     public IterDeconConfig[] getCachedConfigs(Origin prefOrigin,

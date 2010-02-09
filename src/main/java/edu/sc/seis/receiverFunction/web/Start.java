@@ -28,6 +28,7 @@ import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.rev.ServletFromSet;
+import edu.sc.seis.sod.hibernate.SodDB;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
 /**
@@ -55,6 +56,7 @@ public class Start {
         ConnMgr.setURL(props.getProperty("fissuresUtil.database.url"));
         HibernateUtil.setUpFromConnMgr(props, HibernateUtil.DEFAULT_EHCACHE_CONFIG);
         synchronized(HibernateUtil.class) {
+            SodDB.configHibernate(HibernateUtil.getConfiguration());
             RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
         }
         logger.info("connecting to database: " + ConnMgr.getURL());

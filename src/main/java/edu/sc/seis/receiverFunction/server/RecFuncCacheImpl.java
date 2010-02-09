@@ -65,6 +65,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
         this(dataloc);
         synchronized(HibernateUtil.class) {
             HibernateUtil.setUpFromConnMgr(confProps, HibernateUtil.DEFAULT_EHCACHE_CONFIG);
+            SodDB.configHibernate(HibernateUtil.getConfiguration());
             RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
         }
         AbstractHibernateDB.deploySchema();

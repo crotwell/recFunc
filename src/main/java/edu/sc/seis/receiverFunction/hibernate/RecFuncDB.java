@@ -354,9 +354,13 @@ public class RecFuncDB extends AbstractHibernateDB {
         return ((Integer)getSession().save(prior)).intValue();
     }
 
+    public int put(StationResultRef priorRef) {
+        return ((Integer)getSession().save(priorRef)).intValue();
+    }
+
     public List<StationResult> getPriorResults(String name) {
         Query q = getSession().createQuery("from "
-                + StationResult.class.getName() + " where name = :name");
+                + StationResult.class.getName() + " where ref.name = :name");
         q.setString("name", name);
         return q.list();
     }
@@ -372,8 +376,8 @@ public class RecFuncDB extends AbstractHibernateDB {
     }
 
     public StationResultRef getPriorResultsRef(String name) {
-        Query q = getSession().createQuery("select ref from "
-                + StationResult.class.getName() + " where name = :name");
+        Query q = getSession().createQuery("from "
+                + StationResultRef.class.getName() + " where name = :name");
         q.setString("name", name);
         q.setMaxResults(1);
         List<StationResultRef> l = q.list();
@@ -384,8 +388,8 @@ public class RecFuncDB extends AbstractHibernateDB {
     }
 
     public List<StationResultRef> getAllPriorResultsRef() {
-        Query q = getSession().createQuery("select distinct ref from "
-                + StationResult.class.getName());
+        Query q = getSession().createQuery("from "
+                + StationResultRef.class.getName());
         return q.list();
     }
 

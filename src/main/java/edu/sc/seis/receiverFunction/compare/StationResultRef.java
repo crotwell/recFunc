@@ -53,6 +53,14 @@ public class StationResultRef {
     protected void setUrl(String url) {
         this.url = url;
     }
+    
+    public int getDbid() {
+        return dbid;
+    }
+
+    public void setDbid(int dbid) {
+        this.dbid = dbid;
+    }
 
     private String name;
 
@@ -61,4 +69,6 @@ public class StationResultRef {
     private String method;
 
     private String url;
+    
+    private int dbid;
 }

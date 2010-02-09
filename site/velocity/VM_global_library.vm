@@ -133,7 +133,7 @@ $eq.getParam("itr_match"),$sta.getDistanceDeg($eq),$sta.getBaz($eq),$eq.getRegio
 // if this is changed, also change loadSummaryFromCSV() in SumStackWorker.java
 #macro(summaryLineCSV $sumList)
 #foreach($s in $sumList)
-$s.netCodeWithYear,$s.staCode,$s.lat,$s.lon,$s.elevation,$s.formatH(),$s.formatHStdDev(),$s.formatVpVs(),$s.formatKStdDev(),$s.formatVp(),$s.formatVs(),$s.formatPoissonsRatio(),$s.numEarthquakes,$s.formatComplexityResidual()
+$s.netCodeWithYear,$s.staCode,$s.lat,$s.lon,$s.elevation,$s.formatH(),$s.formatHStdDev(),$s.formatVpVs(),$s.formatKStdDev(),$s.formatVp(),$s.formatVs(),$s.formatPoissonsRatio(),$s.numEarthquakes,$s.formatComplexityResidual(),$s.staName,$s.netName
 #end
 #end
 

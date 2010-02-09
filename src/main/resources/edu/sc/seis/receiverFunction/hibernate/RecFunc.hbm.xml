@@ -217,12 +217,9 @@
 			class="edu.iris.Fissures.network.NetworkAttrImpl"
 			foreign-key="FK_result_net" />
 		<property name="staCode"/>
-		<component name="ref" class="edu.sc.seis.receiverFunction.compare.StationResultRef">
-			<property name="name"/>
-			<property name="method"/>
-			<property name="reference"/>
-			<property name="url"/>
-		</component>
+		<many-to-one name="ref"
+			class="edu.sc.seis.receiverFunction.compare.StationResultRef"
+			foreign-key="FK_result_ref" />
 		<component name="h"
 			class="edu.iris.Fissures.model.QuantityImpl" access="field">
 			<property name="value" column="depth_value"
@@ -245,6 +242,17 @@
 		<property name="extras"/>
 	</class>
 	
+	<class name="edu.sc.seis.receiverFunction.compare.StationResultRef"
+		table="stationResultRef">
+		<id name="dbid" type="integer">
+			<generator class="native" />
+		</id>
+		<property name="name"/>
+		<property name="method"/>
+		<property name="reference"/>
+		<property name="url"/>
+	</class>
+		
 	<class name="edu.sc.seis.receiverFunction.hibernate.RFInsertion"
 		table="rfinsertion">
 		<id name="dbid" type="integer">
@@ -258,14 +266,4 @@
 		<property name="insertTime" type="timestamp"/>
 	</class>
 
-<!-- this is a copy of the same class from sod.hbm.xml, uggghhh, but otherwise
-recfunc's hibernate depends on sod's, and sod's is incompatible with MySQL. So, biting
-the bullet and doing the copy so ears can be transfered to the DMC. -->
-    <class name="edu.sc.seis.sod.SodConfig">
-        <id name="dbid" type="integer">
-            <generator class="native" />
-        </id>
-        <property name="config" type="text" />
-        <property name="time" type="timestamp" />
-    </class>
 </hibernate-mapping>

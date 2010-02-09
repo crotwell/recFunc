@@ -84,6 +84,16 @@ public class SumStackWorker implements Runnable {
     }
 
     public void run() {
+        File sumCSVFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV);
+        if ( ! sumCSVFile.exists()) {
+            try {
+                // caught up, redo summary pages
+                generateSummary();
+            } catch(Exception e) {
+                GlobalExceptionHandler.handle("Unable to generate summary html", e);
+                return;
+            }
+        }
         boolean didProcess = false;
         while (keepGoing) {
             RFInsertion insertion = RecFuncDB.getSingleton().popInsertion(RF_AGE_TIME);

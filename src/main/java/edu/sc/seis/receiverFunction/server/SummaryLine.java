@@ -59,7 +59,7 @@ public class SummaryLine extends HKAlpha {
     }
     
     String csvClean(String in) {
-        return in.replaceAll(",", "").trim();
+        return in.replaceAll(",", "").replaceAll("\n", "").trim();
     }
     
     String netCodeWithYear;

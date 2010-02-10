@@ -124,6 +124,7 @@ public class SumStackWorker implements Runnable {
             sumLines.add(new SummaryLine(stack));
         }
         VelocityContext context = new VelocityContext();
+        RevletContext.putDefaults(context);
         context.put("gaussian", "" + DEFAULT_GAUSSIAN);
         context.put("summary", sumLines);
         
@@ -155,7 +156,7 @@ public class SumStackWorker implements Runnable {
             doPage(context, COMPARE_PRIOR_RESULT+"_" + stationResultRef.getName()+".html", "comparePriorResult.vm");
             doPage(context, COMPARE_PRIOR_RESULT+"_" + stationResultRef.getName()+".csv", "comparePriorResultTxt.vm");
         }
-
+        logger.info("Summary regenerated");
     }
     
     List<StationResult> getPriorResults(String name) {

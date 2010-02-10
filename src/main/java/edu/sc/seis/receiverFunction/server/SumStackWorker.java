@@ -201,6 +201,10 @@ public class SumStackWorker implements Runnable {
         while ((line = overviewIn.readLine()) != null) {
             if (line.startsWith("#")) {continue;}
             String[] split = line.split(",");
+            if (split.length < 16) {
+                logger.error("Summary line in csv has less than 15 items: "+split.length+"  "+line);
+                continue;
+            }
             SummaryLine lineResult = new SummaryLine(split[0],
                                                      split[1],
                                                      Float.parseFloat(split[2]),

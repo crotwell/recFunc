@@ -1,2 +1,2 @@
-#Net,Station,Lat,Long,Elev,Est.Thick,StdDev,Est.Vp/Vs,StdDev,AssumedVp,Vs,PoissonsRatio,NumEQ,Complexity
+#Net,Station,Lat,Long,Elev,Est.Thick,StdDev,Est.Vp/Vs,StdDev,AssumedVp,Vs,PoissonsRatio,NumEQ,Complexity,Station,Network
 #summaryLineCSV($summary)

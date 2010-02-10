@@ -119,4 +119,12 @@ public class SummaryLine extends HKAlpha {
     public void setPrior(StationResult r) {
         this.prior = r;
     }
+
+    public String getNetName() {
+        return netName;
+    }
+
+    public String getStaName() {
+        return staName;
+    }
 }

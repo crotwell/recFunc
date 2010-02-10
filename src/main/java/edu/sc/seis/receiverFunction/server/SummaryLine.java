@@ -6,6 +6,7 @@ import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.receiverFunction.HKAlpha;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.sod.status.FissuresFormatter;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 /** also see macro(stationListCSV in VM_global_library.vm */
@@ -98,6 +99,10 @@ public class SummaryLine extends HKAlpha {
     
     public QuantityImpl getElevation() {
         return elevation;
+    }
+    
+    public String formatElevation() {
+        return FissuresFormatter.formatDepth(getElevation());
     }
     
     public int getNumEarthquakes() {

@@ -133,7 +133,7 @@ $eq.getParam("itr_match"),$sta.getDistanceDeg($eq),$sta.getBaz($eq),$eq.getRegio
 // if this is changed, also change loadSummaryFromCSV() in SumStackWorker.java
 #macro(summaryLineCSV $sumList)
 #foreach($s in $sumList)
-$s.netCodeWithYear,$s.staCode,$s.lat,$s.lon,$s.elevation,$s.formatH(),$s.formatHStdDev(),$s.formatVpVs(),$s.formatKStdDev(),$s.formatVp(),$s.formatVs(),$s.formatPoissonsRatio(),$s.numEarthquakes,$s.formatComplexityResidual(),$s.staName,$s.netName
+$s.netCodeWithYear,$s.staCode,$s.lat,$s.lon,$s.formatElevation(),$s.formatH(),$s.formatHStdDev(),$s.formatVpVs(),$s.formatKStdDev(),$s.formatVp(),$s.formatVs(),$s.formatPoissonsRatio(),$s.numEarthquakes,$s.formatComplexityResidual(),$s.staName,$s.netName
 #end
 #end
 
@@ -162,7 +162,7 @@ $s.netCodeWithYear,$s.staCode,$s.lat,$s.lon,$s.elevation,$s.formatH(),$s.formatH
 	<td class="odd"><a href="${revBase}Data/Summary/gauss_${gaussian}/$s.netCodeWithYear/$s.staCode/station.html">$s.staCode</a></td>
     <td class="stat_name"><a href="${revBase}Data/Summary/gauss_${gaussian}/$s.netCodeWithYear/$s.staCode/station.html">$s.getName()</a></td>
     <td class="odd">$s.getOrientedLatitude()/$s.getOrientedLongitude()</td>
-	<td class="even">$s.getElevation()</td>
+	<td class="even">$s.formatElevation()</td>
     <td class="odd">$s.formatH()</td>
     <td class="even">$s.formatHStdDev()</td>
     <td class="odd">$s.formatVpVs()</td>

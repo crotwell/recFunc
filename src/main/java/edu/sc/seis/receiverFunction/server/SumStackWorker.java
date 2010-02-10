@@ -231,7 +231,7 @@ public class SumStackWorker implements Runnable {
         if (split[1].equalsIgnoreCase("km")) { u = UnitImpl.KILOMETER; }
         else if (split[1].equalsIgnoreCase("km/s")) { u = UnitImpl.KILOMETER_PER_SECOND; }
         else if (split[1].equalsIgnoreCase("m")) { u = UnitImpl.METER; }
-        else throw new IllegalArgumentException("Bad unit, expect one of m, km, km/s");
+        else throw new IllegalArgumentException("Bad unit, expect one of m, km, km/s: "+split[1]);
         return new QuantityImpl(Double.parseDouble(split[0]), u);
     }
 

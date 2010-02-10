@@ -84,15 +84,11 @@ public class SumStackWorker implements Runnable {
     }
 
     public void run() {
-        File sumCSVFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), SUMMARY_CSV);
-        if ( ! sumCSVFile.exists()) {
-            try {
-                // caught up, redo summary pages
-                generateSummary();
-            } catch(Exception e) {
-                GlobalExceptionHandler.handle("Unable to generate summary html", e);
-                return;
-            }
+        try {
+            generateSummary();
+        } catch(Exception e) {
+            GlobalExceptionHandler.handle("Unable to generate summary html", e);
+            return;
         }
         boolean didProcess = false;
         while (keepGoing) {
@@ -179,7 +175,7 @@ public class SumStackWorker implements Runnable {
     
     
     void doPage(VelocityContext context, String pageName, String template) throws Exception {
-        File outFile = new File(RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN), pageName + ".new");
+        File outFile = File.createTempFile(pageName , ".new", RecFuncDB.getSummaryDir(DEFAULT_GAUSSIAN));
         BufferedWriter overviewOut = new BufferedWriter(new FileWriter(outFile));
         velocity.mergeTemplate(template, context, overviewOut);
         overviewOut.close();
@@ -202,7 +198,7 @@ public class SumStackWorker implements Runnable {
             if (line.startsWith("#")) {continue;}
             String[] split = line.split(",");
             if (split.length < 16) {
-                logger.error("Summary line in csv has less than 15 items: "+split.length+"  "+line);
+                logger.error("Summary line in csv has less than 16 items: "+split.length+"  "+line);
                 continue;
             }
             SummaryLine lineResult = new SummaryLine(split[0],

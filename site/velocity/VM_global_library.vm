@@ -160,7 +160,7 @@ $s.netCodeWithYear,$s.staCode,$s.lat,$s.lon,$s.formatElevation(),$s.formatH(),$s
 <tr>
 	<td class="even"><a href="${revBase}Data/Summary/gauss_${gaussian}/$s.netCodeWithYear/$s.staCode/station.html">$s.netCodeWithYear</a></td>
 	<td class="odd"><a href="${revBase}Data/Summary/gauss_${gaussian}/$s.netCodeWithYear/$s.staCode/station.html">$s.staCode</a></td>
-    <td class="stat_name"><a href="${revBase}Data/Summary/gauss_${gaussian}/$s.netCodeWithYear/$s.staCode/station.html">$s.getName()</a></td>
+    <td class="stat_name"><a href="${revBase}Data/Summary/gauss_${gaussian}/$s.netCodeWithYear/$s.staCode/station.html">$s.staName</a></td>
     <td class="odd">$s.getOrientedLatitude()/$s.getOrientedLongitude()</td>
 	<td class="even">$s.formatElevation()</td>
     <td class="odd">$s.formatH()</td>

@@ -69,6 +69,7 @@ public class SumHKStackAsXYZ extends SummaryHKStackImageServlet {
             throw new RuntimeException(e);
         } finally {
             if (txtIn != null) {txtIn.close();}
+            RecFuncDB.rollback();
         }
     }
     

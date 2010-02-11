@@ -49,15 +49,15 @@ import edu.sc.seis.receiverFunction.server.SyntheticFactory;
 import edu.sc.seis.receiverFunction.synth.SimpleSynthReceiverFunction;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
+import edu.sc.seis.rev.servlets.image.ImageServlet;
 
 /**
  * @author crotwell Created on Feb 24, 2005
  */
-public class SeismogramImage extends HttpServlet {
+public class SeismogramImage extends ImageServlet {
 
-    public synchronized void doGet(HttpServletRequest req,
-                                   HttpServletResponse res) throws IOException {
-        try {
+    protected synchronized void writeImage(HttpServletRequest req,
+                                   HttpServletResponse res) throws Exception {
             logger.debug("doGet called");
             if(req.getParameter("rf") == null) {
                 throw new Exception("rf param not set");
@@ -162,21 +162,6 @@ public class SeismogramImage extends HttpServlet {
             res.setContentType("image/png");
             disp.outputToPNG(out, dim);
             out.close();
-        } catch(NotFound e) {
-            OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
-            writer.write("<html><body><p>No waveforms found for id "
-                    + req.getParameter("rf") + "</p></body></html>");
-            writer.flush();
-        } catch(EOFException e) {
-            //oh well...
-        } catch(Exception e) {
-            Revlet.sendToGlobalExceptionHandler(req, e);
-            throw new RuntimeException(e);
-        } finally {
-            // read only, just clear the connection
-            RecFuncDB.rollback();
-        }
-        
     }
 
     public DataSetSeismogram[] getDSS(ReceiverFunctionResult result) {

@@ -52,15 +52,9 @@ public class EarthquakeHKPlot extends HttpServlet {
     public EarthquakeHKPlot() throws Exception {
         station = new Station();
     }
-
-    protected void doPost(HttpServletRequest arg0, HttpServletResponse arg1)
-            throws ServletException, IOException {
-        doGet(arg0, arg1);
-    }
-
-    protected synchronized void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        try {
+    
+    protected synchronized void writeImage(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException, NotFound {
             boolean legend = false;
             boolean tooltips = true;
             boolean urls = true;
@@ -117,26 +111,6 @@ public class EarthquakeHKPlot extends HttpServlet {
             res.setContentType("image/png");
             ImageIO.write(image, "png", out);
             out.close();
-        } catch(NotFound e) {
-            OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
-            writer.write("<html><body><p>No HK stack foundfor id "
-                    + req.getParameter("rf") + "</p></body></html>");
-            writer.flush();
-        } catch(IIOException e) {
-            if (e.getCause() instanceof EOFException) {
-                // usually means remote client has closed connection
-                // nothing to be done...
-            } else {
-                logger.debug("Got IIOException, cause is a "+e.getCause().getClass());
-                throw e;
-            }
-        } catch(EOFException e) {
-            // usually means remote client has closed connection
-            // nothing to be done...
-        } catch(Exception e) {
-            Revlet.sendToGlobalExceptionHandler(req, e);
-            throw new RuntimeException(e);
-        }
     }
 
     Station station;

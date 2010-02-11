@@ -25,16 +25,16 @@ import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.server.StackSummary;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
+import edu.sc.seis.rev.servlets.image.ImageServlet;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
 /**
  * @author crotwell Created on Feb 23, 2005
  */
-public class SummaryHKStackImageServlet extends HttpServlet {
+public class SummaryHKStackImageServlet extends ImageServlet {
 
-    public synchronized void doGet(HttpServletRequest req,
-                                   HttpServletResponse res) throws IOException {
-        try {
+    public synchronized void writeImage(HttpServletRequest req,
+                                   HttpServletResponse res) throws Exception {
             logger.debug("SummaryHKStackImageServlet.doGet() called");
             VelocityNetwork net = Start.getNetwork(req);
             String staCode = RevUtil.get("stacode", req);
@@ -53,15 +53,6 @@ public class SummaryHKStackImageServlet extends HttpServlet {
             BufferedOutputStream out = new BufferedOutputStream(res.getOutputStream());
             output(sumStack, out, req, res);
             logger.debug("SummaryHKStackImageServlet.doGet() end");
-        } catch(NotFound e) {
-            OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
-            writer.write("<html><body><p>No HK stack foundfor  "
-                    + req.getParameter("staCode") + "</p></body></html>");
-            writer.close();
-        } catch(Throwable e) {
-            Revlet.sendToGlobalExceptionHandler(req, e);
-            throw new RuntimeException(e);
-        }
     }
 
     public SumHKStack getSumStack(HttpServletRequest req,

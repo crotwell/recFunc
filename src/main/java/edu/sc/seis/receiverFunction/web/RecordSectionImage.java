@@ -19,6 +19,7 @@ import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
+import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.dataset.DataSetEventOrganizer;
 import edu.sc.seis.fissuresUtil.display.BackAzimuthDisplay;
 import edu.sc.seis.fissuresUtil.display.MicroSecondTimeRange;
@@ -30,21 +31,21 @@ import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
+import edu.sc.seis.rev.servlets.image.ImageServlet;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.velocity.event.VelocityEvent;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
-public class RecordSectionImage extends HttpServlet {
+public class RecordSectionImage extends ImageServlet {
 
     public RecordSectionImage() throws SQLException, ConfigurationException,
             Exception {
         DATA_LOC = Start.getDataLoc();
     }
 
-    protected synchronized void doGet(HttpServletRequest req,
+    protected synchronized void writeImage(HttpServletRequest req,
                                       HttpServletResponse res)
-            throws ServletException, IOException {
-        try {
+            throws ServletException, IOException, NotFound {
             VelocityNetwork net = Start.getNetwork(req);
             int netDbId = net.getDbId();
             String staCode = RevUtil.get("stacode", req);
@@ -113,16 +114,6 @@ public class RecordSectionImage extends HttpServlet {
                                                    .getValue(SEC_PER_SEC));
             disp.outputToPNG(out, dim);
             out.close();
-        } catch(EOFException e) {
-            // silently eat these as they just mean remote user has closed
-            // connection
-        } catch(javax.imageio.IIOException e) {
-            // silently eat these as they just mean remote user has closed
-            // connection
-        } catch(Throwable e) {
-            Revlet.sendToGlobalExceptionHandler(req, e);
-            throw new ServletException(e);
-        }
     }
 
     String DATA_LOC;

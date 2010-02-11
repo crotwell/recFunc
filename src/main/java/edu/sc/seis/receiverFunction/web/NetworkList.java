@@ -1,6 +1,5 @@
 package edu.sc.seis.receiverFunction.web;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,7 +21,7 @@ import edu.sc.seis.sod.velocity.network.VelocityNetwork;
  */
 public class NetworkList extends Revlet {
 
-    public NetworkList() throws SQLException {
+    public NetworkList() {
     }
     
     public synchronized RevletContext getContext(HttpServletRequest req,

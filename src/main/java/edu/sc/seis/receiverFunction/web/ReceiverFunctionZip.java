@@ -86,13 +86,13 @@ public class ReceiverFunctionZip extends HttpServlet {
             processResults(result, req, res);
         } catch(EOFException e) {
             // client has closed the connection, so not much we can do...
-            return;
         } catch(SocketException e) {
             // client has closed the connection, so not much we can do...
-            return;
         } catch(Exception e) {
             Revlet.sendToGlobalExceptionHandler(req, e);
             throw new ServletException(e);
+        } finally {
+            RecFuncDB.rollback();
         }
     }
 

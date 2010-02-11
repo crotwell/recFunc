@@ -38,7 +38,7 @@ import edu.sc.seis.sod.velocity.network.VelocityStation;
 /**
  * @author crotwell Created on May 4, 2005
  */
-public class HKLatLonPlot extends HttpServlet {
+public abstract class HKLatLonPlot extends HttpServlet {
 
     /**
      * @throws Exception

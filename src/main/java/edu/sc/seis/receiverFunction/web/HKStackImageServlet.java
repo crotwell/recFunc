@@ -27,12 +27,13 @@ import edu.sc.seis.receiverFunction.server.SyntheticFactory;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.locator.StationLocator;
+import edu.sc.seis.rev.servlets.image.ImageServlet;
 import edu.sc.seis.sod.ConfigurationException;
 
 /**
  * @author crotwell Created on Feb 16, 2005
  */
-public class HKStackImageServlet  extends HttpServlet {
+public class HKStackImageServlet  extends ImageServlet {
 
     /**
      * @throws SQLException
@@ -45,9 +46,8 @@ public class HKStackImageServlet  extends HttpServlet {
     public HKStackImageServlet() throws SQLException, ConfigurationException, Exception {
     }
 
-    public synchronized void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws IOException {
-        try {
+    public synchronized void writeImage(HttpServletRequest req, HttpServletResponse res)
+            throws Exception {
             logger.debug("doGet called");
             if(req.getParameter("rf") == null) { throw new Exception("rf param not set"); }
             ReceiverFunctionResult result = getCachedResult(req);
@@ -68,14 +68,6 @@ public class HKStackImageServlet  extends HttpServlet {
             res.setContentType("image/png");
             ImageIO.write(image, "png", out);
             out.close();
-        } catch(NotFound e) {
-            OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
-            writer.write("<html><body><p>No HK stack foundfor id "+req.getParameter("rf")+"</p></body></html>");
-            writer.flush();
-        } catch(Exception e) {
-            Revlet.sendToGlobalExceptionHandler(req, e);
-            throw new RuntimeException(e);
-        }
     }
     
     public HKStack getStack(HttpServletRequest req) throws Exception {

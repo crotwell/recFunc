@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import edu.sc.seis.fissuresUtil.database.NotFound;
+import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.sod.ConfigurationException;
@@ -39,6 +40,8 @@ public class CustomStackAsXYZ  extends HttpServlet {
         } catch(Throwable e) {
             Revlet.sendToGlobalExceptionHandler(req, e);
             throw new RuntimeException(e);
+        } finally {
+            AbstractHibernateDB.rollback();
         }
 	}
 

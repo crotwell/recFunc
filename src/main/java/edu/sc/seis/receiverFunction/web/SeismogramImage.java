@@ -83,6 +83,7 @@ public class SeismogramImage extends HttpServlet {
             Dimension dim = new Dimension(xdim, ydim);
             OutputStream out = res.getOutputStream();
             if(result == null) {
+                RecFuncDB.rollback();
                 return;
             }
             MultiSeismogramWindowDisplay disp = new MultiSeismogramWindowDisplay(new SeismogramSorter());
@@ -171,7 +172,11 @@ public class SeismogramImage extends HttpServlet {
         } catch(Exception e) {
             Revlet.sendToGlobalExceptionHandler(req, e);
             throw new RuntimeException(e);
+        } finally {
+            // read only, just clear the connection
+            RecFuncDB.rollback();
         }
+        
     }
 
     public DataSetSeismogram[] getDSS(ReceiverFunctionResult result) {

@@ -1,6 +1,7 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.io.EOFException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +29,6 @@ import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.rev.ServletFromSet;
-import edu.sc.seis.sod.hibernate.SodDB;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
 /**
@@ -41,6 +41,10 @@ public class Start {
             public boolean handle(String message, Throwable t) {
                 if(t instanceof EOFException) {
                     logger.debug("EOFException, ignoring.");
+                    return true;
+                }
+                if(t instanceof SocketException) {
+                    logger.debug("SocketException, ignoring.");
                     return true;
                 }
                 return false;

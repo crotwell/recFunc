@@ -1,6 +1,5 @@
 package edu.sc.seis.receiverFunction;
 
-import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 
 
@@ -11,7 +10,7 @@ import edu.sc.seis.fissuresUtil.freq.Cmplx;
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 20451 2009-04-17 14:44:45Z crotwell $
+ * @version $Id: IterDecon.java 21093 2010-02-23 14:09:20Z crotwell $
  */
 
 public class IterDecon {

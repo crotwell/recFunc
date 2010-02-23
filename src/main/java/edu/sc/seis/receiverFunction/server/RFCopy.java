@@ -44,7 +44,7 @@ public class RFCopy {
     }
 
     public void copy(String serverDNS, String serverName) {
-        List<StationImpl> staList = NetworkDB.getSingleton().getStationByCodes("II", "SNZO");
+        List<StationImpl> staList = NetworkDB.getSingleton().getStationByCodes("SP", "DWDAN");
         NSRecFuncCache nsServer = new NSRecFuncCache(serverDNS, serverName, Initializer.getNS());
         copyStation(staList.get(0), nsServer);
     }
@@ -155,7 +155,7 @@ public class RFCopy {
     public static void main(String[] args) throws SQLException {
         Initializer.init(args);
         RFCopy copy = new RFCopy();
-        copy.copy("edu/iris/dms", "Ears");
+        copy.copy("edu/iris/dmc", "Ears");
     }
 
     PreparedStatement inExported;

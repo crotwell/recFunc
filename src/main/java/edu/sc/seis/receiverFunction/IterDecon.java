@@ -10,14 +10,14 @@ import edu.sc.seis.fissuresUtil.freq.Cmplx;
  * http://eqseis.geosc.psu.edu/~cammon/HTML/RftnDocs/rftn01.html
  * 
  * Also see 
- * Ligorr`õa, J., and C. Ammon, Iterative deconvolution and receiver-function estimation, 
- * Bull., Seis. Soc. Am., 89 (5), 1395Ð1400, 1999. 
+ * Ligorria, J., and C. Ammon, Iterative deconvolution and receiver-function estimation, 
+ * Bull., Seis. Soc. Am., 89 (5), 1395-1400, 1999. 
  *
  *
  * Created: Sat Mar 23 18:24:29 2002
  *
  * @author <a href="mailto:">Philip Crotwell</a>
- * @version $Id: IterDecon.java 21094 2010-02-23 14:24:00Z crotwell $
+ * @version $Id: IterDecon.java 21100 2010-02-23 19:25:21Z crotwell $
  */
 
 public class IterDecon {

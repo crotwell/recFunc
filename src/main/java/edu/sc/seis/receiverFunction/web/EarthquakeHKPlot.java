@@ -1,18 +1,14 @@
 package edu.sc.seis.receiverFunction.web;
 
 import java.awt.image.BufferedImage;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,7 +30,7 @@ import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.rev.RevUtil;
-import edu.sc.seis.rev.Revlet;
+import edu.sc.seis.rev.servlets.image.ImageServlet;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
@@ -42,7 +38,7 @@ import edu.sc.seis.sod.velocity.network.VelocityStation;
 /**
  * @author crotwell Created on Aug 23, 2005
  */
-public class EarthquakeHKPlot extends HttpServlet {
+public class EarthquakeHKPlot extends ImageServlet {
 
     /**
      * @throws Exception

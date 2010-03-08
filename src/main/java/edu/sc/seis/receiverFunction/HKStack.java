@@ -949,7 +949,8 @@ public class HKStack implements Serializable {
                                                           sampOffset);
         if(Float.isNaN(retVal)) {
             logger.error("Got a NaN for HKStack.getAmp() at " + time + " chan="
-                    + ChannelIdUtil.toStringNoDates(seis.channel_id));
+                    + ChannelIdUtil.toStringNoDates(seis.channel_id)+" setting to zero");
+            retVal = 0;
         }
         return retVal;
     }

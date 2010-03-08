@@ -23,6 +23,7 @@ import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.iris.Fissures.network.ChannelImpl;
+import edu.iris.Fissures.network.StationIdUtil;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
@@ -88,6 +89,8 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                     configs.add(tmpConfigs[j]);
                 }
             }
+            // read only, so rollback
+            RecFuncDB.rollback();
             return (IterDeconConfig[])configs.toArray(new IterDeconConfig[0]);
         } catch(Throwable e) {
             RecFuncDB.rollback();
@@ -311,6 +314,7 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                 }
                 RecFuncDB.getSingleton().put(result);
                 RecFuncDB.commit();
+                logger.info("Insert RF: "+event+"  "+StationIdUtil.toStringNoDates(cg.getStation()));
             } catch(Throwable e) {
                 RecFuncDB.rollback();
                 GlobalExceptionHandler.handle("Problem with "
@@ -348,11 +352,11 @@ public class RecFuncCacheImpl extends RecFuncCachePOA {
                                                           channel[0].network_id.network_code,
                                                           channel[0].station_code, 
                                                           config.gwidth)) {
-                    RecFuncDB.commit();
+                    RecFuncDB.rollback();
                     return true;
                 }
             }
-            RecFuncDB.commit();
+            RecFuncDB.rollback();
             return false;
         } catch(Throwable e) {
             RecFuncDB.rollback();

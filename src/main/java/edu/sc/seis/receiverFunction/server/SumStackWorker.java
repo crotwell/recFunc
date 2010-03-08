@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -96,6 +95,7 @@ public class SumStackWorker implements Runnable {
             if (insertion != null) {
                 processNext(insertion);
                 didProcess = true;
+                RecFuncDB.commit(); // clear out the session
             } else if (didProcess) {
                 try {
                     // caught up, redo summary pages
@@ -104,9 +104,11 @@ public class SumStackWorker implements Runnable {
                     GlobalExceptionHandler.handle("Unable to generate summary html", e);
                 } finally {
                     didProcess = false;
+                    RecFuncDB.commit(); // clear out the session
                 }
             } else {
                 try {
+                    RecFuncDB.rollback(); // clear out the session
                     logger.info(ClockUtil.now() + " No more insertions to process, sleeping for " + SLEEP_MINUTES
                             + " minutes.");
                     Thread.sleep(SLEEP_MINUTES * 60 * 1000); // 5 minutes
@@ -339,13 +341,13 @@ public class SumStackWorker implements Runnable {
                 RecFuncDB.getSingleton().put(sumStack);
                 RecFuncDB.commit();
             } catch(RuntimeException e) {
-                GlobalExceptionHandler.handle(e);
+                GlobalExceptionHandler.handle("Problem with "+insertion.getNet()+"."+insertion.getStaCode(), e);
                 RecFuncDB.rollback();
                 RecFuncDB.getSession().saveOrUpdate(insertion);
                 RecFuncDB.commit();
                 throw e;
             } catch(Exception e) {
-                GlobalExceptionHandler.handle(e);
+                GlobalExceptionHandler.handle("Problem with "+insertion.getNet()+"."+insertion.getStaCode(), e);
                 RecFuncDB.rollback();
                 RecFuncDB.getSession().saveOrUpdate(insertion);
                 RecFuncDB.commit();

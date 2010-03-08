@@ -68,6 +68,9 @@ public class QualityControl {
                 .getSite()
                 .getStation()
                 .getLocation(), result.getEvent().getPreferred(), transverse);
+        if (radial == null || transverse == null) {
+            throw new RuntimeException("should not happen, no data in vicinity of P wave");
+        }
         Statistics radialStats = new Statistics(radial);
         Statistics transStats = new Statistics(transverse);
         return (float)(transStats.max() / radialStats.max());

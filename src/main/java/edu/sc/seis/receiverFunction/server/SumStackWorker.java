@@ -85,7 +85,7 @@ public class SumStackWorker implements Runnable {
     public void run() {
         try {
             generateSummary();
-        } catch(Exception e) {
+        } catch(Throwable e) {
             GlobalExceptionHandler.handle("Unable to generate summary html", e);
             return;
         }
@@ -286,6 +286,7 @@ public class SumStackWorker implements Runnable {
                 return;
             }
         } else {
+            try {
             SumHKStack sumStack = SumHKStack.calculateForPhase(individualHK,
                                                                smallestH,
                                                                minPercentMatch,
@@ -297,7 +298,6 @@ public class SumStackWorker implements Runnable {
             TimeOMatic.print("sum for " + insertion.getNet().get_code() + "."
                     + insertion.getStaCode());
             
-            try {
                 calcComplexity(sumStack);
                 if(oldSumStack != null) {
                     System.out.println("Old sumstack in db, replacing...");

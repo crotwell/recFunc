@@ -408,7 +408,11 @@ public class SumHKStack {
         hVariance = (float)hStat.var();
         Statistics kStat = new Statistics(kErrors);
         kVariance = (float)kStat.var();
-        mixedVariance = (float)hStat.correlation(kErrors);
+        if (hVariance  != 0 && kVariance != 0) {
+            mixedVariance = (float)hStat.correlation(kErrors);
+        } else {
+            mixedVariance = -1;
+        }
         best.setHStdDev(getHStdDev());
         best.setKStdDev((float)getKStdDev());
         hBootstrap = hErrors;

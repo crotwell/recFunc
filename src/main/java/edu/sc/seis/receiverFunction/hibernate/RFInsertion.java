@@ -3,6 +3,7 @@ package edu.sc.seis.receiverFunction.hibernate;
 import java.sql.Timestamp;
 
 import edu.iris.Fissures.network.NetworkAttrImpl;
+import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 
 public class RFInsertion {
@@ -53,6 +54,10 @@ public class RFInsertion {
 
     public String getStaCode() {
         return staCode;
+    }
+    
+    public String netStaCode() {
+        return NetworkIdUtil.toStringNoDates(getNet())+"."+getStaCode();
     }
 
     public Timestamp getInsertTime() {

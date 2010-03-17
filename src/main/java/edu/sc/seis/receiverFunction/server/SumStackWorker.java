@@ -8,6 +8,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -85,7 +87,7 @@ public class SumStackWorker implements Runnable {
     public void run() {
         try {
             generateSummary();
-        } catch(Throwable e) {
+        } catch(Exception e) {
             GlobalExceptionHandler.handle("Unable to generate summary html", e);
             return;
         }
@@ -286,7 +288,16 @@ public class SumStackWorker implements Runnable {
                 return;
             }
         } else {
-            try {
+            if (individualHK.size() > MAX_STACK_EVENTS) {
+                logger.info("More than max events ("+individualHK.size()+"), only stacking top "+MAX_STACK_EVENTS);
+                Collections.sort(individualHK, new Comparator<ReceiverFunctionResult>() {
+                    public int compare(ReceiverFunctionResult o1, ReceiverFunctionResult o2) {
+                        return (o1.getRadialMatch() < o2.getRadialMatch() ? -1 :
+                            (o1.getRadialMatch() == o2.getRadialMatch() ? 0 : 1));
+                    }
+                });
+                individualHK = individualHK.subList(0, MAX_STACK_EVENTS);
+            }
             SumHKStack sumStack = SumHKStack.calculateForPhase(individualHK,
                                                                smallestH,
                                                                minPercentMatch,
@@ -295,9 +306,9 @@ public class SumStackWorker implements Runnable {
                                                                doBootstrap,
                                                                bootstrapIterations,
                                                                "all");
-            TimeOMatic.print("sum for " + insertion.getNet().get_code() + "."
-                    + insertion.getStaCode());
+            TimeOMatic.print("sum for " + insertion.netStaCode());
             
+            try {
                 calcComplexity(sumStack);
                 if(oldSumStack != null) {
                     System.out.println("Old sumstack in db, replacing...");
@@ -328,9 +339,10 @@ public class SumStackWorker implements Runnable {
                     loserEventList.add(result.createVelocityEvent());
                 }
                 
-                context.put("nearbyStats", getNearByStatistics(oneStationByCode.getLocation().latitude,
+                Statistics nearByStat = getNearByStatistics(oneStationByCode.getLocation().latitude,
                                                                oneStationByCode.getLocation().longitude,
-                                                               NEAR_BY_KM));
+                                                               NEAR_BY_KM);
+                if (nearByStat != null) {context.put("nearbyStats", nearByStat);}
                 
                 stationServlet.populateContext(context, new VelocityNetwork(insertion.getNet()),
                                                insertion.getStaCode(), sumStack, individualHK, losers);
@@ -341,13 +353,13 @@ public class SumStackWorker implements Runnable {
                 RecFuncDB.getSingleton().put(sumStack);
                 RecFuncDB.commit();
             } catch(RuntimeException e) {
-                GlobalExceptionHandler.handle("Problem with "+insertion.getNet()+"."+insertion.getStaCode(), e);
+                GlobalExceptionHandler.handle("Problem with "+insertion.netStaCode(), e);
                 RecFuncDB.rollback();
                 RecFuncDB.getSession().saveOrUpdate(insertion);
                 RecFuncDB.commit();
                 throw e;
             } catch(Exception e) {
-                GlobalExceptionHandler.handle("Problem with "+insertion.getNet()+"."+insertion.getStaCode(), e);
+                GlobalExceptionHandler.handle("Problem with "+insertion.netStaCode(), e);
                 RecFuncDB.rollback();
                 RecFuncDB.getSession().saveOrUpdate(insertion);
                 RecFuncDB.commit();
@@ -358,6 +370,9 @@ public class SumStackWorker implements Runnable {
     
     public Statistics getNearByStatistics(float lat, float lon, float km) throws IOException {
         List<SummaryLine> close = loadSummaryFromCSV(new DistanceFilter(lat, lon, (float)DistAz.kilometersToDegrees(km)));
+        if (close.size() == 0) {
+            return null;
+        }
         List<QuantityImpl> thickness = new ArrayList<QuantityImpl>();
         for (SummaryLine staResult : close) {
             thickness.add(staResult.getH());
@@ -446,6 +461,8 @@ public class SumStackWorker implements Runnable {
     public static final float DEFAULT_GAUSSIAN = 2.5f;
     
     public static final float NEAR_BY_KM = 50f;
+    
+    public static final int MAX_STACK_EVENTS = 200;
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumStackWorker.class);
 

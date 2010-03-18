@@ -27,7 +27,7 @@ window.onload=function(){
  for results with a difference > $hDiff.
 #end</h1>
 <p>Bibliographic Entry: $ref.getReference()</p>
-<p>Reference URL: <a href="$ref.getURL()">$ref.getURL()</a></p>
+<p>Reference URL: <a href="$ref.getUrl()">$ref.getUrl()</a></p>
 <p>Study type: $ref.getMethod()</p>
 
 <p>View results as <a href="comparePriorResult.txt?$req.getQueryString()">text</a></p>

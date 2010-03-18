@@ -83,7 +83,12 @@ public class HKAlpha {
     }
 
     public QuantityImpl getVp() {
+        getVpkm(); // side effect, make sure hibernate loaded vp
         return vp;
+    }
+    
+    public float getVpkm() {
+        return (float)vp.getValue(UnitImpl.KILOMETER);
     }
 
     public QuantityImpl getVs() {

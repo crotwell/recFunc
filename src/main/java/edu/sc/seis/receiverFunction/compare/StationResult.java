@@ -175,7 +175,10 @@ public class StationResult extends HKAlpha {
     public void setVp(QuantityImpl vp) {
         this.vp = vp;
     }
-
+    
+    public void setVpkm(float vp) {
+        setVp(new QuantityImpl(vp, UnitImpl.KILOMETER);
+    }
     
     protected void setAmp(float amp) {
         this.amp = amp;

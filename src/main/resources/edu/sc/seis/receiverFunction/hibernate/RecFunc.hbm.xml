@@ -229,7 +229,7 @@
 				foreign-key="fk_sta_result_depth_unit" lazy="false" />
 		</component>
 		<property name="VpVs" type="float"/>
-		<property name="Vp" type="float"/>
+		<property name="Vpkm" column="Vp" type="float"/>
 		<component name="hStdDev"
 			class="edu.iris.Fissures.model.QuantityImpl" access="field">
 			<property name="value" column="hStdDev_value"
@@ -238,7 +238,7 @@
 				class="edu.iris.Fissures.model.UnitImpl" column="hStdDev_unit_id"
 				foreign-key="fk_hstddev_unit" lazy="false" />
 		</component>
-		<property name="HStdDev" type="float"/>
+		<property name="kStdDev" type="float"/>
 		<property name="extras"/>
 	</class>
 	

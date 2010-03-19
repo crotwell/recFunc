@@ -1,12 +1,14 @@
 package edu.sc.seis.receiverFunction.server;
 
 import java.util.Properties;
+
 import org.omg.CORBA.ORB;
 import org.omg.PortableServer.Servant;
+
 import edu.sc.seis.cormorant.AbstractController;
 import edu.sc.seis.fissuresUtil.database.ConnMgr;
-import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
 import edu.sc.seis.receiverFunction.SumHKStack;
+import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 
 /**
  * @author crotwell Created on Jan 18, 2005
@@ -25,7 +27,8 @@ public class RecFuncCacheController extends AbstractController {
         impl = new RecFuncCacheImpl(confProps.getProperty(getPropertryPrefix()
                 + "dataloc"), confProps);
         logger.debug("Impl created, using " + databaseURL);
-
+        // check to make sure hibernate is ok, don't care about the result just if the query succeeds
+        RecFuncDB.getSingleton().getAllPriorResultsRef().size();
         float minPercentMatch = 80f;
         boolean bootstrap = true;
         boolean usePhaseWeight = true;

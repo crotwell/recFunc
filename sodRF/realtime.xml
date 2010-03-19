@@ -43,7 +43,7 @@
                 <max>1000</max>
             </originDepthRange>
             <originTimeRange>
-                <startTime>20090901T00:00:00.001Z</startTime>
+                <startTime>20090601T00:00:00.001Z</startTime>
                 <endTime>24991231T23:59:59.999Z</endTime>
             </originTimeRange>
             <magnitudeRange>

@@ -1,6 +1,12 @@
 package edu.sc.seis.receiverFunction.server;
 
+import org.jacorb.orb.ParsedIOR;
+import org.jacorb.orb.iiop.IIOPAddress;
+import org.jacorb.orb.iiop.IIOPProfile;
 import org.omg.CORBA.SystemException;
+import org.omg.CosNaming.NamingContextPackage.CannotProceed;
+import org.omg.CosNaming.NamingContextPackage.InvalidName;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.w3c.dom.Element;
 
 import edu.iris.Fissures.IfNetwork.ChannelId;
@@ -8,10 +14,12 @@ import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.display.configuration.DOMHelper;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
+import edu.sc.seis.fissuresUtil.simple.Initializer;
 import edu.sc.seis.receiverFunction.RecFuncProcessor;
 import edu.sc.seis.sod.CommonAccess;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
+import edu.sc.seis.sod.Start;
 import edu.sc.seis.sod.status.StringTree;
 import edu.sc.seis.sod.status.StringTreeLeaf;
 import edu.sc.seis.sod.subsetter.eventChannel.vector.EventVectorSubsetter;
@@ -32,6 +40,12 @@ public class RecFuncCacheCheck implements EventVectorSubsetter {
             cache.getCorbaObject()._is_a("test");
             logger.debug("Connection to rf cacheServer ok");
         } catch (SystemException e) {
+            String ior = CommonAccess.getORB().object_to_string(cache.getCorbaObject());
+            ParsedIOR parsed = new ParsedIOR((org.jacorb.orb.ORB)Initializer.getORB(),
+                                             ior);
+            IIOPProfile profile = (IIOPProfile)parsed.getProfiles().get(0);
+            IIOPAddress addr = (IIOPAddress)profile.getAddress();
+            logger.debug("Server is: "+ dns + " " + serverName+" "+(addr==null?"":" ("+addr.getIP()+":"+addr.getPort()+")"));
             throw new ConfigurationException("Problem getting cache server", e);
         }
     }

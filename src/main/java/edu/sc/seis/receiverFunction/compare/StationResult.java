@@ -177,7 +177,7 @@ public class StationResult extends HKAlpha {
     }
     
     public void setVpkm(float vp) {
-        setVp(new QuantityImpl(vp, UnitImpl.KILOMETER));
+        setVp(new QuantityImpl(vp, UnitImpl.KILOMETER_PER_SECOND));
     }
     
     protected void setAmp(float amp) {

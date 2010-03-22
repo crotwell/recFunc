@@ -88,7 +88,7 @@ public class HKAlpha {
     }
     
     public float getVpkm() {
-        return (float)vp.getValue(UnitImpl.KILOMETER);
+        return (float)vp.getValue(UnitImpl.KILOMETER_PER_SECOND);
     }
 
     public QuantityImpl getVs() {

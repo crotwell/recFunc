@@ -139,6 +139,16 @@ public class StationResult extends HKAlpha {
         hStdDev = stdDev;
     }
 
+    /** dumb hibernate can't find getKStdDev() */
+    public float getkStdDev() {
+        return getKStdDev();
+    }
+    
+    /** dumb hibernate can't find setKStdDev() */
+    public void setkStdDev(float stdDev) {
+        setKStdDev(stdDev);
+    }
+    
     public void setKStdDev(float stdDev) {
         this.kStdDev = stdDev;
     }

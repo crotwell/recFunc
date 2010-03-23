@@ -61,7 +61,6 @@ public class Start {
         ConnMgr.setURL(props.getProperty("fissuresUtil.database.url"));
         HibernateUtil.setUpFromConnMgr(props, HibernateUtil.DEFAULT_EHCACHE_CONFIG);
         synchronized(HibernateUtil.class) {
-            SodDB.configHibernate(HibernateUtil.getConfiguration());
             RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
         }
         logger.info("connecting to database: " + ConnMgr.getURL());

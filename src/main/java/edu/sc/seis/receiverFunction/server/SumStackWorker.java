@@ -141,8 +141,8 @@ public class SumStackWorker implements Runnable {
         // prior results
         List<StationResultRef> refs = RecFuncDB.getSingleton().getAllPriorResultsRef();
         context.put("priorResults", refs);
-        doPage(context, PRIOR_RESULT_LIST, "priorResultList.vm");
         context.put("comparePrefix", COMPARE_PRIOR_RESULT);
+        doPage(context, PRIOR_RESULT_LIST, "priorResultList.vm");
         for (StationResultRef stationResultRef : refs) {
             context.put("ref", stationResultRef);
             context.put("name", stationResultRef.getName());

@@ -102,7 +102,7 @@ window.onload=function(){
 #foreach( $marker in $markerList)
  <tr>
  <td class="odd">
- <a href="${revBase}comparePriorResult.html?name=$marker.getRef().getName()">$marker.getRef().getName()</a></td>
+ <a href="${revBase}Data/Summary/gauss_${gaussian}/${comparePrefix}${marker.ref.fileizedName}.html">$marker.ref.getName()</a></td>
  <td class="even">$marker.formatH()</td>
  <td class="odd">$marker.formatVpVs()</td>
  <td class="even">$marker.formatVp()</td>

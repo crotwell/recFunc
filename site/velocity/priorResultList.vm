@@ -26,7 +26,7 @@ window.onload=function(){
 </tr>
 #foreach($ref in $priorResults)
 <tr>
-<td class="odd"><a href="comparePriorResult.html?name=${ref.name}&gaussian=${gaussian}">$ref.name</a></td>
+<td class="odd"><a href="${revBase}Data/Summary/gauss_${gaussian}/${comparePrefix}${ref.fileizedName}.html">$ref.name</a></td>
 <td class="even">$ref.method</td>
 <td class="odd1">$ref.reference</td>
 <td class="even1"><a href="$ref.url">$ref.url</a></td>

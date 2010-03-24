@@ -61,7 +61,7 @@ window.onload=function(){
 	<td class="headodd num">H diff</td>
 	<td class="headodd num">Extras</td>
 </tr>
-#foreach($s in $sumList)
+#foreach($s in $summary)
 <tr>
 	<td class="even"><a href="${revBase}Data/Summary/gauss_${gaussian}/$s.netCodeWithYear/$s.staCode/station.html">$s.netCodeWithYear</a></td>
 	<td class="odd"><a href="${revBase}Data/Summary/gauss_${gaussian}/$s.netCodeWithYear/$s.staCode/station.html">$s.staCode</a></td>

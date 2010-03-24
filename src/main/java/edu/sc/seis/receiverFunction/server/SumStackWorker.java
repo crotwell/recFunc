@@ -122,6 +122,7 @@ public class SumStackWorker implements Runnable {
     }
     
     void generateSummary() throws Exception {
+        logger.info("Begin Summary generation");
         Iterator<SumHKStack> it = RecFuncDB.getSingleton().getAllSumStackIterator(DEFAULT_GAUSSIAN);
         List<SummaryLine> sumLines = new ArrayList<SummaryLine>();
         while (it.hasNext()) {
@@ -162,6 +163,7 @@ public class SumStackWorker implements Runnable {
                 }
             }
             context.put("summary", out);
+            logger.info("Prior results for "+fileizedName+" has "+out.size()+" results.");
             doPage(context, COMPARE_PRIOR_RESULT + fileizedName+".html", "comparePriorResult.vm");
             doPage(context, COMPARE_PRIOR_RESULT + fileizedName+".csv", "comparePriorResultTxt.vm");
         }
@@ -305,6 +307,7 @@ public class SumStackWorker implements Runnable {
                             (o1.getRadialMatch() == o2.getRadialMatch() ? 0 : 1));
                     }
                 });
+                Collections.reverse(individualHK);
                 individualHK = individualHK.subList(0, MAX_STACK_EVENTS);
             }
             SumHKStack sumStack = SumHKStack.calculateForPhase(individualHK,
@@ -348,11 +351,6 @@ public class SumStackWorker implements Runnable {
                     loserEventList.add(result.createVelocityEvent());
                 }
                 
-                Statistics nearByStat = getNearByStatistics(oneStationByCode.getLocation().latitude,
-                                                               oneStationByCode.getLocation().longitude,
-                                                               NEAR_BY_KM);
-                if (nearByStat != null) {context.put("nearbyStats", nearByStat);}
-                
                 stationServlet.populateContext(context, new VelocityNetwork(insertion.getNet()),
                                                insertion.getStaCode(), sumStack, individualHK, losers);
                 BufferedWriter stationOut = new BufferedWriter(new FileWriter(new File(stationDir, STATION_HTML)));
@@ -377,7 +375,7 @@ public class SumStackWorker implements Runnable {
         }
     }
     
-    public Statistics getNearByStatistics(float lat, float lon, float km) throws IOException {
+    public static Statistics getNearByStatistics(float lat, float lon, float km) throws IOException {
         List<SummaryLine> close = loadSummaryFromCSV(new DistanceFilter(lat, lon, (float)DistAz.kilometersToDegrees(km)));
         if (close.size() == 0) {
             return null;

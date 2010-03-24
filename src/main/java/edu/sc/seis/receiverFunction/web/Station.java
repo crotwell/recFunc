@@ -26,6 +26,7 @@ import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.TauP.TauModelException;
+import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
@@ -40,10 +41,12 @@ import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.receiverFunction.server.SumStackWorker;
+import edu.sc.seis.receiverFunction.summaryFilter.DistanceFilter;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.ConfigurationException;
+import edu.sc.seis.sod.status.FissuresFormatter;
 import edu.sc.seis.sod.velocity.event.VelocityEvent;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
@@ -138,6 +141,16 @@ public class Station extends Revlet {
         markerList.addAll(results);
         TimeOMatic.print("other results");
         context.put("crust2Type", crust2Type);
+        DecimalFormat distFormat = new DecimalFormat("0.0");
+        QuantityImpl nearByDeg = new QuantityImpl(2.0, UnitImpl.DEGREE);
+        context.put("nearByDist", FissuresFormatter.formatDistance(nearByDeg));
+        Statistics nearByStats;
+        try {
+            nearByStats = SumStackWorker.getNearByStatistics(sta.getFloatLatitude(), sta.getFloatLongitude(), (float)nearByDeg.getValue(UnitImpl.DEGREE));
+            context.put("nearByStats", nearByStats);
+        } catch(IOException e) {
+            //oh well
+        }
         
         if (summary != null) {
             context.put("summary", summary);

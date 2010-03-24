@@ -57,8 +57,8 @@ window.onload=function(){
 #foreach($sta in $stationList)
 <tr>
 	<td class="even">$sta.getNet().getCodeWithYear()</td>
-	<td class="odd"><a href="$!{revBase}stationEvent.html?rf=$recfunc.get($sta).getDbId()&gaussian=${gaussian}">$sta.getCode()</a></td>
-    <td class="even1"><a href="$!{revBase}stationEvent.html?rf=$recfunc.get($sta).getDbId()&gaussian=${gaussian}">$sta.getName()</a></td>
+	<td class="odd"><a href="$!{revBase}stationEvent.html?rf=$recfunc.get($sta).getDbid()&gaussian=${gaussian}">$sta.getCode()</a></td>
+    <td class="even1"><a href="$!{revBase}stationEvent.html?rf=$recfunc.get($sta).getDbid()&gaussian=${gaussian}">$sta.getName()</a></td>
     <td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
 	<td class="even">$recfunc.get($sta).formatRadialMatch()</td>
 </tr>

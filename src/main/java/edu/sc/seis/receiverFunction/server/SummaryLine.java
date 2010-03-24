@@ -58,6 +58,23 @@ public class SummaryLine extends HKAlpha {
         this.netName = netName;
     }
     
+    public SummaryLine(SummaryLine line) {
+        this(line.getNetCodeWithYear(),
+             line.getStaCode(),
+             line.getLat(),
+             line.getLon(),
+             line.getElevation(),
+             line.getH(),
+             line.getHStdDev(),
+             line.getVpVs(),
+             line.getKStdDev(),
+             line.getVp(),
+             line.getNumEarthquakes(),
+             line.getComplexityResidual(),
+             line.getStaName(),
+             line.getNetName());
+    }
+    
     String csvClean(String in) {
         return in.replaceAll(",", "").replaceAll("\n", "").trim();
     }

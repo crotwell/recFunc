@@ -1,5 +1,7 @@
 package edu.sc.seis.receiverFunction.compare;
 
+import edu.sc.seis.sod.status.FissuresFormatter;
+
 /**
  * @author crotwell Created on Mar 28, 2005
  */
@@ -28,6 +30,12 @@ public class StationResultRef {
 
     public String getName() {
         return name;
+    }
+    
+    public String getFileizedName() {
+        String fileizedName = FissuresFormatter.filize(getName());
+        fileizedName = fileizedName.replaceAll("\\W", "");
+        return fileizedName;
     }
 
     public String getReference() {

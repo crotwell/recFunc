@@ -39,6 +39,7 @@ import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
+import edu.sc.seis.receiverFunction.server.SumStackWorker;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
@@ -192,6 +193,7 @@ public class Station extends Revlet {
                     new Float(numEighty * 100f / numEvents));
         context.put("markerList", markerList);
         context.put("smallestH", smallestH);
+        context.put("comparePrefix", SumStackWorker.COMPARE_PRIOR_RESULT);
         TimeOMatic.print("done");
     }
 

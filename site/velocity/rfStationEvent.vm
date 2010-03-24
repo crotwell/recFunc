@@ -15,7 +15,11 @@
 		> <a href="${revBase}Data/Summary/gauss_${gaussian}/$sta.getNet().getCodeWithYear()/$sta.getCode()/station.html">Station $sta.getCode() $sta.getName()</a> > <b>Earthquake Result Viewer</b></p>	
 	
 	<h1>$sta.getCode() $sta.getName() - Earthquake Result Viewer</h1>
+#if($stack)
 <img height="600" width="600" id="dataimg" class="dataimg" src="hkstackimage.png?rf=$rf"/>
+#else
+<p id="percent_match">*The percent match for this event was below the threshold and hence no stack was calculated.</p>
+#end
 <table id="eq_results">
 	<tr><td>
 <table class="station_page1">
@@ -172,9 +176,9 @@
 </div>
 <table id="arrivals" class="station_page" cellpadding="0" cellspacing="0">
 <tr><td class="headodd"colspan="2">Arrivals</td></tr>
-<tr><td class="odd">Ps</td><td class="even">$timePs</td></tr>
-<tr><td class="odd">PpPs</td><td class="even">$timePpPs</td></tr>
-<tr><td class="odd">PsPs/PpSs</td><td class="even">$timePsPs</td></tr>
+<tr><td class="odd">Ps</td><td class="even">$!timePs</td></tr>
+<tr><td class="odd">PpPs</td><td class="even">$!timePpPs</td></tr>
+<tr><td class="odd">PsPs/PpSs</td><td class="even">$!timePsPs</td></tr>
 </table>
 
 

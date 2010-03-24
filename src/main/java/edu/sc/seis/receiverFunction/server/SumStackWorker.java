@@ -55,6 +55,7 @@ import edu.sc.seis.receiverFunction.web.Start;
 import edu.sc.seis.receiverFunction.web.Station;
 import edu.sc.seis.rev.RevletContext;
 import edu.sc.seis.sod.hibernate.SodDB;
+import edu.sc.seis.sod.status.FissuresFormatter;
 import edu.sc.seis.sod.velocity.event.VelocityEvent;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
@@ -140,25 +141,29 @@ public class SumStackWorker implements Runnable {
         List<StationResultRef> refs = RecFuncDB.getSingleton().getAllPriorResultsRef();
         context.put("priorResults", refs);
         doPage(context, PRIOR_RESULT_LIST, "priorResultList.vm");
-        
+        context.put("comparePrefix", COMPARE_PRIOR_RESULT);
         for (StationResultRef stationResultRef : refs) {
             context.put("ref", stationResultRef);
             context.put("name", stationResultRef.getName());
+            String fileizedName = FissuresFormatter.filize(stationResultRef.getName());
+            fileizedName = fileizedName.replaceAll("\\W", "");
+            context.put("fileizedName", fileizedName);
             List<StationResult> priors = getPriorResults(stationResultRef.getName());
             List<SummaryLine> out = new ArrayList<SummaryLine>();
             for (StationResult stationResult : priors) {
                 for (SummaryLine summaryLine : sumLines) {
                     if (stationResult.getStaCode().equals(summaryLine.getStaCode()) &&
                             NetworkIdUtil.toStringNoDates(stationResult.getNet()).equals(summaryLine.getNetCodeWithYear()) ) {
-                        summaryLine.setPrior(stationResult);
-                        out.add(summaryLine);
+                        SummaryLine outLine = new SummaryLine(summaryLine);
+                        outLine.setPrior(stationResult);
+                        out.add(outLine);
                         break;
                     }
                 }
             }
             context.put("summary", out);
-            doPage(context, COMPARE_PRIOR_RESULT+"_" + stationResultRef.getName()+".html", "comparePriorResult.vm");
-            doPage(context, COMPARE_PRIOR_RESULT+"_" + stationResultRef.getName()+".csv", "comparePriorResultTxt.vm");
+            doPage(context, COMPARE_PRIOR_RESULT + fileizedName+".html", "comparePriorResult.vm");
+            doPage(context, COMPARE_PRIOR_RESULT + fileizedName+".csv", "comparePriorResultTxt.vm");
         }
         logger.info("Summary regenerated");
     }
@@ -174,7 +179,11 @@ public class SumStackWorker implements Runnable {
             } 
             return out;
         } else {
-            return RecFuncDB.getSingleton().getPriorResults(name);
+            List<StationResult> out = RecFuncDB.getSingleton().getPriorResults(name);
+            if (out.size() == 0) {
+                logger.warn("Zero Prior results for "+name+" in the database");
+            }
+            return out;
         }
     }
     

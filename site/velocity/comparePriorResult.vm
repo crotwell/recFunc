@@ -30,7 +30,7 @@ window.onload=function(){
 <p>Reference URL: <a href="$ref.getUrl()">$ref.getUrl()</a></p>
 <p>Study type: $ref.getMethod()</p>
 
-<p>View results as <a href="comparePriorResult.txt?$req.getQueryString()">text</a></p>
+<p>View results as <a href="${comparePrefix}${fileizedName}.csv">csv</a></p>
 
 <table cellpadding="0" cellspacing="0" class="ruler sortable" id="dumb">
 <tr>

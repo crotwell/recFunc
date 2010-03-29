@@ -63,7 +63,7 @@ window.onload=function(){
 <tr><td class="bold">PpPs Weight:</td><td class="data">$!summary.getSum().getWeightPpPs()</td></tr>
 <tr><td class="bold">PsPs Weight:</td><td class="data">$!summary.getSum().getWeightPsPs()</td></tr>
 <tr><td class="bold">Residual Complexity:</td><td class="data">$!summary.formatComplexityResidual()</td></tr>
-<tr><td class="bold">Nearby stations (${nearByDeg}):</td><td class="data">$!nearbyStats.getMean() +- $!nearbyStats.getStdDev()</td></tr>
+<tr><td class="bold">Nearby stations (${nearByDist}):</td><td class="data">$!nearByStats.mean +- $!nearByStats.stddev()</td></tr>
 </table>
 <div id="eventmap">
 <p>$numNinty with match > 90% ( $percentNinty %) and $numEighty with match > 80% ( $percentEighty %) out of $numEvents.</p>

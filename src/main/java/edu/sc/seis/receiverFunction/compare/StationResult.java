@@ -118,7 +118,7 @@ public class StationResult extends HKAlpha {
      * output.
      */
     public String formatExtras() {
-        return extras.replaceAll(",", "");
+        return (getExtras()!=null)?getExtras().replaceAll(",", ""):"";
     }
 
     private String stationCode;

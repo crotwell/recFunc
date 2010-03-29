@@ -52,6 +52,7 @@ public class Admin extends Bag {
             Initializer.loadProps((Start.class).getClassLoader()
                     .getResourceAsStream(DEFAULT_PROPS), props);
             if(args.hasProps()) {
+                logger.info("Loading props from args");
                 try {
                     Initializer.loadProps(args.getProps(), props);
                 } catch(IOException io) {
@@ -62,21 +63,32 @@ public class Admin extends Bag {
                 }
             }
             PropertyConfigurator.configure(props);
-            ConnMgr.installDbProperties(props, args.getInitialArgs());
+            RecFuncDB.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc", RecFuncDB.getDataLoc()));
+            if (props.containsKey("fissuresUtil.database.url")) {
+                logger.info("Database URL from fissuresUtil.database.url: "+props.getProperty("fissuresUtil.database.url"));
+                ConnMgr.setURL(props.getProperty("fissuresUtil.database.url"));
+            } else if (props.containsKey("cormorant.servers.ears.databaseURL")) {
+                logger.info("Database URL from cormorant.servers.ears.databaseURL: "+props.getProperty("cormorant.servers.ears.databaseURL"));
+                ConnMgr.setURL(props.getProperty("cormorant.servers.ears.databaseURL"));
+            } else {
+                throw new RuntimeException("Can't load databaseURL from properties");
+            }
             synchronized(HibernateUtil.class) {
                 HibernateUtil.setUpFromConnMgr(props, HibernateUtil.DEFAULT_EHCACHE_CONFIG);
                 SodDB.configHibernate(HibernateUtil.getConfiguration());
                 RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
             }
             try {
+                
                 Connection c = ConnMgr.createConnection();
                 ResultSet rs = c.createStatement()
-                        .executeQuery("select count(*) from statefulevent");
+                        .executeQuery("select count(*) from network");
                 rs.next();
                 System.out.println("Connected to database: " + ConnMgr.getDB_TYPE()+" at "+ConnMgr.getURL());
                 c.close();
             } catch(SQLException e) {
                 System.err.println("Unable to connect to database: "+ConnMgr.getURL());
+                throw new RuntimeException(e);
             }
             logger.info("logging configured");
             Admin ic = new Admin(args);

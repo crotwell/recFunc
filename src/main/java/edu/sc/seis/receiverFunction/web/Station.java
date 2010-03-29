@@ -141,13 +141,16 @@ public class Station extends Revlet {
         markerList.addAll(results);
         TimeOMatic.print("other results");
         context.put("crust2Type", crust2Type);
-        DecimalFormat distFormat = new DecimalFormat("0.0");
-        QuantityImpl nearByDeg = new QuantityImpl(2.0, UnitImpl.DEGREE);
-        context.put("nearByDist", FissuresFormatter.formatDistance(nearByDeg));
+        QuantityImpl nearByDist = new QuantityImpl(2.0, UnitImpl.DEGREE);
+        context.put("nearByDist", FissuresFormatter.formatDistance(nearByDist));
         Statistics nearByStats;
         try {
-            nearByStats = SumStackWorker.getNearByStatistics(sta.getFloatLatitude(), sta.getFloatLongitude(), (float)nearByDeg.getValue(UnitImpl.DEGREE));
-            context.put("nearByStats", nearByStats);
+            nearByStats = SumStackWorker.getNearByStatistics(sta.getFloatLatitude(), sta.getFloatLongitude(), (float)nearByDist.getValue(UnitImpl.DEGREE));
+            if (nearByStats!= null && nearByStats.getLength() >2) {
+                context.put("nearByStats", nearByStats);
+            } else {
+                context.put("nearByStats", new Statistics(new int[] {-1,-1}));
+            }
         } catch(IOException e) {
             //oh well
         }

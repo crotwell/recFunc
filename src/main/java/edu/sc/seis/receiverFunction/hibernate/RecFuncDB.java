@@ -17,6 +17,7 @@ import java.util.TimeZone;
 
 import org.hibernate.Query;
 import org.hibernate.StaleStateException;
+import org.hibernate.StatelessSession;
 import org.hibernate.cfg.Configuration;
 import org.omg.CORBA.UNKNOWN;
 
@@ -222,7 +223,8 @@ public class RecFuncDB extends AbstractHibernateDB {
     }
     
     public boolean isResultInDB(CacheEvent cacheEvent, String netCode, String staCode, float gaussian) {
-        Query q = getSession().createQuery("from "
+        StatelessSession s = getReadOnlySession();
+        Query q = s.createQuery("select count(*) from "
                 + ReceiverFunctionResult.class.getName()
                 + " where event = :event "
                 + " and gwidth = :gauss and channelGroup.channel1.id.station_code = :staCode "
@@ -232,7 +234,9 @@ public class RecFuncDB extends AbstractHibernateDB {
         q.setString("staCode", staCode);
         q.setString("netCode", netCode);
         q.setMaxResults(1);
-        return q.iterate().hasNext();
+        boolean out = ((Long)q.uniqueResult()).intValue() > 0 ;
+        s.close();
+        return out;
     }
 
     public List<ReceiverFunctionResult> getStationsByEvent(CacheEvent cacheEvent,
@@ -297,7 +301,8 @@ public class RecFuncDB extends AbstractHibernateDB {
     public int countSuccessful(NetworkAttrImpl networkAttr,
                                String staCode,
                                float gaussian) {
-        Query q = getSession().createQuery("select count(*) from "
+        StatelessSession s = getReadOnlySession();
+        Query q = s.createQuery("select count(*) from "
                 + ReceiverFunctionResult.class.getName()
                 + " where channelGroup.channel1.site.station.id.station_code = :sta "
                 + " and channelGroup.channel1.site.station.networkAttr = :networkAttr "
@@ -305,7 +310,9 @@ public class RecFuncDB extends AbstractHibernateDB {
         q.setString("sta", staCode);
         q.setEntity("networkAttr", networkAttr);
         q.setFloat("gauss", gaussian);
-        return ((Long)q.uniqueResult()).intValue();
+        int out = ((Long)q.uniqueResult()).intValue();
+        s.close();
+        return out;
     }
 
     public List<ReceiverFunctionResult> getUnsuccessful(NetworkAttrImpl networkAttr,
@@ -325,7 +332,8 @@ public class RecFuncDB extends AbstractHibernateDB {
     public int countUnsuccessful(NetworkAttrImpl networkAttr,
                                  String staCode,
                                  float gaussian) {
-        Query q = getSession().createQuery("select count(*) from "
+        StatelessSession s = getReadOnlySession();
+        Query q = s.createQuery("select count(*) from "
                 + ReceiverFunctionResult.class.getName()
                 + " where channelGroup.channel1.site.station.id.station_code = :sta "
                 + " and channelGroup.channel1.site.station.networkAttr = :networkAttr "
@@ -333,7 +341,9 @@ public class RecFuncDB extends AbstractHibernateDB {
         q.setString("sta", staCode);
         q.setEntity("networkAttr", networkAttr);
         q.setFloat("gauss", gaussian);
-        return ((Long)q.uniqueResult()).intValue();
+        int out = ((Long)q.uniqueResult()).intValue();
+        s.close();
+        return out;
     }
 
     public int put(RejectedMaxima reject) {

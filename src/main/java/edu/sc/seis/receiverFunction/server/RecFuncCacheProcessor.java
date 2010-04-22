@@ -1,5 +1,7 @@
 package edu.sc.seis.receiverFunction.server;
 
+import java.util.List;
+
 import org.omg.CORBA.UNKNOWN;
 import org.w3c.dom.Element;
 
@@ -154,10 +156,10 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
                                                     singleSeismograms);
             String[] phaseName = pWave ? new String[] {"ttp"}
                     : new String[] {"tts"};
-            Arrival[] pPhases = taup.calcTravelTimes(chan.getSite()
+            List<Arrival> pPhases = taup.calcTravelTimes(chan.getSite()
                     .getStation(), origin, phaseName);
             MicroSecondDate firstP = new MicroSecondDate(origin.getOriginTime());
-            firstP = firstP.add(new TimeInterval(pPhases[0].getTime(),
+            firstP = firstP.add(new TimeInterval(pPhases.get(0).getTime(),
                                                  UnitImpl.SECOND));
             TimeInterval shift = recFunc.getShift();
             MemoryDataSetSeismogram[] predictedDSS = new MemoryDataSetSeismogram[2];

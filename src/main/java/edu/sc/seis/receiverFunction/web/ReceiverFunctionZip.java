@@ -154,12 +154,12 @@ public class ReceiverFunctionZip extends HttpServlet {
                     sac.kuser0 = "% match ";
                     sac.user1 = cr.getGwidth();
                     sac.kuser1 = "gwidth";
-                    Arrival[] arrivals = tauPTime.calcTravelTimes(sta,
+                    List<Arrival> arrivals = tauPTime.calcTravelTimes(sta,
                                                                   cr.getEvent()
                                                                           .getPreferred(),
                                                                   pPhases);
                     // convert radian per sec ray param into km per sec
-                    float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
+                    float kmRayParam = (float)(arrivals.get(0).getRayParam() / tauPTime.getTauModel()
                             .getRadiusOfEarth());
                     // I don't know why, but this generates slightly wrong
                     // values,

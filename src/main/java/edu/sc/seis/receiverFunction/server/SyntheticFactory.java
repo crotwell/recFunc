@@ -3,6 +3,8 @@ package edu.sc.seis.receiverFunction.server;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.List;
+
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
@@ -71,10 +73,10 @@ public class SyntheticFactory {
     }
     
     public static Arrival getFirstP() throws TauModelException, IOException {
-        Arrival[] pPhases = getTauP().calcTravelTimes(getChannels()[0].getSite().getStation(),
+        List<Arrival> pPhases = getTauP().calcTravelTimes(getChannels()[0].getSite().getStation(),
                                                       getEvent().getOrigin(),
                                                  new String[] {"ttp"});
-        return pPhases[0];
+        return pPhases.get(0);
     }
     
     public static TimeInterval getShift() {

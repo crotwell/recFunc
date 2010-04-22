@@ -1,5 +1,7 @@
 package edu.sc.seis.receiverFunction;
 
+import java.util.List;
+
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.Sampling;
 import edu.iris.Fissures.model.SamplingImpl;
@@ -47,10 +49,10 @@ public class StackComplexity {
     public ReceiverFunctionResult getSyntheticForDist(HKAlpha staResult,
                                                       float distDeg)
             throws TauModelException {
-        Arrival[] arrivals = TauPUtil.getTauPUtil()
+        List<Arrival> arrivals = TauPUtil.getTauPUtil()
                 .calcTravelTimes(distDeg, 0, new String[] {"P"});
         return getSyntheticForRayParam(staResult,
-                                       (float)arrivals[0].getRayParam() / 6371);
+                                       (float)arrivals.get(0).getRayParam() / 6371);
     }
 
     public ReceiverFunctionResult getSyntheticForRayParam(HKAlpha staResult,

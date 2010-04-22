@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.JFrame;
 import org.w3c.dom.Element;
 import edu.iris.Fissures.FissuresException;
@@ -837,7 +839,7 @@ public class HKStack implements Serializable {
             throws TauModelException, FissuresException {
         String[] pPhases = {"P"};
         TauPUtil tauPTime = TauPUtil.getTauPUtil(modelName);
-        Arrival[] arrivals;
+        List<Arrival> arrivals;
         try {
             arrivals = tauPTime.calcTravelTimes(cachedResult.getChannelGroup().getChannel1().getSite().getStation(),
                                                           cachedResult.getEvent().getPreferred(),
@@ -846,7 +848,7 @@ public class HKStack implements Serializable {
             throw new RuntimeException("No Preferred Origin, should never happen but it jut did!");
         }
         // convert radian per sec ray param into km per sec
-        float kmRayParam = (float)(arrivals[0].getRayParam() / tauPTime.getTauModel()
+        float kmRayParam = (float)(arrivals.get(0).getRayParam() / tauPTime.getTauModel()
                 .getRadiusOfEarth());
         HKStack stack = new HKStack(vp,
                                     kmRayParam,

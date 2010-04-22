@@ -6,6 +6,8 @@
 
 package edu.sc.seis.receiverFunction;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import edu.iris.Fissures.FissuresException;
@@ -174,12 +176,12 @@ public class RecFunc {
         logger.info("predicted.length = "+predicted.length);
 
         String[] phaseName = pWave ? new String[] {"ttp"} : new String[] {"tts"};
-        Arrival[] pPhases =
+        List<Arrival> pPhases =
             timeCalc.calcTravelTimes(staLoc, origin, phaseName);
 
         MicroSecondDate firstP = new MicroSecondDate(origin.getOriginTime());
         logger.debug("origin "+firstP);
-        firstP = firstP.add(new TimeInterval(pPhases[0].getTime(), UnitImpl.SECOND));
+        firstP = firstP.add(new TimeInterval(pPhases.get(0).getTime(), UnitImpl.SECOND));
         logger.debug("firstP "+firstP);
         //TimeInterval shift = firstP.subtract(z.getBeginTime());
         shift = (TimeInterval)shift.convertTo(UnitImpl.SECOND);

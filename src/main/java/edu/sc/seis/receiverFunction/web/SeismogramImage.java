@@ -5,6 +5,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -114,13 +115,13 @@ public class SeismogramImage extends ImageServlet {
                                                                                     2048);
                 DistAz distAz = new DistAz(result.getChannelGroup().getStation(),
                                            result.getEvent());
-                Arrival[] arrivals = TauPUtil.getTauPUtil()
+                List<Arrival> arrivals = TauPUtil.getTauPUtil()
                         .calcTravelTimes(distAz.getDelta(),
                                          0,
                                          new String[] {"P"});
-                float flatRP = (float)arrivals[0].getRayParam() / 6371;
+                float flatRP = (float)arrivals.get(0).getRayParam() / 6371;
                 MicroSecondDate pTime = new MicroSecondDate(result.getEvent().getPreferred().getOriginTime());
-                pTime = pTime.add(new TimeInterval(arrivals[0].getTime(),
+                pTime = pTime.add(new TimeInterval(arrivals.get(0).getTime(),
                                                    UnitImpl.SECOND));
                 // pTime = pTime.subtract(RecFunc.DEFAULT_SHIFT);
                 pTime = dss[0].getBeginMicroSecondDate();

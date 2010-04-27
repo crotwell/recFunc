@@ -31,6 +31,7 @@ import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
+import edu.sc.seis.receiverFunction.HKAlpha;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.StackMaximum;
 import edu.sc.seis.receiverFunction.SumHKStack;
@@ -143,13 +144,11 @@ public class Station extends Revlet {
         context.put("crust2Type", crust2Type);
         QuantityImpl nearByDist = new QuantityImpl(2.0, UnitImpl.DEGREE);
         context.put("nearByDist", FissuresFormatter.formatDistance(nearByDist));
-        Statistics nearByStats;
+        HKAlpha nearByStats;
         try {
             nearByStats = SumStackWorker.getNearByStatistics(sta.getFloatLatitude(), sta.getFloatLongitude(), (float)nearByDist.getValue(UnitImpl.DEGREE));
-            if (nearByStats!= null && nearByStats.getLength() >2) {
+            if (nearByStats!= null) {
                 context.put("nearByStats", nearByStats);
-            } else {
-                context.put("nearByStats", new Statistics(new int[] {-1,-1}));
             }
         } catch(IOException e) {
             //oh well

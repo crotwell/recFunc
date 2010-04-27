@@ -39,6 +39,7 @@ import edu.sc.seis.fissuresUtil.hibernate.AbstractHibernateDB;
 import edu.sc.seis.fissuresUtil.hibernate.HibernateUtil;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
+import edu.sc.seis.receiverFunction.HKAlpha;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.compare.StationResult;
@@ -375,16 +376,30 @@ public class SumStackWorker implements Runnable {
         }
     }
     
-    public static Statistics getNearByStatistics(float lat, float lon, float km) throws IOException {
+    public static HKAlpha getNearByStatistics(float lat, float lon, float km) throws IOException {
         List<SummaryLine> close = loadSummaryFromCSV(new DistanceFilter(lat, lon, (float)DistAz.kilometersToDegrees(km)));
-        if (close.size() == 0) {
+        if (close.size() <= 1) {
             return null;
         }
         List<QuantityImpl> thickness = new ArrayList<QuantityImpl>();
+        List<Float> vpvs = new ArrayList<Float>();
         for (SummaryLine staResult : close) {
             thickness.add(staResult.getH());
+            vpvs.add(staResult.getVpVs());
         }
-        return new Statistics(thickness);
+        Statistics thickStat = new Statistics(thickness);
+        float[] vpvsArray = new float[vpvs.size()];
+        for (int i = 0; i < vpvsArray.length; i++) {
+            vpvsArray[i] = vpvs.get(i);
+        }
+        
+        Statistics vpvsStat = new Statistics(vpvsArray);
+        return new HKAlpha(new QuantityImpl(thickStat.mean(),
+                                            UnitImpl.KILOMETER),
+                                            (float)vpvsStat.mean(),
+                                            new QuantityImpl(0, UnitImpl.KILOMETER_PER_SECOND),
+                                            0, new QuantityImpl(thickStat.stddev(), UnitImpl.KILOMETER),
+                                            (float)vpvsStat.stddev());
     }
 
     public static float calcComplexity(SumHKStack sumStack)

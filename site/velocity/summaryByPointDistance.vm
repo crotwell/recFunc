@@ -21,8 +21,6 @@ window.onload=function(){
 
 <h1>Stations within $delta degrees of ($lat, $lon)</h1>
 
-
-
 <img id="station_near_by" src="DisplayChart?filename=${plotname}" usemap="#${plotname}" />
 $imagemap
 

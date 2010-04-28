@@ -3,7 +3,7 @@
 $net.getCodeWithYear()
 $net.name
 $stacode
-${revBase}summaryHKStack.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}
+${revBase}summaryHKStack.png?netCode=$net.getCodeWithYear()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}
 
 #foreach($sta in $stationList)
 $sta.getCode(),$sta.getName(),$sta.getLatitude(),$sta.getLongitude(),$fissures.formatYMD($sta.getStartDate()) / $fissures.formatYMD($sta.getEndDate()),$sta.getElevation()</td>

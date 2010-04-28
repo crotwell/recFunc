@@ -20,7 +20,7 @@ window.onload=function(){
 
 <h1>Stations in $net.getCodeWithYear() ($stationList.size() stations)</h1>
 
-<p>View as <a href="$!{revBase}stationList.txt?netdbid=${net.getDbId()}&gaussian=${gaussian}">text</a></p>
+<p>View as <a href="$!{revBase}stationList.txt?netCode=$net.getCodeWithYear()&gaussian=${gaussian}">CSV</a></p>
 
 <table cellpadding="0" cellspacing="0" id="stat_info">
 <tr><td class="headodd">Network</td>

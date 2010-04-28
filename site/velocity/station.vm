@@ -17,7 +17,7 @@ window.onload=function(){
 	
 <div id="content">
 	
-<p id="breadcrumbs">You are here: <a href="${revBase}index.html">Home</a> > <a href="${revBase}networkList.html">Network List</a> > <a href="${revBase}stationList.html?netdbid=${net.getDbId()}&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name Station List</a> > <b>Station $net.getCode() $stacode</b></p>	
+<p id="breadcrumbs">You are here: <a href="${revBase}index.html">Home</a> > <a href="${revBase}networkList.html">Network List</a> > <a href="${revBase}stationList.html?netCode=$net.getCodeWithYear()&gaussian=${gaussian}">$net.getCodeWithYear() - $net.name Station List</a> > <b>Station $net.getCode() $stacode</b></p>	
 	
 #set ($firstSta = $stationList.get(0) )
 
@@ -126,9 +126,9 @@ window.onload=function(){
 
 
 <h2>Events Processed for this Station</h2>
-<p><a href="${revBase}receiverFunction.zip?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&gaussian=${gaussian}">Download zip of receiver functions as SAC</a></p>
-<p><a href="${revBase}recordSection.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&gaussian=${gaussian}">View Record Section</a></p>
-<p><a href="${revBase}earthquakeHKPlot.png?netdbid=$net.getDbId()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}">Plot maxima for each earthquake.</a></p>
+<p><a href="${revBase}receiverFunction.zip?netCode=$net.getCodeWithYear()&stacode=$stacode&minPercentMatch=80&gaussian=${gaussian}">Download zip of receiver functions as SAC</a></p>
+<p><a href="${revBase}recordSection.png?netCode=$net.getCodeWithYear()&stacode=$stacode&minPercentMatch=80&gaussian=${gaussian}">View Record Section</a></p>
+<p><a href="${revBase}earthquakeHKPlot.png?netCode=$net.getCodeWithYear()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}">Plot maxima for each earthquake.</a></p>
 
 #set( $sta = $stationList.get(0) )
 

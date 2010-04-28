@@ -18,6 +18,8 @@ task makeScript(dependsOn: copyToLib) << { task ->
     ScriptBuilder.create('sod', 'edu.sc.seis.sod.Start', task.project, dExtras:dExtras, background:true)
     ScriptBuilder.create('viewResults', 'edu.sc.seis.receiverFunction.web.Start', task.project, dExtras:dExtras, background:true)
     ScriptBuilder.create('server', 'edu.sc.seis.cormorant.Start', task.project, dExtras:dExtras, background:true, mx:'2048m')
+    ScriptBuilder.create('copyToDMC', 'edu.sc.seis.receiverFunction.server.RFCopy', task.project, dExtras:dExtras, background:false)
+    ScriptBuilder.create('pingDMC', 'edu.sc.seis.receiverFunction.server.RFPing', task.project, dExtras:dExtras, background:false)
     ScriptBuilder.create('admin', 'edu.sc.seis.receiverFunction.server.Admin', task.project, dExtras:dExtras, background:false)
     //ScriptBuilder.create('priorResultCopy', 'edu.sc.seis.receiverFunction.server.PriorResultCopy', task.project, dExtras:dExtras, background:false)
     //ScriptBuilder.create('dateStack', 'edu.sc.seis.receiverFunction.server.DateRangeResults', task.project, dExtras:dExtras, background:false)

@@ -1,7 +1,5 @@
-,,,,,EARS,,,,,,,,,, $name,,,,
-Net,Station,Name,Lat,Lon,Elevation,Est. Thick,StdDev,Est. Vp/Vs,StdDev,Assumed Vp,Vs,Poissons Ratio,Num EQ,Complexity,Thick,Vp/Vs,Vp,Vs,Poissons Ratio,Diff H,Extras
-#foreach($sta in $stationList)##
-#foreach($priorR in $prior.get($sta))
-$sta.getNet().getCodeWithYear(),$sta.getCode(),$name,$sta.getLatitude(),$sta.getLongitude(),$sta.getElevation(),$!summary.get($sta).getBest().formatH(),$!summary.get($sta).getBest().formatHStdDev(),$!summary.get($sta).getBest().formatVpVs(),$!summary.get($sta).getBest().formatKStdDev(),$!summary.get($sta).getBest().formatVp(),$!summary.get($sta).getBest().formatVs(),$!summary.get($sta).getBest().formatPoissonsRatio(),$!summary.get($sta).numEQ,$!summary.get($sta).formatComplexityResidual(),$!priorR.formatH(),$!priorR.formatVpVs(),$!priorR.formatVp(),$!priorR.formatVs(),$!priorR.formatPoissonsRatio(),$!hDiffMap.get($priorR),$!priorR.formatExtras()
-#end
+,,,,,EARS,,,,,,,,, $name,,,,,,,,
+Net,Station,Lat,Lon,Elevation,Est. Thick,StdDev,Est. Vp/Vs,StdDev,Assumed Vp,Vs,Poissons Ratio,Num EQ,Complexity,Thick,Vp/Vs,Vp,Vs,Poissons Ratio,Diff H,Extras,Station Name,Network Name
+#foreach($s in $summary)
+$s.netCodeWithYear,$s.staCode,$s.lat,$s.lon,$s.formatElevation(),$s.formatH(),$s.formatHStdDev(),$s.formatVpVs(),$s.formatKStdDev(),$s.formatVp(),$s.formatVs(),$s.formatPoissonsRatio(),$s.numEarthquakes,$s.formatComplexityResidual(),$!s.prior.formatH(),$!s.prior.formatVpVs(),$!s.prior.formatVp(),$!s.prior.formatVs(),$!s.prior.formatPoissonsRatio(),$!hDiffMap.get($priorR),$!s.prior.formatExtras(),$s.staName,$s.netName
 #end

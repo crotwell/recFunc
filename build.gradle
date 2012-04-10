@@ -3,9 +3,9 @@ group = 'edu.sc.seis'
 version = '2.0beta8'
 
 dependencies {
-    compile project(':rev') { transitive = true }
-    compile project(':cormorant') { transitive = true }
-    compile project(':winkle') { transitive = true }
+    compile project(':rev')
+    compile project(':cormorant')
+    compile project(':winkle')
     compile "edu.sc.seis:recFuncIDL:1.0beta"
     compile "edu.sc.seis.mapData:vmap_po_thinned:1.0"
     compile "jfreechart:jcommon:1.0.0"
@@ -28,7 +28,7 @@ task makeScript(dependsOn: copyToLib) << { task ->
 task tarDist(type: Tar, dependsOn: ['makeScript', 'createBuildScript', 'wrapper'
 ]) {
     compression = Compression.GZIP
-    dirName = project.name+'-'+version
+    def dirName = project.name+'-'+version
     from('build') {
         include('build.gradle')
         into dirName

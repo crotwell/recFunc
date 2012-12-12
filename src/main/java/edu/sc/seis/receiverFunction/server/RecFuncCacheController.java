@@ -22,9 +22,9 @@ public class RecFuncCacheController extends AbstractController {
                                   String serverPropName,
                                   ORB orb) throws Exception {
         super(confProps, serverPropName, orb);
-        String databaseURL = confProps.getProperty(getPropertryPrefix()+ "databaseURL");
+        String databaseURL = confProps.getProperty(getPropertyPrefix()+ "databaseURL");
         ConnMgr.setURL(databaseURL);
-        impl = new RecFuncCacheImpl(confProps.getProperty(getPropertryPrefix()
+        impl = new RecFuncCacheImpl(confProps.getProperty(getPropertyPrefix()
                 + "dataloc"), confProps);
         logger.debug("Impl created, using " + databaseURL);
         // check to make sure hibernate is ok, don't care about the result just if the query succeeds

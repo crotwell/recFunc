@@ -31,7 +31,6 @@ import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.receiverFunction.IterDecon;
 import edu.sc.seis.receiverFunction.IterDeconResult;
 import edu.sc.seis.receiverFunction.RecFunc;
-import edu.sc.seis.receiverFunction.RecFuncException;
 import edu.sc.seis.receiverFunction.ZeroPowerException;
 import edu.sc.seis.sod.CommonAccess;
 import edu.sc.seis.sod.ConfigurationException;
@@ -103,7 +102,7 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
      * @throws TauModelException probably should never happen
      * 
      */
-    public WaveformVectorResult process(CacheEvent event,
+    public WaveformVectorResult accept(CacheEvent event,
                                         ChannelGroup channelGroup,
                                         RequestFilter[][] original,
                                         RequestFilter[][] available,

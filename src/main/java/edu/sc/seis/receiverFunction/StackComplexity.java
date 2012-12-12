@@ -12,11 +12,9 @@ import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
-import edu.sc.seis.fissuresUtil.display.DisplayUtils;
-import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
-import edu.sc.seis.fissuresUtil.mockFissures.MockLocation;
 import edu.sc.seis.fissuresUtil.mockFissures.IfNetwork.MockChannel;
+import edu.sc.seis.fissuresUtil.mockFissures.IfSeismogramDC.MockSeismogram;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.synth.SimpleSynthReceiverFunction;
@@ -93,9 +91,9 @@ public class StackComplexity {
             synthStack.compact();
             ReceiverFunctionResult result = new ReceiverFunctionResult(null,
                                                                        cg,
-                                                                       SimplePlotUtil.createSpike(),
-                                                                       SimplePlotUtil.createSpike(),
-                                                                       SimplePlotUtil.createSpike(),
+                                                                       MockSeismogram.createSpike(),
+                                                                       MockSeismogram.createSpike(),
+                                                                       MockSeismogram.createSpike(),
                                                                        synthRF,
                                                                        synthRF,
                                                                        100,

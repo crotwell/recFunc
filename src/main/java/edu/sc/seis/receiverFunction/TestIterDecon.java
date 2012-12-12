@@ -5,6 +5,7 @@ import java.io.File;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.sc.seis.seisFile.sac.SacConstants;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import edu.sc.seis.fissuresUtil.sac.SacToFissures;
 
@@ -38,40 +39,39 @@ public class TestIterDecon {
 
         float shift = 10;
 
-        IterDeconResult ans = decon.process(num.y, denom.y, num.delta);
+        IterDeconResult ans = decon.process(num.getY(), denom.getY(), num.getHeader().getDelta());
         float[] predicted = ans.getPredicted();
-        predicted = IterDecon.phaseShift(predicted, shift, num.delta);
+        predicted = IterDecon.phaseShift(predicted, shift, num.getHeader().getDelta());
 
-        for (int i=0; i<num.y.length; i++) {
-            System.out.println(i+" "+num.y[i]+" "+denom.y[i]+" "+predicted[i]);
+        for (int i=0; i<num.getY().length; i++) {
+            System.out.println(i+" "+num.getY()[i]+" "+denom.getY()[i]+" "+predicted[i]);
         } // end of for (int i=0; i<num.length; i++)
 
 
 
 
         SacTimeSeries predOut = new SacTimeSeries();
-        predOut.stla = denom.stla;
-        predOut.stlo = denom.stlo;
-        predOut.y = predicted;
-        predOut.npts = predOut.y.length;
-        predOut.iftype = SacTimeSeries.ITIME;
-        predOut.leven = SacTimeSeries.TRUE;
-        predOut.idep = SacTimeSeries.IUNKN;
-        predOut.nzyear = num.nzyear;
-        predOut.nzjday = num.nzjday;
-        predOut.nzhour = num.nzhour;
-        predOut.nzmin = num.nzmin;
-        predOut.nzsec = num.nzsec;
-        predOut.nzmsec = num.nzmsec;
-        predOut.knetwk = num.knetwk;
-        predOut.kstnm = num.kstnm;
-        predOut.kcmpnm = "RRF";
-        predOut.delta = num.delta;
-        predOut.b = -1*shift;
-        predOut.e = predOut.b + (predOut.npts-1)*predOut.delta;
-        predOut.depmin = -12345;
-        predOut.depmax = -12345;
-        predOut.depmen = -12345;
+        predOut.getHeader().setStla(denom.getHeader().getStla());
+        predOut.getHeader().setStlo(denom.getHeader().getStlo());
+        predOut.setY(predicted);
+        predOut.getHeader().setIftype(SacConstants.ITIME);
+        predOut.getHeader().setLeven(SacConstants.TRUE);
+        predOut.getHeader().setIdep(SacConstants.IUNKN);
+        predOut.getHeader().setNzyear(num.getHeader().getNzyear());
+        predOut.getHeader().setNzjday(num.getHeader().getNzjday());
+        predOut.getHeader().setNzhour(num.getHeader().getNzhour());
+        predOut.getHeader().setNzmin(num.getHeader().getNzmin());
+        predOut.getHeader().setNzsec(num.getHeader().getNzsec());
+        predOut.getHeader().setNzmsec(num.getHeader().getNzmsec());
+        predOut.getHeader().setKnetwk(num.getHeader().getKnetwk());
+        predOut.getHeader().setKstnm(num.getHeader().getKstnm());
+        predOut.getHeader().setKcmpnm("RRF");
+        predOut.getHeader().setDelta(num.getHeader().getDelta());
+        predOut.getHeader().setB(-1*shift);
+        predOut.getHeader().setE(predOut.getHeader().getB() + (predOut.getHeader().getNpts()-1)*predOut.getHeader().getDelta());
+        predOut.getHeader().setDepmin(SacConstants.FLOAT_UNDEF);
+        predOut.getHeader().setDepmax(SacConstants.FLOAT_UNDEF);
+        predOut.getHeader().setDepmen(SacConstants.FLOAT_UNDEF);
         String filename = "predicted.SAC";
         predOut.write(filename);
         setOSFileExtras(filename);
@@ -85,13 +85,13 @@ public class TestIterDecon {
         javax.imageio.ImageIO.write(bufSumImage, "png", outSumImageFile);
         
         float[] residual = ans.getResidual();
-        predOut.y = residual;
+        predOut.setY(residual);
         filename = "residual.SAC";
         predOut.write(filename);
         setOSFileExtras(filename);
 
         float[][] corrSave = ans.getCorrSave();
-        predOut.y = corrSave[0];
+        predOut.setY(corrSave[0]);
         filename = "correlation0.SAC";
         predOut.write(filename);
         setOSFileExtras(filename);

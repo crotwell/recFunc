@@ -24,6 +24,7 @@ import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.Rotate;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
+import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.fissuresUtil.sac.FissuresToSac;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
@@ -53,10 +54,17 @@ public class ReceiverFunctionZip extends HttpServlet {
                                                      req,
                                                      Start.getDefaultMinPercentMatch());
             boolean losers = RevUtil.getBoolean("losers", req, false);
-            List<ReceiverFunctionResult> result = RecFuncDB.getSingleton()
+            List<ReceiverFunctionResult> result = new ArrayList<ReceiverFunctionResult>();
+            List<ReceiverFunctionResult> winnerResults = RecFuncDB.getSingleton()
                     .getSuccessful(net.getWrapped(),
                                    staCode,
                                    gaussianWidth);
+            for(ReceiverFunctionResult rfr : winnerResults) {
+                if (rfr.getRadialMatch() >= minPercentMatch) {
+                    result.add(rfr);
+                }
+            }
+            winnerResults = null; // memory
             if (losers) {
                 List<ReceiverFunctionResult> loserResults = 
                     RecFuncDB.getSingleton().getUnsuccessful(net.getWrapped(),
@@ -139,21 +147,21 @@ public class ReceiverFunctionZip extends HttpServlet {
                                                              cr.getEvent()
                                                                      .getPreferred());
                     // fix orientation to radial and transverse
-                    sac.cmpaz = (float)(rfType == 0 ? Rotate.getRadialAzimuth(sta.getLocation(),
+                    sac.getHeader().setCmpaz((float)(rfType == 0 ? Rotate.getRadialAzimuth(sta.getLocation(),
                                                                               cr.getEvent()
                                                                                       .getPreferred()
                                                                                       .getLocation())
                             : Rotate.getTransverseAzimuth(sta.getLocation(),
                                                           cr.getEvent()
                                                                   .getPreferred()
-                                                                  .getLocation()));
-                    sac.cmpinc = 90;
+                                                                  .getLocation())));
+                    sac.getHeader().setCmpinc(90);
                     // put percent match in user0 and gaussian width in user1
-                    sac.user0 = (rfType == 0 ? cr.getRadialMatch()
-                            : cr.getTransverseMatch());
-                    sac.kuser0 = "% match ";
-                    sac.user1 = cr.getGwidth();
-                    sac.kuser1 = "gwidth";
+                    sac.getHeader().setUser0((rfType == 0 ? cr.getRadialMatch()
+                            : cr.getTransverseMatch()));
+                    sac.getHeader().setKuser0("% match ");
+                    sac.getHeader().setUser1(cr.getGwidth());
+                    sac.getHeader().setKuser1("gwidth");
                     List<Arrival> arrivals = tauPTime.calcTravelTimes(sta,
                                                                   cr.getEvent()
                                                                           .getPreferred(),
@@ -166,10 +174,10 @@ public class ReceiverFunctionZip extends HttpServlet {
                     // it should be sac.b+10 sec
                     // TauP_SetSac.setSacTHeader(sac, TauP_SetSac.A_HEADER,
                     // arrivals[0]);
-                    sac.a = sac.b + 10;
-                    sac.user2 = kmRayParam;
-                    sac.kuser2 = "rayparam";
-                    sac.writeHeader(dos);
+                    sac.getHeader().setA(sac.getHeader().getB() + 10);
+                    sac.getHeader().setUser2(kmRayParam);
+                    sac.getHeader().setKuser2("rayparam");
+                    sac.getHeader().writeHeader(dos);
                     sac.writeData(dos);
                     dos.flush();
                     zip.closeEntry();

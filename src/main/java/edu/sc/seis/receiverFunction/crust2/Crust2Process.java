@@ -6,15 +6,12 @@
 
 package edu.sc.seis.receiverFunction.crust2;
 
-import java.io.IOException;
-
 import org.w3c.dom.Element;
 
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.IfSeismogramDC.RequestFilter;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
-import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.process.waveform.vector.WaveformVectorProcess;
@@ -25,7 +22,7 @@ public class Crust2Process implements WaveformVectorProcess  {
     public Crust2Process(Element config) {
     }
 
-    public WaveformVectorResult process(CacheEvent event,
+    public WaveformVectorResult accept(CacheEvent event,
                                         ChannelGroup channelGroup,
                                         RequestFilter[][] original,
                                         RequestFilter[][] available,

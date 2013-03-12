@@ -366,27 +366,6 @@ public class IterDeconTest
             IterDecon.useNativeFFT = true;
         }
     }
-    
-    public void testNativeVsJavaFFT() {
-        float[] data = new float[1024];
-        data[100] = 1;
-        float[] nativeFFT = new float[data.length];
-        System.arraycopy(data, 0, nativeFFT, 0, data.length);
-        NativeFFT.forward(nativeFFT);
-        
-        float[] javaFFT = new float[data.length*2];
-        for(int i = 0; i < data.length; i++) {
-            javaFFT[2*i] = data[i];
-        }
-        javaFFT = Cmplx.four1Forward(javaFFT);
-        assertEquals(2*data.length, javaFFT.length);
-        javaFFT = IterDecon.shortenFFT(javaFFT);
-        assertEquals(nativeFFT.length, javaFFT.length);
-        ArrayAssert.assertEquals(nativeFFT, javaFFT, 0.0001f);
-        for(int i = 0; i < nativeFFT.length; i++) {
-            assertEquals(""+i, nativeFFT[i], javaFFT[i], 0.00001f);
-        }
-    }
 
     
     public void testNativeVsJavaInverseFFT() {

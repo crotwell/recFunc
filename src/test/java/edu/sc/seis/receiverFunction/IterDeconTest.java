@@ -9,6 +9,7 @@ import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import edu.sc.seis.fissuresUtil.mockFissures.IfSeismogramDC.MockSeismogram;
 import edu.sc.seis.fissuresUtil.sac.FissuresToSac;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 // JUnitDoclet end import
@@ -100,11 +101,11 @@ public class IterDeconTest
 
         SamplingImpl sampling = new SamplingImpl(1, new TimeInterval(delta, UnitImpl.SECOND));
 
-        LocalSeismogramImpl fakeNum = SimplePlotUtil.createTestData("num");
+        LocalSeismogramImpl fakeNum = MockSeismogram.createTestData("num");
         fakeNum.setData(numData);
         fakeNum.channel_id.channel_code = "BHR";
         fakeNum.sampling_info = sampling;
-        LocalSeismogramImpl fakeDenom = SimplePlotUtil.createTestData("denom");
+        LocalSeismogramImpl fakeDenom = MockSeismogram.createTestData("denom");
         fakeDenom.setData(denomData);
         fakeDenom.channel_id.channel_code = "BHZ";
         fakeDenom.sampling_info = sampling;
@@ -119,7 +120,7 @@ public class IterDeconTest
         float[] pred = result.getPredicted();
         pred = withGaussIterdecon.phaseShift(pred, 5, delta);
 
-        LocalSeismogramImpl predSeis = SimplePlotUtil.createTestData("denom");
+        LocalSeismogramImpl predSeis = MockSeismogram.createTestData("denom");
         predSeis.setData(pred);
         predSeis.channel_id.channel_code = "OUT";
         sac = FissuresToSac.getSAC(predSeis);
@@ -128,7 +129,7 @@ public class IterDeconTest
         DataInputStream in =
             new DataInputStream(this.getClass().getClassLoader().getResourceAsStream("edu/sc/seis/receiverFunction/withGauss.predicted.sac"));
         sac.read(in);
-        float[] fortranData = sac.y;
+        float[] fortranData = sac.getY();
 
         int[] s = result.getShifts();
         float[] a = result.getAmps();
@@ -227,27 +228,27 @@ public class IterDeconTest
             new DataInputStream(this.getClass().getClassLoader().getResourceAsStream("edu/sc/seis/receiverFunction/ESK1999_312_16.predicted.sac"));
         sac.read(in);
         in.close();
-        float[] fortranData = sac.y;
+        float[] fortranData = sac.getY();
 
         in =
             new DataInputStream(this.getClass().getClassLoader().getResourceAsStream("edu/sc/seis/receiverFunction/ESK_num.sac"));
         sac.read(in);
         in.close();
-        float[] num = sac.y;
+        float[] num = sac.getY();
 
 
         in =
             new DataInputStream(this.getClass().getClassLoader().getResourceAsStream("edu/sc/seis/receiverFunction/ESK_denom.sac"));
         sac.read(in);
         in.close();
-        float[] denom = sac.y;
+        float[] denom = sac.getY();
 
         IterDecon iterdecon = new edu.sc.seis.receiverFunction.IterDecon(100, true, .0001f, 3);
-        IterDeconResult result = iterdecon.process(num, denom, sac.delta);
+        IterDeconResult result = iterdecon.process(num, denom, sac.getHeader().getDelta());
 
 
         float[] pred = result.getPredicted();
-        pred = iterdecon.phaseShift(pred, 5, sac.delta);
+        pred = iterdecon.phaseShift(pred, 5, sac.getHeader().getDelta());
         int[] s = result.getShifts();
         float[] a = result.getAmps();
 
@@ -275,20 +276,20 @@ public class IterDeconTest
 //          Number of bumps in final result:   100
 //          The final deconvolution reproduces   85.4% of the signal.
 
-        assertEquals("spike "+i, 0.100/sac.delta, s[i], 0.1f);
-        assertEquals("amp   "+i, 0.384009242/sac.delta, a[i], 0.001f);
+        assertEquals("spike "+i, 0.100/sac.getHeader().getDelta(), s[i], 0.1f);
+        assertEquals("amp   "+i, 0.384009242/sac.getHeader().getDelta(), a[i], 0.001f);
         i++;
-        assertEquals("spike "+i, 16.250/sac.delta, s[i], 0.1f);
-        assertEquals("amp   "+i, -0.132486761/sac.delta, a[i], 0.001f);
+        assertEquals("spike "+i, 16.250/sac.getHeader().getDelta(), s[i], 0.1f);
+        assertEquals("amp   "+i, -0.132486761/sac.getHeader().getDelta(), a[i], 0.001f);
         i++;
-        assertEquals("spike "+i, 2.250/sac.delta, s[i], 0.1f);
-        assertEquals("amp   "+i, 0.116493061/sac.delta, a[i], 0.001f);
+        assertEquals("spike "+i, 2.250/sac.getHeader().getDelta(), s[i], 0.1f);
+        assertEquals("amp   "+i, 0.116493061/sac.getHeader().getDelta(), a[i], 0.001f);
         i++;
-        assertEquals("spike "+i, 10.800/sac.delta, s[i], 0.1f);
-        assertEquals("amp   "+i, -0.0988256037/sac.delta, a[i], 0.001f);
+        assertEquals("spike "+i, 10.800/sac.getHeader().getDelta(), s[i], 0.1f);
+        assertEquals("amp   "+i, -0.0988256037/sac.getHeader().getDelta(), a[i], 0.001f);
         i++;
-        assertEquals("spike "+i, 15.450/sac.delta, s[i], 0.1f);
-        assertEquals("amp   "+i, -0.0606716201/sac.delta, a[i], 0.001f);
+        assertEquals("spike "+i, 15.450/sac.getHeader().getDelta(), s[i], 0.1f);
+        assertEquals("amp   "+i, -0.0606716201/sac.getHeader().getDelta(), a[i], 0.001f);
         i++;
 
         ArrayAssert.assertEquals("fortran predicted", fortranData, pred, 0.000001f);
@@ -349,18 +350,18 @@ public class IterDeconTest
         DataInputStream in =
             new DataInputStream(this.getClass().getClassLoader().getResourceAsStream("edu/sc/seis/receiverFunction/gauss1024.sac"));
         sac.read(in);
-        float[] data = new float[sac.npts];
-        data[100] = 1/sac.delta;
+        float[] data = new float[sac.getHeader().getNpts()];
+        data[100] = 1/sac.getHeader().getDelta();
 
-        float[] sacData = sac.y;
-        float[] out = iterdecon.gaussianFilter(data, 2.5f, sac.delta);
+        float[] sacData = sac.getY();
+        float[] out = iterdecon.gaussianFilter(data, 2.5f, sac.getHeader().getDelta());
 
         ArrayAssert.assertEquals("gaussian filter", sacData, out, 0.001f);
 
         if(IterDecon.useNativeFFT) {
             // test non-native as well
             IterDecon.useNativeFFT = false;
-            out = iterdecon.gaussianFilter(data, 2.5f, sac.delta);
+            out = iterdecon.gaussianFilter(data, 2.5f, sac.getHeader().getDelta());
             ArrayAssert.assertEquals("gaussian filter", sacData, out, 0.001f);
             IterDecon.useNativeFFT = true;
         }

@@ -1,6 +1,6 @@
 
 group = 'edu.sc.seis'
-version = '2.0beta8'
+version = '2.1-SNAPSHOT'
 
 dependencies {
     compile project(':rev')
@@ -14,7 +14,7 @@ dependencies {
 }
 
 task makeScript(dependsOn: copyToLib) << { task ->
-    dExtras = task.project.findProject(':sod').getDExtras()
+    def dExtras = task.project.findProject(':sod').getDExtras()
     ScriptBuilder.create('sod', 'edu.sc.seis.sod.Start', task.project, dExtras:dExtras, background:true)
     ScriptBuilder.create('viewResults', 'edu.sc.seis.receiverFunction.web.Start', task.project, dExtras:dExtras, background:true)
     ScriptBuilder.create('server', 'edu.sc.seis.cormorant.Start', task.project, dExtras:dExtras, background:true, mx:'2048m')
@@ -50,6 +50,7 @@ task tarDist(type: Tar, dependsOn: ['makeScript', 'createBuildScript', 'wrapper'
         into dirName
         include('realtime.xml')
         include('realtime_IIIU.xml')
+        include('ws_realtime_IIIU.xml')
     }
     from('scripts') {
         include('earsServer_sc.prop')

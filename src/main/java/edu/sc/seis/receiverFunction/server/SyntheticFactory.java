@@ -9,7 +9,6 @@ import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.Location;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfNetwork.Channel;
-import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.SamplingImpl;
@@ -17,28 +16,25 @@ import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
-import edu.sc.seis.IfReceiverFunction.CachedResult;
-import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
+import edu.sc.seis.fissuresUtil.bag.IterDecon;
+import edu.sc.seis.fissuresUtil.bag.IterDeconResult;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
+import edu.sc.seis.fissuresUtil.bag.ZeroPowerException;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
-import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
-import edu.sc.seis.seisFile.sac.SacTimeSeries;
-import edu.sc.seis.sod.SodConfig;
 import edu.sc.seis.fissuresUtil.sac.SacToFissures;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
 import edu.sc.seis.receiverFunction.HKAlpha;
 import edu.sc.seis.receiverFunction.HKStack;
-import edu.sc.seis.receiverFunction.IterDecon;
-import edu.sc.seis.receiverFunction.IterDeconResult;
 import edu.sc.seis.receiverFunction.RecFunc;
 import edu.sc.seis.receiverFunction.RecFuncException;
 import edu.sc.seis.receiverFunction.RecFuncProcessor;
-import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
+import edu.sc.seis.seisFile.sac.SacTimeSeries;
+import edu.sc.seis.sod.SodConfig;
 
 /**
  * @author crotwell Created on Apr 29, 2005
@@ -85,7 +81,7 @@ public class SyntheticFactory {
     
     public static ReceiverFunctionResult getReceiverFunctionResult() throws NoPreferredOrigin,
             FissuresException, IncompatibleSeismograms, TauModelException,
-            RecFuncException, IOException {
+            RecFuncException, IOException, ZeroPowerException {
         LocalSeismogramImpl[] seis = getSeismograms();
         CacheEvent event = getEvent();
         if(event == null) { throw new NoPreferredOrigin(); }
@@ -161,7 +157,7 @@ public class SyntheticFactory {
 
     public static HKStack getHKStack() throws FissuresException,
             NoPreferredOrigin, TauModelException, IncompatibleSeismograms,
-            RecFuncException, IOException {
+            RecFuncException, IOException, ZeroPowerException {
         HKAlpha staResult = getHKAlpha();
         return HKStack.create(getReceiverFunctionResult(),
                               1 / 3f,

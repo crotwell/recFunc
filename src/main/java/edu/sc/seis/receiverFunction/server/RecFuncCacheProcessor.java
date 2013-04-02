@@ -21,17 +21,17 @@ import edu.sc.seis.IfReceiverFunction.SodConfigNotFound;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
+import edu.sc.seis.fissuresUtil.bag.IterDecon;
+import edu.sc.seis.fissuresUtil.bag.IterDeconResult;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
+import edu.sc.seis.fissuresUtil.bag.ZeroPowerException;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
 import edu.sc.seis.fissuresUtil.display.configuration.DOMHelper;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
-import edu.sc.seis.receiverFunction.IterDecon;
-import edu.sc.seis.receiverFunction.IterDeconResult;
 import edu.sc.seis.receiverFunction.RecFunc;
-import edu.sc.seis.receiverFunction.ZeroPowerException;
 import edu.sc.seis.sod.CommonAccess;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
@@ -70,9 +70,7 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
         recFunc = new RecFunc(taup,
                               new IterDecon(maxBumps, true, tol, gwidth),
                               pWave);
-        cache = new NSRecFuncCache(dns,
-                                   serverName,
-                                   CommonAccess.getNameService());
+        
     }
 
     public static IterDeconConfig parseIterDeconConfig(Element config) {
@@ -116,7 +114,7 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
                     int testId = 1;
                     try {
                         while(true) {
-                            if(cache.getSodConfig(testId).equals(config.getConfig())) {
+                            if(getCache().getSodConfig(testId).equals(config.getConfig())) {
                                 sodconfig_id = testId;
                                 break;
                             }
@@ -124,7 +122,7 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
                         }
                     } catch(SodConfigNotFound ee) {
                         // must have gone past the end without find our config
-                        sodconfig_id = cache.insertSodConfig(config.getConfig());
+                        sodconfig_id = getCache().insertSodConfig(config.getConfig());
                     }
                 } catch(Throwable e) {
                     // oh well
@@ -140,7 +138,7 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
             for(int i = 0; i < chanIds.length; i++) {
                 chanIds[i] = channelGroup.getChannels()[i].get_id();
             }
-            if(!overwrite && cache.isCached(origin, chanIds, config)) {
+            if(!overwrite && getCache().isCached(origin, chanIds, config)) {
                 return new WaveformVectorResult(seismograms,
                                                 new StringTreeLeaf(this,
                                                                    true,
@@ -179,7 +177,7 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
             }
             while(true) {
                 try {
-                    cache.insert(origin,
+                    getCache().insert(origin,
                                  event.get_attributes(),
                                  config,
                                  channelGroup.getChannels(),
@@ -239,6 +237,16 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
                                                                "Zero power in numerator or demoninator",
                                                                e));
         }
+    }
+
+    
+    protected RecFuncCacheOperations getCache() {
+        if (cache == null) {
+            cache = new NSRecFuncCache(dns,
+                                       serverName,
+                                       CommonAccess.getNameService());
+        }
+        return cache;
     }
 
     public static float DEFAULT_GWIDTH = 2.5f;

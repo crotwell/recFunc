@@ -18,6 +18,7 @@ import edu.iris.Fissures.network.ChannelIdUtil;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
+import edu.sc.seis.fissuresUtil.bag.ZeroPowerException;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.RecFuncException;
@@ -76,7 +77,7 @@ public class HKStackImageServlet  extends ImageServlet {
 
     ReceiverFunctionResult getCachedResult(HttpServletRequest req)
             throws NoPreferredOrigin, IncompatibleSeismograms,
-            TauModelException, RecFuncException, FileNotFoundException, FissuresException, NotFound, IOException, SQLException {
+            TauModelException, RecFuncException, FileNotFoundException, FissuresException, NotFound, IOException, SQLException, ZeroPowerException {
         if (req.getParameter("rf").equals("synth")) {
             return SyntheticFactory.getReceiverFunctionResult();
         } else {

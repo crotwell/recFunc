@@ -55,6 +55,7 @@ public class Start {
     }
 
     public static void main(String[] args) throws Exception {
+        edu.sc.seis.rev.Start.basicSetup(args); 
         Properties props = Initializer.loadProperties(args);
         PropertyConfigurator.configure(props);
         RecFuncDB.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc", RecFuncDB.getDataLoc()));

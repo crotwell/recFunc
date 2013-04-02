@@ -15,6 +15,7 @@ import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.display.configuration.DOMHelper;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.fissuresUtil.simple.Initializer;
+import edu.sc.seis.receiverFunction.RecFuncException;
 import edu.sc.seis.receiverFunction.RecFuncProcessor;
 import edu.sc.seis.sod.CommonAccess;
 import edu.sc.seis.sod.ConfigurationException;
@@ -33,21 +34,8 @@ public class RecFuncCacheCheck implements EventVectorSubsetter {
 
     public RecFuncCacheCheck(Element config) throws ConfigurationException {
         deconConfig = RecFuncProcessor.parseIterDeconConfig(config);
-        String dns = DOMHelper.extractText(config, "dns", "edu/sc/seis");
-        String serverName = DOMHelper.extractText(config, "name", "Ears");
-        try {
-            cache = new NSRecFuncCache(dns, serverName, CommonAccess.getNameService());
-            cache.getCorbaObject()._is_a("test");
-            logger.debug("Connection to rf cacheServer ok");
-        } catch (SystemException e) {
-            String ior = CommonAccess.getORB().object_to_string(cache.getCorbaObject());
-            ParsedIOR parsed = new ParsedIOR((org.jacorb.orb.ORB)Initializer.getORB(),
-                                             ior);
-            IIOPProfile profile = (IIOPProfile)parsed.getProfiles().get(0);
-            IIOPAddress addr = (IIOPAddress)profile.getAddress();
-            logger.debug("Server is: "+ dns + " " + serverName+" "+(addr==null?"":" ("+addr.getIP()+":"+addr.getPort()+")"));
-            throw new ConfigurationException("Problem getting cache server", e);
-        }
+        dns = DOMHelper.extractText(config, "dns", "edu/sc/seis");
+        serverName = DOMHelper.extractText(config, "name", "Ears");
     }
     
     /**
@@ -60,9 +48,37 @@ public class RecFuncCacheCheck implements EventVectorSubsetter {
         for(int i = 0; i < chanId.length; i++) {
             chanId[i] = channel.getChannels()[i].get_id();
         }
-        return new StringTreeLeaf(this, cache.isCached(event.get_preferred_origin(), chanId, deconConfig));
+        return new StringTreeLeaf(this, getCache().isCached(event.get_preferred_origin(), chanId, deconConfig));
     }
     
+    protected NSRecFuncCache getCache() throws RecFuncException {
+        if (cache == null) {
+            try {
+                cache = new NSRecFuncCache(dns, serverName, CommonAccess.getNameService());
+                cache.getCorbaObject()._is_a("test");
+                logger.debug("Connection to rf cacheServer ok");
+            } catch (SystemException e) {
+                String ior = CommonAccess.getORB().object_to_string(cache.getCorbaObject());
+                ParsedIOR parsed = new ParsedIOR((org.jacorb.orb.ORB)Initializer.getORB(),
+                                                 ior);
+                IIOPProfile profile = (IIOPProfile)parsed.getProfiles().get(0);
+                IIOPAddress addr = (IIOPAddress)profile.getAddress();
+                logger.debug("Server is: "+ dns + " " + serverName+" "+(addr==null?"":" ("+addr.getIP()+":"+addr.getPort()+")"));
+                throw new RecFuncException("Problem getting cache server", e);
+            }
+        }
+        return cache;
+    }
+
+    
+    protected void setCache(NSRecFuncCache cache) {
+        this.cache = cache;
+    }
+    
+    String dns;
+    
+    String serverName;
+
     NSRecFuncCache cache;
 
     IterDeconConfig deconConfig;

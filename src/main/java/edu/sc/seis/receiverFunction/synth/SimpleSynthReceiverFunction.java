@@ -3,16 +3,14 @@ package edu.sc.seis.receiverFunction.synth;
 import edu.iris.Fissures.Sampling;
 import edu.iris.Fissures.Time;
 import edu.iris.Fissures.IfNetwork.ChannelId;
-import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.SamplingImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.ReflTransCoefficient;
+import edu.sc.seis.fissuresUtil.bag.IterDecon;
 import edu.sc.seis.receiverFunction.HKAlpha;
 import edu.sc.seis.receiverFunction.HKStack;
-import edu.sc.seis.receiverFunction.IterDecon;
-import edu.sc.seis.receiverFunction.compare.StationResult;
 
 public class SimpleSynthReceiverFunction {
 

@@ -109,12 +109,18 @@
                 <phaseName>P</phaseName>
             </phaseExists>
         </eventStationAND>
-        <eventVectorNOT>
-            <externalEventVectorSubsetter>
-                <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
-                <gaussianWidth>2.5</gaussianWidth>
-            </externalEventVectorSubsetter>
-        </eventVectorNOT>
+        <eventVectorAND>
+            <bestChannelAtStation>
+                <siteCodeHeuristic>00,  ,01,02,03,04,05,06,07,08,09,10</siteCodeHeuristic>
+                <bandCodeHeuristic>H,B</bandCodeHeuristic>
+            </bestChannelAtStation>
+            <eventVectorNOT>
+                <externalEventVectorSubsetter>
+                    <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
+                    <gaussianWidth>2.5</gaussianWidth>
+                </externalEventVectorSubsetter>
+            </eventVectorNOT>
+        </eventVectorAND>
         <phaseRequest>
             <beginPhase>P</beginPhase>
             <beginOffset>

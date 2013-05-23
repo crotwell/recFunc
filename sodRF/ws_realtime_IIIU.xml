@@ -23,7 +23,7 @@
         <statusPages>FALSE</statusPages>
     </properties>
     <eventArm>
-        <quakeML><url>http://www.iris.edu/ws/event/query?starttime=2011-02-27T06:30:00&amp;endtime=2013-03-01T06:30:00&amp;minmag=5.5&amp;orderby=time&amp;output=xml&amp;contributor=NEIC+PDE-W</url></quakeML>
+        <quakeML><url>http://service.iris.edu/fdsnws/event/1/query?starttime=2011-02-27T06:30:00&amp;endtime=2013-03-01T06:30:00&amp;minmag=5.5&amp;orderby=time&amp;output=xml&amp;contributor=NEIC+PDE-M&amp;catalog=NEIC PDE</url></quakeML>
 
         <removeEventDuplicate/>
         <!-- Print out a line for each successful event -->

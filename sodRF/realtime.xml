@@ -23,25 +23,7 @@
         <statusPages>FALSE</statusPages>
     </properties>
     <eventArm>
-        <eventFinder>
-            <name>IRIS_EventDC</name>
-            <dns>edu/iris/dmc</dns>
-            <boxArea>
-                <latitudeRange>
-                    <min>-90</min>
-                    <max>90</max>
-                </latitudeRange>
-                <longitudeRange>
-                    <min>-180</min>
-                    <max>180</max>
-                </longitudeRange>
-            </boxArea>
-            <!-- Depths from 0 to 1000 kilometers are ok, -->
-            <originDepthRange>
-                <unit>KILOMETER</unit>
-                <min>0</min>
-                <max>1000</max>
-            </originDepthRange>
+        <fdsnEvent>
             <originTimeRange>
                 <startTime>20090601T00:00:00.001Z</startTime>
                 <endTime>24991231T23:59:59.999Z</endTime>
@@ -50,23 +32,31 @@
                 <min>5.5</min>
                 <max>10.0</max>
             </magnitudeRange>
-            <catalog>WHDF</catalog>
-            <contributor>NEIC</contributor>
-        </eventFinder>
+            <contributor>NEIC PDE-W</contributor>
+        </fdsnEvent>
+        <fdsnEvent>
+            <originTimeRange>
+                <startTime>20090601T00:00:00.001Z</startTime>
+                <endTime>24991231T23:59:59.999Z</endTime>
+            </originTimeRange>
+            <magnitudeRange>
+                <min>5.5</min>
+                <max>10.0</max>
+            </magnitudeRange>
+            <contributor>NEIC PDE-M</contributor>
+        </fdsnEvent>
         <removeEventDuplicate/>
         <!-- Print out a line for each successful event -->
         <printlineEventProcess/>
     </eventArm>
     <networkArm>
-        <networkFinder>
-            <name>IRIS_NetworkDC</name>
-            <dns>edu/iris/dmc</dns>
+        <fdsnStation>
             <!-- recheck channels after some time -->
             <refreshInterval>
                 <unit>DAY</unit>
                 <value>3</value>
             </refreshInterval>
-        </networkFinder>
+        </fdsnStation>
         <networkEffectiveTimeOverlap>
             <startTime>20050101T00:00:00.001Z</startTime>
             <endTime>24991231T23:59:59.999Z</endTime>
@@ -89,6 +79,8 @@
                 <orientationCode>Z</orientationCode>
                 <orientationCode>N</orientationCode>
                 <orientationCode>E</orientationCode>
+                <orientationCode>1</orientationCode>
+                <orientationCode>2</orientationCode>
             </channelOR>
             <channelEffectiveTimeOverlap>
                 <startTime>20050101T00:00:00.001Z</startTime>
@@ -133,10 +125,8 @@
                 <value>180</value>
             </endOffset>
         </phaseRequest>
-        <fixedDataCenter>
-            <name>IRIS_PondDataCenter</name>
-            <dns>edu/iris/dmc</dns>
-        </fixedDataCenter>
+        <fdsnDataSelect>
+        </fdsnDataSelect>
         <ORAvailableDataWrapper>
             <someCoverage/>
         </ORAvailableDataWrapper>

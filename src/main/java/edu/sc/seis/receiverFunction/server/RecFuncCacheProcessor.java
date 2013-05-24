@@ -14,6 +14,7 @@ import edu.iris.Fissures.IfSeismogramDC.RequestFilter;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
+import edu.iris.Fissures.network.ChannelImpl;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
 import edu.sc.seis.IfReceiverFunction.RecFuncCacheOperations;
@@ -21,9 +22,7 @@ import edu.sc.seis.IfReceiverFunction.SodConfigNotFound;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
-import edu.sc.seis.fissuresUtil.bag.IterDecon;
 import edu.sc.seis.fissuresUtil.bag.IterDeconResult;
-import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.bag.ZeroPowerException;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
@@ -31,14 +30,16 @@ import edu.sc.seis.fissuresUtil.display.configuration.DOMHelper;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
 import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
+import edu.sc.seis.fissuresUtil.xml.SeismogramFileTypes;
 import edu.sc.seis.receiverFunction.RecFunc;
 import edu.sc.seis.sod.CommonAccess;
 import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.CookieJar;
 import edu.sc.seis.sod.SodConfig;
-import edu.sc.seis.sod.SodUtil;
 import edu.sc.seis.sod.Threadable;
 import edu.sc.seis.sod.hibernate.SodDB;
+import edu.sc.seis.sod.process.waveform.AbstractSeismogramWriter;
+import edu.sc.seis.sod.process.waveform.vector.IterDeconReceiverFunction;
 import edu.sc.seis.sod.process.waveform.vector.WaveformVectorProcess;
 import edu.sc.seis.sod.process.waveform.vector.WaveformVectorResult;
 import edu.sc.seis.sod.status.StringTreeLeaf;
@@ -46,54 +47,27 @@ import edu.sc.seis.sod.status.StringTreeLeaf;
 /**
  * @author crotwell Created on Sep 10, 2004
  */
-public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable {
+public class RecFuncCacheProcessor extends IterDeconReceiverFunction implements WaveformVectorProcess, Threadable {
 
     public RecFuncCacheProcessor(Element config) throws ConfigurationException,
             TauModelException {
-        IterDeconConfig deconConfig = parseIterDeconConfig(config);
-        gwidth = deconConfig.gwidth;
-        maxBumps = deconConfig.maxBumps;
-        tol = deconConfig.tol;
-        Element phaseNameElement = SodUtil.getElement(config, "phaseName");
-        if(phaseNameElement != null) {
-            String phaseName = SodUtil.getNestedText(phaseNameElement);
-            if(phaseName.equals("P")) {
-                pWave = true;
-            } else {
-                pWave = false;
-            }
-        }
+        super(config);
         dns = DOMHelper.extractText(config, "dns", "edu/sc/seis");
         serverName = DOMHelper.extractText(config, "name", "Ears");
-        String modelName = "prem";
-        taup = TauPUtil.getTauPUtil(modelName);
-        recFunc = new RecFunc(taup,
-                              new IterDecon(maxBumps, true, tol, gwidth),
-                              pWave);
-        
+        writer = new AbstractSeismogramWriter() {
+            
+            @Override
+            public void write(String loc, LocalSeismogramImpl seis, ChannelImpl chan, CacheEvent ev) throws Exception {
+                // no op
+            }
+            
+            @Override
+            public SeismogramFileTypes getFileType() {
+                return null;
+            }
+        };
     }
 
-    public static IterDeconConfig parseIterDeconConfig(Element config) {
-        float gwidth = DEFAULT_GWIDTH;
-        int maxBumps = DEFAULT_MAXBUMPS;
-        float tol = DEFAULT_TOL;
-        Element gElement = SodUtil.getElement(config, "gaussianWidth");
-        if(gElement != null) {
-            String gwidthStr = SodUtil.getNestedText(gElement);
-            gwidth = Float.parseFloat(gwidthStr);
-        }
-        Element bumpsElement = SodUtil.getElement(config, "maxBumps");
-        if(bumpsElement != null) {
-            String bumpsStr = SodUtil.getNestedText(bumpsElement);
-            maxBumps = Integer.parseInt(bumpsStr);
-        }
-        Element toleranceElement = SodUtil.getElement(config, "tolerance");
-        if(toleranceElement != null) {
-            String toleranceStr = SodUtil.getNestedText(toleranceElement);
-            tol = Float.parseFloat(toleranceStr);
-        }
-        return new IterDeconConfig(gwidth, maxBumps, tol);
-    }
 
     /**
      * @throws NoPreferredOrigin probably should never happen
@@ -148,7 +122,7 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
             for(int i = 0; i < singleSeismograms.length; i++) {
                 singleSeismograms[i] = seismograms[i][0];
             }
-            IterDeconResult[] ans = recFunc.process(event,
+            IterDeconResult[] ans = super.process(event,
                                                     channelGroup,
                                                     singleSeismograms);
             String[] phaseName = pWave ? new String[] {"ttp"}
@@ -158,7 +132,7 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
             MicroSecondDate firstP = new MicroSecondDate(origin.getOriginTime());
             firstP = firstP.add(new TimeInterval(pPhases.get(0).getTime(),
                                                  UnitImpl.SECOND));
-            TimeInterval shift = recFunc.getShift();
+            TimeInterval shift = getShift();
             MemoryDataSetSeismogram[] predictedDSS = new MemoryDataSetSeismogram[2];
             for(int i = 0; i < ans.length; i++) {
                 float[] predicted = ans[i].getPredicted();
@@ -249,20 +223,6 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
         return cache;
     }
 
-    public static float DEFAULT_GWIDTH = 2.5f;
-
-    public static int DEFAULT_MAXBUMPS = 400;
-
-    public static float DEFAULT_TOL = 0.001f;
-
-    protected float gwidth;
-
-    protected float tol;
-
-    protected int maxBumps;
-
-    protected boolean pWave = true;
-
     String dns = "edu/sc/seis";
 
     String serverName = "Ears";
@@ -273,9 +233,6 @@ public class RecFuncCacheProcessor implements WaveformVectorProcess, Threadable 
 
     protected RecFuncCacheOperations cache;
 
-    TauPUtil taup;
-
-    RecFunc recFunc;
 
     public boolean isThreadSafe() {
         return true;

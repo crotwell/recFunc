@@ -185,41 +185,16 @@
             <numPoles>2</numPoles>
             <filterType>NONCAUSAL</filterType>
         </filter>
-        <alwaysSuccess>
-            <seismogramAND>
-                <seismogramSampling>
-                    <min>100</min>
-                    <interval>
-                        <unit>SECOND</unit>
-                        <value>1</value>
-                    </interval>
-                </seismogramSampling>
-                <decimate>5</decimate>
-            </seismogramAND>
-        </alwaysSuccess>
-        <alwaysSuccess>
-            <seismogramAND>
-                <seismogramSampling>
-                    <min>50</min>
-                    <interval>
-                        <unit>SECOND</unit>
-                        <value>1</value>
-                    </interval>
-                </seismogramSampling>
-                <decimate>2</decimate>
-            </seismogramAND>
-        </alwaysSuccess>
+        <decimate><maxSamplesPerSec>25</maxSamplesPerSec></decimate>
         <externalWaveformVectorProcess>
             <classname>edu.sc.seis.receiverFunction.crust2.Crust2Process</classname>
         </externalWaveformVectorProcess>
-        <embeddedEventVector>
-            <eventVectorNOT>
+            <waveformVectorNOT>
                 <externalEventVectorSubsetter>
                     <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheCheck</classname>
                     <gaussianWidth>2.5</gaussianWidth>
                 </externalEventVectorSubsetter>
-            </eventVectorNOT>
-        </embeddedEventVector>
+            </waveformVectorNOT>
         <externalWaveformVectorProcess>
             <classname>edu.sc.seis.receiverFunction.server.RecFuncCacheProcessor</classname>
             <workingDir>RT_recfunc</workingDir>

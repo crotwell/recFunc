@@ -21,6 +21,7 @@ task makeScript(dependsOn: copyToLib) << { task ->
     ScriptBuilder.create('copyToDMC', 'edu.sc.seis.receiverFunction.server.RFCopy', task.project, dExtras:dExtras, background:false)
     ScriptBuilder.create('pingDMC', 'edu.sc.seis.receiverFunction.server.RFPing', task.project, dExtras:dExtras, background:false)
     ScriptBuilder.create('admin', 'edu.sc.seis.receiverFunction.server.Admin', task.project, dExtras:dExtras, background:false)
+    ScriptBuilder.create('qc', 'edu.sc.seis.receiverFunction.server.QualityControl', task.project, dExtras:dExtras, background:false)
     //ScriptBuilder.create('priorResultCopy', 'edu.sc.seis.receiverFunction.server.PriorResultCopy', task.project, dExtras:dExtras, background:false)
     //ScriptBuilder.create('dateStack', 'edu.sc.seis.receiverFunction.server.DateRangeResults', task.project, dExtras:dExtras, background:false)
 }
@@ -71,6 +72,11 @@ task tarDist(type: Tar, dependsOn: ['makeScript', 'createBuildScript', 'wrapper'
         include('gradlew.bat')
         exclude('**/*.svn')
         into dirName
+    }
+    from('../winkle/site/velocity') {
+        include('*')
+        exclude('**/*.svn')
+        into dirName+'/site/velocity/winkle'
     }
 }
 

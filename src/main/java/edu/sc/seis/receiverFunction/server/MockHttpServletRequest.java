@@ -230,4 +230,24 @@ public class MockHttpServletRequest implements HttpServletRequest {
     URL url;
     
     protected HashMap<String, String> map = new HashMap<String, String>();
+
+    @Override
+    public String getLocalAddr() {
+        throw new RuntimeException("Not implmented");
+    }
+
+    @Override
+    public String getLocalName() {
+        throw new RuntimeException("Not implmented");
+    }
+
+    @Override
+    public int getLocalPort() {
+        throw new RuntimeException("Not implmented");
+    }
+
+    @Override
+    public int getRemotePort() {
+        throw new RuntimeException("Not implmented");
+    }
 }

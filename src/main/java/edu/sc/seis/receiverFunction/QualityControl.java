@@ -3,7 +3,6 @@ package edu.sc.seis.receiverFunction;
 import java.io.FileWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +31,7 @@ import edu.sc.seis.fissuresUtil.bag.PhaseNonExistent;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
 import edu.sc.seis.fissuresUtil.bag.TauPUtil;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
+import edu.sc.seis.fissuresUtil.chooser.ThreadSafeDecimalFormat;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.exceptionHandler.GlobalExceptionHandler;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
@@ -311,7 +311,7 @@ public class QualityControl {
 
     private static float MIN_P_TO_MAX_AMP_RATIO = .8f;
 
-    private static DecimalFormat decFormat = new DecimalFormat("0.000");
+    private static ThreadSafeDecimalFormat decFormat = new ThreadSafeDecimalFormat("0.000");
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(QualityControl.class);
 }

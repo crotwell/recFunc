@@ -1,11 +1,10 @@
 package edu.sc.seis.receiverFunction.server;
 
-import java.text.DecimalFormat;
-
 import edu.iris.Fissures.event.EventAttrImpl;
 import edu.iris.Fissures.event.OriginImpl;
 import edu.sc.seis.IfReceiverFunction.CachedResult;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
+import edu.sc.seis.fissuresUtil.chooser.ThreadSafeDecimalFormat;
 
 
 public class CachedResultPlusDbId {
@@ -35,5 +34,5 @@ public class CachedResultPlusDbId {
         return df.format(getCachedResult().radialMatch);
     }
     
-    private DecimalFormat df = new DecimalFormat("0.0");
+    private ThreadSafeDecimalFormat df = new ThreadSafeDecimalFormat("0.0");
 }

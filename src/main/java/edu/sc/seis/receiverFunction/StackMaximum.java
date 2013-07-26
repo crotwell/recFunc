@@ -1,8 +1,7 @@
 package edu.sc.seis.receiverFunction;
 
-import java.text.DecimalFormat;
-
 import edu.iris.Fissures.model.QuantityImpl;
+import edu.sc.seis.fissuresUtil.chooser.ThreadSafeDecimalFormat;
 import edu.sc.seis.sod.status.FissuresFormatter;
 
 
@@ -72,5 +71,5 @@ public class StackMaximum {
         return vpvsFormat.format(getKValue());
     }
     
-    private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
+    private static ThreadSafeDecimalFormat vpvsFormat = new ThreadSafeDecimalFormat("0.00");
 }

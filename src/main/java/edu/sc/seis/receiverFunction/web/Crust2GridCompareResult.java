@@ -1,9 +1,9 @@
 package edu.sc.seis.receiverFunction.web;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 import edu.sc.seis.fissuresUtil.bag.Statistics;
+import edu.sc.seis.fissuresUtil.chooser.ThreadSafeDecimalFormat;
 import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 
 public class Crust2GridCompareResult {
@@ -96,5 +96,5 @@ public class Crust2GridCompareResult {
         return lon;
     }
     
-    DecimalFormat formatter = new DecimalFormat("0.##");
+    ThreadSafeDecimalFormat formatter = new ThreadSafeDecimalFormat("0.##");
 }

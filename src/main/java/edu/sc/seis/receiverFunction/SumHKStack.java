@@ -6,7 +6,6 @@
 package edu.sc.seis.receiverFunction;
 
 import java.awt.image.BufferedImage;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,6 +20,7 @@ import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.bag.Statistics;
+import edu.sc.seis.fissuresUtil.chooser.ThreadSafeDecimalFormat;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
@@ -709,7 +709,7 @@ public class SumHKStack {
 
     protected StackComplexityResult complexityResult = null;
 
-    private static DecimalFormat vpvsFormat = new DecimalFormat("0.000");
+    private static ThreadSafeDecimalFormat vpvsFormat = new ThreadSafeDecimalFormat("0.000");
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumHKStack.class);
 

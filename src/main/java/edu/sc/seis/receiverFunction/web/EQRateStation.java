@@ -1,11 +1,11 @@
 package edu.sc.seis.receiverFunction.web;
 
-import java.text.DecimalFormat;
 import edu.iris.Fissures.IfNetwork.Station;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
+import edu.sc.seis.fissuresUtil.chooser.ThreadSafeDecimalFormat;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 
@@ -96,8 +96,8 @@ public class EQRateStation {
         return sta.getCode()+" "+getNumSucc()+"  u="+getNumUnsucc();
     }
     
-    static DecimalFormat format = new DecimalFormat("#.0");
-    static DecimalFormat twoformat = new DecimalFormat("#.00");
+    static ThreadSafeDecimalFormat format = new ThreadSafeDecimalFormat("#.0");
+    static ThreadSafeDecimalFormat twoformat = new ThreadSafeDecimalFormat("#.00");
     
     static UnitImpl DAY_PER_DAY = UnitImpl.divide(UnitImpl.DAY, UnitImpl.DAY);
 }

@@ -1,8 +1,9 @@
 package edu.sc.seis.receiverFunction;
 
 import java.awt.Color;
-import java.text.DecimalFormat;
+
 import edu.iris.Fissures.model.QuantityImpl;
+import edu.sc.seis.fissuresUtil.chooser.ThreadSafeDecimalFormat;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 
 
@@ -36,6 +37,6 @@ public class Marker {
     private StationResult result;
     private Color color;
     
-    private static DecimalFormat vpvsFormat = new DecimalFormat("0.00");
-    private static DecimalFormat depthFormat = new DecimalFormat("0.##");
+    private static ThreadSafeDecimalFormat vpvsFormat = new ThreadSafeDecimalFormat("0.00");
+    private static ThreadSafeDecimalFormat depthFormat = new ThreadSafeDecimalFormat("0.##");
 }

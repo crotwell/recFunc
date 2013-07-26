@@ -1,33 +1,25 @@
 package edu.sc.seis.receiverFunction.web;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import edu.iris.Fissures.FissuresException;
-import edu.iris.Fissures.IfParameterMgr.ParameterRef;
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.StationImpl;
 import edu.sc.seis.TauP.TauModelException;
-import edu.sc.seis.fissuresUtil.bag.Statistics;
-import edu.sc.seis.fissuresUtil.cache.CacheEvent;
+import edu.sc.seis.fissuresUtil.chooser.ThreadSafeDecimalFormat;
 import edu.sc.seis.fissuresUtil.database.NotFound;
 import edu.sc.seis.fissuresUtil.hibernate.NetworkDB;
 import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
@@ -42,11 +34,9 @@ import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.receiverFunction.server.SumStackWorker;
-import edu.sc.seis.receiverFunction.summaryFilter.DistanceFilter;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
-import edu.sc.seis.sod.ConfigurationException;
 import edu.sc.seis.sod.status.FissuresFormatter;
 import edu.sc.seis.sod.velocity.event.VelocityEvent;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
@@ -182,7 +172,7 @@ public class Station extends Revlet {
                                                  extra));
             }
             TimeInterval timePs = summary.getSum().getTimePs();
-            DecimalFormat arrivalTimeFormat = new DecimalFormat("0.00");
+            ThreadSafeDecimalFormat arrivalTimeFormat = new ThreadSafeDecimalFormat("0.00");
             timePs.setFormat(arrivalTimeFormat);
             context.put("timePs", timePs);
             TimeInterval timePpPs = summary.getSum().getTimePpPs();

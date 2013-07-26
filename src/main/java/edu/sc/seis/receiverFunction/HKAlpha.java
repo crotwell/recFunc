@@ -1,10 +1,9 @@
 package edu.sc.seis.receiverFunction;
 
-import java.text.DecimalFormat;
-
 import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.sc.seis.fissuresUtil.bag.PoissonsRatio;
+import edu.sc.seis.fissuresUtil.chooser.ThreadSafeDecimalFormat;
 import edu.sc.seis.sod.status.FissuresFormatter;
 
 public class HKAlpha {
@@ -125,9 +124,9 @@ public class HKAlpha {
 
     protected float kStdDev;
 
-    public static final DecimalFormat vpvsFormat = new DecimalFormat("0.00");
+    public static final ThreadSafeDecimalFormat vpvsFormat = new ThreadSafeDecimalFormat("0.00");
 
-    public static final DecimalFormat depthFormat = new DecimalFormat("0.##");
+    public static final ThreadSafeDecimalFormat depthFormat = new ThreadSafeDecimalFormat("0.##");
 
     private static final QuantityImpl ZERO_KM = new QuantityImpl(0, UnitImpl.KILOMETER);
 }

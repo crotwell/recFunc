@@ -6,12 +6,15 @@ import org.omg.CORBA.UNKNOWN;
 import org.w3c.dom.Element;
 
 import edu.iris.Fissures.FissuresException;
+import edu.iris.Fissures.Location;
 import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
 import edu.iris.Fissures.IfEvent.Origin;
 import edu.iris.Fissures.IfNetwork.Channel;
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.iris.Fissures.IfSeismogramDC.RequestFilter;
+import edu.iris.Fissures.event.OriginImpl;
 import edu.iris.Fissures.model.MicroSecondDate;
+import edu.iris.Fissures.model.QuantityImpl;
 import edu.iris.Fissures.model.TimeInterval;
 import edu.iris.Fissures.model.UnitImpl;
 import edu.iris.Fissures.network.ChannelImpl;
@@ -149,9 +152,21 @@ public class RecFuncCacheProcessor extends IterDeconReceiverFunction implements 
                 cookieJar.put("recFunc_percentMatch_" + chanCode, ""
                         + ans[i].getPercentMatch());
             }
+            //make origin have depth in km
+            OriginImpl kmOrigin = new OriginImpl(origin.get_id(),
+                                                 origin.getCatalog(),
+                                                 origin.getContributor(),
+                                                 origin.getOriginTime(),
+                                                 new Location(origin.getLocation().latitude,
+                                                              origin.getLocation().longitude,
+                                                              ((QuantityImpl)origin.getLocation().elevation).convertTo(UnitImpl.KILOMETER),
+                                                              ((QuantityImpl)origin.getLocation().depth).convertTo(UnitImpl.KILOMETER),
+                                                              origin.getLocation().type),
+                                                 origin.getMagnitudes(),
+                                                 origin.getParmIds());
             while(true) {
                 try {
-                    getCache().insert(origin,
+                    getCache().insert(kmOrigin,
                                  event.get_attributes(),
                                  config,
                                  channelGroup.getChannels(),

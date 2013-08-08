@@ -20,35 +20,22 @@ task makeScript(dependsOn: copyToLib) << { task ->
     ScriptBuilder.create('server', 'edu.sc.seis.cormorant.Start', task.project, dExtras:dExtras, background:true, mx:'2048m')
     ScriptBuilder.create('copyToDMC', 'edu.sc.seis.receiverFunction.server.RFCopy', task.project, dExtras:dExtras, background:false)
     ScriptBuilder.create('pingDMC', 'edu.sc.seis.receiverFunction.server.RFPing', task.project, dExtras:dExtras, background:false)
+    ScriptBuilder.create('dbconnectiontest', 'edu.sc.seis.fissuresUtil.database.ConnMgr', task.project, dExtras:dExtras, background:false)
     ScriptBuilder.create('admin', 'edu.sc.seis.receiverFunction.server.Admin', task.project, dExtras:dExtras, background:false)
     ScriptBuilder.create('qc', 'edu.sc.seis.receiverFunction.server.QualityControl', task.project, dExtras:dExtras, background:false)
     //ScriptBuilder.create('priorResultCopy', 'edu.sc.seis.receiverFunction.server.PriorResultCopy', task.project, dExtras:dExtras, background:false)
     //ScriptBuilder.create('dateStack', 'edu.sc.seis.receiverFunction.server.DateRangeResults', task.project, dExtras:dExtras, background:false)
 }
 
-task tarDist(type: Tar, dependsOn: ['makeScript', 'createBuildScript', 'wrapper'
-]) {
-    compression = Compression.GZIP
-    def dirName = project.name+'-'+version
-    from('build') {
-        include('build.gradle')
-        into dirName
-    }
+def binDistFiles = copySpec {
     from('build/output') {
         fileMode=0755
         include('bin/**')
-        into dirName
     }
     from('build/output') {
         include('lib/**')
-        into dirName
-    }
-    from('build/docs') {
-        include('javadoc/**')
-        into dirName
     }
     from('sodRF') {
-        into dirName
         include('realtime.xml')
         include('realtime_IIIU.xml')
         include('ws_realtime_IIIU.xml')
@@ -60,24 +47,74 @@ task tarDist(type: Tar, dependsOn: ['makeScript', 'createBuildScript', 'wrapper'
         include('earsServer_iris.prop')
         include('earsSod_iris.prop')
         include('earsJetty_iris.prop')
-        into dirName
+    }
+    from('.') {
+        include('site/**')
+    }
+    from('../winkle/site/velocity') {
+        include('*')
+        exclude('**/*.svn')
+        into 'site/velocity/winkle'
+    }
+}
+
+def distFiles = copySpec {
+    with(binDistFiles)
+    from('build') {
+        include('build.gradle')
+    }
+    from('build/docs') {
+        include('javadoc/**')
     }
     from('.') {
         include('gpl-3.0.txt')
         include('doc/**')
         include('src/**')
-        include('site/**')
         include('gradleWrapper/**')
         include('gradlew')
         include('gradlew.bat')
         exclude('**/*.svn')
-        into dirName
-    }
-    from('../winkle/site/velocity') {
-        include('*')
-        exclude('**/*.svn')
-        into dirName+'/site/velocity/winkle'
     }
 }
+
+def dirName = project.name+'-'+version
+
+task tarBin(type: Tar, dependsOn: ['explodeBin']) {
+    group = 'dist'
+    compression = Compression.GZIP
+    into(dirName) {
+        with binDistFiles
+    }
+}
+
+task zipDist(type: Zip, dependsOn: ['explodeDist']) {
+    group = 'dist'
+    into(dirName) {
+        with distFiles
+    }
+}
+
+task tarDist(type: Tar, dependsOn: ['explodeDist']) {
+    group = 'dist'
+    compression = Compression.GZIP
+    into(dirName) {
+        with distFiles
+    }
+}
+
+
+task explodeBin(type: Sync, dependsOn: ['makeScript']) {
+    group = 'dist'
+    with binDistFiles
+    into file("$buildDir/explode")
+}
+explodeBin.doLast { ant.chmod(dir: "$buildDir/explode/bin", perm: "755", includes: "*") }
+
+task explodeDist(type: Sync, dependsOn: ['explodeBin', 'wrapper', 'doc']) {
+    group = 'dist'
+    with distFiles
+    into file("$buildDir/explode")
+}
+
 
 assemble.dependsOn(tarDist)

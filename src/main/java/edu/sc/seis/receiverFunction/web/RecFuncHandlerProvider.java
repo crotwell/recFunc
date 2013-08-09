@@ -13,13 +13,6 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
     @Override
     public ContextHandlerCollection setupJetty() throws Exception {
         ContextHandlerCollection rootHandler = new ContextHandlerCollection();
-        edu.sc.seis.receiverFunction.web.IndexPage ip = new edu.sc.seis.receiverFunction.web.IndexPage();
-        RevUtil.populateJetty("/",
-                              ip,
-                              rootHandler);
-        RevUtil.populateJetty("/index.html",
-                              ip,
-                              rootHandler);
         RevUtil.populateJetty("/networkList.html",
                               new edu.sc.seis.receiverFunction.web.NetworkList(),
                               rootHandler);
@@ -145,6 +138,15 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
         RevUtil.populateJetty(WINKLE + "/earthquakes/*",
                               new edu.sc.seis.receiverFunction.web.Event(),
                               rootHandler);
+        
+        edu.sc.seis.receiverFunction.web.IndexPage ip = new edu.sc.seis.receiverFunction.web.IndexPage();
+        RevUtil.populateJetty("/",
+                              ip,
+                              rootHandler);
+        RevUtil.populateJetty("/index.html",
+                              ip,
+                              rootHandler);
+        
         Revlet.addStandardQueryParam(new FloatQueryParamParser("gaussian",
                                                                Start.getDefaultGaussian()));
         Revlet.addStandardQueryParam(new FloatQueryParamParser("minPercentMatch",

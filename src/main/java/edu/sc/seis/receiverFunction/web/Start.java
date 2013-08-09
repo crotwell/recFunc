@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.VelocityContext;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.hibernate.cfg.Configuration;
 
 import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.iris.Fissures.network.NetworkIdUtil;
@@ -26,6 +27,7 @@ import edu.sc.seis.rev.FloatQueryParamParser;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
+import edu.sc.seis.rev.hibernate.HibernateDBConfigurer;
 import edu.sc.seis.sod.velocity.network.VelocityNetwork;
 
 /**
@@ -55,15 +57,19 @@ public class Start {
         Properties props = Initializer.loadProperties(args);
         PropertyConfigurator.configure(props);
         RecFuncDB.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc", RecFuncDB.getDataLoc()));
-        ConnMgr.setURL(props.getProperty("fissuresUtil.database.url"));
-        HibernateUtil.setUpFromConnMgr(props, HibernateUtil.DEFAULT_EHCACHE_CONFIG);
-        synchronized(HibernateUtil.class) {
-            RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
+        
+        edu.sc.seis.rev.Start.runREV(args, 
+                                     new RecFuncHandlerProvider(), 
+                                     new HibernateDBConfigurer[] {
+                                                                  new HibernateDBConfigurer() {
+            @Override
+            public void configureHibernate() {
+                synchronized(HibernateUtil.class) {
+                    RecFuncDB.configHibernate(HibernateUtil.getConfiguration());
+                }
+            }
         }
-        logger.info("connecting to database: " + ConnMgr.getURL());
-        
-        
-        edu.sc.seis.rev.Start.runREV(args, new RecFuncHandlerProvider());
+        });
     }
 
     public static VelocityContext getDefaultContext() {

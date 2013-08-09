@@ -122,9 +122,6 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
         RevUtil.populateJetty( "/network/*",
                                new edu.sc.seis.receiverFunction.rest.Network(),
                                rootHandler);
-        RevUtil.populateJetty( "/es/*",
-                               new edu.sc.seis.rev.servlets.EarthquakeStationServlet(),
-                               rootHandler);
         RevUtil.populateJetty( "/eventReceiverFunction.zip/*",
                                new edu.sc.seis.receiverFunction.web.EventReceiverFunctionZip(),
                                rootHandler);

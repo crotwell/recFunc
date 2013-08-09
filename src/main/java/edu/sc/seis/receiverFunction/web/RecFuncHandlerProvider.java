@@ -123,15 +123,9 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
                                new edu.sc.seis.receiverFunction.web.EventReceiverFunctionZip(),
                                rootHandler);
         
-        edu.sc.seis.rev.RevUtil.populateJetty(WINKLE+"/index.html",
-                                              new edu.sc.seis.winkle.IndexPage(),
-                                              rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty(WINKLE+"/eventSearch.html",
                                               new edu.sc.seis.winkle.EventSearch(),
                                               rootHandler);
-        edu.sc.seis.rev.RevUtil.populateJetty(WINKLE+"/network/*",
-                               new edu.sc.seis.winkle.Network(),
-                               rootHandler);
         
         
         // override winkle Event servlet

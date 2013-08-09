@@ -13,8 +13,12 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
     @Override
     public ContextHandlerCollection setupJetty() throws Exception {
         ContextHandlerCollection rootHandler = new ContextHandlerCollection();
+        edu.sc.seis.receiverFunction.web.IndexPage ip = new edu.sc.seis.receiverFunction.web.IndexPage();
+        RevUtil.populateJetty("/",
+                              ip,
+                              rootHandler);
         RevUtil.populateJetty("/index.html",
-                              new edu.sc.seis.receiverFunction.web.IndexPage(),
+                              ip,
                               rootHandler);
         RevUtil.populateJetty("/networkList.html",
                               new edu.sc.seis.receiverFunction.web.NetworkList(),

@@ -8,8 +8,7 @@ dependencies {
     compile project(':winkle')
     compile "edu.sc.seis:recFuncIDL:1.0beta"
     compile "edu.sc.seis.mapData:vmap_po_thinned:1.0"
-    compile "jfreechart:jcommon:1.0.0"
-    compile "jfreechart:jfreechart:1.0.1"
+    compile "org.jfree:jfreechart:1.0.15"
     compile "easymock:easymock:1.0"
 }
 

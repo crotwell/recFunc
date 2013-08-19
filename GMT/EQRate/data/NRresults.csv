@@ -1,0 +1,16 @@
+# NR - NARS Array
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+NE81,28.92,-109.64,295 m,72.7,29.4,40.38,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,21,52,Novillo Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+NE70,32.42,-115.26,-23.0 m,508.9,117.4,23.08,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,13,Mexicali Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+NE75,27.29,-112.86,137 m,84.8,31.8,37.50,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,18,48,San Ignacio Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+NE82,26.92,-109.23,183 m,61.1,26.8,43.86,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,25,57,Navajoa Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+NE71,31.69,-115.91,1155 m,101.8,38.2,37.50,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,15,40,Agua Blanca Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+NE79,23.12,-109.76,225 m,169.6,39.1,23.08,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,9,39,San Jose del Cabo Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+NE76,26.89,-112.00,35 m,117.4,31.8,27.08,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,13,48,Mulege Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+NE72,30.85,-116.06,17 m,169.6,30.5,18.00,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,9,50,Camalu Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+NE83,24.73,-107.74,28 m,1526.7,127.2,8.33,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,12,Navolato Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+NE73,30.07,-115.35,489 m,127.2,27.3,21.43,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,12,56,Turquesa Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+NE77,26.02,-111.36,40 m,190.8,39.1,20.51,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,8,39,Loreto Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+NE80,30.50,-112.32,225 m,72.7,29.4,40.38,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,21,52,Caborca Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+NE74,28.01,-114.01,21 m,763.4,40.2,5.26,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,2,38,Guerrero Negro Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+NE78,24.40,-111.11,82 m,763.4,84.8,11.11,AD 2002.04.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,2,18,Las Pocitas Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation

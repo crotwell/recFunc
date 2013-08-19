@@ -1,0 +1,41 @@
+<html>
+<head>
+<title>Statistics vs. Crust2.0</title>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+<script src="sorttable.js" type="text/javascript"> </script>
+<script src="tableRuler.js" type="text/javascript"> </script>
+<script type="text/javascript">
+window.onload=function(){
+        tableruler();
+        set_img_dir('images/')
+}
+</script>
+</head>
+<body>
+	
+<div id="content">
+
+$header
+<p>Statistics for Crust2.0 - EARS.</p>
+<p>All Mean: $mean.get("all")</p>
+<p>All StdDev: $stddev.get("all")</p>
+
+<table class="ruler sortable" id="dumb">
+	<tr><td>Name</td><td>Mean</td><td>Std Dev</td><td>Num</td></tr>
+#foreach( $key in $mean.keySet())
+<tr><td class="odd">$key</td><td class="even">$mean.get($key)</td><td class="odd">$stddev.get($key)</td><td class="even">$numSamps.get($key)</td></tr>
+#end
+</table>
+	
+
+<div id="footer2" align="center">
+  <a href="http://seis.sc.edu">
+    <img src="seislogo.gif" alt="Seismology at USC" title="USC"/>
+  </a>
+  <a href="http://www.iris.edu">
+    <img src="irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
+  </a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+stationResult.create=CREATE TABLE $tablename ( \
+    net_id int, \
+    sta_code varchar, \
+    h float, \
+    vpvs float, \
+    vp float, \
+    ref_id int, \
+    FOREIGN KEY (net_id) REFERENCES network (net_id ), \
+    FOREIGN KEY (ref_id) REFERENCES stationResultRef (ref_id ))
+
+stationResult.put=INSERT INTO $tablename ( \
+                     net_id, sta_code, h, vpvs, vp, ref_id )  \
+                     VALUES ( ?, ?, ?, ?, ?, ? )
+
+stationResult.get=SELECT * from $tablename \
+    JOIN stationResultRef ON ( stationResult.ref_id = stationResultRef.ref_id )  \
+    WHERE stationResult.net_id = ? \
+    AND stationResult.sta_code = ? 
+ 
+stationResult.getAllForName=SELECT * from $tablename \
+    JOIN stationResultRef ON ( stationResult.ref_id = stationResultRef.ref_id )  \
+    WHERE stationResultRef.name = ? \
+    
+stationResultRef.create=CREATE TABLE $tablename (  \
+    ref_id int, \
+    name varchar, \
+    reference varchar, \
+    method varchar, \
+    url varchar, \
+    PRIMARY KEY(ref_id))
+    
+stationResultRef.put=INSERT INTO $tablename ( \
+                     ref_id, name, reference, method, url ) \
+                     VALUES ( ?, ?, ?, ?, ? )
+
+stationResultRef.getDbId=SELECT ref_id FROM $tablename \
+    WHERE name = ? \
+    AND reference = ? \
+    AND method = ? \
+    AND url = ?
+    
+stationResultRef.getAll=SELECT * FROM $tablename 
+    
+griddedResult.create=CREATE TABLE $tablename ( \
+	lat float, \
+	lon float, \
+    h float, \
+    herror float, \
+    vpvs float, \
+    vpvserror float, \
+    vp float, \
+    vperror float, \
+    ref_id int \
+	)
+
+griddedResult.get=SELECT * FROM $tablename \
+    JOIN stationResultRef ON ( griddedResult.ref_id = stationResultRef.ref_id )  \
+    WHERE lat >= ? AND lat <= ?
+    
+griddedResult.getNorthPole=SELECT * FROM $tablename \
+    JOIN stationResultRef ON ( griddedResult.ref_id = stationResultRef.ref_id )  \
+    WHERE lat >= ?
+    
+griddedResult.getSouthPole=SELECT * FROM $tablename \
+    JOIN stationResultRef ON ( griddedResult.ref_id = stationResultRef.ref_id )  \
+    WHERE lat <= ?
+    
+    

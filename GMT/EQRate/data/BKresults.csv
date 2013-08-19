@@ -1,0 +1,22 @@
+# BK - Berkeley Digital Seismograph Network
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+CMB,38.03,-120.39,0.7 km,10.8,2.3,21.59,AD 1992.06.25 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,471,2182,Columbia College California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+HOPS,38.99,-123.07,299 m,166.4,8.2,4.93,AD 1998.03.24 22:42:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,18,365,Hopland Field Station Hopland CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+JCC,40.82,-124.03,27 m,69.7,5.3,7.61,AD 2001.04.11 21:27:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,27,355,Jacoby Creek Bayside CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+FARB,37.70,-123.00,-18.5 m,146.5,9.7,6.65,AD 1997.03.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,23,346,Farallon Islands CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+WDC,40.58,-122.54,268 m,147.3,12.9,8.76,AD 1992.09.17 19:23:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,34,388,Whiskeytown CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+CVS,38.35,-122.46,295 m,113.6,8.3,7.28,AD 1998.05.06 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,26,357,Carmenet Vineyards Sonoma CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+WENL,37.62,-121.76,139 m,240.2,8.5,3.54,AD 1998.07.15 20:30:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,12,339,Wente Vineyards Livermore CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+POTR,38.20,-121.94,20 m,?,20.6,.00,AD 1998.12.10 22:18:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,133,Potrero Hills Fairfield CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BDM,37.95,-121.87,220 m,1381.4,15.1,1.09,AD 1998.11.12 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,2,183,Black Diamond Mines Park Antioch CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+ORV,39.55,-121.50,335 m,70.2,13.4,19.15,AD 1992.07.31 18:50:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,72,376,Oroville Dam CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+GASB,39.65,-122.72,1355 m,64.2,2.9,4.44,AD 2005.09.22 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,4,90,Alder Springs CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+MNRC,38.88,-122.44,710 m,54.1,3.1,5.68,AD 2003.06.19 15:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,20,352,McLaughlin Mine CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+PKD,35.95,-120.54,583 m,96.2,9.2,9.59,AD 1996.09.06 16:28:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,37,386,Bear Valley Ranch Parkfield CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+KCC,37.32,-119.32,888 m,79.8,14.8,18.53,AD 1995.12.09 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,48,259,Kaiser Creek CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+PACP,37.01,-121.29,844 m,29.2,3.2,11.04,AD 2003.06.19 15:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,37,335,Pacheco Peak CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+HUMO,42.61,-122.96,555 m,29.0,4.1,14.20,AD 2002.06.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,50,352,Hull Mountain OR,class edu.sc.seis.sod.velocity.network.VelocityStation
+MCCM,38.14,-122.88,-0.0 km,121.9,7.6,6.25,AD 2006.02.03 18:30:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,16,Marconi Conference Center Marshall CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+MOD,41.90,-120.30,1554 m,41.8,6.9,16.62,AD 1999.10.16 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,58,349,Modoc Plateau CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+YBH,41.73,-122.71,1060 m,117.1,8.8,7.52,AD 1996.10.22 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,30,399,Yreka Blue Horn Mine Yreka CA,class edu.sc.seis.sod.velocity.network.VelocityStation
+JRSC,37.40,-122.24,70 m,871.6,52.5,6.02,AD 1994.06.30 21:20:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,5,83,Jasper Ridge Biological Preserve Stanford CA,class edu.sc.seis.sod.velocity.network.VelocityStation

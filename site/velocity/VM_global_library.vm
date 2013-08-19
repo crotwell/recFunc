@@ -1,0 +1,224 @@
+
+#macro(header)
+	<div id="header">
+	<a href="${revBase}index.html"><img src="${revBase}images/earslogo.gif"/></a>
+	
+	</div>
+
+#end
+
+#macro(earsEmail)
+	<script type='text/javascript'>
+// <!-- 1360572810
+// This script is (C) Copyright 2004 Jim Tucek
+// Leave these comments alone!  For more info, visit
+// www.jracademy.com/~jtucek/email/ 
+
+function cast(needle,file,beast) {
+needle += ' ';
+var center = needle.length;
+var whine = 0;
+var waist = '';
+for(var credibility = 0; credibility < center; credibility++) {
+whine = 0;
+while(needle.charCodeAt(credibility) != 32) {
+whine = whine * 10;
+whine = whine + needle.charCodeAt(credibility)-48;
+credibility++;
+}
+waist += String.fromCharCode(plead(whine,file,beast));
+}
+parent.location = 'm'+'a'+'i'+'l'+'t'+'o'+':'+waist;
+}
+
+function dig(stomach,tremor,people) {
+stomach += ' ';
+var humanity = stomach.length;
+var language = 0;
+for(var law = 0; law < humanity; law++) {
+language = 0;
+while(stomach.charCodeAt(law) != 32) {
+language = language * 10;
+language = language + stomach.charCodeAt(law)-48;
+law++;
+}
+//document.write('&');
+//document.write('#');
+//document.write(plead(language,tremor,people));
+document.write(String.fromCharCode(plead(language,tremor,people)));
+}
+}
+
+function plead(moon,way,doctor) {
+if (doctor % 2 == 0) {
+mortality = 1;
+for(var opportunity = 1; opportunity <= doctor/2; opportunity++) {
+ship = (moon*moon) % way;
+mortality = (ship*mortality) % way;
+}
+} else {
+mortality = moon;
+for(var somethingawful = 1; somethingawful <= doctor/2; somethingawful++) {
+ship = (moon*moon) % way;
+mortality = (ship*mortality) % way;
+}
+}
+return mortality;
+}
+// -->
+</script>
+
+<a href='javascript:cast("9788 22995 16192 3189 474 3189 9788 6277 3189 18835 3189 2120 18835 9788 5654 5426",26167,17227)' onMouseOver="self.status=''; return true;" onMouseOut="self.status=' '; return true;"><script type='text/javascript'>dig("9788 22995 16192 3189 474 3189 9788 6277 3189 18835 3189 2120 18835 9788 5654 5426",26167,17227)</script></a> 
+#end
+
+#macro(footer)
+<div id="footer">
+  <a href="http://seis.sc.edu">
+    <img src="${revBase}images/seislogo.png" alt="Seismology at USC" title="USC"/>
+  </a>
+  <a href="http://www.iris.edu">
+    <img src="${revBase}images/irislogo.gif" alt="Iris Consortium" title="IRIS Consortium"/>
+  </a>
+  <br/>
+  EARS is supported by the EarthScope Program, NSF grant #EAR0346113.
+  <br/>
+  Please send any comments or questions to #earsEmail()
+</div>
+#end
+
+#macro(eventTable $list $isLoser) 
+<table class="ruler sortable" id="dumb" cellpadding="0" cellspacing="0">
+<tr>
+<td class="headodd num initiallySorted descending">Radial Match</td>
+<td class="headodd num">Distance</td>
+<td class="headodd num">Baz</td>
+<td class="headodd">FERegion</td>
+<td class="headodd num">Time</td>
+<td class="headodd num">Lat/Lon</td>
+<td class="headodd num">Depth</td>
+<td class="headodd num">Magnitude</td>
+#if($isLoser)
+<td class="headodd num">Reason</td>
+#end
+</tr>
+#set( $maxValueH = $!summary.getBest().getH().getValue() )
+#set( $maxValueK = $!summary.getBest().getVpVs() )
+#foreach($eq in $list)
+<tr>
+<td class="odd">$eq.getParam("itr_match")</td>
+<td class="even">$sta.getDistanceDeg($eq)</td>
+<td class="odd">$sta.getBaz($eq)</td>
+#set( $recFunc_id = $eq.getParam("recFunc_id") )
+<td class="even"><a href="${revBase}stationEvent.html?rf=$recFunc_id&gaussian=${gaussian}&H=$maxValueH&vpvs=$maxValueK">$eq.getRegion()</a></td>
+<td class="odd">$eq.getTime()</td>
+<td class="even">($eq.getLatitude(), $eq.getLongitude())</td>
+<td class="odd">$eq.getDepth()</td>
+<td class="even">$eq.getAllMagnitudes()</td>
+#if($isLoser)
+<td class="odd">$!eq.getParam("reason")</td>
+#end
+</tr>
+#end
+</table>
+#end
+
+#macro(eventCSVTable $list $isLoser) 
+Radial Match,Distance,Baz,FERegion,Time,Lat,Lon,Depth,Magnitude,Reason,RecFunc_id
+#foreach($eq in $list)
+#set( $recFunc_id = $eq.getParam("recFunc_id") )
+$eq.getParam("itr_match"),$sta.getDistanceDeg($eq),$sta.getBaz($eq),$eq.getRegion().replaceAll(',',''),$eq.getTime(),$eq.getLatitude(),$eq.getLongitude(),$eq.getDepth(),$eq.getAllMagnitudes(' '),$!eq.getParam("reason"),$recFunc_id
+#end
+#end
+
+// if this is changed, also change loadSummaryFromCSV() in SumStackWorker.java
+#macro(summaryLineCSV $sumList)
+#foreach($s in $sumList)
+$s.netCodeWithYear,$s.staCode,$s.lat,$s.lon,$s.formatElevation(),$s.formatH(),$s.formatHStdDev(),$s.formatVpVs(),$s.formatKStdDev(),$s.formatVp(),$s.formatVs(),$s.formatPoissonsRatio(),$s.numEarthquakes,$s.formatComplexityResidual(),$s.staName,$s.netName
+#end
+#end
+
+
+#macro(summaryLineHTML $sumList)
+<table cellpadding="0" cellspacing="0" class="ruler sortable" id="dumb">
+<tr>
+	<td class="headodd ">Network</td>
+	<td class="headodd initiallySorted ascending">Station</td>
+	<td class="headodd">Name</td>
+	<td class="headodd num">Lat/Lon</td>
+	<td class="headodd num">Elevation</td>
+	<td class="headodd num">Est. Thick</td>
+	<td class="headodd num">StdDev</td>
+	<td class="headodd num">Est. Vp/Vs</td>
+	<td class="headodd num">StdDev</td>
+	<td class="headodd num">Assumed Vp</td>
+	<td class="headodd num">Vs</td>
+	<td class="headodd num">Poissons Ratio</td>
+	<td class="headodd num">Num EQ</td>
+	<td class="headodd num">Complexity</td>
+</tr>
+#foreach($s in $sumList)
+<tr>
+	<td class="even"><a href="${revBase}Data/Summary/gauss_${gaussian}/$s.netCodeWithYear/$s.staCode/station.html">$s.netCodeWithYear</a></td>
+	<td class="odd"><a href="${revBase}Data/Summary/gauss_${gaussian}/$s.netCodeWithYear/$s.staCode/station.html">$s.staCode</a></td>
+    <td class="stat_name"><a href="${revBase}Data/Summary/gauss_${gaussian}/$s.netCodeWithYear/$s.staCode/station.html">$s.staName</a></td>
+    <td class="odd">$s.getOrientedLatitude()/$s.getOrientedLongitude()</td>
+	<td class="even">$s.formatElevation()</td>
+    <td class="odd">$s.formatH()</td>
+    <td class="even">$s.formatHStdDev()</td>
+    <td class="odd">$s.formatVpVs()</td>
+    <td class="even">$s.formatKStdDev()</td>
+    <td class="odd">$s.formatVp()</td>
+    <td class="even">$s.formatVs()</td>
+    <td class="odd">$s.formatPoissonsRatio()</td>
+    <td class="even">$s.numEarthquakes</td>
+    <td class="odd">$s.formatComplexityResidual()</td>
+</tr>
+#end
+</table>
+#end
+
+
+#macro(stationListCSV $stationList $summary)
+#foreach($sta in $stationList)
+$sta.getNet().getCodeWithYear(),$sta.getCode(),$sta.getLatitude(),$sta.getLongitude(),$sta.getElevation(),$!summary.get($sta).getBest().formatH(),$!summary.get($sta).getBest().formatHStdDev(),$!summary.get($sta).getBest().formatVpVs(),$!summary.get($sta).getBest().formatKStdDev(),$!summary.get($sta).getBest().formatVp(),$!summary.get($sta).getBest().formatVs(),$!summary.get($sta).getBest().formatPoissonsRatio(),$!summary.get($sta).numEQ,$!summary.get($sta).formatComplexityResidual()
+#end
+#end
+
+#macro(stationListHTML $stationList $summary)
+<table cellpadding="0" cellspacing="0" class="ruler sortable" id="dumb">
+<tr>
+	<td class="headodd ">Network</td>
+	<td class="headodd initiallySorted ascending">Station</td>
+	<td class="headodd">Name</td>
+	<td class="headodd num">Lat/Lon</td>
+	<td class="headodd num">Elevation</td>
+	<td class="headodd num">Est. Thick</td>
+	<td class="headodd num">StdDev</td>
+	<td class="headodd num">Est. Vp/Vs</td>
+	<td class="headodd num">StdDev</td>
+	<td class="headodd num">Assumed Vp</td>
+	<td class="headodd num">Vs</td>
+	<td class="headodd num">Poissons Ratio</td>
+	<td class="headodd num">Num EQ</td>
+	<td class="headodd num">Complexity</td>
+</tr>
+#foreach($sta in $stationList)
+<tr>
+	<td class="even"><a href="${revBase}Data/Summary/gauss_${gaussian}/$sta.getNet().getCodeWithYear()/$sta.getCode()/station.html">$sta.getNet().getCode()</a></td>
+	<td class="odd"><a href="${revBase}Data/Summary/gauss_${gaussian}/$sta.getNet().getCodeWithYear()/$sta.getCode()/station.html">$sta.getCode()</a></td>
+    <td class="stat_name"><a href="${revBase}Data/Summary/gauss_${gaussian}/$sta.getNet().getCodeWithYear()/$sta.getCode()/station.html">$sta.getName()</a></td>
+    <td class="odd">$sta.getOrientedLatitude()/$sta.getOrientedLongitude()</td>
+	<td class="even">$sta.getElevation()</td>
+    <td class="odd">$!summary.get($sta).getBest().formatH()</td>
+    <td class="even">$!summary.get($sta).getBest().formatHStdDev()</td>
+    <td class="odd">$!summary.get($sta).getBest().formatVpVs()</td>
+    <td class="even">$!summary.get($sta).getBest().formatKStdDev()</td>
+    <td class="odd">$!summary.get($sta).getBest().formatVp()</td>
+    <td class="even">$!summary.get($sta).getBest().formatVs()</td>
+    <td class="odd">$!summary.get($sta).getBest().formatPoissonsRatio()</td>
+    <td class="even">$!summary.get($sta).numEQ</td>
+    <td class="odd">$!summary.get($sta).formatComplexityResidual()</td>
+</tr>
+#end
+</table>
+#end

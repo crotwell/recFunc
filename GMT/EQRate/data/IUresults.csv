@@ -1,0 +1,80 @@
+# IU - Global Seismograph Network (GSN - IRIS/USGS)
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+SFJ,67.00,-50.62,328 m,90.9,19.6,21.58,AD 1996.03.21 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,41,190,Sondre Stromfjord Greenland,class edu.sc.seis.sod.velocity.network.VelocityStation
+YAK,62.03,129.68,105 m,4661.7,11.7,.25,AD 1993.08.31 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,397,Yakutsk Russia,class edu.sc.seis.sod.velocity.network.VelocityStation
+KIP,21.42,-158.01,70 m,209.8,23.0,10.95,AD 1988.08.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,31,283,Kipapa Hawaii USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+GRFO,49.69,11.22,425 m,20.5,9.8,47.83,AD 1994.01.26 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,220,460,Grafenberg Germany,class edu.sc.seis.sod.velocity.network.VelocityStation
+MIDW,28.22,-177.37,18 m,268.6,35.6,13.24,AD 1999.10.23 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,9,68,Midway Island USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+YSS,46.96,142.76,100 m,13.1,6.7,51.58,AD 1992.05.31 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,392,760,Yuzhno Sakhalinsk Russia,class edu.sc.seis.sod.velocity.network.VelocityStation
+PMG,-9.41,147.15,67 m,19.1,8.3,43.34,AD 1993.09.10 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,244,563,Port Moresby New Guinea,class edu.sc.seis.sod.velocity.network.VelocityStation
+PTCN,-25.07,-130.10,227 m,492.2,28.7,5.83,AD 1996.12.29 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,7,120,Pitcairn Island South Pacific,class edu.sc.seis.sod.velocity.network.VelocityStation
+GUMO,13.59,144.87,14 m,156.4,16.6,10.64,AD 1991.06.09 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,35,329,Guam Marianas Islands,class edu.sc.seis.sod.velocity.network.VelocityStation
+PET,53.02,158.65,150 m,22.0,8.3,37.59,AD 1993.08.28 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,212,564,Petropavlovsk Russia,class edu.sc.seis.sod.velocity.network.VelocityStation
+NAI,-1.27,36.80,1692 m,17.1,13.5,78.95,AD 1995.01.05 00:00:00.000 GMT,AD 1995.09.18 00:00:00.000 GMT,15,19,Nairobi Kenya,class edu.sc.seis.sod.velocity.network.VelocityStation
+LCO,-29.01,-70.70,2299 m,681.2,41.3,6.06,AD 1998.12.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,4,66,Las Campanas Astronomical Observatory Chile,class edu.sc.seis.sod.velocity.network.VelocityStation
+TBT,28.68,-17.91,180 m,89.6,40.5,45.16,AD 1993.03.17 00:00:00.000 GMT,AD 1996.08.22 00:00:00.000 GMT,14,31,Taburiente Canary Islands Spain,class edu.sc.seis.sod.velocity.network.VelocityStation
+QSPA,-89.93,145.00,2860 m,250.9,8.1,3.25,AD 2002.12.29 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,5,154,South Pole Remote Earth Science Observatory (Quiet Zone),class edu.sc.seis.sod.velocity.network.VelocityStation
+AFI,-13.91,-171.78,706 m,203.0,35.1,17.29,AD 1993.08.24 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,23,133,Afiamalu Western Samoa,class edu.sc.seis.sod.velocity.network.VelocityStation
+KMBO,-1.13,37.25,1960 m,35.9,24.5,68.12,AD 1995.09.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,109,160,Kilima Mbogo Kenya,class edu.sc.seis.sod.velocity.network.VelocityStation
+INCN,37.48,126.63,420 m,17.5,10.1,57.47,AD 1995.07.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,227,395,Inchon Republic of Korea,class edu.sc.seis.sod.velocity.network.VelocityStation
+RAO,-29.25,-177.92,110 m,343.9,68.8,20.00,AD 2004.07.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,2,10,Raoul Kermadec Islands,class edu.sc.seis.sod.velocity.network.VelocityStation
+SFJD,67.00,-50.62,328 m,44.5,13.6,30.56,AD 2005.01.31 16:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,11,36,Sondre Stromfjord Greenland,class edu.sc.seis.sod.velocity.network.VelocityStation
+FURI,8.90,38.69,2545 m,48.5,25.6,52.80,AD 1997.09.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,66,125,Mt. Furi Ethiopia,class edu.sc.seis.sod.velocity.network.VelocityStation
+PTGA,-0.73,-59.97,237 m,175.3,160.7,91.67,AD 1995.11.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,22,24,Pitinga Brazil,class edu.sc.seis.sod.velocity.network.VelocityStation
+KOWA,14.50,-4.01,321 m,?,752.9,.00,AD 1998.03.08 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,4,Kowa Mali,class edu.sc.seis.sod.velocity.network.VelocityStation
+PAB,39.55,-4.35,925 m,34.8,16.0,45.83,AD 1992.10.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,143,312,San Pablo Spain,class edu.sc.seis.sod.velocity.network.VelocityStation
+SDV,8.88,-70.63,1618 m,51.9,27.1,52.20,AD 1994.08.19 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,83,159,Santo Domingo Venezuela,class edu.sc.seis.sod.velocity.network.VelocityStation
+ANMO,34.95,-106.46,1840 m,15.7,8.6,54.80,AD 1989.08.29 00:00:00.000 GMT,AD 1995.07.14 00:00:00.000 GMT,137,250,Albuquerque New Mexico USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+CTAO,-20.09,146.25,357 m,15.3,8.9,57.86,AD 1991.06.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,357,617,Charters Towers Australia,class edu.sc.seis.sod.velocity.network.VelocityStation
+NWAO,-32.93,117.23,265 m,30.9,14.1,45.74,AD 1991.11.25 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,172,376,Narrogin Australia,class edu.sc.seis.sod.velocity.network.VelocityStation
+MAJO,36.54,138.21,405 m,32.6,13.2,40.41,AD 1990.08.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,177,438,Matsushiro Japan,class edu.sc.seis.sod.velocity.network.VelocityStation
+COL,64.90,-147.79,320 m,7.1,3.6,50.57,AD 1991.03.04 00:00:00.000 GMT,AD 1996.05.11 00:00:00.000 GMT,267,528,College Outpost Alaska USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+KIEV,50.69,29.21,163 m,34.3,17.3,50.63,AD 1995.01.30 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,121,239,Kiev Ukraine,class edu.sc.seis.sod.velocity.network.VelocityStation
+COLA,64.87,-147.85,194 m,23.5,9.4,39.85,AD 1996.06.14 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,155,389,College Outpost Alaska USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+ADK,51.88,-176.68,116 m,53.3,13.6,25.44,AD 1993.09.21 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,87,342,Adak Aleutian Islands Alaska,class edu.sc.seis.sod.velocity.network.VelocityStation
+XMAS,2.04,-157.45,2.0 m,133.7,24.0,17.91,AD 1997.08.22 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,24,134,Kiritimati Island Republic of Kiribati,class edu.sc.seis.sod.velocity.network.VelocityStation
+TUC,32.31,-110.78,874 m,22.8,11.3,49.78,AD 1992.06.13 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,224,450,Tucson Arizona,class edu.sc.seis.sod.velocity.network.VelocityStation
+HKT,29.96,-95.84,-413.0 m,55.3,17.9,32.43,AD 1995.07.11 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,72,222,Hockley Texas,class edu.sc.seis.sod.velocity.network.VelocityStation
+TEIG,20.23,-88.28,69 m,1751.9,700.7,40.00,AD 1996.11.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,2,5,Tepich Yucatan Mexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+SNZO,-41.31,174.70,62 m,95.8,14.4,15.08,AD 1992.04.07 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,54,358,South Karori New Zealand,class edu.sc.seis.sod.velocity.network.VelocityStation
+MAKZ,46.81,81.98,600 m,118.4,12.2,10.27,AD 1996.09.14 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,30,292,Makanchi Kazakhstan,class edu.sc.seis.sod.velocity.network.VelocityStation
+POHA,19.76,-155.53,1967 m,798.9,104.2,13.04,AD 1999.11.13 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,23,Pohakuloa Hawaii USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+LVC,-22.61,-68.91,2967 m,165.4,60.9,36.84,AD 1996.12.02 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,21,57,Limon Verde Chile,class edu.sc.seis.sod.velocity.network.VelocityStation
+MSKU,-1.66,13.61,312 m,189.7,85.7,45.16,AD 1999.02.27 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,14,31,Masuku Gabon,class edu.sc.seis.sod.velocity.network.VelocityStation
+RAIO,46.04,-122.89,1.0 m,617.0,77.1,12.50,AD 1995.08.30 00:00:00.000 GMT,AD 1997.05.08 00:00:00.000 GMT,1,8,Rainier Oregon USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BOCO,4.59,-74.04,3160 m,269.3,62.2,23.08,AD 1994.06.06 00:00:00.000 GMT,AD 1996.08.22 00:00:00.000 GMT,3,13,Bogota Colombia,class edu.sc.seis.sod.velocity.network.VelocityStation
+TOL,39.88,-4.05,480 m,27.9,9.7,34.88,AD 1991.08.09 00:00:00.000 GMT,AD 1992.10.01 00:00:00.000 GMT,15,43,Toledo Spain,class edu.sc.seis.sod.velocity.network.VelocityStation
+ANTO,39.87,32.79,883 m,26.7,18.7,70.04,AD 1992.09.25 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,187,267,Ankara Turkey,class edu.sc.seis.sod.velocity.network.VelocityStation
+TATO,24.98,121.49,53 m,53.8,13.5,25.14,AD 1992.09.26 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,93,370,Taipei Taiwan,class edu.sc.seis.sod.velocity.network.VelocityStation
+RAR,-21.21,-159.77,28 m,1300.9,63.5,4.88,AD 1992.03.07 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,4,82,Rarotonga Cook Islands,class edu.sc.seis.sod.velocity.network.VelocityStation
+DAV,7.07,125.58,0.1 km,?,115.8,.00,AD 1997.11.14 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,27,Davao Philippines,class edu.sc.seis.sod.velocity.network.VelocityStation
+MA2,59.58,150.77,339 m,12.8,6.8,53.22,AD 1993.09.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,364,684,Magadan Russia,class edu.sc.seis.sod.velocity.network.VelocityStation
+PMSA,-64.77,-64.05,10 m,98.8,20.8,21.03,AD 1993.03.03 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,49,233,Palmer Station Antarctica,class edu.sc.seis.sod.velocity.network.VelocityStation
+WCI,38.23,-86.29,638 m,124.8,42.7,34.21,AD 1997.07.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,26,76,Wyandotte Cave Indiana USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+RCBR,-5.83,-35.90,409 m,265.4,115.4,43.48,AD 1999.03.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,10,23,Riachuelo Brazil,class edu.sc.seis.sod.velocity.network.VelocityStation
+LSZ,-15.28,28.19,1184 m,74.5,38.6,51.79,AD 1994.08.05 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,58,112,Lusaka Zambia,class edu.sc.seis.sod.velocity.network.VelocityStation
+SJG,18.11,-66.15,457 m,47.1,21.3,45.29,AD 1993.05.26 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,101,223,San Juan Puerto Rico,class edu.sc.seis.sod.velocity.network.VelocityStation
+KBS,78.93,11.94,77 m,32.3,11.8,36.59,AD 1994.11.05 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,131,358,Ny-Alesund Spitzbergen Norway,class edu.sc.seis.sod.velocity.network.VelocityStation
+CCM,38.06,-91.24,222 m,27.2,12.7,46.79,AD 1989.07.28 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,226,483,Cathedral Cave Missouri USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+HRV,42.51,-71.56,180 m,156.5,58.5,37.39,AD 1988.01.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,43,115,Harvard Massachusetts USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+GNI,40.15,44.74,1609 m,44.6,14.3,32.02,AD 1991.07.10 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,122,381,Garni Armenia,class edu.sc.seis.sod.velocity.network.VelocityStation
+HNR,-9.43,159.95,72 m,273.7,37.2,13.58,AD 1998.03.09 03:50:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,11,81,Honiara Solomon Islands,class edu.sc.seis.sod.velocity.network.VelocityStation
+COR,44.59,-123.30,121 m,41.8,14.3,34.12,AD 1989.10.26 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,145,425,Corvallis Oregon USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+WAKE,19.28,166.65,1.0 m,474.0,47.4,10.00,AD 1997.05.06 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,7,70,Wake Island,class edu.sc.seis.sod.velocity.network.VelocityStation
+TIXI,71.65,128.87,50 m,11.7,6.6,56.00,AD 1995.08.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,336,600,Tiksi Russia,class edu.sc.seis.sod.velocity.network.VelocityStation
+OTAV,0.24,-78.45,3507 m,69.9,40.3,57.69,AD 2000.09.07 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,30,52,Otavalu Ecuador,class edu.sc.seis.sod.velocity.network.VelocityStation
+CASY,-66.28,110.54,159 m,150.4,10.4,6.89,AD 1996.02.19 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,25,363,Casey Antarctica,class edu.sc.seis.sod.velocity.network.VelocityStation
+JOHN,16.73,-169.53,2.0 m,2873.7,2873.7,100.00,AD 1998.07.24 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,1,Johnston Island USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+CHTO,18.79,98.98,316 m,10.5,8.4,80.10,AD 1992.08.31 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,479,598,Chiang Mai Thailand,class edu.sc.seis.sod.velocity.network.VelocityStation
+SBA,-77.85,166.76,20 m,51.4,9.7,18.82,AD 1998.10.28 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,54,287,Scott Base Antarctica,class edu.sc.seis.sod.velocity.network.VelocityStation
+WVT,36.13,-87.83,157 m,79.5,28.0,35.29,AD 1997.04.16 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,42,119,Waverly Tennessee USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+KEV,69.76,27.01,80 m,33.9,11.6,34.15,AD 1993.06.07 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,140,410,Kevo Finland,class edu.sc.seis.sod.velocity.network.VelocityStation
+BILL,68.07,166.45,299 m,16.8,6.7,40.10,AD 1995.08.16 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,235,586,Bilibino Russia,class edu.sc.seis.sod.velocity.network.VelocityStation
+TRIS,-37.07,-12.32,57 m,?,103.1,.00,AD 2004.03.03 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,8,Tristan da Cunha,class edu.sc.seis.sod.velocity.network.VelocityStation
+ULN,47.87,107.05,1615 m,9.4,6.9,72.77,AD 1994.10.31 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,449,617,Ulaanbaatar Mongolia,class edu.sc.seis.sod.velocity.network.VelocityStation
+TSUM,-19.20,17.58,1240 m,64.3,24.1,37.43,AD 1994.08.19 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,67,179,Tsumeb Namibia,class edu.sc.seis.sod.velocity.network.VelocityStation
+SPA,-90.00,0.00,2927 m,550.4,6.5,1.17,AD 1991.12.18 00:00:00.000 GMT,AD 2004.01.07 03:44:00.000 GMT,8,682,South Pole Antarctica,class edu.sc.seis.sod.velocity.network.VelocityStation
+RSSD,44.12,-104.04,2060 m,143.9,44.5,30.91,AD 1999.09.24 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,17,55,Black Hills South Dakota USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+KONO,59.65,9.60,216 m,31.2,12.8,40.89,AD 1991.06.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,175,428,Kongsberg Norway,class edu.sc.seis.sod.velocity.network.VelocityStation
+SSPA,40.64,-77.89,352 m,67.8,28.4,41.89,AD 1994.12.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,62,148,Standing Stone Pennsylvania,class edu.sc.seis.sod.velocity.network.VelocityStation
+FUNA,8.53,179.20,0.0 m,288.6,66.6,23.08,AD 2004.01.21 20:24:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,13,Funafuti Tuvalu,class edu.sc.seis.sod.velocity.network.VelocityStation

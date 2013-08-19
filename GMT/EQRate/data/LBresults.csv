@@ -1,0 +1,7 @@
+# LB - Leo Brady Network
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+BMN,40.43,-117.22,1594 m,73.0,26.2,35.88,AD 1997.01.14 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,47,131,Battle Mountain Nevada USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+TPH,38.08,-117.22,1883 m,62.8,24.8,39.57,AD 1996.12.23 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,55,139,Tonopah Nevada USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+DAC,36.28,-117.59,1813 m,265.5,84.2,31.71,AD 1996.12.23 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,13,41,Darwin Inyo County California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+LDS,37.24,-113.35,1101 m,541.0,270.5,50.00,AD 1996.12.23 00:00:00.000 GMT,AD 1998.06.17 00:00:00.000 GMT,1,2,Leeds Washington County Utah USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+MVU,38.50,-112.21,2239 m,2736.7,1368.4,50.00,AD 1998.12.08 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,2,Marysvale Piute County Utah USA,class edu.sc.seis.sod.velocity.network.VelocityStation

@@ -1,0 +1,45 @@
+#set ($firstSta = $stationList.get(0) )
+#set ($sta = $firstSta)
+$net.getCodeWithYear()
+$net.name
+$stacode
+${revBase}summaryHKStack.png?netCode=$net.getCodeWithYear()&stacode=$stacode&minPercentMatch=80&smallestH=$smallestH.getValue()&gaussian=${gaussian}
+
+#foreach($sta in $stationList)
+$sta.getCode(),$sta.getName(),$sta.getLatitude(),$sta.getLongitude(),$fissures.formatYMD($sta.getStartDate()) / $fissures.formatYMD($sta.getEndDate()),$sta.getElevation()</td>
+#end
+
+Crust2 Type: $crust2Type
+Thickness Estimate: $!summary.getBest().formatH()
+Thickness StdDev: $summary.getBest().formatHStdDev()
+Vp/Vs Estimate: $!summary.getBest().formatVpVs()
+Vp/Vs StdDev: $!summary.getBest().formatKStdDev()
+Vs Estimate: $!summary.getBest().formatVs()
+Poisson's Ratio: $!summary.getBest().formatPoissonsRatio()
+Peak Value: $!summary.getBest().formatAmp()
+Assumed Vp: $!summary.getBest().formatVs()
+Ps Weight: $!summary.getSum().getWeightPs()
+PpPs Weight: $!summary.getSum().getWeightPpPs()
+PsPs Weight: $!summary.getSum().getWeightPsPs()
+Residual Complexity: $!summary.formatComplexityResidual()
+
+
+$numNinty with match > 90% ( $percentNinty %) and $numEighty with match > 80% ( $percentEighty %)
+
+Prior Results for this Station
+Study,Thickness,Vp/Vs,Vp,Vs,Poissons Ratio,Extra
+ EARS,$fissures.formatDepth($!summary.getSum().getMaxValueH()),$!summary.getSum().getMaxValueK(),$fissures.formatQuantity($!summary.getSum().getAlpha()),$fissures.formatQuantity($!summary.getSum().getVs()),$!summary.getSum().formatPoissonsRatio(),
+#foreach( $marker in $markerList)
+$marker.getRef().getName(),$marker.formatH(),$marker.formatVpVs(),$marker.formatVp(),$marker.formatVs(),$marker.formatPoissonsRatio(),$marker.getExtras()
+#end
+
+Arrivals for vertical incidence (zero ray parameter)
+Ps,$timePs
+PpPs,$timePpPs
+PsPs/PpSs,$timePsPs
+
+Events Used in the Stack
+#eventCSVTable($eventList false)
+
+Losers
+#eventCSVTable($eventLoserList true)

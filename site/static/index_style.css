@@ -1,0 +1,131 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+          font-family: "Trebuchet MS", Arial, sans-serif;
+          font-size: 12px;
+}
+
+
+
+#outer {
+        width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+        }
+
+#header {
+         margin-top: 10px;
+         border-top: 1px solid  #999999;
+         border-bottom: 1px solid  #999999;
+         }
+         
+#footer {
+         clear: both;
+         margin-top: 10px;
+         height: 70px;
+         text-align: center;
+         }
+         
+#footer img{
+            padding: 10px;
+            }
+
+#footer a {
+           text-decoration: none;
+           }
+
+#content {
+          width: 800px;
+          }
+
+#search_station {
+                 float: left;
+                  background: #D0EFBB;
+                  height: 580px;
+                  margin: 0px 10px 10px 10px;
+                   border: 1px solid #999999;
+                   width: 440px;
+                    clear: both;
+                 }
+
+ #search_earthquake {
+                                     height: 580px;
+                                      margin: 10px 0 10px 460px;
+                                      background: #F9F4C2;
+                                      border: 1px solid #999999;
+                                      width: 440px;
+                                      
+ }
+ 
+#other_options {
+                width: 890px;
+                 margin: 10px 0 10px 10px;
+                   border: 1px solid #999999;
+                   background: #ececec;
+                   padding-bottom: 10px;
+                }
+
+#search_station p {
+                   text-align: center;
+                   border-bottom: 1px solid #CCCCCC;
+                   border-top: 1px solid #CCCCCC;
+                   margin-top: 5px;
+                   color: #666666;
+                  
+                   }
+
+label {
+       font-weight: bold;
+       }
+
+td.label {
+          text-align: right;
+          }
+
+h1 {
+    font-size: 24px;
+     color: #007C39;
+     text-align: center;
+     padding-top: 5px;
+    }
+    
+    table.entry_form {
+    font-size: 12px;
+    margin: 10px 0 15px 10px;
+    width: 300px;
+}
+
+#article {
+          padding: 5px 5px 0 10px;
+          font-size: 12px;
+          }
+          
+ a:link {
+            color: #007C39;
+}
+
+a:visited {
+                 color: #17BE63;
+}
+
+a:hover, a.active {
+                               text-decoration: none;
+}
+
+a img {
+            border: none;
+}
+
+
+
+li {
+     margin-left: 10px;
+       color: #007C39;
+       padding-top: 10px;
+       list-style: none;
+       font-size: 16px;
+}
+    

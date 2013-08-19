@@ -1,0 +1,65 @@
+<html>
+<head>
+<title>Stations within $delta degrees of ($lat, $lon)</title>
+<link rel="stylesheet" type="text/css" href="$!{staticFiles}station_list_style.css"/>
+<script src="$!{staticFiles}sorttable.js" type="text/javascript"> </script>
+<script src="$!{staticFiles}tableRuler.js" type="text/javascript"> </script>
+<script type="text/javascript">
+window.onload=function(){
+        tableruler();
+        set_img_dir('images/')
+}
+</script>
+</head>
+<body>
+
+#header()	
+	
+<div id="content">
+
+<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <b>Stations within $delta degrees of ($lat, $lon)</b></p>
+
+<h1>Stations within $delta degrees of ($lat, $lon)</h1>
+
+<img id="station_near_by" src="DisplayChart?filename=${plotname}" usemap="#${plotname}" />
+$imagemap
+
+<ul id="stat_nearby_form">
+	<li>Change Results Criteria</li>
+<li>
+<form action="stationsNearBy.html?gaussian=${gaussian}" method="get">
+<table>
+<tr><td class="label"><label for="lat">Latitude: </label></td><td colspan="2"><input type="text" name="lat" value="$lat"/></td></tr>
+<tr><td class="label"><label for="lon">Longitude: </label></td><td colspan="2"><input type="text" name="lon" value="$lon"/></td></tr>
+<tr><td class="label"><label for="delta">Delta: </label></td><td colspan="2"><input type="text" name="delta" value="$delta"/></td></tr>
+
+<tr><td class="label"><label for="xAxis">X Axis: </label></td>
+<td><input type="radio" name="xAxis" value="lat"> Latitude</td>
+<td><input type="radio" name="xAxis" value="lon" checked="true"> Longitude</td>
+<td><input type="radio" name="xAxis" value="H"> Thickness</td>
+<td><input type="radio" name="xAxis" value="vpvs"> Vp/Vs</td></tr>
+
+<tr><td class="label"><label for="yAxis">Y Axis: </label></td>
+<td><input type="radio" name="yAxis" value="lat" checked="true"> Latitude</td>
+<td><input type="radio" name="yAxis" value="lon"> Longitude</td>
+<td><input type="radio" name="yAxis" value="H"> Thickness</td>
+<td><input type="radio" name="yAxis" value="vpvs"> Vp/Vs</td></tr>
+
+<tr><td class="label"><label for="zAxis">Z (Color) Axis: </label></td>
+<td><input type="radio" name="zAxis" value="lat"> Latitude</td>
+<td><input type="radio" name="zAxis" value="lon"> Longitude</td>
+<td><input type="radio" name="zAxis" value="H" checked="true"> Thickness</td>
+<td><input type="radio" name="zAxis" value="vpvs"> Vp/Vs</td></tr>
+
+<tr><td></td><td><input type="submit" value="Send"/></td></tr>
+    </table>
+ </form>
+</li>
+</ul>
+
+#summaryLineHTML($summary)
+
+</div>
+#footer()
+</body>
+</html>

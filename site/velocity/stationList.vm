@@ -1,0 +1,42 @@
+<html>
+<head>
+<title>EARS - Stations in $net.getCode()</title>
+<link rel="stylesheet" type="text/css" href="$!{staticFiles}station_list_style.css"/>
+<script src="$!{staticFiles}sorttable.js" type="text/javascript"> </script>
+<script src="$!{staticFiles}tableRuler.js" type="text/javascript"> </script>
+<script type="text/javascript">
+window.onload=function(){
+        tableruler();
+        set_img_dir('images/')
+}
+</script>
+</head>
+<body>
+	
+<div id="content">
+
+#header()
+<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <a href="networkList.html">Network List</a> > <b>$net.getCodeWithYear() - $net.name Stations List</b></p>
+
+<h1>Stations in $net.getCodeWithYear() ($stationList.size() stations)</h1>
+
+<p>View as <a href="$!{revBase}stationList.txt?netCode=$net.getCodeWithYear()&gaussian=${gaussian}">CSV</a></p>
+
+<table cellpadding="0" cellspacing="0" id="stat_info">
+<tr><td class="headodd">Network</td>
+<td class="headodd">Description</td>
+<td class="headodd">Owner</td>
+<td class="headodd">Dates</td></tr>
+<tr><td class="odd">$net.getCodeWithYear() - $net.name</td>
+<td class="even">$net.getDescription()</td><td class="odd">$net.getOwner()</td>
+<td class="even">$fissures.formatYMD($net.getStartDate()) / $fissures.formatYMD($net.getEndDate())</td></tr>	
+
+
+</table>
+
+#stationListHTML($stationList $summary)
+
+</div>
+#footer()
+</body>
+</html>

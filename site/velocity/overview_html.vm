@@ -1,0 +1,66 @@
+<html>
+<head>
+<title>EARS - All Stations</title>
+<link rel="stylesheet" type="text/css" href="$!{staticFiles}station_list_style.css"/>
+<script src="$!{staticFiles}sorttable.js" type="text/javascript"> </script>
+<script src="$!{staticFiles}tableRuler.js" type="text/javascript"> </script>
+<script type="text/javascript">
+window.onload=function(){
+        tableruler();
+        set_img_dir('images/')
+}
+</script>
+</head>
+<body>
+#header()	
+
+<div id="content">
+<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <b>All Stations for gaussian=${gaussian}</b></p>
+
+<p>Download as a <a href="summary.csv">CSV file</a></p>
+
+<table cellpadding="0" cellspacing="0" class="ruler sortable" id="dumb">
+<tr  class="title">
+<td class="headodd">Net</td>
+<td class="headodd">Station</td>
+<td class="headodd">Name</td>
+<td class="headodd num">Lat</td>
+<td class="headodd num">Lon</td>
+<td class="headodd num">Elevation</td>
+<td class="headodd num">Est. Thick</td>
+	<td class="headodd num">StdDev</td>
+<td class="headodd num">Est. Vp/Vs</td>
+	<td class="headodd num">StdDev</td>
+<td class="headodd num">Assumed Vp</td>
+<td class="headodd num">Vs</td>
+<td class="headodd num">Poissons Ratio</td>
+<td class="headodd num">Num EQ</td>
+<td class="headodd num">Complexity</td>
+</tr>
+#foreach($sta in $stationList)
+<tr>
+<td class="even"><a href="${revBase}network.html?netcode=$sta.net.getCodeWithYear()&gaussian=${gaussian}">$sta.net.getCodeWithYear()</a></td>
+<td class="odd"><a href="${revBase}Data/Summary/gauss_${gaussian}/$sta.getNet().getCodeWithYear()/$sta.getCode()/station.html">$sta.getCode()</a></td>
+<td class="stat_name"><a href="${revBase}Data/Summary/gauss_${gaussian}/$sta.getNet().getCodeWithYear()/$sta.getCode()/station.html">$sta.getName()</a></td>
+<td class="odd">$sta.getOrientedLatitude()</td>
+<td class="even">$sta.getOrientedLongitude()</td>
+<td class="odd">$sta.getElevation()</td>
+    <td class="even">$!summary.get($sta).getSum().formatMaxValueH()</td>
+    <td class="odd">$fissures.formatQuantity($!summary.get($sta).getHStdDev())</td>
+    <td class="even">$!summary.get($sta).getSum().formatMaxValueK()</td>
+    <td class="odd">$!summary.get($sta).formatKStdDev()</td>
+    <td class="even">$!summary.get($sta).getSum().formatAlpha()</td>
+    <td class="odd">$!summary.get($sta).getSum().formatVs()</td>
+    <td class="even">$!summary.get($sta).getSum().formatPoissonsRatio()</td>
+    <td class="odd">$!summary.get($sta).getNumEQ()</td>
+    <td class="even">$!summary.get($sta).formatComplexityResidual()</td>
+</tr>
+#end
+</table>
+
+
+
+</div>
+#footer()
+</body>
+</html>

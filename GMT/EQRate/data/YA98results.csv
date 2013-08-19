@@ -1,0 +1,10 @@
+# YA98 - Coso Passive Short Period Arrays
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+CCPE4,36.07,-117.79,1.5 km,?,45.0,.00,AD 1999.10.08 17:07:20.000 GMT,AD 2000.12.31 23:59:59.000 GMT,0,10,Cactus Peak E4,class edu.sc.seis.sod.velocity.network.VelocityStation
+CCPE2,36.07,-117.80,1.4 km,225.6,75.2,33.33,AD 1999.10.07 18:36:03.000 GMT,AD 2000.12.31 23:59:59.000 GMT,2,6,Cactus Peak E2,class edu.sc.seis.sod.velocity.network.VelocityStation
+CCPE5,36.06,-117.79,1.5 km,?,451.3,.00,AD 1999.10.07 17:04:50.000 GMT,AD 2000.12.31 23:59:59.000 GMT,0,1,Cactus Peak E5,class edu.sc.seis.sod.velocity.network.VelocityStation
+CCPS5,36.05,-117.83,1.3 km,231.5,77.2,33.33,AD 1999.09.26 01:52:28.000 GMT,AD 2000.12.31 23:59:59.000 GMT,2,6,Cactus Peak S5,class edu.sc.seis.sod.velocity.network.VelocityStation
+CCP00,36.08,-117.81,1.5 km,?,148.6,.00,AD 2000.03.09 19:33:18.000 GMT,AD 2000.12.31 23:59:59.000 GMT,0,2,Cactus Peak 00,class edu.sc.seis.sod.velocity.network.VelocityStation
+CCPS1,36.07,-117.82,1.4 km,117.2,78.1,66.67,AD 1999.09.20 09:19:59.000 GMT,AD 2000.12.31 23:59:59.000 GMT,4,6,Cactus Peak S1,class edu.sc.seis.sod.velocity.network.VelocityStation
+CCPE3,36.07,-117.80,1.4 km,115.5,51.3,44.44,AD 1999.09.26 21:10:31.000 GMT,AD 2000.12.31 23:59:59.000 GMT,4,9,Cactus Peak E3,class edu.sc.seis.sod.velocity.network.VelocityStation
+CCPS3,36.06,-117.82,1.4 km,?,112.6,.00,AD 1999.10.08 19:10:33.000 GMT,AD 2000.12.31 23:59:59.000 GMT,0,4,Cactus Peak S3,class edu.sc.seis.sod.velocity.network.VelocityStation

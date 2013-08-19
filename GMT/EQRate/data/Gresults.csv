@@ -1,0 +1,32 @@
+# G - GEOSCOPE
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+CAN,-35.32,149.00,650 m,36.2,15.7,43.39,AD 1987.11.27 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,187,431,Canberra Australia,class edu.sc.seis.sod.velocity.network.VelocityStation
+KIP,21.42,-158.01,70 m,459.7,40.0,8.70,AD 1986.04.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,16,184,Kipapa Hawai U.S.A. (Pacific Ocean),class edu.sc.seis.sod.velocity.network.VelocityStation
+PAF,-49.35,70.21,17 m,658.2,67.4,10.24,AD 1983.01.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,13,127,Port aux Francais Kerguelen (South Indian Ocean),class edu.sc.seis.sod.velocity.network.VelocityStation
+PEL,-33.15,-70.68,660 m,324.8,47.5,14.63,AD 1995.10.04 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,12,82,PeldehueChile,class edu.sc.seis.sod.velocity.network.VelocityStation
+WUS,41.20,79.22,1457 m,10.9,8.5,78.30,AD 1988.10.31 00:00:00.000 GMT,AD 2003.02.22 01:10:00.000 GMT,480,613,Wushi Xinjiang Uygur China,class edu.sc.seis.sod.velocity.network.VelocityStation
+TAM,22.79,5.53,1377 m,38.3,30.9,80.52,AD 1983.11.16 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,215,267,Tamanrasset Algeria,class edu.sc.seis.sod.velocity.network.VelocityStation
+CRZF,-46.43,51.86,140 m,530.7,49.5,9.33,AD 1986.02.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,14,150,Port Alfred Crozet South Indian Ocean,class edu.sc.seis.sod.velocity.network.VelocityStation
+RER,-21.16,55.75,834 m,530.1,60.3,11.38,AD 1986.02.10 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,14,123,Riviere de l'Est La Reunion (Indian Ocean),class edu.sc.seis.sod.velocity.network.VelocityStation
+FDF,14.73,-61.14,467 m,305.5,85.9,28.12,AD 1998.11.25 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,9,32,Fort de France Martinique France,class edu.sc.seis.sod.velocity.network.VelocityStation
+ATD,11.53,42.85,610 m,63.7,25.9,40.66,AD 1993.07.07 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,74,182,Arta Cave Djibouti,class edu.sc.seis.sod.velocity.network.VelocityStation
+EVO,38.53,-8.01,0.0 m,?,19.7,.00,AD 1996.02.07 00:00:00.000 GMT,AD 1997.05.06 00:00:00.000 GMT,0,23,Evora  Portugal,class edu.sc.seis.sod.velocity.network.VelocityStation
+SEY,62.93,152.37,206 m,23.2,11.6,50.00,AD 1990.09.21 00:00:00.000 GMT,AD 1994.02.02 00:00:00.000 GMT,53,106,Seymchan URSS,class edu.sc.seis.sod.velocity.network.VelocityStation
+AIS,-37.80,77.57,35 m,909.1,42.1,4.63,AD 1993.12.25 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,5,108,New Amsterdam Indian Ocean,class edu.sc.seis.sod.velocity.network.VelocityStation
+ECH,48.22,7.16,580 m,47.0,22.5,47.83,AD 1990.11.08 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,121,253,Echery  France,class edu.sc.seis.sod.velocity.network.VelocityStation
+KOG,5.21,-52.73,10 m,51.2,37.7,73.58,AD 1994.07.02 00:00:00.000 GMT,AD 1999.12.19 08:32:00.000 GMT,39,53,Kourou French Guyana,class edu.sc.seis.sod.velocity.network.VelocityStation
+GRC,47.30,3.07,191 m,130.3,16.6,12.73,AD 2000.06.21 00:00:00.000 GMT,AD 2002.12.20 09:00:00.000 GMT,7,55,Garchy France,class edu.sc.seis.sod.velocity.network.VelocityStation
+INU,35.35,137.03,132 m,26.3,13.4,50.76,AD 1987.03.04 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,267,526,Inuyama Japan,class edu.sc.seis.sod.velocity.network.VelocityStation
+HYB,17.42,78.55,510 m,16.9,11.1,65.79,AD 1989.01.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,375,570,Hyderabad India,class edu.sc.seis.sod.velocity.network.VelocityStation
+UNM,19.33,-99.18,2280 m,119.3,31.2,26.20,AD 1990.06.06 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,49,187,UnamMexico,class edu.sc.seis.sod.velocity.network.VelocityStation
+HDC,10.00,-84.11,1154 m,225.1,44.4,19.74,AD 1997.03.08 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,15,76,Heredia Costa Rica,class edu.sc.seis.sod.velocity.network.VelocityStation
+SSB,45.28,4.54,700 m,41.3,24.0,58.20,AD 1982.05.02 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,213,366,Saint Sauveur Badole France,class edu.sc.seis.sod.velocity.network.VelocityStation
+MPG,5.11,-52.64,147 m,86.5,49.2,56.82,AD 2000.07.03 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,25,44,Montagne des Pères French Guyana,class edu.sc.seis.sod.velocity.network.VelocityStation
+MBO,14.39,-16.95,3.0 m,2527.6,631.9,25.00,AD 1985.09.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,12,M'Bour Senegal,class edu.sc.seis.sod.velocity.network.VelocityStation
+DZM,-22.07,166.44,878 m,84.1,32.5,38.71,AD 2003.09.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,12,31,Dzumac New Caledonia,class edu.sc.seis.sod.velocity.network.VelocityStation
+DRV,-66.67,140.01,40 m,29.6,13.1,44.19,AD 1986.02.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,251,568,Dumont d'Urville Terre Adelie (Antartica),class edu.sc.seis.sod.velocity.network.VelocityStation
+SPB,-23.59,-47.43,85 m,151.7,68.7,45.28,AD 1996.06.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,24,53,Sao Paulo Brazil,class edu.sc.seis.sod.velocity.network.VelocityStation
+SSB2,45.28,4.54,700 m,15.9,10.2,64.29,AD 1991.11.19 00:00:00.000 GMT,AD 1993.06.15 00:00:00.000 GMT,36,56,Saint Sauveur Badole France,class edu.sc.seis.sod.velocity.network.VelocityStation
+NOUC,-22.10,166.30,112 m,123.2,41.8,33.96,AD 1988.03.21 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,54,159,Port Laguerre New Caledonia,class edu.sc.seis.sod.velocity.network.VelocityStation
+SCZ,36.60,-121.40,261 m,47.7,16.5,34.54,AD 1986.06.11 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,153,443,Chualar Canyon Santa Cruz California U.S.A.,class edu.sc.seis.sod.velocity.network.VelocityStation
+SSB3,45.28,4.54,700 m,7.2,4.8,66.67,AD 1993.05.04 00:00:00.000 GMT,AD 1993.06.16 00:00:00.000 GMT,6,9,Saint Sauveur Badole France,class edu.sc.seis.sod.velocity.network.VelocityStation

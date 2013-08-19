@@ -1,0 +1,3 @@
+#Stations in $net.codeWithYear
+#Net,Station,Lat,Long,Elev,Est.Thick,StdDev,Est.Vp/Vs,StdDev,AssumedVp,Vs,PoissonsRatio,NumEQ,Complexity
+#summaryLineCSV( $summary)

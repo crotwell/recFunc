@@ -1,0 +1,130 @@
+<html>
+<head>
+<title>EARS - Home</title>
+<link rel="stylesheet" type="text/css" href="index_style.css"/>
+</head>
+<body>
+	#header()
+	<div id="outer">
+		<table id="article">
+		<tr><td><a href="http://www.seismosoc.org/publications/SRL/SRL_76/srl_76-6_es.html"><img src="images/article.gif"/></a></td>
+<td>If you use results from EARS, please cite our article in 
+<a href="http://www.seismosoc.org/publications/SRL/SRL_76/srl_76-6_es.html">The Electronic Seismologist column of Seismological Research Letters, Nov/Dec 2005.</a></td>
+		</tr>
+		</table>
+<div id="content">
+
+
+
+
+
+
+
+<div id="search_station">
+<h1>Search by Station</h1>
+<ul>
+<li>Browse the <a href="networkList.html?gaussian=${gaussian}">network list</a> </li>
+<p>or</p>
+<li>Find a station by code:
+<form action="stationCodeList.html?gaussian=${gaussian}" method="get">
+<table class="entry_form">
+<tr><td class="label"><label for="code">Station Code: </label></td><td colspan="2"><input type="text" name="stacode" value=""/></td></tr>
+
+<tr><td></td><td><input type="submit" value="Send"/></td></tr>
+</table>   
+ </form>
+</li>
+<p>or</p>
+
+<li>Graph results near:
+<form action="stationsNearBy.html?gaussian=${gaussian}" method="get">
+<table class="entry_form">
+<tr><td class="label"><label for="lat">Latitude: </label></td><td colspan="2"><input type="text" name="lat" value="34"/></td></tr>
+<tr><td class="label"><label for="lon">Longitude: </label></td><td colspan="2"><input type="text" name="lon" value="-117"/></td></tr>
+<tr><td class="label"><label for="delta">Delta: </label></td><td colspan="2"><input type="text" name="delta" value="2"/></td></tr>
+
+<tr><td class="label"><label for="xAxis">X Axis: </label></td>
+<td><input type="radio" name="xAxis" value="lat"> Latitude</td>
+<td><input type="radio" name="xAxis" value="lon" checked="true"> Longitude</td>
+<td><input type="radio" name="xAxis" value="H"> Thickness</td>
+<td><input type="radio" name="xAxis" value="vpvs"> Vp/Vs</td></tr>
+
+<tr><td class="label"><label for="yAxis">Y Axis: </label></td>
+<td><input type="radio" name="yAxis" value="lat" checked="true"> Latitude</td>
+<td><input type="radio" name="yAxis" value="lon"> Longitude</td>
+<td><input type="radio" name="yAxis" value="H"> Thickness</td>
+<td><input type="radio" name="yAxis" value="vpvs"> Vp/Vs</td></tr>
+
+<tr><td class="label"><label for="zAxis">Z (Color) Axis: </label></td>
+<td><input type="radio" name="zAxis" value="lat"> Latitude</td>
+<td><input type="radio" name="zAxis" value="lon"> Longitude</td>
+<td><input type="radio" name="zAxis" value="H" checked="true"> Thickness</td>
+<td><input type="radio" name="zAxis" value="vpvs"> Vp/Vs</td></tr>
+
+<tr><td></td><td><input type="submit" value="Send"/></td></tr>
+</table>   
+ </form>
+</li>
+<p>or</p>
+<li>List results in a lat/lon box:
+<form action="stationLatLonBox.html?gaussian=${gaussian}&xAxis=lon&yAxis=lat" method="get">
+<table  class="entry_form">
+<tr><td class="label"><label for="minLat">Min Latitude: </label></td><td><input type="text" name="minLat" value="30"/></td></tr>
+<tr><td class="label"><label for="maxLat">Max Latitude: </label></td><td><input type="text" name="maxLat" value="45"/></td></tr>
+<tr><td class="label"><label for="minLon">Min Longitude: </label></td><td><input type="text" name="minLon" value="-122"/></td></tr>
+<tr><td class="label"><label for="maxLon">Max Longitude: </label></td><td><input type="text" name="maxLon" value="-110"/></td></tr>
+
+<tr><td></td><td><input type="submit" value="Send"/></td></tr>
+    </table>
+ </form>
+</li>
+</ul>
+ </div>
+ <div id="search_earthquake">
+ <h1>Search by Earthquake</h1>
+ <ul><li>Find earthquakes:
+<form action="winkle/eventSearch.html?gaussian=${gaussian}" method="get">
+<table class="entry_form">
+<tr><td class="label"><label for="begin">Begin: </label></td><td colspan="3"><input type="text" name="begin" id="begin" value="20000101T000000.000Z"/></td></tr>
+<tr><td class="label"><label for="end">End: </label></td><td colspan="3"><input type="text" name="end" id="end"  value="20000131T000000.000Z"/></td></tr>
+<tr><td class="label"><label for="minLat">Min Latitude: </label></td><td colspan="3"><input type="text" name="minLat" value="-90"/></td></tr>
+<tr><td class="label"><label for="maxLat">Max Latitude: </label></td><td colspan="3"><input type="text" name="maxLat" value="90"/></td></tr>
+<tr><td class="label"><label for="minLon">Min Longitude: </label></td><td colspan="3"><input type="text" name="minLon" value="-180"/></td></tr>
+<tr><td class="label"><label for="maxLon">Max Longitude: </label></td><td colspan="3"><input type="text" name="maxLon" value="180"/></td></tr>
+<tr><td class="label"><label for="minDepth">Min Depth: </label></td><td colspan="3"><input type="text" name="minDepth" value="0"/></td></tr>
+<tr><td class="label"><label for="maxDepth">Max Depth: </label></td><td colspan="3"><input type="text" name="maxDepth" value="1000"/></td></tr>
+<tr><td class="label"><label for="minMag">Min Mag: </label></td><td colspan="3"><input type="text" name="minMag" value="0"/></td></tr>
+<tr><td class="label"><label for="maxMag">Max Mag: </label></td><td colspan="3"><input type="text" name="maxMag" value="10"/></td></tr>
+
+<tr><td></td><td><label for="HTML" ><input id="HTML" checked type="radio" name="filetype" value="text/html" />HTML</label></td><td>
+<label for="XML" ><input id="XML" type="radio" name="filetype" value="text/xml"/>XML</label></td><td>
+<label for="CSV"><input id="CSV" type="radio" name="filetype" value="text/csv"/>CSV</label></td></tr>
+<tr><td></td><td><input type="submit" value="Send"/></td></tr>
+    </table>
+ </form>
+ </li></ul>
+ </div>
+  <div id="other_options">
+ <h1>Other Options</h1>
+ <ul>
+	<li>
+ Choose Gaussian: 
+#foreach ( $g in $knownGaussians )
+	#if ( $g == $gaussian) 
+		$g
+		#else
+<a href="index.html?gaussian=${g}">${g}</a>
+#end
+#end
+</li>
+ <li>Compare with <a href="priorResultList.html?gaussian=${gaussian}">prior results</a>
+</li>
+ <li>Get a summary of the results for all stations as <a href="${revBase}Data/Summary/gauss_${gaussian}/summary.html">html</a> or as a <a href="${revBase}Data/Summary/gauss_${gaussian}/summary.csv">CSV text</a> file</li>
+</ul>  
+</div>
+
+</div>
+	</div>
+#footer()
+</body>
+</html>

@@ -51,9 +51,9 @@ def binDistFiles = copySpec {
         include('site/**')
     }
     from('../winkle/site/velocity') {
-        include('*')
+        include('eventList*')
         exclude('**/*.svn')
-        into 'site/velocity/winkle'
+        into 'site/velocity'
     }
 }
 

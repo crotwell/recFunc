@@ -140,6 +140,12 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
                               new edu.sc.seis.receiverFunction.web.Event(),
                               rootHandler);
         
+        ResourceHandler dataHandler = new ResourceHandler();
+        dataHandler.setResourceBase("../Data");
+        ContextHandler ctx = new ContextHandler("/Data"); /* the server uri path */
+        ctx.setHandler(dataHandler);
+        rootHandler.addHandler(ctx);
+        
         edu.sc.seis.receiverFunction.web.IndexPage ip = new edu.sc.seis.receiverFunction.web.IndexPage();
         RevUtil.populateJetty("/", ip, rootHandler);
         RevUtil.populateJetty("/index.html", ip, rootHandler);
@@ -151,12 +157,6 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
     @Override
     public List<Handler> additionalHandlers() {
         List<Handler> out = super.additionalHandlers();
-        if (props.containsKey("cormorant.servers.ears.dataloc")) {
-            Handler handler = edu.sc.seis.rev.Start.setupContext("cormorant.servers.ears.dataloc",
-                                               "", "cormorant.servers.ears.dataurl", props);
-            out.add(handler);
-            
-        }
         return out;
     }
 

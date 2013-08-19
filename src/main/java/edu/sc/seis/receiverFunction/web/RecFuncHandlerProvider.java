@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.Resource;
 
 import edu.sc.seis.rev.FloatQueryParamParser;
 import edu.sc.seis.rev.JettyHandlerProvider;
@@ -152,7 +154,9 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
         if (props.containsKey("cormorant.servers.ears.dataloc")) {
             ResourceHandler handler = new ResourceHandler();
             handler.setResourceBase(props.getProperty("cormorant.servers.ears.dataloc"));
-            out.add(handler);
+            ContextHandler ctx = new ContextHandler("/Data"); /* the server uri path */
+            ctx.setHandler(handler);
+            out.add(ctx);
         }
         return out;
     }

@@ -1,5 +1,6 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Properties;
 
@@ -140,8 +141,21 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
                               new edu.sc.seis.receiverFunction.web.Event(),
                               rootHandler);
         
-        ResourceHandler dataHandler = new ResourceHandler();
-        dataHandler.setResourceBase("../Data");
+        ResourceHandler dataHandler = new ResourceHandler() {
+
+            @Override
+            public Resource getResource(String path) throws MalformedURLException {
+                logger.info("attempt handle: "+path);
+                Resource r = super.getResource(path);
+                if (r == null) {
+                    logger.info("Didn't handle "+path);
+                }
+                return r;
+            }
+            
+        };
+        dataHandler.setResourceBase(props.getProperty("ears.dataloc"));
+        dataHandler.setDirectoriesListed(true);
         ContextHandler ctx = new ContextHandler("/Data"); /* the server uri path */
         ctx.setHandler(dataHandler);
         rootHandler.addHandler(ctx);
@@ -163,4 +177,6 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
     protected Properties props; 
 
     public static final String WINKLE = "/winkle";
+    
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(RecFuncHandlerProvider.class);
 }

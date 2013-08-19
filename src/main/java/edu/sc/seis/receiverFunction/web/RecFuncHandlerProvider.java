@@ -152,11 +152,10 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
     public List<Handler> additionalHandlers() {
         List<Handler> out = super.additionalHandlers();
         if (props.containsKey("cormorant.servers.ears.dataloc")) {
-            ResourceHandler handler = new ResourceHandler();
-            handler.setResourceBase(props.getProperty("cormorant.servers.ears.dataloc"));
-            ContextHandler ctx = new ContextHandler("/Data"); /* the server uri path */
-            ctx.setHandler(handler);
-            out.add(ctx);
+            Handler handler = edu.sc.seis.rev.Start.setupContext("cormorant.servers.ears.dataloc",
+                                               "", "cormorant.servers.ears.dataurl", props);
+            out.add(handler);
+            
         }
         return out;
     }

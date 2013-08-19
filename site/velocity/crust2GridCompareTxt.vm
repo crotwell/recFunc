@@ -1,0 +1,4 @@
+\# code Crust2Vp Crust2Vs  Crust2Vp/Vs Crust2H EarsH EarsVp/Vs Lat Lon NumSta HStdDev KStdDev
+#foreach( $r in $gridLists)
+$r.profile.code $r.profile.formatPWaveAvgVelocity() $r.profile.formatSWaveAvgVelocity() $r.profile.formatVpVs() $r.profile.getCrustThickness() $r.formatHAvg() $r.formatKAvg() $r.lat $r.lon $r.getStationSummary().size() $r.formatHStdDev() $r.formatKStdDev()
+#end

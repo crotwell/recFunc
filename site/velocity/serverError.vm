@@ -1,0 +1,34 @@
+
+<html lang="en">
+    <head>
+        <title>EARS - Server Error!</title>
+
+<link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+		#header()
+        <div id="outer">
+            
+
+                <div id="content">
+					<h1>We're sorry!</h1>
+    <p>The server encountered an error trying to generate this page.
+	Don't worry, it's not your fault.  It's ours.</p>
+		<p>This automatically sends an error message to us so we should have the 
+			problem corrected shortly.</p>
+			<p>Use your browser's "back" button or the "return to the Home Page" link below to choose a different 
+		link on that page.
+				
+				
+				We apologize for any inconvenience!</p>
+				
+				<p id="backbutton"><a href="index.html"><img src="images/backbutton.gif" alt="Return to the Homepage" title="Return to the Homepage"/></a></p>
+   </div>
+
+	</div>
+		</div>
+		#footer()
+ </body>
+	
+</html>
+			

@@ -1,0 +1,119 @@
+
+group = 'edu.sc.seis'
+version = '2.1-SNAPSHOT'
+
+dependencies {
+    compile project(':rev')
+    compile project(':cormorant')
+    compile project(':winkle')
+    compile "edu.sc.seis:recFuncIDL:1.0beta"
+    compile "edu.sc.seis.mapData:vmap_po_thinned:1.0"
+    compile "org.jfree:jfreechart:1.0.15"
+    compile "easymock:easymock:1.0"
+}
+
+task makeScript(dependsOn: copyToLib) << { task ->
+    def dExtras = task.project.findProject(':sod').getDExtras()
+    ScriptBuilder.create('sod', 'edu.sc.seis.sod.Start', task.project, dExtras:dExtras, background:true)
+    ScriptBuilder.create('viewResults', 'edu.sc.seis.receiverFunction.web.Start', task.project, dExtras:dExtras, background:true)
+    ScriptBuilder.create('server', 'edu.sc.seis.cormorant.Start', task.project, dExtras:dExtras, background:true, mx:'2048m')
+    ScriptBuilder.create('copyToDMC', 'edu.sc.seis.receiverFunction.server.RFCopy', task.project, dExtras:dExtras, background:false)
+    ScriptBuilder.create('pingDMC', 'edu.sc.seis.receiverFunction.server.RFPing', task.project, dExtras:dExtras, background:false)
+    ScriptBuilder.create('dbconnectiontest', 'edu.sc.seis.fissuresUtil.database.ConnMgr', task.project, dExtras:dExtras, background:false)
+    ScriptBuilder.create('admin', 'edu.sc.seis.receiverFunction.server.Admin', task.project, dExtras:dExtras, background:false)
+    ScriptBuilder.create('qc', 'edu.sc.seis.receiverFunction.server.QualityControl', task.project, dExtras:dExtras, background:false)
+    //ScriptBuilder.create('priorResultCopy', 'edu.sc.seis.receiverFunction.server.PriorResultCopy', task.project, dExtras:dExtras, background:false)
+    //ScriptBuilder.create('dateStack', 'edu.sc.seis.receiverFunction.server.DateRangeResults', task.project, dExtras:dExtras, background:false)
+}
+
+def binDistFiles = copySpec {
+    from('build/output') {
+        fileMode=0755
+        include('bin/**')
+    }
+    from('build/output') {
+        include('lib/**')
+    }
+    from('sodRF') {
+        include('realtime.xml')
+        include('realtime_IIIU.xml')
+        include('ws_realtime_IIIU.xml')
+    }
+    from('scripts') {
+        include('earsServer_sc.prop')
+        include('earsSod_sc.prop')
+        include('earsJetty_sc.prop')
+        include('earsServer_iris.prop')
+        include('earsSod_iris.prop')
+        include('earsJetty_iris.prop')
+    }
+    from('.') {
+        include('site/**')
+    }
+    from('../winkle/site/velocity') {
+        include('eventList*')
+        exclude('**/*.svn')
+        into 'site/velocity'
+    }
+}
+
+def distFiles = copySpec {
+    with(binDistFiles)
+    from('build') {
+        include('build.gradle')
+    }
+    from('build/docs') {
+        include('javadoc/**')
+    }
+    from('.') {
+        include('gpl-3.0.txt')
+        include('doc/**')
+        include('src/**')
+        include('gradleWrapper/**')
+        include('gradlew')
+        include('gradlew.bat')
+        exclude('**/*.svn')
+    }
+}
+
+def dirName = project.name+'-'+version
+
+task tarBin(type: Tar, dependsOn: ['explodeBin']) {
+    group = 'dist'
+    compression = Compression.GZIP
+    into(dirName) {
+        with binDistFiles
+    }
+}
+
+task zipDist(type: Zip, dependsOn: ['explodeDist']) {
+    group = 'dist'
+    into(dirName) {
+        with distFiles
+    }
+}
+
+task tarDist(type: Tar, dependsOn: ['explodeDist']) {
+    group = 'dist'
+    compression = Compression.GZIP
+    into(dirName) {
+        with distFiles
+    }
+}
+
+
+task explodeBin(type: Sync, dependsOn: ['makeScript']) {
+    group = 'dist'
+    with binDistFiles
+    into file("$buildDir/explode")
+}
+explodeBin.doLast { ant.chmod(dir: "$buildDir/explode/bin", perm: "755", includes: "*") }
+
+task explodeDist(type: Sync, dependsOn: ['explodeBin', 'wrapper', 'doc']) {
+    group = 'dist'
+    with distFiles
+    into file("$buildDir/explode")
+}
+
+
+assemble.dependsOn(tarDist)

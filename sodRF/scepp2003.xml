@@ -1,0 +1,255 @@
+<?xml version="1.0" ?>
+
+<sod
+xmlns:xlink="http://www.w3.org/1999/xlink/"
+>
+  <properties>
+      <runName>SCEPP RecFunc</runName>
+      <statusBase>status</statusBase>
+                <eventQueryIncrement>
+                        <value>1</value>
+                        <unit>WEEK</unit>
+                </eventQueryIncrement>
+                <eventLag>
+                        <value>1</value>
+                        <unit>WEEK</unit>
+                </eventLag>
+                <eventRefreshInterval>
+                        <value>6</value>
+                        <unit>MINUTE</unit>
+                </eventRefreshInterval>
+                <waveformWorkerThreads>1</waveformWorkerThreads>
+                <maxRetryDelay>
+                        <value>16</value>
+                        <unit>DAY</unit>
+                </maxRetryDelay>
+
+  </properties>
+
+     <eventArm>
+
+       <eventFinder>
+        <name>IRIS_EventDC</name>
+        <dns>edu/iris/dmc</dns>
+            <boxArea>
+            <latitudeRange>
+                <min>-90</min>
+                <max>90</max>
+            </latitudeRange>
+            <longitudeRange>
+                <min>-180</min>
+                <max>180</max>
+            </longitudeRange>
+            </boxArea>
+
+<!-- Depths from 0 to 1000 kilometers are ok, -->
+        <originDepthRange>
+            <unitRange>
+                <unit>KILOMETER</unit>
+                <min>0</min>
+                <max>1000</max>
+            </unitRange>
+        </originDepthRange>
+
+<!-- Only take events from Apr-June -->
+        <eventTimeRange>
+        <timeRange>
+            <startTime>20020101T00:00:00.001Z</startTime>
+            <endTime>20041231T23:59:59.999Z</endTime>
+        </timeRange>
+        </eventTimeRange>
+
+
+                <magnitudeRange>
+                        <magType>M</magType>
+                        <min>6.0</min>
+                        <max>10.0</max>
+                </magnitudeRange>
+
+                <catalog>PREF</catalog>
+                <contributor>IRIS-DMC</contributor>
+
+       </eventFinder>
+
+       <originPointDistance>
+          <latitude>35</latitude>
+          <longitude>-82</longitude>
+          <unit>DEGREE</unit>
+          <min>30</min>
+          <max>100</max>
+       </originPointDistance>
+
+<!-- Print out a line for each successful event -->
+    <printLineEventProcess/>
+
+                <mapEventStatus xlink:href="SPstatus/eventMap.png"/>
+                <eventStatusTemplate>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/timeSorted.xml"/>
+                </eventStatusTemplate>
+                <eventStatusTemplate>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/depthSorted.xml"/>
+                </eventStatusTemplate>
+                <eventStatusTemplate>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/locSorted.xml"/>
+                </eventStatusTemplate>
+                <eventStatusTemplate>
+                        <eventConfig xlink:href="jar:edu/sc/seis/sod/data/templates/eventArm/magSorted.xml"/>
+                </eventStatusTemplate>
+
+   </eventArm>
+
+   <networkArm>
+    <networkFinder>
+        <description>Connect to the SCEPP networkDC</description>
+        <name>SCEPPNetworkDC</name>
+        <dns>edu/sc/seis</dns>
+<!-- recheck channels after some time -->
+        <refreshInterval>
+            <unit>MINUTE</unit>
+            <value>3000</value>
+        </refreshInterval>
+    </networkFinder>
+
+              <networkCode>SP</networkCode>
+
+    <stationAND>
+        <stationEffectiveTimeOverlap>
+           <effectiveTimeOverlap>
+               <min>20020101T00:00:00.001Z</min>
+               <max>20041231T23:59:59.999Z</max>
+           </effectiveTimeOverlap>
+        </stationEffectiveTimeOverlap>
+    </stationAND>
+
+   <channelAND>
+<!-- Accept any channel with B band code -->
+    <channelOR>
+        <bandCode>B</bandCode>
+    </channelOR>
+
+        <channelEffectiveTimeOverlap>
+        <effectiveTimeOverlap>
+               <min>20020101T00:00:00.001Z</min>
+               <max>20041231T23:59:59.999Z</max>
+        </effectiveTimeOverlap>
+        </channelEffectiveTimeOverlap>
+
+   </channelAND>
+
+    <printlineChannelProcessor/>
+                <networkInfoTemplateGenerator>
+                    <netConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/networks.xml"/>
+                    <stationConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/stations.xml"/>
+                    <channelConfig xlink:href="jar:edu/sc/seis/sod/data/templates/networkArm/channels.xml"/>
+                </networkInfoTemplateGenerator>
+    </networkArm>
+
+
+    <waveformArm>
+      <eventStationAND>
+        <distanceRange>
+            <unit>DEGREE</unit>
+            <min>30</min>
+            <max>100</max>
+        </distanceRange>
+        <phaseExists>
+            <modelName>prem</modelName>
+            <phaseName>P</phaseName>
+        </phaseExists>
+      </eventStationAND>
+
+    <motionVectorArm>
+
+    <requestGeneratorWrapper>
+    <phaseRequest>
+        <beginPhase>P</beginPhase>
+        <beginOffset>
+            <unit>SECOND</unit>
+            <value>-100</value>
+        </beginOffset>
+        <endPhase>P</endPhase>
+        <endOffset>
+            <unit>SECOND</unit>
+            <value>180</value>
+        </endOffset>
+    </phaseRequest>
+    </requestGeneratorWrapper>
+
+    <fixedDataCenter>
+        <name>SCEPPSeismogramDC</name>
+        <dns>edu/sc/seis</dns>
+    </fixedDataCenter>
+
+    <ORAvailableDataWrapper>
+        <someCoverage/>
+    </ORAvailableDataWrapper>
+
+    <ORLocalSeismogramSubsetterWrapper>
+            <phaseSignalToNoise>
+                <modelName>prem</modelName>    
+                <phaseName>P</phaseName>
+                <shortOffsetBegin>
+                    <unit>SECOND</unit>
+                    <value>-5</value>
+                </shortOffsetBegin>
+                <shortOffsetEnd>
+                    <unit>SECOND</unit>
+                    <value>5</value>
+                </shortOffsetEnd>
+                <longOffsetBegin>
+                    <unit>SECOND</unit>
+                    <value>-105</value>
+                </longOffsetBegin>
+                <longOffsetEnd>
+                    <unit>SECOND</unit>
+                    <value>-5</value>
+                </longOffsetEnd>
+                <ratio>2.7</ratio>
+            </phaseSignalToNoise>
+    </ORLocalSeismogramSubsetterWrapper>
+
+    <printlineSeismogramProcess/>
+
+    <phaseCut>
+        <beginPhase>P</beginPhase>
+        <beginOffset>
+            <unit>SECOND</unit>
+            <value>-30</value>
+        </beginOffset>
+        <endPhase>P</endPhase>
+        <endOffset>
+            <unit>SECOND</unit>
+            <value>120</value>
+        </endOffset>
+    </phaseCut>
+    <rMean/>
+    <rTrend/>
+    <taper/>
+    <filter>
+       <lowFreqCorner><value>50</value><unit>SECOND</unit></lowFreqCorner>
+       <highFreqCorner><value>5</value><unit>HERTZ</unit></highFreqCorner>
+       <numPoles>2</numPoles>
+       <filterType>NONCAUSAL</filterType>
+    </filter>
+
+
+    <externalChannelGroupSeismogramProcess>
+        <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
+        <fileType>sac</fileType>
+        <dataDirectory>SP_recfunc</dataDirectory>
+        <eventDirLabel><originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/></eventDirLabel>
+        <gaussianWidth>2.5</gaussianWidth>
+    </externalChannelGroupSeismogramProcess>
+
+            <localSeismogramTemplateGenerator>  
+                <seismogramConfig xlink:href="jar:edu/sc/seis/receiverFunction/rfTemplate.vm"/>
+            </localSeismogramTemplateGenerator>
+
+    </motionVectorArm>
+
+                <waveformEventTemplateGenerator>
+                        <waveformConfig xlink:href="jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml"/>
+                </waveformEventTemplateGenerator>
+
+   </waveformArm>
+</sod>

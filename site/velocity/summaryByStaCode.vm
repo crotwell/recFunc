@@ -1,0 +1,31 @@
+<html>
+<head>
+<title>EARS - Stations in with code $staCode</title>
+<link rel="stylesheet" type="text/css" href="$!{staticFiles}station_list_style.css"/>
+<script src="$!{staticFiles}sorttable.js" type="text/javascript"> </script>
+<script src="$!{staticFiles}tableRuler.js" type="text/javascript"> </script>
+<script type="text/javascript">
+window.onload=function(){
+        tableruler();
+        set_img_dir('images/')
+}
+</script>
+</head>
+<body>
+	
+<div id="content">
+
+#header()
+<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <b>$stacode Stations List</b></p>
+
+<h1>Stations with code $stacode ($summary.size() stations)</h1>
+
+<p>View as <a href="$!{revBase}stationCodeList.csv?stacode=${stacode}&gaussian=${gaussian}">CSV</a></p>
+
+
+#summaryLineHTML($summary)
+
+</div>
+#footer()
+</body>
+</html>

@@ -1,0 +1,41 @@
+
+<html>
+	<head>
+	</head>
+	<body>
+		<table>
+			<thead >
+			<td>Crust2 Code</td>
+			<td>Name</td>
+			<td>Vp</td>
+			<td>Vs</td>
+			<td>Vp/Vs</td>
+			<td>H</td>
+			<td>Avg H</td>
+			<td>Avg K</td>
+			<td>Lat</td>
+			<td>Lon</td>
+			<td>num Stations</td>
+			<td>H StdDev</td>
+			<td>K StdDev</td>
+			</thead>
+#foreach( $r in $gridLists)
+	<tr>
+	<td>$r.profile.code </td>
+	<td>$r.profile.name</td>
+	<td> $r.profile.formatPWaveAvgVelocity()</td>
+	<td> $r.profile.formatSWaveAvgVelocity()</td>
+	<td> $r.profile.formatVpVs()</td>
+	<td> $r.profile.getCrustThickness()</td>
+	<td> $r.formatHAvg()</td>
+	<td> $r.formatKAvg()</td>
+	<td> $r.lat</td>
+	<td> $r.lon</td>
+	<td> $r.getStationSummary().size()</td>
+	<td>$r.formatHStdDev()</td>
+	<td>$r.formatKStdDev()</td>
+	</tr>
+#end
+		</table>
+	</body>
+</html>

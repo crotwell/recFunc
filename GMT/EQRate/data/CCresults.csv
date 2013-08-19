@@ -1,0 +1,4 @@
+# CC - Cascade Chain Volcano Monitoring
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+JRO,46.28,-122.22,1280 m,53.1,12.4,23.40,AD 2004.10.30 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,11,47,Johnston Ridge Observatory,class edu.sc.seis.sod.velocity.network.VelocityStation
+WIFE,44.06,-121.82,1955 m,135.5,18.3,13.51,AD 2004.07.28 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,5,37,Wife at 3-Sisters,class edu.sc.seis.sod.velocity.network.VelocityStation

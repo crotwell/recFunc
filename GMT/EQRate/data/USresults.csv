@@ -1,0 +1,72 @@
+# US - United States National Seismic Network
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+DGMT,48.47,-104.20,0.0 m,230.2,9.6,4.17,AD 2004.07.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,72,Dagmar Montana USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+EGMT,48.02,-109.75,1.1 km,?,66.9,.00,AD 2005.11.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,3,Eagleton Montana USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+HLID,43.56,-114.41,1772 m,24.0,8.8,36.50,AD 1998.08.10 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,119,326,Hailey Idaho USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+JCT,30.48,-99.80,591 m,25.2,9.6,38.02,AD 2000.02.03 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,92,242,Junction Texas USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+MSO,46.83,-113.94,1.3 km,32.2,8.2,25.44,AD 2002.08.23 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,43,169,Missoula Montana USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+LTX,29.33,-103.67,1.0 km,76.1,21.7,28.57,AD 1993.02.04 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,64,224,Lajitas Texas USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+MNV,38.43,-118.15,1524 m,70.9,17.4,24.58,AD 1994.12.22 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,59,240,Mina Nevada USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+NHSC,33.11,-80.18,0.0 km,103.5,32.8,31.67,AD 2001.01.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,19,60,New Hope South Carolina USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+SDCO,37.75,-105.50,2569 m,1425.7,7.2,.50,AD 2002.07.11 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,199,Great Sand Dunes National Park Colorado USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+DWPF,28.11,-81.43,-142.0 m,884.6,189.6,21.43,AD 1999.03.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,14,Disney Wilderness Preserve Florida USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BMO,44.85,-117.31,1189 m,111.9,28.0,25.00,AD 2004.11.23 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,5,20,Blue Mountains Array (Baker) Oregon USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+SAO,36.76,-121.44,350 m,692.1,42.5,6.14,AD 1993.03.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,7,114,San Andreas Geological Observatory San Benito County Calif,class edu.sc.seis.sod.velocity.network.VelocityStation
+OXF,34.51,-89.41,101 m,110.6,20.8,18.83,AD 1993.09.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,42,223,Oxford Mississippi USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+LKWY,44.57,-110.40,2424 m,353.7,22.2,6.29,AD 1995.10.11 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,11,175,Lake (Yellowstone--Lake) Wyoming USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BLA,37.21,-80.42,634 m,103.9,39.7,38.18,AD 1994.06.24 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,42,110,Blacksburg Virginia USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+MNTX,31.70,-105.38,404 m,56.8,16.6,29.17,AD 2004.04.01 06:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,14,48,Cornudas Mountains Texas USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+CMB,38.03,-120.39,719 m,68.7,18.2,26.45,AD 1992.09.10 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,73,276,Columbia College California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+MCWV,39.66,-79.85,280 m,132.1,42.0,31.82,AD 1991.03.28 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,42,132,Mont Chateau West Virginia USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+LSCT,41.68,-73.22,318 m,4686.7,156.2,3.33,AD 1993.08.06 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,30,Lakeside Connecticut USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+ACSO,40.23,-82.98,288 m,50.3,17.3,34.38,AD 2000.05.14 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,44,128,Alum Creek State Park Ohio USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+GWDE,38.83,-75.62,19 m,518.2,296.1,57.14,AD 1995.09.07 00:00:00.000 GMT,AD 2001.05.11 00:00:00.000 GMT,4,7,Greenwood Delaware USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+WUAZ,35.52,-111.37,1592 m,32.0,12.9,40.35,AD 1998.05.12 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,92,228,Wupatki Arizona USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+TPNV,36.95,-116.25,1600 m,96.3,22.9,23.77,AD 1992.06.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,53,223,Topopah Spring Nevada USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+AAM,42.30,-83.66,172 m,112.0,55.3,49.37,AD 1994.06.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,39,79,Ann Arbor Michigan USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+EYMN,47.95,-91.50,475 m,77.6,26.7,34.38,AD 1994.09.26 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,55,160,Ely Minnesota USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+CBM,46.93,-68.12,250 m,1654.6,827.3,50.00,AD 1992.11.02 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,6,Caribou Maine USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+HKT,29.95,-95.83,-415.0 m,281.5,83.8,29.79,AD 1995.08.22 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,14,47,Hockley Texas USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+TUC,32.31,-110.78,906 m,82.9,40.8,49.23,AD 1999.03.03 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,32,65,Tucson Arizona USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+ERPA,42.12,-79.99,306 m,62.2,20.7,33.33,AD 2004.03.19 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,13,39,Erie Pennsylvania USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+NCB,43.97,-74.22,500 m,59.0,20.0,33.88,AD 1999.10.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,41,121,Newcomb New York USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+MIAR,34.55,-93.58,207 m,131.7,30.0,22.75,AD 1992.09.23 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,38,167,Mount Ida Arkansas USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+OCWA,47.75,-124.18,671 m,123.4,17.4,14.11,AD 1998.08.28 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,23,163,Octopus Mountain Washington USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+LRAL,33.03,-87.00,130 m,60.0,26.5,44.12,AD 2001.07.02 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,30,68,Lakeview Retreat Alabama USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+NATX,31.76,-94.66,156 m,107.7,14.0,12.96,AD 2004.05.13 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,7,54,Nacogdoches Texas USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+GOGA,33.41,-83.47,150 m,284.5,46.5,16.35,AD 1993.03.09 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,17,104,Godfrey Georgia USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+AMTX,34.53,-101.41,1010 m,204.6,32.3,15.79,AD 2004.09.30 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,19,Amarillo Texas USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+WMOK,34.74,-98.78,486 m,90.1,23.7,26.32,AD 1992.11.12 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,55,209,Wichita Mountains Oklahoma USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+WDC,40.58,-122.54,300 m,128.4,28.0,21.79,AD 1992.09.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,39,179,Whiskeytown Dam Shasta County California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+AHID,42.77,-111.10,1960 m,74.5,9.1,12.21,AD 1997.11.12 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,42,344,Auburn Hatchery Idaho USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+CBN,38.21,-77.37,70 m,201.9,38.7,19.15,AD 2001.06.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,9,47,Corbin (Fredericksburg Observatory) Virginia USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+CBKS,38.81,-99.74,677 m,57.1,19.4,33.94,AD 1994.09.12 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,75,221,Cedar Bluff Kansas USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+DUG,40.19,-112.81,1477 m,47.6,16.3,34.23,AD 1993.02.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,102,298,Dugway Tooele County Utah USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+WVOR,42.43,-118.64,1344 m,104.0,25.7,24.71,AD 1994.06.22 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,42,170,Wild Horse Valley Oregon USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+NEW,48.26,-117.12,760 m,58.1,17.4,30.04,AD 1993.11.13 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,79,263,Newport Washington USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+KNB,37.02,-112.82,1715 m,807.5,52.4,6.49,AD 1995.05.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,5,77,Kanab Kane County Utah USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+WCI,38.23,-86.29,500 m,64.8,21.5,33.13,AD 1996.11.06 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,54,163,Wyandotte Cave Indiana USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BOZ,45.65,-111.63,1589 m,23.3,7.9,33.88,AD 1999.11.11 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,103,304,Bozeman Montana USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+HAWA,46.39,-119.53,364 m,34.2,10.8,31.54,AD 1999.04.23 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,76,241,Hanford Washington USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+ISA,35.66,-118.47,873 m,369.4,129.3,35.00,AD 1992.04.08 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,14,40,Isabella Kern County California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+CCM,38.06,-91.24,222 m,54.4,19.3,35.38,AD 2003.01.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,23,65,Cathedral Cave Missouri USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+LBNH,44.24,-71.93,367 m,141.8,60.0,42.31,AD 1993.08.14 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,33,78,Lisbon New Hampshire USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+ISCO,39.80,-105.61,2743 m,48.8,15.3,31.44,AD 1996.10.25 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,72,229,Idaho Springs Colorado USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BW06,42.77,-109.56,2224 m,53.4,12.5,23.47,AD 1996.05.05 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,69,294,Boulder Array Site 6 (Pinedale) Wyoming USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+HRV,42.51,-71.56,180 m,374.0,163.6,43.75,AD 1992.02.04 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,14,32,Harvard--Oak Ridge Massachusetts USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+CEH,35.89,-79.09,152 m,1811.0,517.4,28.57,AD 1991.03.29 00:00:00.000 GMT,AD 2001.02.26 00:00:00.000 GMT,2,7,Chapel Hill North Carolina USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+COR,44.59,-123.30,121 m,304.0,105.7,34.78,AD 1993.02.10 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,16,46,Corvallis Oregon USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+HWUT,41.61,-111.57,1830 m,45.4,9.3,20.44,AD 1997.03.26 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,74,362,Hardware Ranch Cache County Utah USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+LAO,46.69,-106.22,902 m,38.4,7.3,18.95,AD 2004.07.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,18,95,LASA Array Montana USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BMN,40.43,-117.22,1500 m,312.0,187.2,60.00,AD 1994.06.23 00:00:00.000 GMT,AD 1997.01.14 00:00:00.000 GMT,3,5,Battle Mountain Nevada USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+JFWS,42.91,-90.25,335 m,93.7,29.9,31.95,AD 1992.07.29 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,54,169,Jewell Farm Wisconsin USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+ELK,40.74,-115.24,2210 m,54.0,17.8,33.07,AD 1994.01.06 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,84,254,Elko Nevada USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+LONY,44.62,-74.58,0.4 km,?,60.7,.00,AD 2005.10.06 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,4,Lake Ozonia New York USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BINY,42.20,-75.99,498 m,111.3,37.1,33.33,AD 1993.08.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,42,126,Binghamton New York USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+YSNY,42.48,-78.54,628 m,1168.7,584.3,50.00,AD 1993.08.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,4,8,Yorkshire New York USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+WVT,36.13,-87.83,153 m,99.6,21.4,21.47,AD 1996.11.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,35,163,Waverly Tennessee USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+MYNC,35.07,-84.13,550 m,962.9,102.4,10.64,AD 1993.03.31 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,5,47,Murphy North Carolina USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+REDW,43.36,-110.85,2192 m,208.3,130.2,62.50,AD 2003.07.30 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,5,8,Red Top Meadow Wyoming USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+RSSD,44.12,-104.04,2060 m,1223.4,9.8,.80,AD 1999.09.24 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,2,250,Black Hills South Dakota USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+SSPA,40.64,-77.89,158 m,170.0,58.4,34.33,AD 1995.09.22 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,23,67,Standing Stone Pennsylvania USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+KSU1,39.10,-96.61,347 m,50.2,10.1,20.18,AD 2003.05.28 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,22,109,Kansas State University--Konza Prairie Kansas USA,class edu.sc.seis.sod.velocity.network.VelocityStation

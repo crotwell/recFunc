@@ -1,0 +1,167 @@
+package edu.sc.seis.receiverFunction;
+
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
+
+/**
+ * Correlation.java
+ *
+ *
+ * Created: Sat Mar 23 11:49:29 2002
+ *
+ * @author <a href="mailto:">Philip Crotwell</a>
+ * @version
+ */
+
+public class Correlation {
+    public Correlation (){
+	
+    }
+
+    public static float[][] correl(float[] data1, float[] data2) {
+	int n;
+	float no2;
+	if (data1.length != data2.length) {
+	    throw new IllegalArgumentException("Data1 and Data2 must have same length:"+data1.length+"!="+data2.length);
+	} // end of if (data1.length != data2.length)
+	Cmplx[] ans = new Cmplx[data1.length];
+	Cmplx[] fft = new Cmplx[data1.length];
+	twofft(data1, data2, fft, ans);
+
+	no2 = data1.length / 2.0f;
+	for (int i=0; i<=data1.length/2;i++) {
+	     ans[i] = Cmplx.div(Cmplx.mul(fft[i], ans[i].conjg()), no2);
+	} // end of for (int i=0; i<n/2;i++)
+	ans[0] = new Cmplx(ans[0].real(), ans[n/2].real());
+
+	realFT(ans, -1);
+    }
+    
+    public static void realFT(Cmplx[] data, int sign) {
+	double theta = 6.28318530717959/2.0/data.length;
+	double c1 = 0.5;
+	double c2;
+	if (sign == 1) {
+	    c2 = -0.5;
+	    four1(data, 1);
+	} else {
+	    c2 = 0.5;
+	    theta *= -1;
+	} // end of else
+	double wpr = -2.0*Math.pow(Math.sin(0.5*theta), 2);
+	double wpi = Math.sin(theta);
+	double wr = 1.0+wpr;
+	double wi=wpi;
+	int n2p3=2*data.length+3;
+	int i1, i2, i3, i4;
+	double wrs, wis, h1r, h1i, h2r, h2i, wtemp;
+	for (int i=2; i<=n/2;i++) {
+	    i1=2*i-1;
+	    i2=i1+1;
+	    i3=n2p3-i2;
+	    i4=i3+1;
+	    wrs=sngl(wr);
+	    wis=sngl(wi);
+	    h1r=c1*(data[i1]+data[i3]);
+	    h1i=c1*(data[i2]-data[i4]);
+	    h2r=-c2*(data[i2]+data[i4]);
+	    h2i=c2*(data[i1]-data[i3]);
+	    data(i1)=h1r+wrs*h2r-wis*h2i;
+	    data(i2)=h1i+wrs*h2i+wis*h2r;
+	    data(i3)=h1r-wrs*h2r+wis*h2i;
+	    data(i4)=-h1i+wrs*h2i+wis*h2r;
+	    wtemp=wr;
+	    wr=wr*wpr-wi*wpi+wr;
+	    wi=wi*wpr+wtemp*wpi+wi;
+	} // end of for (int i=2; i<=n/2;i++)
+	if (sign == 1) {
+	    h1r=data[1];
+	    data[1]=h1r+data[2];
+	    data[2]=h1r-data[2];
+	} else {
+	    h1r=data[1];
+	    data[1]=c1*(h1r+data[2]);
+	    data[2]=c1*(h1r-data[2]);
+	    four1(data,-1);
+	} // end of else
+    }
+
+    public static void four1(double[] data, int sign) {
+	double wr,wi,wpr,wpi,wtemp,theta;
+	double tempr, tempi;
+	int n, nn, m, mmax, i, j, istep, isign;
+	int n=2*nn;
+	int j=0;
+	for (int i=0; i<data.length; i+=2) {
+	     
+	    if(j>i) {
+		tempr=data[j];
+		tempi=data[j+1];
+		data[j]=data[i];
+		data[j+1]=data[i+1];
+		data[i]=tempr;
+		data[i+1]=tempi;
+	    }
+	    m=n/2;
+	    while ((m>2)&&(j>m)) {
+		j=j-m;
+		m=m/2;
+	    }
+	    j=j+m;
+	} // end of for (int i=0; i<n; i+=2)
+
+	mmax=2;
+	if (n>mmax) {
+	    istep=2*mmax;
+	    theta=6.28318530717959/(sign*mmax);
+	    wpr=-2.0*math.pow(math.sin(0.5*theta),2);
+	    wpi=math.sin(theta);
+	    wr=1.0;
+	    wi=0.0;
+	    for (m=1; m<mmax; m+=2) {
+		for (i=m; i<n; i+=step) {
+		    j=i+mmax;
+		    tempr=sngl(wr)*data[j]-sngl(wi)*data[j+1];
+		    tempi=sngl(wr)*data[j+1]+sngl(wi)*data[j];
+		    data[j]=data[i]-tempr;
+		    data[j+1]=data[i+1]-tempi;
+		    data[i]=data[i]+tempr;
+		    data[i+1]=data[i+1]+tempi;
+		}
+		wtemp=wr;
+		wr=wr*wpr-wi*wpi+wr;
+		wi=wi*wpr+wtemp*wpi+wi;
+	    }
+	    mmax=istep;
+	}
+    }
+
+    public static void  twofft(float[] data1, float[] data2, Cmplx[] fft1, Cmplx[] fft2) {
+	int n, j, n2;
+	if (data1.length != data2.length) {
+	    throw new IllegalArgumentException("data1 and data2 must have same length");
+	} // end of if (data1.length != data2.length)
+	n=data1.length;
+	
+	Cmplx fft1 = new Cmplx[n];
+	Cmplx fft2 = new Cmplx[n];
+	Cmplx h1,h2,c1,c2;
+	c1= new Cmplx(0.5,0.0);
+	c2= new Cmplx(0.0,-0.5);
+	for (int j=1; j<n;j++) {
+	    fft1[j]=new Cmplx(data1[j],data2[j]);
+	}
+	four1(fft1,1);
+	fft2[0]=new Cmplx(fft1[0].imag(),0.0);
+	fft1[0]=new Cmplx(fft1[0].real(),0.0);
+	n2=n+2;
+	for (int j=1;j<n/2;j++) {
+	    h1=c1.times(fft1[j]+Cmplx.conjugate(fft1[n2-j]));
+	    h2=c2.times(fft1[j]-Cmplx.conjugate(fft1[n2-j]));
+	    fft1[j]=h1;
+	    fft1[n2-j]=Cmplx.conjugate(h1);
+	    fft2[j]=h2;
+	    fft2[n2-j]=Cmplx.conjugate(h2);
+	}
+    }
+
+}// Correlation

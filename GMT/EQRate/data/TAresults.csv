@@ -1,0 +1,96 @@
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+# TA - USArray Transportable Network (new EarthScope stations)
+109C,32.89,-117.11,150 m,18.6,2.7,14.54,AD 2004.05.04 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,41,282,Camp Elliot Mirimar CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+115A,32.70,-112.23,0.6 km,?,38.4,.00,AD 2006.03.21 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,2,Sonoran Desert Stanfield AZ USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+116A,32.56,-111.70,0.5 km,77.7,25.9,33.33,AD 2006.03.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,3,Eloy AZ USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+A04A,48.72,-122.71,23 m,31.2,2.2,6.94,AD 2004.09.19 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,20,288,Lummi Island Lummi Island WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+A05A,49.00,-122.09,0.2 km,?,4.1,.00,AD 2005.11.29 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,46,Maple Falls WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+B04A,48.06,-123.50,294 m,75.9,3.5,4.55,AD 2005.10.21 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,66,Port Angeles WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+B05A,48.26,-122.10,0.2 km,93.9,4.7,5.00,AD 2005.11.30 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,2,40,Bryant WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BNLO,37.13,-122.17,794 m,41.2,3.3,7.94,AD 2005.04.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,10,126,Ben Lomond (Santa Cruz Mountains) CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+C03A,47.95,-124.57,0.0 km,?,4.0,.00,AD 2005.10.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,57,Quillayute Airport Forks WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+C04A,47.72,-122.97,0.1 km,56.7,4.0,7.02,AD 2005.10.22 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,4,57,Brinnon WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+C05A,47.69,-121.69,0.5 km,188.7,94.4,50.00,AD 2005.11.29 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,2,Tolt Reservoir WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+D03A,47.12,-123.77,31 m,?,2.4,.00,AD 2004.09.16 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,263,Wishkah Elem. School Wishkah WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+D04A,47.11,-122.80,0.0 km,?,3.7,.00,AD 2005.10.24 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,60,Dobbs Creek Ranch Lacey WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+D05A,47.19,-121.99,0.3 km,196.7,4.7,2.38,AD 2005.11.21 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,42,Enumclaw WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+E03A,46.55,-123.56,0.1 km,74.2,4.9,6.67,AD 2005.10.26 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,45,Lebam WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+E04A,46.59,-122.72,0.2 km,221.7,6.7,3.03,AD 2005.10.27 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,33,Onalaska WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+E05A,46.56,-121.76,0.5 km,73.6,4.8,6.52,AD 2005.10.28 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,46,Randle WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+ELFS,40.62,-120.73,1.6 km,27.3,3.0,10.94,AD 2005.05.19 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,14,128,Eagle Lake Field Station Susanville CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+F03A,45.93,-123.56,0.3 km,104.9,3.5,3.33,AD 2005.11.08 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,2,60,Seaside OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+F04A,45.93,-122.42,0.2 km,55.9,3.9,6.90,AD 2005.10.25 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,4,58,Amboy WA  USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+F05A,45.88,-121.46,0.5 km,215.7,9.0,4.17,AD 2005.11.02 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,24,White Salmon WA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+G04A,45.21,-122.48,0.3 km,208.7,5.2,2.50,AD 2005.11.09 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,40,Mulino OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+G05A,45.24,-121.32,0.6 km,?,7.2,.00,AD 2005.11.03 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,30,Wamic OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+H02A,44.68,-124.00,0.2 km,?,4.5,.00,AD 2005.11.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,45,Toledo OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+H03A,44.68,-123.29,0.2 km,41.5,3.8,9.26,AD 2005.11.10 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,5,54,Soap Creek Ranch Albany OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+H04A,44.68,-122.19,0.7 km,52.2,4.0,7.69,AD 2005.11.09 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,4,52,Detroit Lake OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+H05A,44.65,-121.23,0.7 km,?,11.2,.00,AD 2005.12.09 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,16,Madras OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+HAST,36.39,-121.55,542 m,22.9,2.3,9.84,AD 2004.07.19 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,30,305,UC Hastings Reserve Carmel Valley CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+HATC,40.82,-121.46,1.0 km,34.9,2.8,8.03,AD 2005.05.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,11,137,Hat Creek Radio Observatory Hat Creek CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+HELL,36.68,-119.02,1145 m,30.0,3.7,12.31,AD 2005.02.11 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,16,130,Mitchell Peak Miramonte CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+I02A,44.00,-123.83,0.2 km,?,4.4,.00,AD 2005.11.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,46,Mapleton OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+I03A,43.97,-123.28,0.2 km,?,4.5,.00,AD 2005.11.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,44,Eugene OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+I05A,44.16,-121.27,1.0 km,136.9,6.5,4.76,AD 2004.07.21 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,5,105,Bend OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+I06A,43.94,-120.21,1.3 km,123.7,5.6,4.55,AD 2006.02.02 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,22,Prineville OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+J02A,43.37,-123.57,0.1 km,100.9,6.1,6.06,AD 2005.11.16 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,2,33,Umpqua OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+J03A,43.72,-122.96,0.3 km,?,86.4,.00,AD 2005.12.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,2,Ideyld Park OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+J06A,43.25,-120.15,1.4 km,125.7,6.3,5.00,AD 2006.01.31 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,20,Christmas Valley OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+K01A,42.81,-124.47,0.2 km,?,4.8,.00,AD 2005.12.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,35,Sixes OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+K06A,42.80,-120.25,1.3 km,?,10.6,.00,AD 2006.01.29 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,12,Valley Falls OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+L02A,42.16,-123.60,0.5 km,?,57.2,.00,AD 2005.12.16 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,3,Cave Junction OR USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+LAVA,38.76,-120.74,828 m,24.7,2.9,11.83,AD 2004.12.09 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,22,186,Lava Cap Winery Placerville CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+M02C,41.39,-122.85,0.0 m,48.7,3.3,6.86,AD 2005.06.30 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,7,102,Callahan CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+M03C,41.27,-122.12,1047 m,32.9,3.9,11.90,AD 2005.07.12 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,10,84,McCloud CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+M04C,41.78,-121.84,1391 m,48.7,4.0,8.14,AD 2005.06.30 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,7,86,Macdoel CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+M05C,41.36,-121.15,1333 m,21.4,3.0,14.16,AD 2005.06.29 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,16,113,Lookout CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+M06C,41.21,-120.48,1434 m,24.5,2.8,11.38,AD 2005.06.28 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,14,123,Likely Place Golf Likely CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+M07A,41.39,-119.17,1.4 km,54.4,9.1,16.67,AD 2006.02.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,2,12,Soldier Meadows NV USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+M08A,41.45,-118.38,1.3 km,?,11.2,.00,AD 2006.02.14 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,10,Happy Creek Ranch Winnemucca NV USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+N02C,40.82,-123.31,0.0 m,57.0,3.8,6.67,AD 2005.06.29 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,6,90,Big Bar CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+N07A,40.77,-118.97,1.3 km,33.0,4.7,14.29,AD 2006.02.21 00:00:00.000 GMT,AD 2006.04.28 00:00:00.000 GMT,2,14,Gerlach NV USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+N08A,40.78,-118.13,1.5 km,?,27.7,.00,AD 2006.02.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,4,GE Springer Mine Mill City NV USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+O01C,40.14,-123.82,0.1 km,?,6.9,.00,AD 2005.08.19 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,42,Eel River Conservation Camp Redway CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+O03C,40.00,-122.03,85 m,137.6,2.7,1.97,AD 2005.04.19 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,152,Acorn Hollow Los Molinos CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+O04C,40.32,-121.09,1513 m,16.4,2.6,15.86,AD 2005.05.25 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,23,145,Chester CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+O05C,39.96,-120.92,1032 m,24.2,3.0,12.23,AD 2005.04.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,17,139,Quincy CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+O06A,40.17,-119.83,1.2 km,101.7,17.0,16.67,AD 2006.02.24 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,6,Flanigan NV USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+O07A,40.16,-118.88,1.2 km,96.7,6.9,7.14,AD 2006.03.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,14,Toulon NV USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+O08A,40.29,-118.15,2.1 km,?,20.5,.00,AD 2006.02.23 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,5,Rochester Mine Lovelock NV USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+P01C,39.47,-123.34,441 m,95.2,2.9,3.09,AD 2005.08.24 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,97,Double 8 Ranch Willits CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+P05C,39.30,-120.61,1756 m,13.5,2.6,19.15,AD 2005.06.07 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,27,141,Yuba Gap Truckee CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+P07A,39.54,-118.89,1.2 km,?,20.1,.00,AD 2006.02.25 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,5,Fallon NV USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+P08A,39.69,-118.08,1.0 km,?,33.2,.00,AD 2006.02.26 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,3,Dixie Valley NV USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+Q03C,38.63,-122.01,108 m,171.4,3.2,1.89,AD 2005.06.28 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,2,106,Winters CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+Q04C,38.84,-121.38,14 m,19.4,3.0,15.30,AD 2004.12.10 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,28,183,Lincoln CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+Q07A,38.94,-118.81,1.3 km,?,24.7,.00,AD 2006.02.27 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,4,Schurz NV USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+Q08A,38.86,-117.93,1.4 km,?,47.9,.00,AD 2006.03.02 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,2,Gabbs NV USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+R04C,38.26,-120.94,115 m,12.1,2.4,19.74,AD 2004.12.08 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,45,228,Big Horse Ranch Ione CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+R05C,38.70,-120.08,2366 m,20.3,3.2,15.79,AD 2005.08.05 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,15,95,Kirkwood Meadows Resort Kirkwood CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+R06C,38.52,-119.45,1698 m,30.6,3.4,11.24,AD 2005.08.04 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,10,89,Coleville CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+R07C,38.09,-119.05,1996 m,20.4,2.9,14.02,AD 2005.08.03 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,15,107,Lee Vining CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+R08A,38.35,-118.11,1.4 km,94.7,15.8,16.67,AD 2006.03.03 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,6,Mina NV USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+S04C,37.51,-121.33,310 m,48.4,3.0,6.11,AD 2004.12.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,11,180,Ingram Canyon Westley CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+S05C,37.35,-120.33,85 m,8.8,2.7,30.72,AD 2005.04.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,47,153,Merced CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+S06C,37.88,-119.85,1377 m,24.1,3.3,13.70,AD 2005.10.08 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,10,73,San Francisco Camp Mather Mather CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+S08C,37.50,-118.17,3087 m,18.1,3.6,19.77,AD 2005.08.02 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,17,86,White Mtn Res Sta-Crooked Creek Bishop CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+SUTB,39.23,-121.79,252 m,76.9,4.2,5.43,AD 2005.05.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,5,92,Sutter Butte CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+T05C,36.90,-120.67,46 m,?,2.8,.00,AD 2005.02.14 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,170,Eagle Field Dos Palos CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+T06C,37.01,-119.71,216 m,20.2,2.7,13.30,AD 2004.12.06 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,27,203,Millerton Lake Dam Friant CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+U04C,36.36,-120.78,813 m,91.3,4.5,4.92,AD 2004.12.05 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,6,122,Hernandez Reservoir Idria CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+U05C,36.34,-120.12,0.1 km,?,2.8,.00,AD 2004.12.06 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,193,Westside ANR Five Points CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+V03C,36.02,-121.24,336 m,42.5,2.6,6.08,AD 2005.02.23 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,11,181,Hunter Liggett MR Jolon CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+V04C,35.64,-120.87,431 m,30.4,2.4,8.05,AD 2004.06.07 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,24,298,Ramage Ranch Paso Robles CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+V05C,35.87,-119.90,0.1 km,?,2.9,.00,AD 2005.04.08 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,148,Boulder Hill Kettleman City CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+W12A,35.30,-114.87,0.8 km,72.7,36.4,50.00,AD 2006.03.25 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,2,Cal Nev Ari NV USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+W14A,35.21,-113.08,1.8 km,87.7,14.6,16.67,AD 2006.03.10 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,6,Seligman AZ USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+W15A,35.18,-112.27,2.0 km,86.7,21.7,25.00,AD 2006.03.11 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,4,Williams AZ USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+X13A,34.59,-113.83,0.9 km,83.7,20.9,25.00,AD 2006.03.14 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,4,Yucca AZ USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+X14A,34.47,-112.89,1.1 km,85.7,17.1,20.00,AD 2006.03.12 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,5,Yava AZ USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+X15A,34.49,-112.24,1.3 km,75.7,25.2,33.33,AD 2006.03.22 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,3,Humboldt AZ USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+Y12C,33.75,-114.52,196 m,13.5,2.8,21.13,AD 2004.10.08 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,45,213,Blythe CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+Y13A,33.81,-113.83,0.4 km,?,40.9,.00,AD 2006.03.16 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,2,Salome AZ USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+Y14A,33.94,-113.00,0.7 km,83.7,41.9,50.00,AD 2006.03.14 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,1,2,Wickenburg AZ USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+Y22C,34.07,-106.92,1436 m,63.3,3.0,4.76,AD 2004.05.07 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,12,252,IRIS PASSCAL Instrument Center Socorro NM USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+Z14A,33.36,-112.95,0.3 km,?,81.7,.00,AD 2006.03.16 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,0,1,Wintersburg AZ USA,class edu.sc.seis.sod.velocity.network.VelocityStation

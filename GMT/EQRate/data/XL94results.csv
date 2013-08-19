@@ -1,0 +1,6 @@
+# XL94 - Southern Seirra - Death Valley
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+HFEB,36.36,-117.08,1650 m,22.9,7.6,33.33,AD 1994.07.24 18:06:52.000 GMT,AD 1994.12.31 23:59:59.000 GMT,7,21,Harrisburg Flat east 11,class edu.sc.seis.sod.velocity.network.VelocityStation
+HF00,36.36,-117.14,1526 m,27.7,8.4,30.43,AD 1994.06.21 01:58:08.000 GMT,AD 1994.12.31 23:59:59.000 GMT,7,23,Harrisburg Flat 00,class edu.sc.seis.sod.velocity.network.VelocityStation
+HFN7,36.39,-117.14,1516 m,64.7,16.2,25.00,AD 1994.06.21 00:50:27.000 GMT,AD 1994.12.31 23:59:59.000 GMT,3,12,Harrisburg Flat north 7,class edu.sc.seis.sod.velocity.network.VelocityStation
+DP00,36.26,-117.66,1713 m,?,16.2,.00,AD 1994.07.22 21:11:04.000 GMT,AD 1994.12.31 23:59:59.000 GMT,0,10,Darwin Plateau,class edu.sc.seis.sod.velocity.network.VelocityStation

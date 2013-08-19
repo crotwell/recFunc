@@ -1,0 +1,11 @@
+# XF94 - Penninsular Ranges, California
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+LGNA,32.84,-116.41,5667 m,44.8,7.7,17.24,AD 1994.03.25 00:00:00.000 GMT,AD 1994.11.04 00:00:00.000 GMT,5,29,Laguna Mountain Observatory San Diego Co. Calif.,class edu.sc.seis.sod.velocity.network.VelocityStation
+ALPN,32.87,-116.75,2693 m,45.0,12.5,27.78,AD 1994.03.24 00:00:00.000 GMT,AD 1994.11.04 00:00:00.000 GMT,5,18,Alpine Alpine Calif.,class edu.sc.seis.sod.velocity.network.VelocityStation
+BWLW,32.84,-116.23,964 m,225.0,16.1,7.14,AD 1994.03.24 00:00:00.000 GMT,AD 1994.11.04 00:00:00.000 GMT,1,14,Bow Willow Campground Anza Borrego State Park Ca,class edu.sc.seis.sod.velocity.network.VelocityStation
+PINE,32.83,-116.53,3515 m,40.8,8.9,21.74,AD 1994.04.14 00:00:00.000 GMT,AD 1994.11.04 00:00:00.000 GMT,5,23,Pine Valley Pine Valley Calif.,class edu.sc.seis.sod.velocity.network.VelocityStation
+BLSY,32.91,-116.88,1739 m,34.0,10.2,30.00,AD 1994.04.14 00:00:00.000 GMT,AD 1994.11.04 00:00:00.000 GMT,6,20,Blue Sky Ranch Lakeside Calif.,class edu.sc.seis.sod.velocity.network.VelocityStation
+FEAR,32.77,-115.93,330 m,98.5,14.1,14.29,AD 1994.04.21 00:00:00.000 GMT,AD 1994.11.04 00:00:00.000 GMT,2,14,Fearless Roy Fuller's Place Ocotillo Calif.,class edu.sc.seis.sod.velocity.network.VelocityStation
+MICA,32.65,-116.12,3295 m,49.2,7.9,16.00,AD 1994.04.21 00:00:00.000 GMT,AD 1994.11.04 00:00:00.000 GMT,4,25,Mica Mine In Ko Pah Calif.,class edu.sc.seis.sod.velocity.network.VelocityStation
+BLVD,32.72,-116.26,3512 m,?,10.0,.00,AD 1994.03.29 00:00:00.000 GMT,AD 1994.11.04 00:00:00.000 GMT,0,22,Boulevard Boulevard Calif.,class edu.sc.seis.sod.velocity.network.VelocityStation
+HONY,32.90,-116.64,2914 m,51.0,6.4,12.50,AD 1994.04.14 00:00:00.000 GMT,AD 1994.11.04 00:00:00.000 GMT,4,32,Honey Ranch Descanso Calif.,class edu.sc.seis.sod.velocity.network.VelocityStation

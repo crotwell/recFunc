@@ -1,0 +1,351 @@
+<?xml version="1.0" ?>
+
+<sod
+xmlns:xlink="http://www.w3.org/1999/xlink/"
+>
+    <properties>
+        <runName>USA RecFunc</runName>
+        <statusBase>status</statusBase>
+        <eventQueryIncrement>
+            <value>1</value>
+            <unit>WEEK</unit>
+        </eventQueryIncrement>
+        <eventLag>
+            <value>1</value>
+            <unit>WEEK</unit>
+        </eventLag>
+        <eventRefreshInterval>
+            <value>6</value>
+            <unit>MINUTE</unit>
+        </eventRefreshInterval>
+        <waveformWorkerThreads>2</waveformWorkerThreads>
+        <maxRetryDelay>
+            <value>16</value>
+            <unit>DAY</unit>
+        </maxRetryDelay>
+    </properties>
+    
+    <eventArm>
+        
+        <eventFinder>
+            <name>IRIS_EventDC</name>
+            <dns>edu/iris/dmc</dns>
+            <boxArea>
+                <latitudeRange>
+                    <min>-90</min>
+                    <max>90</max>
+                </latitudeRange>
+                <longitudeRange>
+                    <min>-180</min>
+                    <max>180</max>
+                </longitudeRange>
+            </boxArea>
+            
+            <!-- Depths from 0 to 1000 kilometers are ok, -->
+            <originDepthRange>
+                    <unit>KILOMETER</unit>
+                    <min>0</min>
+                    <max>1000</max>
+            </originDepthRange>
+            
+            <originTimeRange>
+                <startTime>20020101T00:00:00.001Z</startTime>
+                <endTime>20041231T23:59:59.999Z</endTime>
+            </originTimeRange>
+            
+            
+            <magnitudeRange>
+                <min>6.0</min>
+                <max>10.0</max>
+            </magnitudeRange>
+            
+            <catalog>PREF</catalog>
+            <contributor>IRIS-DMC</contributor>
+            
+        </eventFinder>
+        
+        <originAND>
+            <originOR>
+                <!-- California -->
+                <originPointDistance>
+                    <latitude>25</latitude>
+                    <longitude>-120</longitude>
+                    <unit>DEGREE</unit>
+                    <min>20</min>
+                    <max>115</max>
+                </originPointDistance>
+                <!-- Florida -->
+                <originPointDistance>
+                    <latitude>25</latitude>
+                    <longitude>-80</longitude>
+                    <unit>DEGREE</unit>
+                    <min>20</min>
+                    <max>115</max>
+                </originPointDistance>
+                <!-- Maine -->
+                <originPointDistance>
+                    <latitude>49</latitude>
+                    <longitude>-80</longitude>
+                    <unit>DEGREE</unit>
+                    <min>20</min>
+                    <max>115</max>
+                </originPointDistance>
+                <!-- Washington -->
+                <originPointDistance>
+                    <latitude>49</latitude>
+                    <longitude>-125</longitude>
+                    <unit>DEGREE</unit>
+                    <min>20</min>
+                    <max>115</max>
+                </originPointDistance>
+            </originOR>
+
+            <removeEventDuplicate/>
+        </originAND>
+
+        
+        <!-- Print out a line for each successful event -->
+        <printLineEventProcess/>
+        
+        <eventStatusTemplate>
+            <template>jar:edu/sc/seis/sod/data/templates/eventArm/eventStatus.xml</template>
+        </eventStatusTemplate>
+    </eventArm>
+    
+    <networkArm>
+        <networkFinder>
+            <name>IRIS_NetworkDC</name>
+            <dns>edu/iris/dmc</dns>
+            <!-- recheck channels after some time -->
+            <refreshInterval>
+                <unit>DAY</unit>
+                <value>3</value>
+            </refreshInterval>
+        </networkFinder>
+        
+        <networkOR>
+            <networkCode>US</networkCode>
+            <networkCode>II</networkCode>
+            <networkCode>IU</networkCode>
+            <networkCode>SP</networkCode>
+        </networkOR>
+        
+        <stationArea>
+            <boxArea>
+                <latitudeRange>
+                    <unit>DEGREE</unit>
+                    <min>25</min>
+                    <max>50</max>
+                </latitudeRange>
+                <longitudeRange>
+                    <unit>DEGREE</unit>
+                    <min>-130</min>
+                    <max>-75</max>
+                </longitudeRange>
+            </boxArea>
+        </stationArea>
+       
+        <siteOR>
+            <siteCode>  </siteCode>
+            <siteCode>00</siteCode>
+        </siteOR> 
+        <channelAND>
+            <!-- Accept any channel with B band code -->
+            <channelOR>
+                <bandCode>B</bandCode>
+            </channelOR>
+            <gainCode>H</gainCode>
+        </channelAND>
+        
+        <printlineChannelProcessor/>
+        <networkInfoTemplateGenerator>
+            <netConfig>
+                <template>jar:edu/sc/seis/sod/data/templates/networkArm/networks.xml</template>
+            </netConfig>
+            <stationConfig>
+                <template>jar:edu/sc/seis/sod/data/templates/networkArm/stations.xml</template>
+            </stationConfig>
+            <channelConfig>
+                <template>jar:edu/sc/seis/sod/data/templates/networkArm/channels.xml</template>
+            </channelConfig>
+        </networkInfoTemplateGenerator>
+    </networkArm>
+    
+    
+    <waveformVectorArm>
+        <eventStationAND>
+            <distanceRange>
+                <unit>DEGREE</unit>
+                <min>30</min>
+                <max>100</max>
+            </distanceRange>
+            <phaseExists>
+                <modelName>prem</modelName>
+                <phaseName>P</phaseName>
+            </phaseExists>
+        </eventStationAND>
+        
+            
+            <requestGeneratorWrapper>
+                <phaseRequest>
+                    <beginPhase>P</beginPhase>
+                    <beginOffset>
+                        <unit>SECOND</unit>
+                        <value>-120</value>
+                    </beginOffset>
+                    <endPhase>ttp</endPhase>
+                    <endOffset>
+                        <unit>SECOND</unit>
+                        <value>180</value>
+                    </endOffset>
+                </phaseRequest>
+            </requestGeneratorWrapper>
+            
+            <fixedDataCenter>
+                <name>IRIS_PondDataCenter</name>
+                <dns>edu/iris/dmc</dns>
+            </fixedDataCenter>
+            
+            <ORAvailableDataWrapper>
+                <someCoverage/>
+            </ORAvailableDataWrapper>
+            
+            <threeComponentData/>
+
+            <ORWaveformProcessWrapper>
+                <phaseSignalToNoise>
+                    <modelName>prem</modelName>
+                    <phaseName>P</phaseName>
+                    <shortOffsetBegin>
+                        <unit>SECOND</unit>
+                        <value>-5</value>
+                    </shortOffsetBegin>
+                    <shortOffsetEnd>
+                        <unit>SECOND</unit>
+                        <value>5</value>
+                    </shortOffsetEnd>
+                    <longOffsetBegin>
+                        <unit>SECOND</unit>
+                        <value>-105</value>
+                    </longOffsetBegin>
+                    <longOffsetEnd>
+                        <unit>SECOND</unit>
+                        <value>-5</value>
+                    </longOffsetEnd>
+                    <ratio>1.0</ratio>
+                </phaseSignalToNoise>
+            </ORWaveformProcessWrapper>
+            
+            <printlineSeismogramProcess/>
+
+            <ANDWaveformProcessWrapper>
+               <alwaysSuccess>
+                <phaseSignalToNoise>
+                    <modelName>prem</modelName>
+                    <phaseName>P</phaseName>
+                    <shortOffsetBegin>
+                        <unit>SECOND</unit>
+                        <value>-5</value>
+                    </shortOffsetBegin>
+                    <shortOffsetEnd>
+                        <unit>SECOND</unit>
+                        <value>5</value>
+                    </shortOffsetEnd>
+                    <longOffsetBegin>
+                        <unit>SECOND</unit>
+                        <value>-105</value>
+                    </longOffsetBegin>
+                    <longOffsetEnd>
+                        <unit>SECOND</unit>
+                        <value>-5</value>
+                    </longOffsetEnd>
+                    <ratio>0.0</ratio>
+                </phaseSignalToNoise>
+               </alwaysSuccess>
+            </ANDWaveformProcessWrapper>
+            
+            <seismogramImageProcess>  
+                <seismogramConfig>
+                    <template>jar:edu/sc/seis/receiverFunction/rfTemplate.vm</template>
+                </seismogramConfig>
+                <prefix>orig_</prefix>
+                <fileType>pdf</fileType>
+            </seismogramImageProcess>
+            
+            <phaseCut>
+                <beginPhase>P</beginPhase>
+                <beginOffset>
+                    <unit>SECOND</unit>
+                    <value>-30</value>
+                </beginOffset>
+                <endPhase>P</endPhase>
+                <endOffset>
+                    <unit>SECOND</unit>
+                    <value>120</value>
+                </endOffset>
+            </phaseCut>
+
+            <threeComponentData/>
+
+            <seismogramImageProcess>  
+                <seismogramConfig>
+                    <template>jar:edu/sc/seis/receiverFunction/rfTemplate.vm</template>
+                </seismogramConfig>
+                <prefix>cut_</prefix>
+                <fileType>pdf</fileType>
+            </seismogramImageProcess>
+            
+            <rMean/>
+            <rTrend/>
+            <taper/>
+            <responseGain/>
+            
+            <filter>
+                <lowFreqCorner>
+                    <value>50</value><unit>SECOND</unit>
+                </lowFreqCorner>
+                <highFreqCorner>
+                    <value>5</value><unit>HERTZ</unit>
+                </highFreqCorner>
+                <numPoles>2</numPoles>
+                <filterType>NONCAUSAL</filterType>
+            </filter>
+            
+            <seismogramImageProcess>  
+                <seismogramConfig>
+                    <template>jar:edu/sc/seis/receiverFunction/rfTemplate.vm</template>
+                </seismogramConfig>
+                <prefix>pre_</prefix>
+                <fileType>pdf</fileType>
+            </seismogramImageProcess>
+
+            <externalWaveformVectorProcess>
+                <classname>edu.sc.seis.receiverFunction.crust2.Crust2Process</classname>
+            </externalWaveformVectorProcess>
+
+            <externalWaveformVectorProcess>
+                <classname>edu.sc.seis.receiverFunction.RecFuncProcessor</classname>
+                <fileType>sac</fileType>
+                <dataDirectory>IRIS_recfunc</dataDirectory>
+                <eventDirLabel>
+                    <originTime>yyyy_DDD_HH_mm_ss</originTime>_<magnitude/>
+                </eventDirLabel>
+                <gaussianWidth>2.5</gaussianWidth>
+            </externalWaveformVectorProcess>
+            
+            <localSeismogramTemplateGenerator>
+                <template>jar:edu/sc/seis/receiverFunction/rfTemplate.vm</template>
+            </localSeismogramTemplateGenerator>
+            
+        <waveformEventTemplateGenerator>
+            <template>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformEvent.xml</template>
+        </waveformEventTemplateGenerator>
+        <waveformNetworkStatus>
+            <template>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformNetwork.xml</template>
+            <networkListTemplate>jar:edu/sc/seis/sod/data/templates/waveformArm/waveformNetworks.xml</networkListTemplate>
+        </waveformNetworkStatus>
+        <waveformStationStatus>
+            <template>jar:edu/sc/seis/receiverFunction/waveformStation.xml</template>
+        </waveformStationStatus>
+    </waveformVectorArm>
+</sod>

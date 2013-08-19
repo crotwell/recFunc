@@ -1,0 +1,27 @@
+<html>
+<head>
+<title>EARS - All Stations</title>
+<link rel="stylesheet" type="text/css" href="$!{staticFiles}station_list_style.css"/>
+<script src="$!{staticFiles}sorttable.js" type="text/javascript"> </script>
+<script src="$!{staticFiles}tableRuler.js" type="text/javascript"> </script>
+<script type="text/javascript">
+window.onload=function(){
+        tableruler();
+        set_img_dir('images/')
+}
+</script>
+</head>
+<body>
+#header()	
+
+<div id="content">
+<p id="breadcrumbs">You are here: <a href="index.html">Home</a> > <b>All Stations for gaussian=${gaussian}</b></p>
+
+<p>Download as a <a href="summary.csv">CSV file</a></p>
+
+#summaryLineHTML($summary)
+
+</div>
+#footer()
+</body>
+</html>

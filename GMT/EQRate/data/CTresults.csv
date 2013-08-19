@@ -1,0 +1,5 @@
+# CT - California Transect Network
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+ICAN,37.50,-121.33,312 m,206.3,91.7,44.44,AD 1995.02.17 02:13:45.000 GMT,AD 2499.01.01 00:00:00.000 GMT,20,45,Ingram Canyon California,class edu.sc.seis.sod.velocity.network.VelocityStation
+FERN,37.15,-121.81,518 m,206.4,93.8,45.45,AD 1995.02.15 23:47:10.000 GMT,AD 2499.01.01 00:00:00.000 GMT,20,44,Fern Peak California,class edu.sc.seis.sod.velocity.network.VelocityStation
+SAVY,37.39,-121.50,600 m,242.7,100.6,41.46,AD 1995.02.18 00:12:45.000 GMT,AD 2499.01.01 00:00:00.000 GMT,17,41,San Antonio Valley California,class edu.sc.seis.sod.velocity.network.VelocityStation

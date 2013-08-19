@@ -1,0 +1,12 @@
+# XH94 - Colorado Plateau-Great Basin Network 
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+SRS,38.91,-110.60,2019 m,283.2,118.0,41.67,AD 1994.10.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,15,36,San Rafael Swell Utah,class edu.sc.seis.sod.velocity.network.VelocityStation
+MDW,38.89,-112.36,1640 m,265.5,118.0,44.44,AD 1994.10.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,16,36,Meadow Utah,class edu.sc.seis.sod.velocity.network.VelocityStation
+LMP,37.98,-111.20,1922 m,249.9,103.6,41.46,AD 1994.10.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,17,41,Lampstand Utah,class edu.sc.seis.sod.velocity.network.VelocityStation
+PHR,37.65,-114.99,1585 m,48.7,12.2,25.00,AD 1994.10.18 00:00:00.000 GMT,AD 1995.03.13 00:00:00.000 GMT,3,12,Pahroc Nevada,class edu.sc.seis.sod.velocity.network.VelocityStation
+CYF,37.55,-109.87,2057 m,265.5,125.0,47.06,AD 1994.10.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,16,34,Cyclone Flat Utah,class edu.sc.seis.sod.velocity.network.VelocityStation
+WCP,40.52,-114.17,1573 m,303.5,72.0,23.73,AD 1994.10.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,14,59,Wildcat Peak Nevada,class edu.sc.seis.sod.velocity.network.VelocityStation
+MLC,38.99,-116.77,2292 m,386.2,118.0,30.56,AD 1994.10.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,11,36,Mill Canyon Nevada,class edu.sc.seis.sod.velocity.network.VelocityStation
+GAR,38.88,-114.10,1977 m,169.9,78.7,46.30,AD 1994.10.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,25,54,Garrison Utah-Nevada border,class edu.sc.seis.sod.velocity.network.VelocityStation
+WMT,40.11,-111.84,1516 m,35.2,11.7,33.33,AD 1994.11.13 00:00:00.000 GMT,AD 1995.06.12 00:00:00.000 GMT,6,18,West Mountain Utah,class edu.sc.seis.sod.velocity.network.VelocityStation
+RCC,40.52,-110.59,2280 m,234.6,132.0,56.25,AD 1994.11.13 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,18,32,Rock Corral Creek Utah,class edu.sc.seis.sod.velocity.network.VelocityStation

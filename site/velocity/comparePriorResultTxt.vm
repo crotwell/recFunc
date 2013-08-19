@@ -1,0 +1,5 @@
+,,,,,EARS,,,,,,,,, $name,,,,,,,,
+Net,Station,Lat,Lon,Elevation,Est. Thick,StdDev,Est. Vp/Vs,StdDev,Assumed Vp,Vs,Poissons Ratio,Num EQ,Complexity,Thick,Vp/Vs,Vp,Vs,Poissons Ratio,Diff H,Extras,Station Name,Network Name
+#foreach($s in $summary)
+$s.netCodeWithYear,$s.staCode,$s.lat,$s.lon,$s.formatElevation(),$s.formatH(),$s.formatHStdDev(),$s.formatVpVs(),$s.formatKStdDev(),$s.formatVp(),$s.formatVs(),$s.formatPoissonsRatio(),$s.numEarthquakes,$s.formatComplexityResidual(),$!s.prior.formatH(),$!s.prior.formatVpVs(),$!s.prior.formatVp(),$!s.prior.formatVs(),$!s.prior.formatPoissonsRatio(),$!hDiffMap.get($priorR),$!s.prior.formatExtras(),$s.staName,$s.netName
+#end

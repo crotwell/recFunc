@@ -1,0 +1,201 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+          font-family: "Trebuchet MS", Arial, sans-serif;
+         
+}
+
+p {
+   padding-left: 15px;
+   padding-bottom: 15px;
+   }
+
+li {
+    list-style: none;
+    }
+
+#header {
+         margin-top: 10px;
+         border-top: 1px solid  #999999;
+         border-bottom: 1px solid  #999999;
+         }
+         
+#breadcrumbs {
+              padding-top: 10px;
+              text-align: center;
+              font-size: 12px;
+              }
+#stat_info   {
+               margin-left: 15px;
+               margin-right: 15px;
+               width: 98%;
+               border: 1px solid #999999;
+               margin-bottom: 15px;
+               }
+#stat_info td {
+               text-align: center;
+               color: #007C39;
+               }
+         
+#footer {
+         clear: both;
+         margin-top: 10px;
+         height: 70px;
+         text-align: center;
+         }
+         
+#footer img{
+            padding: 10px;
+            }
+
+#footer a {
+           text-decoration: none;
+           }
+
+
+
+h1 {
+    font-size: 24px;
+     color: #007C39;
+     padding-top: 10px;
+     padding-left: 15px;
+     padding-bottom: 10px;
+    }
+    
+    #dumb {
+       margin: 0 15px 15px 15px;
+       width: 98%;
+       border: 1px solid #999999;
+       clear: both;
+       }
+       
+#dumb td.even, #dumb td.stat_name {
+          border-bottom: 1px solid #ececec;
+          }
+
+td {
+     padding: 2px;
+}
+
+td.odd {
+             background: #ececec;
+             text-align: center;
+             border-bottom: 1px solid #d7d7d7;
+             color: #666666;
+}
+
+td.odd1 {
+             background: #ececec;
+             text-align: left;
+             border-bottom: 1px solid #d7d7d7;
+             color: #666666;
+               padding-left: 5px;
+}
+
+
+td.headodd {
+                       font-size: 18px;
+                       font-weight: bold;
+                       color: #666666;
+                        text-align: center;
+                        border-top: 1px solid #999999;
+          border-left: 1px solid #999999;
+          border-right: 1px solid #999999;
+          border-bottom: 2px solid #999999;
+                         background: #d7d7d7;
+                        
+}
+
+td.headeven {
+                       font-size: 18px;
+                       font-weight: bold;
+                       color: #666666;
+                        text-align: center;
+                        border-top: 1px solid #999999;
+          border-left: 1px solid #999999;
+          border-right: 1px solid #999999;
+          border-bottom: 2px solid #999999;
+                          background: #ececec;
+}
+
+td.even {
+               text-align: center;
+               color: #666666;
+}
+
+td.even1 {
+               text-align: left;
+               color: #666666;
+               border-bottom: 1px solid #ececec;
+               padding-left: 5px;
+}
+
+
+td.stat_name{
+               color: #007C39;
+               text-align: left;
+}
+
+a:link {
+            color: #007C39;
+}
+
+a:visited {
+                 color: #17BE63;
+}
+
+a:hover, a.active {
+                               text-decoration: none;
+}
+
+a img {
+            border: none;
+}
+
+#station_near_by {
+                  float: left;
+                  margin: 15px;
+                  border: 1px solid#999999;
+                  }    
+                
+#stat_nearby_form {
+                   margin-top: 15px;
+                   margin-left: 630px;
+                   background: #D0EFBB;
+                   padding-top: 15px;
+                   padding-left: 15px;
+                   padding-bottom: 10px;
+                   margin-right: 15px;
+                   width: 500px;
+                   border: 1px solid #999999;
+                   }
+                   
+td.label {
+          text-align: right;
+          font-weight: bold;
+          }
+          
+li {
+     margin-left: 10px;
+       color: #007C39;
+       padding-top: 10px;
+       list-style: none;
+       font-size: 18px;
+}
+
+table.station_page1 {
+                    margin: 15px;
+                    }
+                
+td.bold {
+         text-align: right;
+         font-weight: bold;
+         padding-right: 10px;
+         }
+   
+td.data {
+         color: #666666;
+         }    

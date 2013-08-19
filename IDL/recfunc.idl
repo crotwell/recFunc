@@ -1,0 +1,77 @@
+
+#pragma prefix "seis.sc.edu"
+
+#include "Fissures.idl"
+#include "IfTimeSeries.idl"
+#include "IfNetwork.idl"
+#include "IfEvent.idl"
+#include "IfSeismogramDC.idl"
+
+module IfReceiverFunction {
+
+   exception RecFuncNotFound {};
+
+   exception SodConfigNotFound {};
+
+	typedef sequence<Fissures::IfNetwork::Channel> ChannelSeq;
+	typedef sequence<Fissures::IfNetwork::ChannelId> ChannelIdSeq;
+	
+	struct IterDeconConfig {
+		float gwidth;
+		long maxBumps;
+		float tol;
+	};
+	
+	struct CachedResult {
+	    Fissures::IfEvent::Origin prefOrigin;	
+        Fissures::IfEvent::EventAttr event_attr;
+        IterDeconConfig config;
+        ChannelSeq channels;
+        Fissures::IfSeismogramDC::LocalSeismogramSeq original;
+        Fissures::IfSeismogramDC::LocalSeismogram radial;
+        float radialMatch;
+        long radialBump;
+        Fissures::IfSeismogramDC::LocalSeismogram tansverse;
+        float transverseMatch;
+        long transverseBump;
+        long sodConfigId;
+        Fissures::Time insertTime;
+	};
+	
+    typedef sequence<IterDeconConfig> IterDeconConfigSeq;
+	
+    interface RecFuncCache {
+
+        boolean isCached(in Fissures::IfEvent::Origin prefOrigin, 
+        				    in ChannelIdSeq channel,
+        				    in IterDeconConfig config);
+        				    
+        
+        IterDeconConfigSeq getCachedConfigs(in Fissures::IfEvent::Origin prefOrigin, 
+        				    in ChannelIdSeq channel);
+
+        CachedResult get(
+                         in Fissures::IfEvent::Origin prefOrigin,
+                         in ChannelIdSeq channel,
+                         in IterDeconConfig config) raises (RecFuncNotFound);
+
+        long insertSodConfig(in string sodConfig);
+
+        string getSodConfig(in long sodConfigId) raises (SodConfigNotFound);
+					      
+        void insert(in Fissures::IfEvent::Origin prefOrigin,
+                    in Fissures::IfEvent::EventAttr event_attr,
+					      in IterDeconConfig config,
+					      in ChannelSeq channels,
+					      in Fissures::IfSeismogramDC::LocalSeismogramSeq original,
+					      in Fissures::IfSeismogramDC::LocalSeismogram radial,
+					      in float radialMatch,
+					      in long radialBump,
+					      in Fissures::IfSeismogramDC::LocalSeismogram tansverse,
+					      in float transverseMatch,
+					      in long transverseBump,
+                                              in long sodConfigId
+                    );
+
+    };
+};

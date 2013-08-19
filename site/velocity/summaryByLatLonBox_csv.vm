@@ -1,0 +1,3 @@
+#Stations within latitude ($minLat, $maxLat) and longitude ($minLon, $maxLon)
+#Net,Station,Lat,Long,Elev,Est.Thick,StdDev,Est.Vp/Vs,StdDev,AssumedVp,Vs,PoissonsRatio,NumEQ,Complexity
+#summaryLineCSV($summary)

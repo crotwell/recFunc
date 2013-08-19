@@ -1,0 +1,114 @@
+
+<project name="recFunc" default="dist" basedir=".">
+
+<!-- set global properties for this build -->
+       <property name="src" value="src" />
+       <property name="build" value="build" />
+       <property name="dist" value="dist" />
+       <property name="doc" value="${dist}/doc" />
+       <property name="javadocs" value="${doc}/javadocs" />
+       <property file="../KeySigning/ant.props" />
+       <property name="junit_jar" value="../junit3.7/junit.jar" />
+       <property name="fissuresImpljar" value="../fissures/dist/lib/FissuresImpl.jar" />
+       <property name="fissuresIDLjar" value="../fissures/dist/lib/FissuresIDL.jar" />
+       <property name="fissuresUtiljar" value="../fissuresUtil/dist/lib/fissuresUtil.jar" />
+       <property name="gee" value="../vsnExplorer/dist/lib/gee.jar" />
+       <property name="junitdir" value="../junit3.7" />
+       <property name="log4j" value="../jakarta-log4j-1.1.3/dist/lib/log4j.jar" />
+       <property name="objar" value="../OrbacusSignedJars/dist/OB.jar" />
+       <property name="obnamingjar" value="../OrbacusSignedJars/dist/OBNaming.jar" />
+       <property name="colt" value="../colt1.0.2/colt.jar"/>
+
+       <path id="myclasspath" >
+          <pathelement location="${build}" />
+          <pathelement location="${fissuresIDLjar}" />
+          <pathelement location="${fissuresImpljar}" />
+          <pathelement location="${fissuresUtiljar}" />
+          <pathelement location="${log4j}" />
+          <pathelement location="${junit}" />
+          <pathelement location="${gee}" />
+       </path>
+
+       <target name="prepare">
+         <!-- Create the time stamp -->
+         <tstamp/>
+         <!-- Create the build directory structure used by compile -->
+         <mkdir dir="${build}" />
+         <mkdir dir="${dist}" />
+         <mkdir dir="${dist}/lib" />
+         <mkdir dir="${doc}" />
+         <mkdir dir="${javadocs}" />
+       </target>
+
+       <target name="javacompile" 
+               depends="prepare">
+         <!-- Compile the java code from ${src} into ${build} -->
+         <javac destdir="${build}" >
+            <classpath refid="myclasspath"/>
+            <src path="${src}" />
+            <include name="**/*.java" />
+         </javac>
+       </target>
+
+       <target name="testcompile" depends="javacompile">
+         <!-- Compile the java code from ${src}/test into ${build} -->
+         <javac destdir="${build}" classpath="${build}:${fissuresImpljar}:${fissuresIDLjar}:${junitdir}/junit.jar:${objar}:${obnamingjar}" >
+            <src path="${src}" />
+            <include name="test/**/*.java" />
+<!--
+-->
+         </javac>
+       </target>
+
+       <target name="run" depends="javacompile">
+           <java fork="yes" 
+                 classname="edu.sc.seis.receiverFunction.TestIterDecon"
+                 failonerror="true" >
+              <classpath refid="myclasspath" />
+           </java>
+       </target>
+
+       <target name="test" depends="testcompile">
+           <java fork="yes" classname="junit.swingui.TestRunner"
+                 taskname="junit" failonerror="true" >
+              <arg value="test.edu.sc.seis.receiverFunction.AllJUnitTests"/>
+              <classpath refid="myclasspath" />
+           </java>
+       </target>
+
+       <target name="javadoc" depends="prepare">
+         <!-- Compile the javadocs from ${src} into ${javadocs} -->
+         <javadoc destdir="${javadocs}" sourcepath="${src}" 
+            packagenames="edu.sc.seis.receiverFunction.*"  maxmemory="64m" >
+
+        <link href="http://www.seis.sc.edu/software/Fissures/idljava_docs" />
+         </javadoc>
+       </target>
+
+       <target name="jar" depends="javacompile, testcompile">
+         <jar jarfile="${dist}/lib/recfunc.jar" basedir="${build}" />
+       </target>
+
+       <target name="signjar" depends="jar" if="signjarpasswd">
+         <signjar jar="${dist}/lib/recfunc.jar"
+                  alias="scepp"
+                  storepass="${signjarpasswd}"
+                  keystore="../KeySigning/SCEPPKeystore"/>
+       </target>
+
+       <target name="dist" depends="jar, signjar, javadoc, testcompile">
+         <zip zipfile="${dist}/lib/recfunc_src.zip" >
+              <fileset dir=".." >
+                 <include name="recFunc/**/*.java" />
+                 <include name="recFunc/build.xml" />
+                 <exclude name="recFunc/**/*.class" />
+              </fileset>
+         </zip>
+       </target>
+
+       <target name="clean">
+         <!-- Delete the ${build} and ${dist} directory trees -->
+         <delete dir="${build}" />
+         <delete dir="${dist}" />
+       </target>
+</project>

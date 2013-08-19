@@ -1,0 +1,66 @@
+# CI - Caltech Regional Seismic Network
+# Station, Lat, Lon, Elevation, Success Period (day), EQ Period(day), Period Ratio, Begin, End, Successful, Total, Name
+LGU,34.11,-119.07,381 m,17.9,2.3,12.74,AD 1999.06.13 00:00:00.000 GMT,AD 2004.04.22 02:07:00.000 GMT,99,777,Laguna Peak California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+PAS,34.15,-118.17,0.3 km,42.0,6.8,16.26,AD 1987.11.30 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,161,990,Pasadena CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+MPP,34.89,-119.81,1.7 km,129.6,26.2,20.25,AD 2000.10.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,16,79,McPhearson Peak,class edu.sc.seis.sod.velocity.network.VelocityStation
+FMP,33.71,-118.29,0.1 km,210.6,43.0,20.41,AD 2000.08.30 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,10,49,Fort MacArthur Park Pt. Fermin San Pedro CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+SLA,35.89,-117.28,1174 m,16.1,3.2,19.93,AD 1999.02.09 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,166,833,SLA Trona CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BC3,33.66,-115.45,1.1 km,74.0,35.0,47.25,AD 1997.09.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,43,91,Big Chuckawalla Mtns Desert Center CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BBR,34.26,-116.92,2.1 km,77.9,26.6,34.15,AD 2000.06.14 22:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,28,82,Big Bear Solar Observatory,class edu.sc.seis.sod.velocity.network.VelocityStation
+CWC,36.44,-118.08,1553 m,32.4,4.3,13.24,AD 1995.03.20 00:00:00.000 GMT,AD 2004.07.12 02:47:00.000 GMT,105,793,Cottonwood Creek California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BAK,35.34,-119.10,116 m,363.1,4.0,1.11,AD 1999.06.21 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,7,628,BAK Bakersfield CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+CIA,33.40,-118.42,428 m,15.2,2.4,15.86,AD 1998.09.10 00:00:00.000 GMT,AD 2004.04.12 04:31:00.000 GMT,134,845,Catalina Island Airport California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+DGR,33.65,-117.01,609 m,19.2,4.4,22.88,AD 1993.06.22 00:00:00.000 GMT,AD 2004.02.12 00:00:00.000 GMT,202,883,Domenigoni Reservoir California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+GLA,33.05,-114.83,627 m,21.1,5.6,26.45,AD 1994.04.28 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,210,794,Glamis California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+MUR,33.60,-117.20,0.6 km,35.1,17.5,50.00,AD 2005.07.25 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,9,18,Murrieta,class edu.sc.seis.sod.velocity.network.VelocityStation
+VTV,34.56,-117.33,812 m,48.0,6.0,12.47,AD 1993.04.14 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,100,802,Victorville California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+SMM,35.31,-120.00,0.6 km,133.4,29.6,22.22,AD 1999.11.09 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,18,81,Simmler CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+RPV,33.74,-118.40,64 m,34.1,5.1,15.10,AD 1993.05.12 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,140,927,Rancho Palos Verdes California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BFS,34.24,-117.66,1.3 km,64.0,21.6,33.73,AD 2001.07.10 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,28,83,Mt Baldy Forest Station,class edu.sc.seis.sod.velocity.network.VelocityStation
+SCZ2,34.00,-119.64,440 m,59.2,12.9,21.82,AD 2004.06.24 19:02:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,12,55,Santa Cruz Island 2,class edu.sc.seis.sod.velocity.network.VelocityStation
+PHL,35.41,-120.55,355 m,24.5,3.6,14.70,AD 1997.07.23 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,132,898,PHL Santa Margarita CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+GSC,35.30,-116.81,1.0 km,84.4,17.4,20.66,AD 1961.11.07 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,193,934,Goldstone Goldstone Lake CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+MLAC,37.63,-118.84,2162 m,275.7,6.0,2.19,AD 1992.11.04 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,18,822,Mammoth Lakes,class edu.sc.seis.sod.velocity.network.VelocityStation
+TOV,34.16,-118.82,50 m,22.5,3.2,14.24,AD 1997.10.03 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,141,990,Thousand Oaks California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+MPM,36.06,-117.49,185 m,14.0,3.2,22.78,AD 1998.06.25 00:00:00.000 GMT,AD 2004.04.09 03:11:00.000 GMT,151,663,Manuel Prospect Mine California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+GPO,35.65,-117.66,735 m,633.0,71.7,11.32,AD 1996.01.12 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,6,53,Geothermal Program Office California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+PLM,33.35,-116.86,1691 m,16.0,3.5,22.09,AD 1997.04.08 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,209,946,PLM Palomar Observatory CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+SVD,34.11,-117.10,574 m,46.8,7.1,15.12,AD 1990.12.04 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,121,800,Seven Oaks Dam California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+SNCC,33.25,-119.52,197 m,74.5,5.5,7.35,AD 1994.05.27 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,59,803,San Nicolas Island,class edu.sc.seis.sod.velocity.network.VelocityStation
+SHO,35.90,-116.28,0.5 km,92.7,43.5,46.91,AD 1996.10.14 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,38,81,Shoshone CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+TUQ,35.44,-115.92,1.4 km,45.3,14.1,31.13,AD 2002.05.02 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,33,106,Turquiose Mountain Baker CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+NEE,34.82,-114.60,170 m,51.0,8.7,17.12,AD 1993.04.20 00:00:00.000 GMT,AD 2004.09.28 14:29:00.000 GMT,82,479,NEE Needles CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+SBC,34.44,-119.71,61 m,125.5,5.7,4.58,AD 1990.12.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,45,983,Santa Barbara California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+OSI,34.61,-118.72,718 m,29.2,4.5,15.52,AD 1995.06.28 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,137,883,Osito Audit,class edu.sc.seis.sod.velocity.network.VelocityStation
+SDP,34.57,-120.50,0.6 km,266.6,42.1,15.79,AD 2002.01.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,6,38,Sudden Peak Lompoc CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BCC,33.58,-117.26,391 m,231.7,80.6,34.78,AD 2000.07.11 22:45:00.000 GMT,AD 2005.08.08 19:00:00.000 GMT,8,23,Bear Creek Country Club,class edu.sc.seis.sod.velocity.network.VelocityStation
+CHF,34.33,-118.03,1.6 km,18.8,3.6,19.32,AD 1999.01.29 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,143,740,CHF Mt. Wilson Observatory CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+RCT,36.31,-119.24,0.1 km,142.9,50.6,35.42,AD 1999.10.11 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,17,48,Rector Visalia CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+ARV,35.13,-118.83,258 m,40.9,9.7,23.61,AD 2004.07.09 16:15:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,17,72,Arvin,class edu.sc.seis.sod.velocity.network.VelocityStation
+RRX,34.88,-117.00,0.4 km,70.2,30.4,43.28,AD 2000.11.08 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,29,67,Rimrock Road Barstow CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+LRL,35.48,-117.68,1.3 km,83.1,33.8,40.70,AD 1998.06.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,35,86,Laurel Mtn Radio Fac Ridgecrest CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+ADO,34.55,-117.43,908 m,63.6,63.6,100.00,AD 2004.04.22 02:40:00.000 GMT,AD 2004.06.24 17:36:00.000 GMT,1,1,Adelanto,class edu.sc.seis.sod.velocity.network.VelocityStation
+MWC,34.22,-118.06,1.7 km,19.1,3.6,18.67,AD 1996.10.09 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,185,991,Mt. Wilson Observatory Altadena CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+ISA,35.66,-118.47,873 m,72.7,17.0,23.40,AD 1991.02.07 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,77,329,Isabella,class edu.sc.seis.sod.velocity.network.VelocityStation
+CIU,33.45,-118.48,0.2 km,42.0,3.6,8.46,AD 1997.06.26 00:00:00.000 GMT,AD 1998.10.01 00:00:00.000 GMT,11,130,CATALINA ISLAND,class edu.sc.seis.sod.velocity.network.VelocityStation
+DJJ,34.11,-118.45,245 m,26.1,3.4,13.14,AD 1998.11.09 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,106,807,Donna Jones Jenkins California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+SCI2,32.98,-118.55,199 m,262.5,35.8,13.64,AD 2004.04.09 03:07:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,3,22,San Clemente Island 2,class edu.sc.seis.sod.velocity.network.VelocityStation
+BEL,34.00,-116.00,1.4 km,48.9,22.5,45.88,AD 2001.03.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,39,85,Belle Mtn Joshua Tree National Park CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+SWS,32.94,-115.80,0.1 km,198.8,33.5,16.84,AD 1997.09.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,16,95,Sam W. Stewart Westmorland CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+USC,34.02,-118.29,58 m,323.8,5.6,1.72,AD 1993.02.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,15,874,University of Southern California,class edu.sc.seis.sod.velocity.network.VelocityStation
+TIN,37.05,-118.23,1164 m,22.3,4.1,18.36,AD 1996.12.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,155,844,Tinemaha California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+VCS,34.48,-118.12,991 m,17.1,3.4,20.15,AD 1998.10.22 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,163,809,VCS Palmdale CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+SDD,33.55,-117.66,120 m,38.1,4.1,10.76,AD 1999.05.03 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,68,632,SDD Mission Viejo CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+DEC,34.25,-118.33,0.5 km,132.8,38.6,29.09,AD 2000.08.10 20:30:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,16,55,Green Verdugo Microwave Site Sunland CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+IRM,34.16,-115.15,0.6 km,42.1,16.1,38.24,AD 2001.12.05 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,39,102,Iron Mountain Pumping Station Eagle Mtn. CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+BAR,32.68,-116.67,496 m,35.4,5.5,15.43,AD 1992.10.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,141,914,Barrett California USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+FUR,36.47,-116.86,-0.0 km,105.6,41.5,39.29,AD 1996.11.19 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,33,84,Furnace Creek CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+JCS,33.09,-116.60,1264 m,19.6,3.5,18.09,AD 1998.09.17 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,144,796,JCS Julian CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+HEC,34.83,-116.33,0.9 km,78.8,32.3,41.00,AD 1997.08.01 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,41,100,Hector Baker CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+VES,35.84,-119.08,0.2 km,186.6,53.9,28.89,AD 1999.10.15 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,13,45,Vestal Porterville CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+GRA,37.00,-117.37,0.7 km,60.5,19.5,32.29,AD 2001.04.18 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,31,96,Grapevine Ranger Station Death Valley CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+EDW,34.88,-117.99,789 m,113.5,56.8,50.00,AD 2004.04.12 04:10:00.000 GMT,AD 2004.08.03 16:42:00.000 GMT,1,2,Edwards,class edu.sc.seis.sod.velocity.network.VelocityStation
+PDM,34.30,-114.14,0.1 km,50.6,24.2,47.89,AD 2001.09.20 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,34,71,Parker Dam Lake Havasu City AZ USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+DAN,34.64,-115.38,428 m,15.3,3.7,24.21,AD 1998.09.22 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,184,760,DAN Needles CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+DVT,32.66,-116.10,0.9 km,181.0,26.6,14.71,AD 2001.06.22 00:00:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,10,68,Desert View Tower Ocotillo CA USA,class edu.sc.seis.sod.velocity.network.VelocityStation
+EDW2,34.88,-117.99,772 m,17.4,7.4,42.86,AD 2004.06.06 17:27:00.000 GMT,AD 2499.01.01 00:00:00.000 GMT,42,98,Edwards 2,class edu.sc.seis.sod.velocity.network.VelocityStation

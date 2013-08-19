@@ -59,7 +59,7 @@ public class Start {
         RecFuncDB.setDataLoc(props.getProperty("cormorant.servers.ears.dataloc", RecFuncDB.getDataLoc()));
         
         edu.sc.seis.rev.Start.runREV(args, 
-                                     new RecFuncHandlerProvider(), 
+                                     new RecFuncHandlerProvider(props), 
                                      new HibernateDBConfigurer[] {
                                                                   new HibernateDBConfigurer() {
             @Override

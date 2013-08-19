@@ -1,15 +1,23 @@
 package edu.sc.seis.receiverFunction.web;
 
+import java.util.List;
+import java.util.Properties;
+
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 
 import edu.sc.seis.rev.FloatQueryParamParser;
 import edu.sc.seis.rev.JettyHandlerProvider;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 
-
 public class RecFuncHandlerProvider extends JettyHandlerProvider {
 
+    public RecFuncHandlerProvider(Properties props) {
+        this.props = props;
+    }
+    
     @Override
     public ContextHandlerCollection setupJetty() throws Exception {
         ContextHandlerCollection rootHandler = new ContextHandlerCollection();
@@ -119,35 +127,37 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
         RevUtil.populateJetty( "/network/*",
                                new edu.sc.seis.receiverFunction.rest.Network(),
                                rootHandler);
-        RevUtil.populateJetty( "/eventReceiverFunction.zip/*",
-                               new edu.sc.seis.receiverFunction.web.EventReceiverFunctionZip(),
-                               rootHandler);
-        
-        edu.sc.seis.rev.RevUtil.populateJetty(WINKLE+"/eventSearch.html",
+        RevUtil.populateJetty("/eventReceiverFunction.zip/*",
+                              new edu.sc.seis.receiverFunction.web.EventReceiverFunctionZip(),
+                              rootHandler);
+        edu.sc.seis.rev.RevUtil.populateJetty(WINKLE + "/eventSearch.html",
                                               new edu.sc.seis.winkle.EventSearch(),
                                               rootHandler);
-        
-        
         // override winkle Event servlet
         RevUtil.populateJetty(WINKLE + "/earthquakes/*",
                               new edu.sc.seis.receiverFunction.web.Event(),
                               rootHandler);
         
         edu.sc.seis.receiverFunction.web.IndexPage ip = new edu.sc.seis.receiverFunction.web.IndexPage();
-        RevUtil.populateJetty("/",
-                              ip,
-                              rootHandler);
-        RevUtil.populateJetty("/index.html",
-                              ip,
-                              rootHandler);
-        
-        Revlet.addStandardQueryParam(new FloatQueryParamParser("gaussian",
-                                                               Start.getDefaultGaussian()));
-        Revlet.addStandardQueryParam(new FloatQueryParamParser("minPercentMatch",
-                                                               Start.getDefaultMinPercentMatch()));
+        RevUtil.populateJetty("/", ip, rootHandler);
+        RevUtil.populateJetty("/index.html", ip, rootHandler);
+        Revlet.addStandardQueryParam(new FloatQueryParamParser("gaussian", Start.getDefaultGaussian()));
+        Revlet.addStandardQueryParam(new FloatQueryParamParser("minPercentMatch", Start.getDefaultMinPercentMatch()));
         return rootHandler;
     }
-    
+
+    @Override
+    public List<Handler> additionalHandlers() {
+        List<Handler> out = super.additionalHandlers();
+        if (props.containsKey("cormorant.servers.ears.dataloc")) {
+            ResourceHandler handler = new ResourceHandler();
+            handler.setResourceBase(props.getProperty("cormorant.servers.ears.dataloc"));
+            out.add(handler);
+        }
+        return out;
+    }
+
+    protected Properties props; 
 
     public static final String WINKLE = "/winkle";
 }

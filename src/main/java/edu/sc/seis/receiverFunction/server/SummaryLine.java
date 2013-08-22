@@ -119,7 +119,7 @@ public class SummaryLine extends HKAlpha {
     }
     
     public String formatElevation() {
-        return FissuresFormatter.formatDepth(getElevation());
+        return FissuresFormatter.formatElevation(getElevation());
     }
     
     public int getNumEarthquakes() {

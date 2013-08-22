@@ -121,9 +121,9 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
                               new edu.sc.seis.receiverFunction.web.EQRateCalc(),
                               rootHandler);
         // jfreechart image servlet
-        RevUtil.populateJetty("/saveDisplayChart",
-                              new org.jfree.chart.servlet.DisplayChart(),
-                              rootHandler);
+       // RevUtil.populateJetty("/DisplayChart",
+       //                       new org.jfree.chart.servlet.DisplayChart(),
+       //                       rootHandler);
         RevUtil.populateJetty("/DisplayChart",
                               new MyDisplayChart(),
                               rootHandler);

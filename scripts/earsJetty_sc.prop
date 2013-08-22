@@ -12,6 +12,9 @@ rev.base=/
 rev.jettylogs=logs/jetty
 
 velocimacro.library.autoreload = false
+
+java.io.tmpdir=/tmp/ears
+
 #
 # for testing
 #fissuresUtil.database.url=jdbc:hsqldb:hsql://localhost:9003

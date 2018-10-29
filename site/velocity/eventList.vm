@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>EARS - List of Events</title>
+<link rel="stylesheet" type="text/css" href="$!{staticFiles}station_list_style.css"/>
+
+</head>
+<body>
+	
+#header()	
+	
+<script src="sorttable.js"></script>
+
+<div id="content">
+
+<p id="breadcrumbs">You are here: <a href="$!{revBase}index.html">Home</a> > <b>List of Events</b></p>	
+	
+<h1>List of Events</h1>
+	
+<p>View Events found: as html, csv text, XML</p>
+<table cellpadding="0" cellspacing="0" id="dumb" class="sortable">
+    <tr>
+			<td class="headodd">Region</td>
+			<td class="headodd">Time</td>
+			<td class="headodd">Latitude</td>
+			<td class="headodd">Longitude</td>
+			<td class="headodd">Depth</td>
+			<td class="headodd">Magnitude</td>
+		</tr>
+	#foreach( $event in $eventList)
+		
+	<tr>
+		<td class="even1"><a href="$event.getURL()&dbid=$event.dbid">$event.region</a></td>
+		<td class="odd">$event.getTime()</td>
+		<td class="even">$event.getOrientedLatitude()</td>
+		<td class="odd">$event.getOrientedLongitude()</td>
+		<td class="even">$event.getDepth()</td>
+		<td class="odd">$event.getAllMagnitudes()</td>
+	</tr>
+    #end
+</table>
+</div>
+#footer()
+	</body>
+</html>

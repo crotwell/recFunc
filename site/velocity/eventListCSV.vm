@@ -1,0 +1,3 @@
+#foreach( $event in $eventList)
+$event.region.replaceAll(',',''),$event.getTime(),$event.getLatitude(),$event.getLongitude(),$event.getDepth(),$event.getAllMagnitudes()
+#end

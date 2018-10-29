@@ -19,16 +19,18 @@ import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.rev.RevUtil;
 import edu.sc.seis.rev.Revlet;
 import edu.sc.seis.rev.RevletContext;
+import edu.sc.seis.rev.locator.EarthquakeLocator;
+import edu.sc.seis.sod.hibernate.SodDB;
 import edu.sc.seis.sod.velocity.event.VelocityEvent;
 import edu.sc.seis.sod.velocity.network.VelocityStation;
 
 
-public class Event extends edu.sc.seis.winkle.Event {
+public class Event extends XMLRevlet {
 
     public Event() throws Exception {
         super();
     }
-    
+
     public RevletContext getContext(HttpServletRequest req,
                                     HttpServletResponse res) throws Exception {
         try {
@@ -41,7 +43,7 @@ public class Event extends edu.sc.seis.winkle.Event {
                 stationList.add(sta);
                 resultMap.put(sta, receiverFunctionResult);
             }
-            
+
             RevletContext context = new RevletContext("eventStationList.vm", Start.getDefaultContext());
             Revlet.loadStandardQueryParams(req, context);
             context.put("stationList", stationList);
@@ -54,20 +56,33 @@ public class Event extends edu.sc.seis.winkle.Event {
             return handleNotFound(req, res, e);
         }
     }
-    
+
     protected void setContentType(HttpServletRequest request,
                                   HttpServletResponse response)
     {
         response.setContentType("text/html");
     }
-    
+
     public List<ReceiverFunctionResult> extractRF(HttpServletRequest req, HttpServletResponse resp, VelocityEvent event) throws SQLException, FileNotFoundException, FissuresException, IOException {
         float gaussianWidth = RevUtil.getFloat("gaussian",
                                                req,
                                                Start.getDefaultGaussian());
-        
+
         return RecFuncDB.getSingleton().getStationsByEvent(event.getCacheEvent(), gaussianWidth);
-        
+
     }
-    
+
+
+    public VelocityEvent extractEvent(HttpServletRequest req,
+                                      HttpServletResponse res) throws Exception {
+        return eqLoc.locate(req);
+    }
+
+
+    protected SodDB soddb = SodDB.getSingleton();
+
+    EarthquakeLocator eqLoc;
+
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Event.class);
+
 }

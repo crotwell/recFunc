@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="$!{staticFiles}${prefix}/restevent.css"?>
+<eventList xmlns:xlink="http://www.w3.org/1999/xlink">
+    #foreach( $event in $eventList)
+	<event xlink:type="simple" xlink:href="$event.getURL()">
+		$event.toXML()
+	</event>
+    #end
+</eventList>

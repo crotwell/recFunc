@@ -4,8 +4,7 @@ version = '2.1-SNAPSHOT'
 
 dependencies {
     compile project(':rev')
-    compile project(':cormorant')
-    compile project(':winkle')
+    compile "edu.sc.seis:cormorant:1.3-SNAPSHOT"
     compile "edu.sc.seis:recFuncIDL:1.0beta"
     compile "edu.sc.seis.mapData:vmap_po_thinned:1.0"
     compile "org.jfree:jfreechart:1.0.15"

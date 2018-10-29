@@ -89,7 +89,7 @@ public class DateRangeResults {
 
     float gaussianWidth;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         float minPercentMatch = 80f;
         boolean bootstrap = true;
         boolean usePhaseWeight = true;

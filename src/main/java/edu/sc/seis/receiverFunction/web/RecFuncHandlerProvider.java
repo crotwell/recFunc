@@ -20,7 +20,7 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
     public RecFuncHandlerProvider(Properties props) {
         this.props = props;
     }
-    
+
     @Override
     public ContextHandlerCollection setupJetty() throws Exception {
         ContextHandlerCollection rootHandler = new ContextHandlerCollection();
@@ -137,13 +137,13 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
                               new edu.sc.seis.receiverFunction.web.EventReceiverFunctionZip(),
                               rootHandler);
         edu.sc.seis.rev.RevUtil.populateJetty(WINKLE + "/eventSearch.html",
-                                              new edu.sc.seis.winkle.EventSearch(),
+                                              new edu.sc.seis.receiverFunction.web.EventSearchResult(),
                                               rootHandler);
         // override winkle Event servlet
         RevUtil.populateJetty(WINKLE + "/earthquakes/*",
                               new edu.sc.seis.receiverFunction.web.Event(),
                               rootHandler);
-        
+
         ResourceHandler dataHandler = new ResourceHandler() {
 
             @Override
@@ -155,14 +155,14 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
                 }
                 return r;
             }
-            
+
         };
         dataHandler.setResourceBase(props.getProperty("ears.dataloc"));
         dataHandler.setDirectoriesListed(true);
         ContextHandler ctx = new ContextHandler("/Data"); /* the server uri path */
         ctx.setHandler(dataHandler);
         rootHandler.addHandler(ctx);
-        
+
         edu.sc.seis.receiverFunction.web.IndexPage ip = new edu.sc.seis.receiverFunction.web.IndexPage();
         RevUtil.populateJetty("/", ip, rootHandler);
         RevUtil.populateJetty("/index.html", ip, rootHandler);
@@ -177,9 +177,9 @@ public class RecFuncHandlerProvider extends JettyHandlerProvider {
         return out;
     }
 
-    protected Properties props; 
+    protected Properties props;
 
     public static final String WINKLE = "/winkle";
-    
+
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(RecFuncHandlerProvider.class);
 }

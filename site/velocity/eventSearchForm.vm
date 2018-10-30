@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>EARS</title>
-<link rel="stylesheet" type="text/css" href="style.css"/>
+<link rel="stylesheet" type="text/css" href="$!{staticFiles}style.css"/>
 <style type="text/css">@import url($!{staticFiles}styles/calendar-system.css);</style>
 <script type="text/javascript" src="$!{staticFiles}scripts/calendar/calendar.js"></script>
 <script type="text/javascript" src="$!{staticFiles}scripts/calendar/calendar-en.js"></script>

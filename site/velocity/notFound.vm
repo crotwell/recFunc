@@ -3,7 +3,7 @@
     <head>
         <title>EARS - Page Not Found!</title>
 
-        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <link rel="stylesheet" type="text/css" href="$!{staticFiles}style.css"/>
     </head>
     <body>
         <div id="outer">

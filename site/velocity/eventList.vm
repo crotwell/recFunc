@@ -29,7 +29,7 @@
 	#foreach( $event in $eventList)
 		
 	<tr>
-		<td class="even1"><a href="$event.getURL()&dbid=$event.dbid">$event.region</a></td>
+		<td class="even1"><a href="$event.getURL()&eq_dbid=$event.dbid">$event.region</a></td>
 		<td class="odd">$event.getTime()</td>
 		<td class="even">$event.getOrientedLatitude()</td>
 		<td class="odd">$event.getOrientedLongitude()</td>

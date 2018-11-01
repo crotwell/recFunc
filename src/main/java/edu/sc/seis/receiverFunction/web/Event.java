@@ -29,6 +29,7 @@ public class Event extends XMLRevlet {
 
     public Event() throws Exception {
         super();
+        eqLoc = new EarthquakeLocator();
     }
 
     public RevletContext getContext(HttpServletRequest req,
@@ -51,8 +52,10 @@ public class Event extends XMLRevlet {
             context.put("recfunc", resultMap);
             return context;
         } catch(ParseException e) {
+            logger.warn("ParseException on "+req.getRequestURI()+" "+req.getQueryString(), e);
             return handleNotFound(req, res, e);
         } catch(NotFound e) {
+            logger.warn("NotFound on "+req.getRequestURI()+" "+req.getQueryString(), e);
             return handleNotFound(req, res, e);
         }
     }

@@ -13,7 +13,7 @@
 $header
 
 <p>Find earthquakes:</p>
-<form action="winkle/eventSearch.html?gaussian=${gaussian}" method="get">
+<form action="eventSearch.html?gaussian=${gaussian}" method="get">
 <p>
 <label for="begin">Begin: </label><input type="text" name="begin" id="begin" value="20000101T000000.000Z"/><br/>
 <label for="end">End: </label><input type="text" name="end" id="end"  value="20000131T000000.000Z"/><br/>

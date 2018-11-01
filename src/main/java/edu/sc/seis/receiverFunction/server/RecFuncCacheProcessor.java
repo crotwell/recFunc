@@ -1,5 +1,6 @@
 package edu.sc.seis.receiverFunction.server;
 
+import java.io.File;
 import java.util.List;
 
 import org.omg.CORBA.UNKNOWN;
@@ -55,6 +56,11 @@ public class RecFuncCacheProcessor extends IterDeconReceiverFunction implements 
     public RecFuncCacheProcessor(Element config) throws ConfigurationException,
             TauModelException {
         super(config);
+        iorFilename = DOMHelper.extractText(config, "iorfile", "../server/Ears.ior");
+        File f = new File(iorFilename);
+        if (! f.exists()) {
+            throw new ConfigurationException("Unable to find ior file: "+iorFilename);
+        }
         dns = DOMHelper.extractText(config, "dns", "edu/sc/seis");
         serverName = DOMHelper.extractText(config, "name", "Ears");
         writer = new AbstractSeismogramWriter() {
@@ -228,16 +234,23 @@ public class RecFuncCacheProcessor extends IterDeconReceiverFunction implements 
         }
     }
 
-    
+
     protected RecFuncCacheOperations getCache() {
         if (cache == null) {
-            cache = new NSRecFuncCache(dns,
-                                       serverName,
-                                       CommonAccess.getNameService());
+            if (iorFilename != null && new File(iorFilename).exists()) {
+                cache = new IORFileRecFuncCache(iorFilename, CommonAccess.getORB());
+            } else {
+                logger.warn("unable to load Ears from IOR file: "+iorFilename);
+                cache = new NSRecFuncCache(dns,
+                                           serverName,
+                                           CommonAccess.getNameService());
+            }
         }
         return cache;
     }
 
+    String iorFilename;
+    
     String dns = "edu/sc/seis";
 
     String serverName = "Ears";
@@ -247,6 +260,8 @@ public class RecFuncCacheProcessor extends IterDeconReceiverFunction implements 
     boolean overwrite = false;
 
     protected RecFuncCacheOperations cache;
+
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(RecFuncCacheProcessor.class);
 
 
     public boolean isThreadSafe() {

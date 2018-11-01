@@ -1,5 +1,7 @@
 package edu.sc.seis.receiverFunction.server;
 
+import java.io.File;
+
 import org.jacorb.orb.ParsedIOR;
 import org.jacorb.orb.iiop.IIOPAddress;
 import org.jacorb.orb.iiop.IIOPProfile;
@@ -8,6 +10,7 @@ import org.w3c.dom.Element;
 
 import edu.iris.Fissures.IfNetwork.ChannelId;
 import edu.sc.seis.IfReceiverFunction.IterDeconConfig;
+import edu.sc.seis.IfReceiverFunction.RecFuncCacheOperations;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.fissuresUtil.cache.CacheEvent;
 import edu.sc.seis.fissuresUtil.display.configuration.DOMHelper;
@@ -32,6 +35,7 @@ public class RecFuncCacheCheck implements EventVectorSubsetter {
         try {
             idrf = new IterDeconReceiverFunction(config);
             deconConfig = new IterDeconConfig(idrf.getGwidth(), idrf.getMaxBumps(), idrf.getTol());
+            iorFilename = DOMHelper.extractText(config, "iorfile", "../server/Ears.ior");
             dns = DOMHelper.extractText(config, "dns", "edu/sc/seis");
             serverName = DOMHelper.extractText(config, "name", "Ears");
         } catch(TauModelException e) {
@@ -49,8 +53,23 @@ public class RecFuncCacheCheck implements EventVectorSubsetter {
         }
         return new StringTreeLeaf(this, getCache().isCached(event.get_preferred_origin(), chanId, deconConfig));
     }
+    
 
-    protected NSRecFuncCache getCache() throws RecFuncException {
+    
+    protected RecFuncCacheOperations getCache() {
+        if (cache == null) {
+            if (iorFilename != null && new File(iorFilename).exists()) {
+                cache = new IORFileRecFuncCache(iorFilename, CommonAccess.getORB());
+            } else {
+                cache = new NSRecFuncCache(dns,
+                                           serverName,
+                                           CommonAccess.getNameService());
+            }
+        }
+        return cache;
+    }
+
+   /* protected NSRecFuncCache getNSCache() throws RecFuncException {
         if (cache == null) {
             try {
                 cache = new NSRecFuncCache(dns, serverName, CommonAccess.getNameService());
@@ -67,17 +86,19 @@ public class RecFuncCacheCheck implements EventVectorSubsetter {
             }
         }
         return cache;
-    }
+    }*/
 
     protected void setCache(NSRecFuncCache cache) {
         this.cache = cache;
     }
 
+    String iorFilename;
+    
     String dns;
 
     String serverName;
 
-    NSRecFuncCache cache;
+    RecFuncCacheOperations cache;
 
     IterDeconConfig deconConfig;
 

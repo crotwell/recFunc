@@ -1,30 +1,31 @@
 package edu.sc.seis.receiverFunction.synth;
 
-import edu.iris.Fissures.Sampling;
-import edu.iris.Fissures.Time;
-import edu.iris.Fissures.IfNetwork.ChannelId;
-import edu.iris.Fissures.model.SamplingImpl;
-import edu.iris.Fissures.model.TimeInterval;
-import edu.iris.Fissures.model.UnitImpl;
-import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
+import java.time.Duration;
+import java.time.Instant;
+
 import edu.sc.seis.TauP.ReflTransCoefficient;
-import edu.sc.seis.fissuresUtil.bag.IterDecon;
 import edu.sc.seis.receiverFunction.HKAlpha;
 import edu.sc.seis.receiverFunction.HKStack;
+import edu.sc.seis.sod.bag.IterDecon;
+import edu.sc.seis.sod.model.common.SamplingImpl;
+import edu.sc.seis.sod.model.common.UnitImpl;
+import edu.sc.seis.sod.model.seismogram.LocalSeismogramImpl;
+import edu.sc.seis.sod.model.station.ChannelId;
+import edu.sc.seis.sod.util.time.ClockUtil;
 
 public class SimpleSynthReceiverFunction {
 
 
     public SimpleSynthReceiverFunction(HKAlpha model) {
-        this(model, new SamplingImpl(20, new TimeInterval(1, UnitImpl.SECOND)), 4096);
+        this(model, new SamplingImpl(20, ClockUtil.durationOfSeconds(1)), 4096);
     }
     
-    public SimpleSynthReceiverFunction(HKAlpha model, Sampling samp, int num_points) {
+    public SimpleSynthReceiverFunction(HKAlpha model, SamplingImpl samp, int num_points) {
         this(model, samp, num_points, 2.7, 8.0, 4.5, 3.2);
     }
 
     public SimpleSynthReceiverFunction(HKAlpha hka,
-                                       Sampling samp,
+    		                           SamplingImpl samp,
                                        int num_points,
                                        double crustRho,
                                        double mantleVp,
@@ -43,8 +44,8 @@ public class SimpleSynthReceiverFunction {
     }
 
     public LocalSeismogramImpl calculate(float flatRP,
-                                         Time begin_time,
-                                         TimeInterval lagZeroOffset,
+                                         Instant begin_time,
+                                         Duration lagZeroOffset,
                                          ChannelId chan,
                                          float gaussianWidth) {
         if (gaussianWidth <= 0) {
@@ -61,31 +62,30 @@ public class SimpleSynthReceiverFunction {
         // scale from unit area gaussian to unit amplitude gaussian
         float scale = (float)2*SQRT_PI*gaussianWidth;
         // P
-        TimeInterval timeP = new TimeInterval(0, UnitImpl.SECOND);
+        Duration timeP = ClockUtil.durationOfSeconds(0);
         double refTransP = getAmpP(flatRP);
-        float index = HKStack.getDataIndex(seis, timeP.add(lagZeroOffset));
+        float index = HKStack.getDataIndex(seis, timeP.plus(lagZeroOffset));
         data[Math.round(index)] = scale * (float)refTransP;
         
         // Ps
-        TimeInterval timePs = HKStack.getTimePs(flatRP, hka.getVp(), hka.getVpVs(), hka.getH());
+        Duration timePs = HKStack.getTimePs(flatRP, hka.getVp(), hka.getVpVs(), hka.getH());
         double refTransPs = getAmpPs(flatRP);
-        index = HKStack.getDataIndex(seis, timePs.add(lagZeroOffset));
+        index = HKStack.getDataIndex(seis, timePs.plus(lagZeroOffset));
         data[Math.round(index)] = scale * (float)refTransPs;
 
         // PpPs
-        TimeInterval timePpPs = HKStack.getTimePpPs(flatRP, hka.getVp(), hka.getVpVs(), hka.getH());
+        Duration timePpPs = HKStack.getTimePpPs(flatRP, hka.getVp(), hka.getVpVs(), hka.getH());
         double refTransPpPs = getAmpPpPs(flatRP);
-        index = HKStack.getDataIndex(seis, timePpPs.add(lagZeroOffset));
+        index = HKStack.getDataIndex(seis, timePpPs.plus(lagZeroOffset));
         data[Math.round(index)] = scale * (float)refTransPpPs;
 
         // PsPs+PpSs
-        TimeInterval timePsPs = HKStack.getTimePsPs(flatRP, hka.getVp(), hka.getVpVs(), hka.getH());
+        Duration timePsPs = HKStack.getTimePsPs(flatRP, hka.getVp(), hka.getVpVs(), hka.getH());
         double refTransPsPs = getAmpPsPs(flatRP);
-        index = HKStack.getDataIndex(seis, timePsPs.add(lagZeroOffset));
+        index = HKStack.getDataIndex(seis, timePsPs.plus(lagZeroOffset));
         data[Math.round(index)] = scale * (float)refTransPsPs;
 
-        float[] tmp = IterDecon.gaussianFilter(data, gaussianWidth, (float)((SamplingImpl)seis.sampling_info).getPeriod()
-                .getValue(UnitImpl.SECOND));
+        float[] tmp = IterDecon.gaussianFilter(data, gaussianWidth, (float)ClockUtil.floatSeconds(((SamplingImpl)seis.sampling_info).getPeriod()));
         System.arraycopy(tmp, 0, data, 0, data.length);
         
         return seis;
@@ -154,7 +154,7 @@ public class SimpleSynthReceiverFunction {
     
     HKAlpha hka;
     
-    Sampling samp;
+    SamplingImpl samp;
 
     int num_points;
 

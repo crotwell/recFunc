@@ -2,23 +2,21 @@ package edu.sc.seis.receiverFunction;
 
 import java.util.List;
 
-import edu.iris.Fissures.FissuresException;
-import edu.iris.Fissures.Sampling;
-import edu.iris.Fissures.model.SamplingImpl;
-import edu.iris.Fissures.model.TimeInterval;
-import edu.iris.Fissures.model.UnitImpl;
-import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
-import edu.sc.seis.fissuresUtil.bag.TauPUtil;
-import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
-import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
-import edu.sc.seis.fissuresUtil.mockFissures.IfNetwork.MockChannel;
-import edu.sc.seis.fissuresUtil.mockFissures.IfSeismogramDC.MockSeismogram;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.synth.SimpleSynthReceiverFunction;
 import edu.sc.seis.sod.SodConfig;
+import edu.sc.seis.sod.bag.TauPUtil;
+import edu.sc.seis.sod.mock.seismogram.MockSeismogram;
+import edu.sc.seis.sod.mock.station.MockChannel;
+import edu.sc.seis.sod.model.common.FissuresException;
+import edu.sc.seis.sod.model.common.SamplingImpl;
+import edu.sc.seis.sod.model.seismogram.LocalSeismogramImpl;
+import edu.sc.seis.sod.model.station.ChannelGroup;
+import edu.sc.seis.sod.model.station.ChannelId;
+import edu.sc.seis.sod.util.time.ClockUtil;
 
 /**
  * @author crotwell Created on Oct 21, 2005
@@ -28,10 +26,10 @@ public class StackComplexity {
     private float gaussianWidth;
 
     public StackComplexity(HKStack hkplot, float gaussianWidth) {
-        this(hkplot, 4096, new SamplingImpl(20, new TimeInterval(1, UnitImpl.SECOND)), gaussianWidth);
+        this(hkplot, 4096, new SamplingImpl(20, ClockUtil.durationOfSeconds(1)), gaussianWidth);
     }
     
-    public StackComplexity(HKStack hkplot, int num_points, Sampling samp, float gaussianWidth) {
+    public StackComplexity(HKStack hkplot, int num_points, SamplingImpl samp, float gaussianWidth) {
         this.hkplot = hkplot;
         this.samp = samp;
         this.num_points = num_points;
@@ -67,11 +65,9 @@ public class StackComplexity {
                                                                                 num_points);
             ChannelGroup cg = MockChannel.createGroup();
             LocalSeismogramImpl synthRF = synth.calculate(flatRP,
-                                                          ClockUtil.now()
-                                                                  .getFissuresTime(),
+                                                          ClockUtil.now(),
                                                           RecFunc.getDefaultShift(),
-                                                          cg.getChannel1()
-                                                                  .get_id(),
+                                                          ChannelId.of(cg.getChannel1()),
                                                           gaussianWidth);
             HKStack synthStack = new HKStack(hkplot.getAlpha(),
                                              flatRP,
@@ -184,7 +180,7 @@ public class StackComplexity {
 
     HKStack hkplot;
 
-    Sampling samp;
+    SamplingImpl samp;
 
     int num_points;
 }

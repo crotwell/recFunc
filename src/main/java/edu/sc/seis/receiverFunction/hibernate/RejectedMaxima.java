@@ -1,9 +1,9 @@
 package edu.sc.seis.receiverFunction.hibernate;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
-import edu.iris.Fissures.network.NetworkAttrImpl;
-import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
+import edu.sc.seis.sod.util.time.ClockUtil;
 
 public class RejectedMaxima {
 
@@ -11,7 +11,7 @@ public class RejectedMaxima {
     /** hibernate */
     protected RejectedMaxima() {}
     
-    public RejectedMaxima(NetworkAttrImpl net,
+    public RejectedMaxima(String net,
                           String staCode,
                           float hMin,
                           float hMax,
@@ -26,18 +26,18 @@ public class RejectedMaxima {
         this.kMin = kMin;
         this.kMax = kMax;
         this.reason = reason;
-        this.insertTime = ClockUtil.now().getTimestamp();
+        this.insertTime = ClockUtil.now();
     }
 
     public boolean inside(float h, float k) {
         return h >= hMin && h <= hMax && k >= kMin && k <= kMax;
     }
 
-    public NetworkAttrImpl getNet() {
+    public String getNet() {
         return net;
     }
 
-    public void setNet(NetworkAttrImpl net) {
+    public void setNet(String net) {
         this.net = net;
     }
 
@@ -97,17 +97,17 @@ public class RejectedMaxima {
         this.dbid = dbid;
     }
 
-    public Timestamp getInsertTime() {
+    public Instant getInsertTime() {
         return insertTime;
     }
 
-    protected void setInsertTime(Timestamp insertTime) {
+    protected void setInsertTime(Instant insertTime) {
         this.insertTime = insertTime;
     }
 
     int dbid;
 
-    NetworkAttrImpl net;
+    String net;
 
     String staCode;
 
@@ -121,5 +121,5 @@ public class RejectedMaxima {
 
     String reason;
 
-    Timestamp insertTime;
+    Instant insertTime;
 }

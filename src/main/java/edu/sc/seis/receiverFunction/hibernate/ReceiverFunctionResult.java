@@ -1,20 +1,20 @@
 package edu.sc.seis.receiverFunction.hibernate;
 
 import java.io.File;
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.time.Instant;
 
-import edu.iris.Fissures.IfParameterMgr.ParameterRef;
-import edu.iris.Fissures.model.UnitImpl;
-import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
-import edu.sc.seis.fissuresUtil.bag.DistAz;
-import edu.sc.seis.fissuresUtil.cache.CacheEvent;
-import edu.sc.seis.fissuresUtil.chooser.ClockUtil;
-import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
-import edu.sc.seis.fissuresUtil.sac.SacToFissures;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import edu.sc.seis.sod.SodConfig;
+import edu.sc.seis.sod.model.common.DistAz;
+import edu.sc.seis.sod.model.common.ParameterRef;
+import edu.sc.seis.sod.model.common.UnitImpl;
+import edu.sc.seis.sod.model.event.CacheEvent;
+import edu.sc.seis.sod.model.seismogram.LocalSeismogramImpl;
+import edu.sc.seis.sod.model.station.ChannelGroup;
+import edu.sc.seis.sod.util.convert.sac.SacToFissures;
+import edu.sc.seis.sod.util.time.ClockUtil;
 import edu.sc.seis.sod.velocity.event.VelocityEvent;
 
 public class ReceiverFunctionResult {
@@ -42,7 +42,7 @@ public class ReceiverFunctionResult {
         this.maxBumps = maxBumps;
         this.tol = tol;
         this.sodConfig = config;
-        this.insertTime = ClockUtil.now().getTimestamp();
+        this.insertTime = ClockUtil.now();
     }
 
     public ReceiverFunctionResult(CacheEvent event,
@@ -134,6 +134,7 @@ public class ReceiverFunctionResult {
     }
 
     public LocalSeismogramImpl getOriginal1() {
+    	/*
         if(original1 == null) {
             File stationDir = RecFuncDB.getDir(getEvent(),
                                                       getChannelGroup().getChannel1(),
@@ -152,6 +153,7 @@ public class ReceiverFunctionResult {
                                            e);
             }
         }
+        */
         return original1;
     }
 
@@ -160,6 +162,7 @@ public class ReceiverFunctionResult {
     }
 
     public LocalSeismogramImpl getOriginal2() {
+    	/*
         if(original2 == null) {
             File stationDir = RecFuncDB.getDir(getEvent(),
                                                       getChannelGroup().getChannel2(),
@@ -178,6 +181,7 @@ public class ReceiverFunctionResult {
                                            e);
             }
         }
+        */
         return original2;
     }
 
@@ -186,6 +190,7 @@ public class ReceiverFunctionResult {
     }
 
     public LocalSeismogramImpl getOriginal3() {
+    	/*
         if(original3 == null) {
             File stationDir = RecFuncDB.getDir(getEvent(),
                                                       getChannelGroup().getChannel3(),
@@ -204,6 +209,7 @@ public class ReceiverFunctionResult {
                                            e);
             }
         }
+        */
         return original3;
     }
 
@@ -312,6 +318,7 @@ public class ReceiverFunctionResult {
     }
 
     public LocalSeismogramImpl getRadial() {
+    	/*
         if(radial == null) {
             File stationDir = RecFuncDB.getDir(getEvent(),
                                                       getChannelGroup().getChannel1(),
@@ -330,6 +337,7 @@ public class ReceiverFunctionResult {
                                            e);
             }
         }
+        */
         return radial;
     }
 
@@ -338,6 +346,7 @@ public class ReceiverFunctionResult {
     }
 
     public LocalSeismogramImpl getTransverse() {
+    	/*
         if(transverse == null) {
             File stationDir = RecFuncDB.getDir(getEvent(),
                                                       getChannelGroup().getChannel1(),
@@ -356,6 +365,7 @@ public class ReceiverFunctionResult {
                                            e);
             }
         }
+        */
         return transverse;
     }
 
@@ -363,11 +373,11 @@ public class ReceiverFunctionResult {
         this.transverse = transverse;
     }
 
-    public Timestamp getInsertTime() {
+    public Instant getInsertTime() {
         return insertTime;
     }
 
-    protected void setInsertTime(Timestamp insertTime) {
+    protected void setInsertTime(Instant insertTime) {
         this.insertTime = insertTime;
     }
 
@@ -380,6 +390,7 @@ public class ReceiverFunctionResult {
     }
 
     public HKStack getHKstack() {
+    	/*
         if (hkstack != null) {
             hkstack.setGaussianWidth(getGwidth());
             if (getEvent() != null) {
@@ -392,6 +403,7 @@ public class ReceiverFunctionResult {
                 hkstack.setStackFile(stackFile.getPath());
             }
         }
+        */
         return hkstack;
     }
 
@@ -458,7 +470,7 @@ public class ReceiverFunctionResult {
 
     SodConfig sodConfig;
 
-    Timestamp insertTime;
+    Instant insertTime;
 
     RecFuncQCResult qc;
 

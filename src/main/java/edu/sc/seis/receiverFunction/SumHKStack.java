@@ -5,31 +5,26 @@
  */
 package edu.sc.seis.receiverFunction;
 
-import java.awt.image.BufferedImage;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import edu.iris.Fissures.IfNetwork.Channel;
-import edu.iris.Fissures.IfNetwork.Station;
-import edu.iris.Fissures.model.QuantityImpl;
-import edu.iris.Fissures.model.UnitImpl;
-import edu.iris.Fissures.network.NetworkAttrImpl;
-import edu.iris.Fissures.network.NetworkIdUtil;
 import edu.sc.seis.TauP.TauModelException;
-import edu.sc.seis.fissuresUtil.bag.Statistics;
-import edu.sc.seis.fissuresUtil.chooser.ThreadSafeDecimalFormat;
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
-import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
-import edu.sc.seis.fissuresUtil.simple.TimeOMatic;
+import edu.sc.seis.hkstack.CmplxArray2D;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
-import edu.sc.seis.receiverFunction.hibernate.RecFuncDB;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.receiverFunction.server.StackComplexityResult;
+import edu.sc.seis.seisFile.fdsnws.stationxml.Channel;
+import edu.sc.seis.sod.bag.Cmplx;
+import edu.sc.seis.sod.bag.Statistics;
+import edu.sc.seis.sod.model.common.Location;
+import edu.sc.seis.sod.model.common.QuantityImpl;
+import edu.sc.seis.sod.model.common.UnitImpl;
 
 public class SumHKStack {
     
@@ -53,14 +48,13 @@ public class SumHKStack {
         this.kVariance = kVariance;
         this.individuals = individuals;
         this.setGaussianWidth(individuals.get(0).getGwidth());
-        Station sta = individuals.iterator()
+        Channel chan = individuals.iterator()
                 .next()
                 .getChannelGroup()
-                .getChannel1()
-                .getSite()
-                .getStation();
-        net = (NetworkAttrImpl)sta.getNetworkAttr();
-        staCode = sta.get_code();
+                .getChannel1();
+
+        net = chan.getNetworkCode();
+        staCode = chan.getStationCode();
         this.rejects = rejects;
         best = makeStationResult(new StackMaximum(-1,
                                                   sum.getMaxValueH(),
@@ -69,10 +63,6 @@ public class SumHKStack {
                                                   sum.getMaxValue(),
                                                   -1,
                                                   -1), "max", "");
-    }
-
-    public BufferedImage createStackImage() {
-        return getSum().createStackImage(NetworkIdUtil.toStringNoDates(net)+"."+staCode);
     }
 
     public HKStack getSum() {
@@ -93,12 +83,14 @@ public class SumHKStack {
     private int numEQ = -1;
     
     public int getNumEQ() {
+    	/*
         if (viaHibernate) {
             if (numEQ < 0) {
                 numEQ = ((Long) RecFuncDB.getSession().createFilter( getIndividuals(), "select count(*)" ).uniqueResult()).intValue();
             }
             return numEQ;
         }
+        */
         return getIndividuals().size();
     }
     
@@ -252,7 +244,7 @@ public class SumHKStack {
                                       first.getGwidth(),
                                       minPercentMatch,
                                       s.getMinH().add(s.getStepH()
-                                              .multiplyBy(smallestHIndex)),
+                                              .multipliedByDbl(smallestHIndex)),
                                       s.getStepH(),
                                       s.getNumH() - smallestHIndex,
                                       s.getMinK(),
@@ -303,13 +295,12 @@ public class SumHKStack {
                 .getValue(UnitImpl.KILOMETER);
         float nextK = residual.getMaxValueK(getSmallestH());
         float nextVal = residual.getMaxValue(getSmallestH());
+        Channel chan = getIndividuals().iterator()
+                .next()
+                .getChannelGroup()
+                .getChannel1();
         StationResult crust2Result = HKStack.getCrust2()
-                .getStationResult(getIndividuals().iterator()
-                        .next()
-                        .getChannelGroup()
-                        .getChannel1()
-                        .getSite()
-                        .getStation());
+                .getStationResult(chan.getNetworkCode(), chan.getStationCode(), Location.of(chan));
         float crust2diff = bestH
                 - (float)crust2Result.getH().getValue(UnitImpl.KILOMETER);
         setComplexityResult(new StackComplexityResult(complex,
@@ -382,7 +373,6 @@ public class SumHKStack {
         individualList.addAll(getIndividuals());
         double[] hErrors = new double[bootstrapIterations];
         double[] kErrors = new double[bootstrapIterations];
-        TimeOMatic.start();
         for(int i = 0; i < bootstrapIterations; i++) {
             ArrayList sample = new ArrayList();
             for(ReceiverFunctionResult result : getIndividuals()) {
@@ -400,7 +390,7 @@ public class SumHKStack {
             hErrors[i] = (float)bestBoot.getH().getValue(UnitImpl.KILOMETER);
             kErrors[i] = bestBoot.getVpVs();
             if(i % 10 == 0) {
-                logger.info("calcVarianceBootstrap:  " + i + " "+getNet().get_code()+"."+getStaCode()+" "
+                logger.info("calcVarianceBootstrap:  " + i + " "+getNet()+"."+getStaCode()+" "
                         + hErrors[i] + "  " + kErrors[i]);
             }
         }
@@ -408,11 +398,7 @@ public class SumHKStack {
         hVariance = (float)hStat.var();
         Statistics kStat = new Statistics(kErrors);
         kVariance = (float)kStat.var();
-        if (hVariance  != 0 && kVariance != 0) {
-            mixedVariance = (float)hStat.correlation(kErrors);
-        } else {
-            mixedVariance = -1;
-        }
+        mixedVariance = (float)hStat.correlation(kErrors);
         best.setHStdDev(getHStdDev());
         best.setKStdDev((float)getKStdDev());
         hBootstrap = hErrors;
@@ -701,7 +687,7 @@ public class SumHKStack {
 
     protected int dbid = -1;
 
-    protected NetworkAttrImpl net;
+    protected String net;
 
     protected String staCode;
 
@@ -709,17 +695,17 @@ public class SumHKStack {
 
     protected StackComplexityResult complexityResult = null;
 
-    private static ThreadSafeDecimalFormat vpvsFormat = new ThreadSafeDecimalFormat("0.000");
+    private static DecimalFormat vpvsFormat = new DecimalFormat("0.000");
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SumHKStack.class);
 
     
-    public NetworkAttrImpl getNet() {
+    public String getNet() {
         return net;
     }
 
     
-    public void setNet(NetworkAttrImpl net) {
+    public void setNet(String net) {
         this.net = net;
     }
 

@@ -18,14 +18,13 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import edu.iris.Fissures.Location;
-import edu.iris.Fissures.IfNetwork.Station;
-import edu.iris.Fissures.model.QuantityImpl;
-import edu.iris.Fissures.model.UnitImpl;
-import edu.iris.Fissures.network.NetworkAttrImpl;
 import edu.sc.seis.TauP.VelocityLayer;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
+import edu.sc.seis.seisFile.fdsnws.stationxml.Station;
+import edu.sc.seis.sod.model.common.Location;
+import edu.sc.seis.sod.model.common.QuantityImpl;
+import edu.sc.seis.sod.model.common.UnitImpl;
 
 public class Crust2 {
 
@@ -82,10 +81,33 @@ public class Crust2 {
     }
 
     public StationResult getStationResult(Station station) {
-        Crust2Profile profile = getClosest(station.getLocation().longitude,
-                                           station.getLocation().latitude);
-        return new StationResult((NetworkAttrImpl)station.getNetworkAttr(),
-                                 station.get_code(),
+        Crust2Profile profile = getClosest(station.getLongitude().getValue(),
+                                           station.getLatitude().getValue());
+        return new StationResult(station.getNetworkCode(),
+                                 station.getCode(),
+                                 profile.getCrustThickness(),
+                                 (float)(profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity()),
+                                 new QuantityImpl((float)profile.getPWaveAvgVelocity(), UnitImpl.KILOMETER_PER_SECOND),
+                                 getReference(),
+                                 profile.getCode()+","+profile.getName());
+    }
+
+    public StationResult getStationResult(String netCode, String stationCode, Location loc) {
+    	Crust2Profile profile = getClosest(loc.longitude, loc.latitude);
+    	return new StationResult(netCode,
+                stationCode,
+                profile.getCrustThickness(),
+                (float)(profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity()),
+                new QuantityImpl((float)profile.getPWaveAvgVelocity(), UnitImpl.KILOMETER_PER_SECOND),
+                getReference(),
+                profile.getCode()+","+profile.getName());
+    }
+
+    @Deprecated
+    public StationResult getStationResult(String netCode, String stationCode, float lat, float lon) {
+        Crust2Profile profile = getClosest(lon, lat);
+        return new StationResult(netCode,
+                                 stationCode,
                                  profile.getCrustThickness(),
                                  (float)(profile.getPWaveAvgVelocity() / profile.getSWaveAvgVelocity()),
                                  new QuantityImpl((float)profile.getPWaveAvgVelocity(), UnitImpl.KILOMETER_PER_SECOND),

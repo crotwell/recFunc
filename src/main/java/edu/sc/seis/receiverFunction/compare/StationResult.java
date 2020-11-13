@@ -1,14 +1,8 @@
 package edu.sc.seis.receiverFunction.compare;
 
-import java.text.DecimalFormat;
-
-import edu.iris.Fissures.IfNetwork.NetworkId;
-import edu.iris.Fissures.model.QuantityImpl;
-import edu.iris.Fissures.model.UnitImpl;
-import edu.iris.Fissures.network.NetworkAttrImpl;
-import edu.sc.seis.fissuresUtil.bag.PoissonsRatio;
 import edu.sc.seis.receiverFunction.HKAlpha;
-import edu.sc.seis.sod.status.FissuresFormatter;
+import edu.sc.seis.sod.model.common.QuantityImpl;
+import edu.sc.seis.sod.model.common.UnitImpl;
 
 /**
  * Stores the crustal thickness and vp/vs ratio for a station from a previous
@@ -22,7 +16,7 @@ public class StationResult extends HKAlpha {
     /** for hibernate */
     protected StationResult() {}
     
-    public StationResult(NetworkAttrImpl networkId,
+    public StationResult(String networkId,
                          String stationCode,
                          QuantityImpl h,
                          float vpVs,
@@ -40,7 +34,7 @@ public class StationResult extends HKAlpha {
              "");
     }
      
-    public StationResult(NetworkAttrImpl networkId,
+    public StationResult(String networkId,
                          String stationCode,
                          QuantityImpl h,
                          float vpVs,
@@ -59,7 +53,7 @@ public class StationResult extends HKAlpha {
              extras);
     }
 
-    public StationResult(NetworkAttrImpl networkId,
+    public StationResult(String networkId,
                          String stationCode,
                          QuantityImpl h,
                          float vpVs,
@@ -80,7 +74,7 @@ public class StationResult extends HKAlpha {
              "");
     }
 
-    public StationResult(NetworkAttrImpl networkId,
+    public StationResult(String networkId,
                          String stationCode,
                          QuantityImpl h,
                          float vpVs,
@@ -97,7 +91,7 @@ public class StationResult extends HKAlpha {
         this.extras = extras;
     }
 
-    public NetworkAttrImpl getNet() {
+    public String getNet() {
         return networkId;
     }
 
@@ -125,7 +119,7 @@ public class StationResult extends HKAlpha {
 
     private StationResultRef ref;
 
-    private NetworkAttrImpl networkId;
+    private String networkId;
 
     private String extras;
 
@@ -164,7 +158,7 @@ public class StationResult extends HKAlpha {
     }
 
     
-    public void setNet(NetworkAttrImpl networkId) {
+    public void setNet(String networkId) {
         this.networkId = networkId;
     }
     

@@ -6,32 +6,31 @@
 
 package edu.sc.seis.receiverFunction;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import edu.iris.Fissures.FissuresException;
-import edu.iris.Fissures.Location;
-import edu.iris.Fissures.IfEvent.EventAccessOperations;
-import edu.iris.Fissures.IfEvent.NoPreferredOrigin;
-import edu.iris.Fissures.IfEvent.Origin;
-import edu.iris.Fissures.IfNetwork.Channel;
-import edu.iris.Fissures.IfNetwork.ChannelId;
-import edu.iris.Fissures.model.MicroSecondDate;
-import edu.iris.Fissures.model.SamplingImpl;
-import edu.iris.Fissures.model.TimeInterval;
-import edu.iris.Fissures.model.UnitImpl;
-import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
-import edu.sc.seis.fissuresUtil.bag.IncompatibleSeismograms;
-import edu.sc.seis.fissuresUtil.bag.IterDecon;
-import edu.sc.seis.fissuresUtil.bag.IterDeconResult;
-import edu.sc.seis.fissuresUtil.bag.Rotate;
-import edu.sc.seis.fissuresUtil.bag.TauPUtil;
-import edu.sc.seis.fissuresUtil.bag.ZeroPowerException;
-import edu.sc.seis.fissuresUtil.hibernate.ChannelGroup;
-import edu.sc.seis.fissuresUtil.xml.MemoryDataSetSeismogram;
+import edu.sc.seis.seisFile.fdsnws.stationxml.Channel;
+import edu.sc.seis.sod.bag.IncompatibleSeismograms;
+import edu.sc.seis.sod.bag.IterDecon;
+import edu.sc.seis.sod.bag.IterDeconResult;
+import edu.sc.seis.sod.bag.Rotate;
+import edu.sc.seis.sod.bag.TauPUtil;
+import edu.sc.seis.sod.bag.ZeroPowerException;
+import edu.sc.seis.sod.model.common.FissuresException;
+import edu.sc.seis.sod.model.common.Location;
+import edu.sc.seis.sod.model.common.Orientation;
+import edu.sc.seis.sod.model.common.SamplingImpl;
+import edu.sc.seis.sod.model.event.CacheEvent;
+import edu.sc.seis.sod.model.event.NoPreferredOrigin;
+import edu.sc.seis.sod.model.event.OriginImpl;
+import edu.sc.seis.sod.model.seismogram.LocalSeismogramImpl;
+import edu.sc.seis.sod.model.station.ChannelGroup;
+import edu.sc.seis.sod.util.time.ClockUtil;
 
 public class RecFunc {
 
@@ -41,11 +40,11 @@ public class RecFunc {
 
     }
 
-    public RecFunc(TauPUtil timeCalc, IterDecon decon, boolean pWave, TimeInterval shift) {
-        this(timeCalc, decon, pWave, shift, new TimeInterval(100, UnitImpl.SECOND));
+    public RecFunc(TauPUtil timeCalc, IterDecon decon, boolean pWave, Duration shift) {
+        this(timeCalc, decon, pWave, shift, Duration.ofSeconds(100));
     }
 
-    public RecFunc(TauPUtil timeCalc, IterDecon decon, boolean pWave, TimeInterval shift, TimeInterval pad) {
+    public RecFunc(TauPUtil timeCalc, IterDecon decon, boolean pWave, Duration shift, Duration pad) {
         this.timeCalc = timeCalc;
         this.decon = decon;
         this.shift = shift;
@@ -53,14 +52,14 @@ public class RecFunc {
         this.pWave = pWave;
     }
 
-    public IterDeconResult[] process(EventAccessOperations event,
+    public IterDeconResult[] process(CacheEvent event,
                                      ChannelGroup channelGroup,
                                      LocalSeismogramImpl[] localSeis)
         throws NoPreferredOrigin, FissuresException, IncompatibleSeismograms, TauModelException, ZeroPowerException {
         return process(event, channelGroup.getChannels(), localSeis);
     }
     
-    public IterDeconResult[] process(EventAccessOperations event,
+    public IterDeconResult[] process(CacheEvent event,
                                      Channel[] channel,
                                      LocalSeismogramImpl[] localSeis)
         throws NoPreferredOrigin,
@@ -70,14 +69,14 @@ public class RecFunc {
         LocalSeismogramImpl n = null, e = null, z = null;
         String foundChanCodes = "";
         for (int i=0; i<localSeis.length; i++) {
-            if (localSeis[i].channel_id.channel_code.endsWith("N")) {
+            if (localSeis[i].channel_id.getChannelCode().endsWith("N")) {
                 n = localSeis[i];
-            } else if (localSeis[i].channel_id.channel_code.endsWith("E")) {
+            } else if (localSeis[i].channel_id.getChannelCode().endsWith("E")) {
                 e = localSeis[i];
-            }if (localSeis[i].channel_id.channel_code.endsWith("Z")) {
+            }if (localSeis[i].channel_id.getChannelCode().endsWith("Z")) {
                 z = localSeis[i];
             }
-            foundChanCodes += localSeis[i].channel_id.channel_code+" ";
+            foundChanCodes += localSeis[i].channel_id.getChannelCode()+" ";
         }
         if (n == null || e == null || z == null) {
             logger.error("problem one seismogram component is null ");
@@ -86,11 +85,11 @@ public class RecFunc {
         }
         Channel nChan = null, eChan = null, zChan = null;
         for(int i = 0; i < channel.length; i++) {
-            if (channel[i].get_id().channel_code.endsWith("N")) {
+            if (channel[i].getCode().endsWith("N")) {
                 nChan = channel[i];
-            } else if (channel[i].get_id().channel_code.endsWith("E")) {
+            } else if (channel[i].getCode().endsWith("E")) {
                 eChan = channel[i];
-            }if (channel[i].get_id().channel_code.endsWith("Z")) {
+            }if (channel[i].getCode().endsWith("Z")) {
                 zChan = channel[i];
             }
         }
@@ -100,11 +99,11 @@ public class RecFunc {
                                            " "+(nChan != null)+" "+(eChan != null)+" "+(zChan != null));
         }
 
-        Location staLoc = zChan.getSite().getStation().getLocation();
-        Origin origin = event.get_preferred_origin();
+        Location staLoc = Location.of(zChan);
+        OriginImpl origin = event.get_preferred_origin();
         Location evtLoc = origin.getLocation();
 
-        LocalSeismogramImpl[] rotSeis = Rotate.rotateGCP(e, eChan.getOrientation(), n, nChan.getOrientation(), staLoc, evtLoc, "T", "R");
+        LocalSeismogramImpl[] rotSeis = Rotate.rotateGCP(e, Orientation.of(eChan), n, Orientation.of(nChan), staLoc, evtLoc, "T", "R");
         float[][] rotated = { rotSeis[0].get_as_floats(), rotSeis[1].get_as_floats() };
 
         // check lengths, trim if needed???
@@ -118,8 +117,8 @@ public class RecFunc {
         if (zdata.length == 0) {
             throw new IncompatibleSeismograms("data is of zero length ");
         }
-        SamplingImpl samp = SamplingImpl.createSamplingImpl(z.sampling_info);
-        double period = samp.getPeriod().convertTo(UnitImpl.SECOND).getValue();
+        SamplingImpl samp = z.sampling_info;
+        double period = ClockUtil.doubleSeconds(samp.getPeriod());
 
         zdata = IterDecon.makePowerTwo(zdata);
         rotated[0] = IterDecon.makePowerTwo(rotated[0]);
@@ -164,8 +163,8 @@ public class RecFunc {
                                                float[] zdata,
                                                float period,
                                                Location staLoc,
-                                               Origin origin)
-        throws TauModelException, ZeroPowerException {
+                                               OriginImpl origin)
+        throws TauModelException, ZeroPowerException, ZeroPowerException {
         if (component.length == 0) {
             throw new ArrayIndexOutOfBoundsException("Component length is "+component.length);
         }
@@ -182,23 +181,21 @@ public class RecFunc {
         List<Arrival> pPhases =
             timeCalc.calcTravelTimes(staLoc, origin, phaseName);
 
-        MicroSecondDate firstP = new MicroSecondDate(origin.getOriginTime());
+        Instant firstP = origin.getOriginTime();
         logger.debug("origin "+firstP);
-        firstP = firstP.add(new TimeInterval(pPhases.get(0).getTime(), UnitImpl.SECOND));
+        firstP = firstP.plus(ClockUtil.durationOfSeconds(pPhases.get(0).getTime()));
         logger.debug("firstP "+firstP);
-        //TimeInterval shift = firstP.subtract(z.getBeginTime());
-        shift = (TimeInterval)shift.convertTo(UnitImpl.SECOND);
-        if (shift.getValue() != 0) {
+        if (ClockUtil.floatSeconds(shift) != 0) {
             logger.debug("shifting by "+shift+"  before 0="+predicted[0]);
             predicted = decon.phaseShift(predicted,
-                                             (float)shift.getValue(),
+            		ClockUtil.floatSeconds(shift),
                                              period);
 
             logger.debug("shifting by "+shift);
         }
 
         logger.info("Finished with receiver function processing");
-        logger.debug("rec func begin "+firstP.subtract(shift));
+        logger.debug("rec func begin "+firstP.minus(shift));
         ans.predicted = predicted;
         ans.setAlignShift(shift);
         return ans;
@@ -212,14 +209,15 @@ public class RecFunc {
         return timeCalc;
     }
 
-    public TimeInterval getShift() {
+    public Duration getShift() {
         return shift;
     }
 
+    /*
     public static MemoryDataSetSeismogram saveTimeSeries(float[] data,
                                            String name,
                                            String chanCode,
-                                           MicroSecondDate begin,
+                                           Instant begin,
                                            LocalSeismogramImpl refSeismogram) {
         return saveTimeSeries(data, name, chanCode, begin, refSeismogram, UnitImpl.createUnitImpl(refSeismogram.y_unit));
     }
@@ -227,7 +225,7 @@ public class RecFunc {
     public static MemoryDataSetSeismogram saveTimeSeries(float[] data,
                                            String name,
                                            String chanCode,
-                                           MicroSecondDate begin,
+                                           Instant begin,
                                            LocalSeismogramImpl refSeismogram,
                                           UnitImpl unit) {
         ChannelId recFuncChanId = new ChannelId(refSeismogram.channel_id.network_id,
@@ -238,7 +236,7 @@ public class RecFunc {
 
         LocalSeismogramImpl predSeis =
             new LocalSeismogramImpl("recFunc/"+chanCode+"/"+refSeismogram.get_id(),
-                                    begin.getFissuresTime(),
+                                    begin,
                                     data.length,
                                     refSeismogram.sampling_info,
                                     unit,
@@ -249,20 +247,21 @@ public class RecFunc {
                                            name);
 
     }
+    */
     
     TauPUtil timeCalc;
 
     IterDecon decon;
 
-    TimeInterval shift;
+    Duration shift;
 
-    TimeInterval pad;
+    Duration pad;
     
     boolean pWave;
     
-    static public final TimeInterval DEFAULT_SHIFT = new TimeInterval(10, UnitImpl.SECOND);
+    static public final Duration DEFAULT_SHIFT = Duration.ofSeconds(10);
 
-    public static TimeInterval getDefaultShift() {
+    public static Duration getDefaultShift() {
         return DEFAULT_SHIFT;   
     }
     

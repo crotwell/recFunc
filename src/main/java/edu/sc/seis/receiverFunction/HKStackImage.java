@@ -9,26 +9,24 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
-import edu.iris.Fissures.model.QuantityImpl;
-import edu.iris.Fissures.model.UnitImpl;
-import edu.sc.seis.fissuresUtil.display.SimplePlotUtil;
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
-import edu.sc.seis.fissuresUtil.freq.CmplxArray2D;
-import edu.sc.seis.receiverFunction.compare.StationResult;
-import edu.sc.seis.receiverFunction.web.GMTColorPalette;
+
+import edu.sc.seis.hkstack.CmplxArray2D;
 
 public class HKStackImage extends JComponent {
 
-    HKStackImage(HKStack stack) {
+    public HKStackImage(HKStack stack) {
         this(stack, "all", 0);
     }
 
@@ -65,11 +63,9 @@ public class HKStackImage extends JComponent {
         colorMapMax = xyMax.getMaxValue();
     }
 
-    public void addMarker(StationResult result, Color color) {
-        markers.add(new Marker(result, color));
-    }
 
     public void paintComponent(Graphics graphics) {
+    	Dimension size = getPreferredSize();
         Graphics2D g = (Graphics2D)graphics;
         Color origColor = g.getColor();
         int[] xyMin = stack.getMinValueIndices();
@@ -88,6 +84,9 @@ public class HKStackImage extends JComponent {
             logger.warn(e);
             colorPallete = GMTColorPalette.getDefault(colorMapMin, colorMapMax);
         }
+        int squareWidth = size.width/stackOut[0].length;
+        int squareHeight = size.height/stackOut.length;
+        
         for(int j = smallestHindex; j < stackOut.length; j++) {
             for(int k = 0; k < stackOut[j].length; k++) {
                 if(j == xyMax.getHIndex() && k == xyMax.getKIndex()) {
@@ -96,7 +95,7 @@ public class HKStackImage extends JComponent {
                     Color color = colorPallete.getColor(stackOut[j][k]);
                     g.setColor(color);
                 }
-                g.fillRect(2 * k, 2 * (j - smallestHindex), 2, 2);
+                g.fillRect(squareWidth * k, squareHeight * (j - smallestHindex), squareWidth, squareHeight);
             }
         }
         // tradeoff curves
@@ -163,6 +162,20 @@ public class HKStackImage extends JComponent {
             }
         }
         return CPT_FILE;
+    }
+    
+
+    public BufferedImage createImage(int width, int height) {
+        BufferedImage bufImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Dimension imageSize = new Dimension(width, height);
+        setMinimumSize(imageSize);
+        setPreferredSize(imageSize);
+        this.paintComponent(bufImg.createGraphics());
+        return bufImg;
+    }
+    
+    public void saveImage(String filename, int width, int height) throws IOException {
+        ImageIO.write(createImage(width, height), "png", new File(filename));
     }
 
     static URL CPT_FILE;

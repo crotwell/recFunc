@@ -1,6 +1,6 @@
 package edu.sc.seis.receiverFunction.compare;
 
-import edu.iris.Fissures.IfNetwork.StationId;
+import edu.sc.seis.sod.model.station.StationId;
 
 
 /**

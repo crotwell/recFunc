@@ -1,10 +1,10 @@
 package edu.sc.seis.receiverFunction;
 
-import edu.iris.Fissures.model.QuantityImpl;
-import edu.iris.Fissures.model.UnitImpl;
-import edu.sc.seis.fissuresUtil.bag.PoissonsRatio;
-import edu.sc.seis.fissuresUtil.chooser.ThreadSafeDecimalFormat;
-import edu.sc.seis.sod.status.FissuresFormatter;
+import java.text.DecimalFormat;
+
+import edu.sc.seis.sod.bag.PoissonsRatio;
+import edu.sc.seis.sod.model.common.QuantityImpl;
+import edu.sc.seis.sod.model.common.UnitImpl;
 
 public class HKAlpha {
 
@@ -34,7 +34,7 @@ public class HKAlpha {
     }
 
     public String formatH() {
-        return FissuresFormatter.formatDepth(getH());
+        return getH().formatValue("0.00");
     }
 
     public String formatVpVs() {
@@ -42,11 +42,11 @@ public class HKAlpha {
     }
 
     public String formatVp() {
-        return FissuresFormatter.formatQuantity(getVp());
+        return getVp().formatValue("0.00");
     }
 
     public String formatVs() {
-        return FissuresFormatter.formatQuantity(getVs());
+        return getVs().formatValue("0.00");
     }
 
     public String formatPoissonsRatio() {
@@ -58,7 +58,7 @@ public class HKAlpha {
     }
 
     public String formatHStdDev() {
-        return FissuresFormatter.formatDepth(getHStdDev());
+        return getHStdDev().formatValue("0.0000");
     }
 
     public String formatKStdDev() {
@@ -82,17 +82,12 @@ public class HKAlpha {
     }
 
     public QuantityImpl getVp() {
-        getVpkm(); // side effect, make sure hibernate loaded vp
         return vp;
-    }
-    
-    public float getVpkm() {
-        return (float)vp.getValue(UnitImpl.KILOMETER_PER_SECOND);
     }
 
     public QuantityImpl getVs() {
         if (getVp() == null) {throw new NullPointerException("getVp is null");}
-        return getVp().divideBy(getVpVs());
+        return getVp().dividedByDbl((double)getVpVs());
     }
 
     public float getAmp() {
@@ -124,9 +119,9 @@ public class HKAlpha {
 
     protected float kStdDev;
 
-    public static final ThreadSafeDecimalFormat vpvsFormat = new ThreadSafeDecimalFormat("0.00");
+    public static final DecimalFormat vpvsFormat = new DecimalFormat("0.00");
 
-    public static final ThreadSafeDecimalFormat depthFormat = new ThreadSafeDecimalFormat("0.##");
+    public static final DecimalFormat depthFormat = new DecimalFormat("0.##");
 
     private static final QuantityImpl ZERO_KM = new QuantityImpl(0, UnitImpl.KILOMETER);
 }

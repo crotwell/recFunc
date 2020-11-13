@@ -7,10 +7,10 @@
 package edu.sc.seis.receiverFunction.crust2;
 
 import java.text.DecimalFormat;
-import edu.iris.Fissures.model.QuantityImpl;
-import edu.iris.Fissures.model.UnitImpl;
+
 import edu.sc.seis.TauP.VelocityLayer;
-import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.sod.model.common.QuantityImpl;
+import edu.sc.seis.sod.model.common.UnitImpl;
 
 public class Crust2Profile {
 

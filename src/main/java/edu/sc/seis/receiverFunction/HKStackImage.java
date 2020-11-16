@@ -22,7 +22,6 @@ import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
-import edu.sc.seis.hkstack.CmplxArray2D;
 
 public class HKStackImage extends JComponent {
 

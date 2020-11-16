@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 import edu.sc.seis.TauP.TauModelException;
-import edu.sc.seis.hkstack.CmplxArray2D;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;

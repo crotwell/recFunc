@@ -47,9 +47,6 @@ import edu.sc.seis.sod.util.convert.sac.SacToFissures;
 import edu.sc.seis.sod.util.time.ClockUtil;
 
 public class App {
-    public String getUsage() {
-        return "Usage: HKStack receiverfunction.sac";
-    }
     
     public void config(String[] args) throws JSAPException, FileNotFoundException {
     	SimpleJSAP jsap = new SimpleJSAP( 

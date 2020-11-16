@@ -873,11 +873,15 @@ public class HKStack  {
         out.newLine();
         out.write("numH=" + numH);
         out.newLine();
+        out.write("maxH=" + minH.add(stepH.multipliedByDbl(numH-1)));
+        out.newLine();
         out.write("minK=" + minK);
         out.newLine();
         out.write("stepK=" + stepK);
         out.newLine();
         out.write("numK=" + numK);
+        out.newLine();
+        out.write("maxK=" + minK + stepK * (numK-1));
         out.newLine();
         out.write("stack.length=" + stack.length);
         out.newLine();

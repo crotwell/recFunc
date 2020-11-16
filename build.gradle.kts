@@ -10,7 +10,10 @@ plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
     eclipse
+    id("project-report")
 }
+
+version = "0.1-20201116"
 
 repositories {
     mavenLocal()
@@ -28,17 +31,9 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 
     // This dependency is used by the application.
-        implementation("edu.sc.seis:seedCodec:1.0.11")
-    implementation("edu.sc.seis:seisFile:2.0.0-SNAPSHOT") {
-      // we need seisFile for sac output, but not all the other functionality
-      exclude("com.martiansoftware:jsap")
-      exclude("org.rxtx:rxtx")
-      exclude("org.codehaus.woodstox:woodstox-core-lgpl")
-      exclude("net.java.dev.msv:msv-core")
-      exclude("org.apache.httpcomponents:httpclient")
-      exclude("mysql:mysql-connector-java")
-    }
-    implementation("edu.sc.seis:TauP:2.4.5")
+    implementation("edu.sc.seis:seedCodec:1.0.11")
+    implementation("edu.sc.seis:seisFile:2.0.0-SNAPSHOT")
+    implementation("edu.sc.seis:TauP:2.4.6-SNAPSHOT")
     implementation("edu.sc.seis:sod:4.0.0-SNAPSHOT-WEBSTATUS")
     implementation("edu.sc.seis:sod-model:4.0.0-SNAPSHOT")
     implementation("edu.sc.seis:sod-mock:4.0.0-SNAPSHOT")
@@ -46,6 +41,9 @@ dependencies {
     implementation("edu.sc.seis:sod-bag:4.0.0-SNAPSHOT")
     implementation("com.oregondsp.signalprocessing:oregondsp:1.0.1-alpha")
     implementation("org.json:json:20170516")
+    implementation("com.martiansoftware:jsap:2.1")
+    implementation( "org.slf4j:slf4j-api:1.7.30")
+    implementation( "org.slf4j:slf4j-log4j12:1.7.30")
 }
 
 java {

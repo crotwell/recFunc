@@ -9,16 +9,40 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import com.martiansoftware.jsap.FlaggedOption;
+import com.martiansoftware.jsap.JSAP;
+import com.martiansoftware.jsap.JSAPException;
+import com.martiansoftware.jsap.JSAPResult;
+import com.martiansoftware.jsap.Parameter;
+import com.martiansoftware.jsap.QualifiedSwitch;
+import com.martiansoftware.jsap.SimpleJSAP;
+import com.martiansoftware.jsap.UnflaggedOption;
+import com.martiansoftware.jsap.stringparsers.FileStringParser;
+
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.HKStackImage;
+import edu.sc.seis.receiverFunction.SumHKStack;
+import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
+import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
+import edu.sc.seis.seisFile.fdsnws.stationxml.Channel;
+import edu.sc.seis.seisFile.fdsnws.stationxml.Network;
+import edu.sc.seis.seisFile.fdsnws.stationxml.Station;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
+import edu.sc.seis.sod.SodConfig;
 import edu.sc.seis.sod.model.common.FissuresException;
 import edu.sc.seis.sod.model.common.QuantityImpl;
 import edu.sc.seis.sod.model.common.UnitImpl;
+import edu.sc.seis.sod.model.event.CacheEvent;
 import edu.sc.seis.sod.model.seismogram.LocalSeismogramImpl;
+import edu.sc.seis.sod.model.station.ChannelGroup;
 import edu.sc.seis.sod.util.convert.sac.SacToFissures;
 import edu.sc.seis.sod.util.time.ClockUtil;
 
@@ -26,66 +50,178 @@ public class App {
     public String getUsage() {
         return "Usage: HKStack receiverfunction.sac";
     }
+    
+    public void config(String[] args) throws JSAPException, FileNotFoundException {
+    	SimpleJSAP jsap = new SimpleJSAP( 
+                "HKStack", 
+                "Calculate H-K stacks for receiver functions",
+                new Parameter[] {
+                    new FlaggedOption( "filenamefile", FileStringParser.getParser(), JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'f', JSAP.NO_LONGFLAG, 
+                        "File with list of receiver function filenames to include." ),
+                    new QualifiedSwitch( "verbose", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'v', "verbose", 
+                        "Requests verbose output." ),
+                    new UnflaggedOption( "filenames", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, JSAP.GREEDY, 
+                        "One or more filenames of receiver functions you would like to stack." )
+                }
+            );
 
-    public static void main(String[] args) throws FileNotFoundException, IOException, FissuresException {
-    	if (args.length == 0) {
-    		System.out.println(new App().getUsage());
+    	JSAPResult config = jsap.parse(args);    
+    	if ( jsap.messagePrinted() ) System.exit( 1 );
+
+    	if (config.contains("filenamefile")) {
+    		Scanner scanner = new Scanner(config.getFile("filenamefile"));
+    		while (scanner.hasNextLine()) {
+    			String line = scanner.nextLine();
+    			filenameList.add(line.strip());
+    		}
+    	} else if (config.contains("filenames")) {
+    		filenameList = List.of(config.getStringArray("filenames"));
+    	} else {
+    		System.err.println();
+    		System.err.println("Usage: HKStack ");
+    		System.err.println("                "
+    				+ jsap.getUsage());
+    		System.err.println();
+    		System.exit(1);
     	}
-    	boolean doImage = true;
-    	boolean doValues = false;
-        QuantityImpl alpha = new QuantityImpl(6.1, UnitImpl.KILOMETER_PER_SECOND);
-        QuantityImpl minH = new QuantityImpl(30, UnitImpl.KILOMETER);
-        QuantityImpl stepH = new QuantityImpl(.25, UnitImpl.KILOMETER);
-        int numH = 100;
-        
-        float minK = 1.5f;
-        float stepK = 0.005f;
-        int numK = 100;
-        float weightPs = 1.0f/3;
-        float weightPpPs = 1.0f/3;
-        float weightPsPs = 1 - weightPs - weightPpPs;
-        
-        SacTimeSeries sac = new SacTimeSeries(args[0]);
-        float percentMatch = sac.getHeader().getUser0();
-        float quassianWidth = sac.getHeader().getUser1();
-        float rayParam = sac.getHeader().getUser2();
-        System.out.println("percentMatch "+percentMatch+"  quassianWidth: "+quassianWidth+"  rayParam:"+rayParam);
-        
-        LocalSeismogramImpl recFuncSeis = SacToFissures.getSeismogram(sac);
-        Duration shift = ClockUtil.durationOfSeconds(sac.getHeader().getA()-sac.getHeader().getB());
-        System.out.println("shift:  "+shift+"   "+sac.getHeader().getA()+" "+sac.getHeader().getB());
-        
-        HKStack stack = new HKStack(alpha,
-        		rayParam,
-                quassianWidth,
-                percentMatch,
-                minH,
-                stepH,
-                numH,
-                 minK,
-                 stepK,
-                 numK,
-                 weightPs,
-                 weightPpPs,
-                 weightPsPs,
-                 recFuncSeis,
-                 shift);
-        if (doValues) {
-        	float[][] stackVals = stack.getStack();
-        	for(int j = 0; j < stackVals.length; j++) {
-        		for(int k = 0; k < stackVals[j].length; k++) {
-        			System.out.print(stackVals[j][k]+" ");
-        		}
-        		System.out.println();
-        	}
-        }
-        if (doImage) {
-        	HKStackImage stackImage = new HKStackImage(stack);
-        	ImageIO.write(stackImage.createImage(400, 400), "png", new File("hkstack.png"));
+    	
+    }
+    
+    public void doit() throws IOException, FissuresException {
+    	List<ReceiverFunctionResult> individuals = new ArrayList<ReceiverFunctionResult>();
 
-        	BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
-        	stack.writeReport(out);
-        	out.close();
-        }
+    	
+    	Channel chan = null;
+    	for (String sacfilename: filenameList ) {
+
+    		SacTimeSeries sac = new SacTimeSeries(sacfilename);
+    		if (chan == null) {
+    	    	Network net = new Network(sac.getHeader().getKnetwk().strip());
+    	    	Station sta = new Station(net, sac.getHeader().getKstnm().strip());
+    	    	chan = new Channel(sta, sac.getHeader().getKhole().strip(), sac.getHeader().getKcmpnm().strip());
+    		}
+    		float percentMatch = sac.getHeader().getUser0();
+    		float quassianWidth = sac.getHeader().getUser1();
+    		float rayParam = sac.getHeader().getUser2();
+    		System.out.println(sacfilename+": percentMatch "+percentMatch+"  quassianWidth: "+quassianWidth+"  rayParam:"+rayParam);
+    		if (percentMatch < 0) {percentMatch = 0;}
+    		if (rayParam < 0) {
+    			throw new FissuresException("rayParam is undefined in sac file: "+rayParam+" for "+sacfilename);
+    		}
+    		
+    		LocalSeismogramImpl recFuncSeis = SacToFissures.getSeismogram(sac);
+    		Duration shift = ClockUtil.durationOfSeconds(sac.getHeader().getA()-sac.getHeader().getB());
+    		System.out.println("shift:  "+shift+"   "+sac.getHeader().getA()+" "+sac.getHeader().getB());
+
+    		HKStack stack = new HKStack(alpha,
+    				rayParam,
+    				quassianWidth,
+    				percentMatch,
+    				minH,
+    				stepH,
+    				numH,
+    				minK,
+    				stepK,
+    				numK,
+    				weightPs,
+    				weightPpPs,
+    				weightPsPs,
+    				recFuncSeis,
+    				shift);
+    		CacheEvent event = null;
+    		Channel[] chanArr = new Channel[] { chan }; // fake it to get station codes into stacker
+    		ChannelGroup channelGroup = new ChannelGroup(chanArr);
+    		LocalSeismogramImpl original1 = null;
+    		LocalSeismogramImpl original2 = null;
+    		LocalSeismogramImpl original3 = null;
+    		LocalSeismogramImpl radial = recFuncSeis;
+    		LocalSeismogramImpl transverse = null;
+    		float radialMatch = percentMatch;
+    		int radialBump = 0;
+    		float transverseMatch = 0;
+    		int transverseBump = 0;
+    		float gwidth = quassianWidth;
+    		int maxBumps = 400;
+    		float tol = 1;
+    		SodConfig config = null;
+    		ReceiverFunctionResult rfResult = new ReceiverFunctionResult(event,
+    				channelGroup,
+    				original1,
+    				original2,
+    				original3,
+    				radial, 
+    				transverse,
+    				radialMatch,
+    				radialBump,
+    				transverseMatch,
+    				transverseBump,
+    				gwidth,
+    				maxBumps,
+    				tol,
+    				config);
+
+    		rfResult.setHKstack(stack);
+    		individuals.add(rfResult);
+
+    	}
+
+    	float minPercentMatch = 0;
+    	QuantityImpl smallestH = new QuantityImpl(10, UnitImpl.KILOMETER);
+
+    	boolean usePhaseWeight = true;
+    	Set<RejectedMaxima> rejects = new HashSet<RejectedMaxima>();
+    	boolean doBootstrap = false;
+    	int bootstrapIterations = 1;
+    	String phase = "";
+    	SumHKStack sumStack = SumHKStack.calculateForPhase(individuals,
+    			smallestH,
+    			minPercentMatch,
+    			usePhaseWeight,
+    			rejects,
+    			doBootstrap,
+    			bootstrapIterations,
+    			phase);
+
+    	HKStack sumHK = sumStack.getSum();
+
+    	if (doValues) {
+    		float[][] stackVals = sumHK.getStack();
+    		for(int j = 0; j < stackVals.length; j++) {
+    			for(int k = 0; k < stackVals[j].length; k++) {
+    				System.out.print(stackVals[j][k]+" ");
+    			}
+    			System.out.println();
+    		}
+    	}
+    	if (doImage) {
+    		HKStackImage stackImage = new HKStackImage(sumHK);
+    		ImageIO.write(stackImage.createImage(400, 400), "png", new File("hkstack_"+chan.getNetworkCode()+"."+chan.getStationCode()+".png"));
+
+    		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
+    		sumHK.writeReport(out);
+    		out.close();
+    	}
+    }
+    
+    List<String> filenameList = new ArrayList<String>();
+    
+    boolean doImage = true;
+	boolean doValues = false;
+    QuantityImpl alpha = new QuantityImpl(6.1, UnitImpl.KILOMETER_PER_SECOND);
+    QuantityImpl minH = new QuantityImpl(30, UnitImpl.KILOMETER);
+    QuantityImpl stepH = new QuantityImpl(.25, UnitImpl.KILOMETER);
+    int numH = 100;
+    
+    float minK = 1.5f;
+    float stepK = 0.005f;
+    int numK = 100;
+    float weightPs = 1.0f/3;
+    float weightPpPs = 1.0f/3;
+    float weightPsPs = 1 - weightPs - weightPpPs;
+
+    public static void main(String[] args) throws FileNotFoundException, IOException, FissuresException, JSAPException {
+        App app = new App();
+        app.config(args);
+        app.doit();
     }
 }

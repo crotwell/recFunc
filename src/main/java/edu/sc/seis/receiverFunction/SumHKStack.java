@@ -151,6 +151,9 @@ public class SumHKStack {
         if(!iterator.hasNext()) {
             throw new IllegalArgumentException("individual HKStack cannot be length 0");
         }
+        if (phase == null || phase.length() == 0) {
+        	phase = "all";
+        }
         while(iterator.hasNext()) {
             ReceiverFunctionResult result = iterator.next();
             if (result.getHKstack().getStack() == null) {
@@ -178,7 +181,7 @@ public class SumHKStack {
                 for(int kIndex = 0; kIndex < sumStack[0].length; kIndex++) {
                     if(usePhaseWeight) {
                         Cmplx val = new Cmplx(0, 0);
-                        if(phase.equals("Ps") || phase.equals("all")) {
+                        if(phase.equals("Ps") || phase.equalsIgnoreCase("all")) {
                             val = individual.getAnalyticPs().get(shiftHIndex,
                                                                  kIndex);
                             sumStack[hIndex][kIndex] += val.real();

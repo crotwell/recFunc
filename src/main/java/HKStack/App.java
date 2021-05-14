@@ -3,11 +3,14 @@
  */
 package HKStack;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,6 +20,11 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import org.apache.log4j.BasicConfigurator;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+
 import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
@@ -24,9 +32,11 @@ import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Parameter;
 import com.martiansoftware.jsap.QualifiedSwitch;
 import com.martiansoftware.jsap.SimpleJSAP;
+import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.UnflaggedOption;
 import com.martiansoftware.jsap.stringparsers.FileStringParser;
 
+import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.receiverFunction.HKStack;
 import edu.sc.seis.receiverFunction.HKStackImage;
 import edu.sc.seis.receiverFunction.SumHKStack;
@@ -45,18 +55,24 @@ import edu.sc.seis.sod.model.seismogram.LocalSeismogramImpl;
 import edu.sc.seis.sod.model.station.ChannelGroup;
 import edu.sc.seis.sod.util.convert.sac.SacToFissures;
 import edu.sc.seis.sod.util.time.ClockUtil;
+import edu.sc.seis.sod.web.jsonapi.JsonApi;
+import edu.sc.seis.sod.web.jsonapi.JsonApiException;
 
 public class App {
     
-    public void config(String[] args) throws JSAPException, FileNotFoundException {
+    public void config(String[] args) throws JSAPException, IOException {
     	SimpleJSAP jsap = new SimpleJSAP( 
                 "HKStack", 
                 "Calculate H-K stacks for receiver functions",
                 new Parameter[] {
                     new FlaggedOption( "filenamefile", FileStringParser.getParser(), JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'f', JSAP.NO_LONGFLAG, 
                         "File with list of receiver function filenames to include." ),
+                    new FlaggedOption( "config", FileStringParser.getParser(), JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'c', JSAP.NO_LONGFLAG, 
+                        "File with configuration parameters (json)." ),
                     new QualifiedSwitch( "verbose", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'v', "verbose", 
                         "Requests verbose output." ),
+                    new Switch( "savedefaults", JSAP.NO_SHORTFLAG, "defaultconfig", 
+                            "Save default config as config_defaults.json." ),
                     new UnflaggedOption( "filenames", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, JSAP.GREEDY, 
                         "One or more filenames of receiver functions you would like to stack." )
                 }
@@ -64,6 +80,27 @@ public class App {
 
     	JSAPResult config = jsap.parse(args);    
     	if ( jsap.messagePrinted() ) System.exit( 1 );
+    	if (config.getBoolean("savedefaults")) {
+
+            File outFile = new File("config_default.json");
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outFile)));
+            out.println(defaultRunParams().toString(2));
+            out.close();
+            System.out.println("Save defaults to "+outFile);
+            System.exit(0);
+    	}
+
+        if (config.contains("config")) {
+            try {
+                runParams = loadConfigFile(config.getFile("config"));
+            } catch (JSONException e) {
+                throw new RuntimeException("can't happen",e);
+            } catch (JsonApiException e) {
+                throw new RuntimeException("can't happen",e);
+            }
+        } else {
+            runParams = defaultRunParams();
+        }
 
     	if (config.contains("filenamefile")) {
     		Scanner scanner = new Scanner(config.getFile("filenamefile"));
@@ -84,18 +121,83 @@ public class App {
     	
     }
     
-    public void doit() throws IOException, FissuresException {
+    public void saveRunParams(File configfile) throws JSONException, IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(configfile));
+        writer.write(runParams.toString(2));
+        writer.close();
+    }
+    
+    public JSONObject defaultRunParams() {
+        JSONObject json = new JSONObject();
+        json.put("doimage", true);
+        json.put("dovalues", false);
+        json.put("doreport", true);
+        json.put("alpha", 6.1);
+        JSONObject hObj = new JSONObject();
+        hObj.put("min", 25);
+        hObj.put("step", .25);
+        hObj.put("num", 100);
+        json.put("h", hObj);
+        JSONObject kObj = new JSONObject();
+        kObj.put("min", 1.5);
+        kObj.put("step", .005);
+        kObj.put("num", 100);
+        json.put("k", kObj);
+        JSONObject wObj = new JSONObject();
+        wObj.put("Ps", 1.0f/3);
+        wObj.put("PpPs", 1.0f/3);
+        wObj.put("PsPs", "remainder");
+        json.put("weight", wObj);
+        json.put("minPercentMatch", 80.0);
+        json.put("dobootstrap", false);
+        json.put("bootstrapIterations", 100);
+        return json;
+    }
+    
+    public void doit() throws IOException, FissuresException, TauModelException {
+        System.out.println("doit");
     	List<ReceiverFunctionResult> individuals = new ArrayList<ReceiverFunctionResult>();
 
-    	
+
+        boolean doImage = runParams.optBoolean("doimage", true);
+        boolean doValues = runParams.optBoolean("dovalues", false);
+        QuantityImpl alpha = new QuantityImpl(runParams.optDouble("alpha", 6.1), UnitImpl.KILOMETER_PER_SECOND);
+        JSONObject hObj = runParams.getJSONObject("h");
+        QuantityImpl minH = new QuantityImpl(hObj.optDouble("min", 25), UnitImpl.KILOMETER);
+        QuantityImpl stepH = new QuantityImpl(hObj.optDouble("step", .25), UnitImpl.KILOMETER);
+        int numH = hObj.optInt("num", 100);
+        System.out.println("H "+minH+" "+stepH+" "+numH);
+
+        JSONObject kObj = runParams.getJSONObject("k");
+        float minK = (float) kObj.optDouble("min", 1.5f);
+        float stepK = (float) kObj.optDouble("step", 0.005f);
+        int numK = kObj.optInt("num", 100);
+        System.out.println("K "+minK+" "+stepK+" "+numK);
+
+        JSONObject wObj = runParams.getJSONObject("weight");
+        float weightPs = (float) wObj.optDouble("Ps", 1.0f/3);
+        float weightPpPs = (float) wObj.optDouble("PpPs", 1.0f/3);
+        float weightPsPs = 1 - weightPs - weightPpPs;
+
+        float minPercentMatch = (float) runParams.optDouble("minPercentMatch", 80.0f);
+
+        boolean doBootstrap = runParams.optBoolean("dobootstrap", false);
+        int bootstrapIterations = runParams.optInt("bootstrapIterations", 100);
+        
+        boolean doReport = runParams.optBoolean("doreport", true);
+        
     	Channel chan = null;
     	for (String sacfilename: filenameList ) {
 
-    		SacTimeSeries sac = new SacTimeSeries(sacfilename);
+    		SacTimeSeries sac = SacTimeSeries.read(sacfilename);
     		if (chan == null) {
     	    	Network net = new Network(sac.getHeader().getKnetwk().strip());
     	    	Station sta = new Station(net, sac.getHeader().getKstnm().strip());
     	    	chan = new Channel(sta, sac.getHeader().getKhole().strip(), sac.getHeader().getKcmpnm().strip());
+    	    	chan.setElevation(sac.getHeader().getStel());
+    	    	chan.setDepth(sac.getHeader().getStdp());
+    	    	chan.setLatitude(sac.getHeader().getStla());
+    	    	chan.setLongitude(sac.getHeader().getStlo());
     		}
     		float percentMatch = sac.getHeader().getUser0();
     		float quassianWidth = sac.getHeader().getUser1();
@@ -162,13 +264,10 @@ public class App {
 
     	}
 
-    	float minPercentMatch = 0;
     	QuantityImpl smallestH = new QuantityImpl(10, UnitImpl.KILOMETER);
 
     	boolean usePhaseWeight = true;
     	Set<RejectedMaxima> rejects = new HashSet<RejectedMaxima>();
-    	boolean doBootstrap = false;
-    	int bootstrapIterations = 1;
     	String phase = "";
     	SumHKStack sumStack = SumHKStack.calculateForPhase(individuals,
     			smallestH,
@@ -178,47 +277,88 @@ public class App {
     			doBootstrap,
     			bootstrapIterations,
     			phase);
-
+    	sumStack.calcStackComplexity();
     	HKStack sumHK = sumStack.getSum();
 
     	if (doValues) {
+    	    File outFile = new File("hkstack_"+chan.getNetworkCode()+"."+chan.getStationCode()+".xy");
+    	    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outFile)));
     		float[][] stackVals = sumHK.getStack();
     		for(int j = 0; j < stackVals.length; j++) {
     			for(int k = 0; k < stackVals[j].length; k++) {
-    				System.out.print(stackVals[j][k]+" ");
+    				out.print(stackVals[j][k]+" ");
     			}
-    			System.out.println();
+    			out.println();
     		}
+    		out.close();
     	}
     	if (doImage) {
     		HKStackImage stackImage = new HKStackImage(sumHK);
     		ImageIO.write(stackImage.createImage(400, 400), "png", new File("hkstack_"+chan.getNetworkCode()+"."+chan.getStationCode()+".png"));
 
-    		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
-    		sumHK.writeReport(out);
-    		out.close();
     	}
+    	if (doReport) {
+            File outFile = new File("report_"+chan.getNetworkCode()+"."+chan.getStationCode()+".json");
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outFile)));
+            JSONStringer json = new JSONStringer();
+            json.object();
+            json.key("sumhk");
+            sumStack.reportJson(json);
+            
+            json.key("config").value(runParams);
+            
+            json.endObject();
+            
+            JSONObject formated = new JSONObject(json.toString());
+            out.print(formated.toString(2));
+            out.close();
+    	}
+
+        File outFile = new File("config_"+chan.getNetworkCode()+"."+chan.getStationCode()+".json");
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outFile)));
+        out.println(runParams.toString(2));
+        out.close();
+    }
+    
+
+    public JSONObject loadConfigFile(File configfile) throws JSONException, IOException, JsonApiException {
+        BufferedReader in = null;
+        try {
+            if (configfile.exists()) {
+                in = new BufferedReader(new FileReader(configfile));
+
+                String rawJson = JsonApi.loadFromReader(in);
+                JSONObject json = new JSONObject(rawJson);
+                return json; 
+            } else {
+                throw new IOException("can't find or open config file: "+configfile);
+            }
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch(IOException e) {
+                    // oh well
+                }
+            }
+        }
     }
     
     List<String> filenameList = new ArrayList<String>();
+    JSONObject runParams;
     
-    boolean doImage = true;
-	boolean doValues = false;
-    QuantityImpl alpha = new QuantityImpl(6.1, UnitImpl.KILOMETER_PER_SECOND);
-    QuantityImpl minH = new QuantityImpl(30, UnitImpl.KILOMETER);
-    QuantityImpl stepH = new QuantityImpl(.25, UnitImpl.KILOMETER);
-    int numH = 100;
-    
-    float minK = 1.5f;
-    float stepK = 0.005f;
-    int numK = 100;
-    float weightPs = 1.0f/3;
-    float weightPpPs = 1.0f/3;
-    float weightPsPs = 1 - weightPs - weightPpPs;
 
     public static void main(String[] args) throws FileNotFoundException, IOException, FissuresException, JSAPException {
+        try {
+            BasicConfigurator.configure();
+            System.out.println("Start");
         App app = new App();
         app.config(args);
         app.doit();
+        System.out.println("Done");
+        } catch(Exception e) {
+            e.printStackTrace();
+        
+        }
     }
 }

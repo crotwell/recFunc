@@ -5,11 +5,13 @@
  */
 package edu.sc.seis.receiverFunction;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.util.List;
+
+import org.json.JSONWriter;
 
 import edu.sc.seis.TauP.Arrival;
 import edu.sc.seis.TauP.TauModelException;
@@ -847,45 +849,65 @@ public class HKStack  {
     public String formatWeightPsPs() {
         return vpvsFormat.format(getWeightPsPs());
     }
+    
+
+    public void reportJson(JSONWriter json) throws IOException {
+        json.object();
+        json.key("p").value(p);
+        json.key("alpha").value(alpha);
+        StackMaximum xyMax = getGlobalMaximum();
+        float max = xyMax.getMaxValue();
+        json.key("globalmax").object();
+        json.key("h").value(xyMax.getHValue());
+        json.key("k").value(xyMax.getKValue());
+        json.key("value").value(max);
+        json.endObject();
+        json.key("h").object();
+        json.key("min").value(getMinH());
+        json.key("step").value(getStepH());
+        json.key("num").value(getNumH());
+        json.key("max").value(minH.add(stepH.multipliedByDbl(numH-1)));
+        json.endObject();
+        json.key("k").object();
+        json.key("min").value(getMinK());
+        json.key("step").value(getStepK());
+        json.key("num").value(getNumK());
+        json.key("max").value(minK + stepK * (numK-1));
+        json.endObject();
+        json.key("weight").object();
+        json.key("Ps").value(formatWeightPs());
+        json.key("PpPs").value(formatWeightPpPs());
+        json.key("PsPs").value(formatWeightPsPs());
+        json.endObject();
+        json.key("percentMatch").value(percentMatch);
+        json.endObject();
+        
+    }
 
     /**
      * Writes the HKStack report to a string.
      */
-    public void writeReport(BufferedWriter out) throws IOException {
-        out.write("p=" + p);
-        out.newLine();
-        out.write("alpha=" + alpha);
-        out.newLine();
+    public void writeReport(PrintWriter out) throws IOException {
+        out.println("p=" + p);
+        out.println("alpha=" + alpha);
         StackMaximum xyMax = getGlobalMaximum();
         float max = xyMax.getMaxValue();
-        out.write("Max H="
+        out.println("Max H="
                 + xyMax.getHValue());
-        out.write("    K=" + xyMax.getKValue());
-        out.write("  max=" + max);
-        out.write(" alpha=" + alpha);
-        out.newLine();
-        out.write("percentMatch=" + percentMatch);
-        out.newLine();
-        out.write("minH=" + minH);
-        out.newLine();
-        out.write("stepH=" + stepH);
-        out.newLine();
-        out.write("numH=" + numH);
-        out.newLine();
-        out.write("maxH=" + minH.add(stepH.multipliedByDbl(numH-1)));
-        out.newLine();
-        out.write("minK=" + minK);
-        out.newLine();
-        out.write("stepK=" + stepK);
-        out.newLine();
-        out.write("numK=" + numK);
-        out.newLine();
-        out.write("maxK=" + minK + stepK * (numK-1));
-        out.newLine();
-        out.write("stack.length=" + stack.length);
-        out.newLine();
-        out.write("stack[0].length=" + stack[0].length);
-        out.newLine();
+        out.println("    K=" + xyMax.getKValue());
+        out.println("  max=" + max);
+        out.println(" alpha=" + alpha);
+        out.println("percentMatch=" + percentMatch);
+        out.println("minH=" + minH);
+        out.println("stepH=" + stepH);
+        out.println("numH=" + numH);
+        out.println("maxH=" + minH.add(stepH.multipliedByDbl(numH-1)));
+        out.println("minK=" + minK);
+        out.println("stepK=" + stepK);
+        out.println("numK=" + numK);
+        out.println("maxK=" + minK + stepK * (numK-1));
+        out.println("stack.length=" + stack.length);
+        out.println("stack[0].length=" + stack[0].length);
     }
 
     float calcPhaseStack(int hIndex, int kIndex) {

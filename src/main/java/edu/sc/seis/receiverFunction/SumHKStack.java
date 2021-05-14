@@ -5,12 +5,17 @@
  */
 package edu.sc.seis.receiverFunction;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import org.json.JSONException;
+import org.json.JSONWriter;
 
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.receiverFunction.compare.StationResult;
@@ -660,7 +665,31 @@ public class SumHKStack {
     protected void setGaussianWidth(float gw) {
         this.gaussianWidth = gw;
     }
+
     
+    public void reportJson(JSONWriter json) throws IOException {
+        json.object();
+        json.key("hkstack");
+        sum.reportJson(json);
+        json.key("numEQ").value(numEQ);
+        json.key("complexResidual").value(formatComplexityResidual());
+        json.key("bootstrap").object();
+        // stddev only if calc bootstrap
+        if (hBootstrap != null) {
+            json.key("Hstddev").value(getHStdDev());
+            json.key("Kstddev").value(getKStdDev());
+        }
+        json.endObject();
+        json.key("gaussianWidth").value(gaussianWidth);
+        json.key("minPercentMatch").value(minPercentMatch);
+        try {
+            json.key("residualPower").value(getResidualPower());
+        } catch (TauModelException e) {
+            throw new RuntimeException("shouldn't happen",e);
+        }
+        json.key("smallestH").value(getSmallestH());
+        json.endObject();
+    }
     protected float gaussianWidth;
 
     protected List<ReceiverFunctionResult> individuals;

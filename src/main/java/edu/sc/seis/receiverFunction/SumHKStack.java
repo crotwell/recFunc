@@ -688,6 +688,20 @@ public class SumHKStack {
             throw new RuntimeException("shouldn't happen",e);
         }
         json.key("smallestH").value(getSmallestH());
+        StackMaximum[] localMaxima = getSum().getLocalMaxima(smallestH, 5);
+        json.key("localMax").array();
+        for (StackMaximum m : localMaxima) {
+            json.object();
+            json.key("hValue").value(m.hValue);
+            json.key("kValue").value(m.kValue);
+            json.key("hIndex").value(m.hIndex);
+            json.key("kIndex").value(m.kIndex);
+            json.key("complexityResidual").value(m.complexityResidual);
+            json.key("complexityOriginal").value(m.complexityOriginal);
+            json.key("maxValue").value(m.maxValue);
+            json.endObject();
+        }
+        json.endArray();
         json.endObject();
     }
     protected float gaussianWidth;

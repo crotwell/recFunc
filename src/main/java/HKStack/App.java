@@ -20,6 +20,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import edu.sc.seis.receiverFunction.StackMaximum;
 import org.apache.log4j.BasicConfigurator;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -279,16 +280,19 @@ public class App {
     			phase);
     	sumStack.calcStackComplexity();
     	HKStack sumHK = sumStack.getSum();
+		StackMaximum[] localMaxima = sumHK.getLocalMaxima(smallestH, 5);
 
     	if (doValues) {
-    	    File outFile = new File("hkstack_"+chan.getNetworkCode()+"."+chan.getStationCode()+".xy");
+    	    File outFile = new File("hkstack_"+chan.getNetworkCode()+"."+chan.getStationCode()+".xyz");
     	    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outFile)));
     		float[][] stackVals = sumHK.getStack();
     		for(int j = 0; j < stackVals.length; j++) {
+    			QuantityImpl hQ = sumHK.getHFromIndex(j);
+    			double hVal = hQ.getValue(UnitImpl.KILOMETER);
     			for(int k = 0; k < stackVals[j].length; k++) {
-    				out.print(stackVals[j][k]+" ");
+    				float kVal = sumHK.getKFromIndex(k);
+    				out.println(kVal+" "+hVal+" "+stackVals[j][k]+" ");
     			}
-    			out.println();
     		}
     		out.close();
     	}

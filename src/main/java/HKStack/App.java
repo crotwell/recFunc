@@ -20,7 +20,9 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import edu.sc.seis.receiverFunction.StackMaximum;
+import edu.sc.seis.receiverFunction.*;
+import edu.sc.seis.receiverFunction.compare.StationResult;
+import edu.sc.seis.receiverFunction.compare.StationResultRef;
 import org.apache.log4j.BasicConfigurator;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,9 +40,6 @@ import com.martiansoftware.jsap.UnflaggedOption;
 import com.martiansoftware.jsap.stringparsers.FileStringParser;
 
 import edu.sc.seis.TauP.TauModelException;
-import edu.sc.seis.receiverFunction.HKStack;
-import edu.sc.seis.receiverFunction.HKStackImage;
-import edu.sc.seis.receiverFunction.SumHKStack;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
 import edu.sc.seis.seisFile.fdsnws.stationxml.Channel;
@@ -132,6 +131,7 @@ public class App {
         JSONObject json = new JSONObject();
         json.put("doimage", true);
         json.put("dovalues", false);
+		json.put("dosynthmaxima", false);
         json.put("doreport", true);
         json.put("alpha", 6.1);
         JSONObject hObj = new JSONObject();
@@ -162,6 +162,7 @@ public class App {
 
         boolean doImage = runParams.optBoolean("doimage", true);
         boolean doValues = runParams.optBoolean("dovalues", false);
+		boolean doSynthMaxima = runParams.optBoolean("dosynthmaxima", false);
         QuantityImpl alpha = new QuantityImpl(runParams.optDouble("alpha", 6.1), UnitImpl.KILOMETER_PER_SECOND);
         JSONObject hObj = runParams.getJSONObject("h");
         QuantityImpl minH = new QuantityImpl(hObj.optDouble("min", 25), UnitImpl.KILOMETER);
@@ -283,19 +284,24 @@ public class App {
 		StackMaximum[] localMaxima = sumHK.getLocalMaxima(smallestH, 5);
 
     	if (doValues) {
-    	    File outFile = new File("hkstack_"+chan.getNetworkCode()+"."+chan.getStationCode()+".xyz");
-    	    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outFile)));
-    		float[][] stackVals = sumHK.getStack();
-    		for(int j = 0; j < stackVals.length; j++) {
-    			QuantityImpl hQ = sumHK.getHFromIndex(j);
-    			double hVal = hQ.getValue(UnitImpl.KILOMETER);
-    			for(int k = 0; k < stackVals[j].length; k++) {
-    				float kVal = sumHK.getKFromIndex(k);
-    				out.println(kVal+" "+hVal+" "+stackVals[j][k]+" ");
-    			}
-    		}
-    		out.close();
+			writeStackXYZ("hkstack_"+chan.getNetworkCode()+"."+chan.getStationCode()+".xyz", sumHK);
     	}
+    	if (doSynthMaxima) {
+			StationResultRef earsStaRef = new StationResultRef("Global Maxima",
+					"ears",
+					"ears");
+			StationResult staResult = new StationResult(chan.getNetworkCode(),
+					chan.getStationCode(),
+					sumStack.getSum().getMaxValueH(sumStack.getSmallestH()),
+					sumStack.getSum().getMaxValueK(sumStack.getSmallestH()),
+					sumStack.getSum().getAlpha(),
+					earsStaRef);
+			StackComplexity complexity = new StackComplexity(sumStack.getSum(),
+					sumStack.getGaussianWidth());
+			ReceiverFunctionResult rfr = complexity.getSynthetic(staResult);
+    		HKStack maxima = rfr.getHKstack();
+			writeStackXYZ("synthstack_max_"+chan.getNetworkCode()+"."+chan.getStationCode()+".xyz", maxima);
+		}
     	if (doImage) {
     		HKStackImage stackImage = new HKStackImage(sumHK);
     		ImageIO.write(stackImage.createImage(400, 400), "png", new File("hkstack_"+chan.getNetworkCode()+"."+chan.getStationCode()+".png"));
@@ -323,7 +329,21 @@ public class App {
         out.println(runParams.toString(2));
         out.close();
     }
-    
+
+    public void writeStackXYZ(String filename, HKStack sumHK) throws IOException {
+		File outFile = new File(filename);
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outFile)));
+		float[][] stackVals = sumHK.getStack();
+		for(int j = 0; j < stackVals.length; j++) {
+			QuantityImpl hQ = sumHK.getHFromIndex(j);
+			double hVal = hQ.getValue(UnitImpl.KILOMETER);
+			for(int k = 0; k < stackVals[j].length; k++) {
+				float kVal = sumHK.getKFromIndex(k);
+				out.println(kVal+" "+hVal+" "+stackVals[j][k]+" ");
+			}
+		}
+		out.close();
+	}
 
     public JSONObject loadConfigFile(File configfile) throws JSONException, IOException, JsonApiException {
         BufferedReader in = null;

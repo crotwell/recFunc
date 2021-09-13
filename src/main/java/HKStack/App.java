@@ -20,9 +20,13 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import edu.iris.dmc.seedcodec.CodecException;
 import edu.sc.seis.receiverFunction.*;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
+import edu.sc.seis.receiverFunction.crust2.Crust2;
+import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
+import edu.sc.seis.sod.util.convert.sac.FissuresToSac;
 import org.apache.log4j.BasicConfigurator;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -133,7 +137,8 @@ public class App {
         json.put("dovalues", false);
 		json.put("dosynthmaxima", false);
         json.put("doreport", true);
-        json.put("alpha", 6.1);
+        json.put("alpha", "0.0");
+		json.put("alpha_from", "crust2.0");
         JSONObject hObj = new JSONObject();
         hObj.put("min", 25);
         hObj.put("step", .25);
@@ -155,7 +160,7 @@ public class App {
         return json;
     }
     
-    public void doit() throws IOException, FissuresException, TauModelException {
+    public void doit() throws IOException, FissuresException, TauModelException, CodecException {
         System.out.println("doit");
     	List<ReceiverFunctionResult> individuals = new ArrayList<ReceiverFunctionResult>();
 
@@ -163,8 +168,16 @@ public class App {
         boolean doImage = runParams.optBoolean("doimage", true);
         boolean doValues = runParams.optBoolean("dovalues", false);
 		boolean doSynthMaxima = runParams.optBoolean("dosynthmaxima", false);
-        QuantityImpl alpha = new QuantityImpl(runParams.optDouble("alpha", 6.1), UnitImpl.KILOMETER_PER_SECOND);
-        JSONObject hObj = runParams.getJSONObject("h");
+		QuantityImpl alpha;
+		if (runParams.has("alpha_from") && runParams.getString("alpha_from").equalsIgnoreCase("crust2.0")) {
+			alpha = null;
+		} else if (runParams.has("alpha_from") && runParams.getString("alpha_from").equalsIgnoreCase("crust1.0")) {
+            throw new FissuresException("crust1.0 not yet implemented.");
+		} else {
+			runParams.put("alpha_from", "fixed");
+			alpha = new QuantityImpl(runParams.optDouble("alpha", 6.1), UnitImpl.KILOMETER_PER_SECOND);
+		}
+		JSONObject hObj = runParams.getJSONObject("h");
         QuantityImpl minH = new QuantityImpl(hObj.optDouble("min", 25), UnitImpl.KILOMETER);
         QuantityImpl stepH = new QuantityImpl(hObj.optDouble("step", .25), UnitImpl.KILOMETER);
         int numH = hObj.optInt("num", 100);
@@ -200,6 +213,14 @@ public class App {
     	    	chan.setDepth(sac.getHeader().getStdp());
     	    	chan.setLatitude(sac.getHeader().getStla());
     	    	chan.setLongitude(sac.getHeader().getStlo());
+				if (runParams.getString("alpha_from").equalsIgnoreCase("crust2.0")) {
+					Crust2 crust2 = new Crust2();
+					Crust2Profile profile = crust2.getClosest(chan.getLongitudeFloat(), chan.getLatitudeFloat());
+					alpha = new QuantityImpl(profile.getPWaveAvgVelocity(), UnitImpl.KILOMETER_PER_SECOND);
+					runParams.put("alpha", alpha.formatValue("0.00"));
+				} else if (runParams.getString("alpha_from").equalsIgnoreCase("crust1.0")) {
+					throw new FissuresException("crust1.0 not yet implemented.");
+				}
     		}
     		float percentMatch = sac.getHeader().getUser0();
     		float quassianWidth = sac.getHeader().getUser1();
@@ -299,6 +320,8 @@ public class App {
 			StackComplexity complexity = new StackComplexity(sumStack.getSum(),
 					sumStack.getGaussianWidth());
 			ReceiverFunctionResult rfr = complexity.getSynthetic(staResult);
+			SacTimeSeries sacRadial = FissuresToSac.getSAC(rfr.getRadial());
+			sacRadial.write("synth_"+chan.getNetworkCode()+"."+chan.getStationCode()+"."+chan.getLocCode()+"."+chan.getChannelCode()+".sac");
     		HKStack maxima = rfr.getHKstack();
 			writeStackXYZ("synthstack_max_"+chan.getNetworkCode()+"."+chan.getStationCode()+".xyz", maxima);
 		}

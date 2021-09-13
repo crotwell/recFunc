@@ -24,6 +24,8 @@ import edu.iris.dmc.seedcodec.CodecException;
 import edu.sc.seis.receiverFunction.*;
 import edu.sc.seis.receiverFunction.compare.StationResult;
 import edu.sc.seis.receiverFunction.compare.StationResultRef;
+import edu.sc.seis.receiverFunction.crust1.Crust1;
+import edu.sc.seis.receiverFunction.crust1.Crust1Profile;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
 import edu.sc.seis.sod.util.convert.sac.FissuresToSac;
@@ -171,8 +173,10 @@ public class App {
 		QuantityImpl alpha;
 		if (runParams.has("alpha_from") && runParams.getString("alpha_from").equalsIgnoreCase("crust2.0")) {
 			alpha = null;
+			runParams.put("alpha", "0.0");
 		} else if (runParams.has("alpha_from") && runParams.getString("alpha_from").equalsIgnoreCase("crust1.0")) {
-            throw new FissuresException("crust1.0 not yet implemented.");
+			alpha = null;
+			runParams.put("alpha", "0.0");
 		} else {
 			runParams.put("alpha_from", "fixed");
 			alpha = new QuantityImpl(runParams.optDouble("alpha", 6.1), UnitImpl.KILOMETER_PER_SECOND);
@@ -219,7 +223,10 @@ public class App {
 					alpha = new QuantityImpl(profile.getPWaveAvgVelocity(), UnitImpl.KILOMETER_PER_SECOND);
 					runParams.put("alpha", alpha.formatValue("0.00"));
 				} else if (runParams.getString("alpha_from").equalsIgnoreCase("crust1.0")) {
-					throw new FissuresException("crust1.0 not yet implemented.");
+					Crust1 crust1 = new Crust1();
+					Crust1Profile profile = crust1.getClosest(chan.getLongitudeFloat(), chan.getLatitudeFloat());
+					alpha = new QuantityImpl(profile.getPWaveAvgVelocity(), UnitImpl.KILOMETER_PER_SECOND);
+					runParams.put("alpha", alpha.formatValue("0.00"));
 				}
     		}
     		float percentMatch = sac.getHeader().getUser0();

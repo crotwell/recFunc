@@ -171,15 +171,24 @@ public class App {
         boolean doValues = runParams.optBoolean("dovalues", false);
 		boolean doSynthMaxima = runParams.optBoolean("dosynthmaxima", false);
 		QuantityImpl alpha;
-		if (runParams.has("alpha_from") && runParams.getString("alpha_from").equalsIgnoreCase("crust2.0")) {
-			alpha = null;
-			runParams.put("alpha", "0.0");
-		} else if (runParams.has("alpha_from") && runParams.getString("alpha_from").equalsIgnoreCase("crust1.0")) {
-			alpha = null;
-			runParams.put("alpha", "0.0");
+		if (runParams.has("alpha_from")) {
+			if (runParams.getString("alpha_from").equalsIgnoreCase("crust2.0")) {
+				alpha = null;
+				runParams.put("alpha", "0.0");
+			} else if (runParams.getString("alpha_from").equalsIgnoreCase("crust1.0")) {
+				alpha = null;
+				runParams.put("alpha", "0.0");
+			} else {
+                throw new FissuresException("Do not understand \"alpha_from\": "+runParams.getString("alpha_from"));
+			}
 		} else {
 			runParams.put("alpha_from", "fixed");
-			alpha = new QuantityImpl(runParams.optDouble("alpha", 6.1), UnitImpl.KILOMETER_PER_SECOND);
+			if (runParams.has("alpha")) {
+				alpha = new QuantityImpl(runParams.getDouble("alpha"), UnitImpl.KILOMETER_PER_SECOND);
+			} else {
+				alpha = new QuantityImpl(6.1, UnitImpl.KILOMETER_PER_SECOND);
+				runParams.put("alpha", alpha.formatValue("0.00"));
+			}
 		}
 		JSONObject hObj = runParams.getJSONObject("h");
         QuantityImpl minH = new QuantityImpl(hObj.optDouble("min", 25), UnitImpl.KILOMETER);

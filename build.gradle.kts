@@ -13,7 +13,7 @@ plugins {
     id("project-report")
 }
 
-version = "0.1-20210915d"
+version = "0.1-20211004a"
 
 repositories {
     mavenLocal()

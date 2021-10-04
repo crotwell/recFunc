@@ -215,6 +215,7 @@ public class App {
         boolean doReport = runParams.optBoolean("doreport", true);
         
     	Channel chan = null;
+    	int numEventsInput = 0;
     	for (String sacfilename: filenameList ) {
 
     		SacTimeSeries sac = SacTimeSeries.read(sacfilename);
@@ -249,7 +250,6 @@ public class App {
     		
     		LocalSeismogramImpl recFuncSeis = SacToFissures.getSeismogram(sac);
     		Duration shift = ClockUtil.durationOfSeconds(sac.getHeader().getA()-sac.getHeader().getB());
-    		System.out.println("shift:  "+shift+"   "+sac.getHeader().getA()+" "+sac.getHeader().getB());
 
     		HKStack stack = new HKStack(alpha,
     				rayParam,
@@ -355,7 +355,8 @@ public class App {
             sumStack.reportJson(json);
             
             json.key("config").value(runParams);
-            
+			json.key("numEventsInput").value(filenameList.size());
+            json.key("numEventsUsed").value(sumStack.getNumEQ());
             json.endObject();
             
             JSONObject formated = new JSONObject(json.toString());

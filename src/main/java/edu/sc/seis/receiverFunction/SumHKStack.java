@@ -46,6 +46,7 @@ public class SumHKStack {
                       List<ReceiverFunctionResult> individuals,
                       Set<RejectedMaxima> rejects) {
         this.sum = sum;
+        this.numEQ = numEQ;
         this.minPercentMatch = minPercentMatch;
         this.smallestH = smallestH;
         this.hVariance = hVariance;
@@ -405,7 +406,12 @@ public class SumHKStack {
         hVariance = (float)hStat.var();
         Statistics kStat = new Statistics(kErrors);
         kVariance = (float)kStat.var();
-        mixedVariance = (float)hStat.correlation(kErrors);
+        try {
+            mixedVariance = (float) hStat.correlation(kErrors);
+        } catch (ArithmeticException e) {
+            // likely divide by zero in correlation, just set to zero
+            mixedVariance = 0.0f;
+        }
         best.setHStdDev(getHStdDev());
         best.setKStdDev((float)getKStdDev());
         hBootstrap = hErrors;
@@ -671,13 +677,15 @@ public class SumHKStack {
         json.object();
         json.key("hkstack");
         sum.reportJson(json);
-        json.key("numEQ").value(numEQ);
+        json.key("numEQ").value(getNumEQ());
         json.key("complexResidual").value(formatComplexityResidual());
         json.key("bootstrap").object();
         // stddev only if calc bootstrap
         if (hBootstrap != null) {
             json.key("Hstddev").value(getHStdDev());
             json.key("Kstddev").value(getKStdDev());
+            json.key("mixedVariance").value(mixedVariance);
+            json.key("iterations").value(hBootstrap.length);
         }
         json.endObject();
         json.key("gaussianWidth").value(gaussianWidth);
@@ -699,6 +707,18 @@ public class SumHKStack {
             json.key("complexityResidual").value(m.complexityResidual);
             json.key("complexityOriginal").value(m.complexityOriginal);
             json.key("maxValue").value(m.maxValue);
+            json.endObject();
+        }
+        json.endArray();
+
+        json.key("rejectedMaxima").array();
+        for (RejectedMaxima rjm: getRejectedMaxima()) {
+            json.object();
+            json.key("hmin").value(rjm.getHMin());
+            json.key("hmax").value(rjm.getHMax());
+            json.key("kmin").value(rjm.getKMin());
+            json.key("kmax").value(rjm.getKMax());
+            json.key("reason").value(rjm.getReason());
             json.endObject();
         }
         json.endArray();

@@ -3,14 +3,7 @@
  */
 package HKStack;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,6 +12,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
+import javax.xml.stream.XMLStreamException;
 
 import edu.iris.dmc.seedcodec.CodecException;
 import edu.sc.seis.receiverFunction.*;
@@ -28,6 +22,8 @@ import edu.sc.seis.receiverFunction.crust1.Crust1;
 import edu.sc.seis.receiverFunction.crust1.Crust1Profile;
 import edu.sc.seis.receiverFunction.crust2.Crust2;
 import edu.sc.seis.receiverFunction.crust2.Crust2Profile;
+import edu.sc.seis.seisFile.SeisFileException;
+import edu.sc.seis.seisFile.fdsnws.stationxml.*;
 import edu.sc.seis.sod.util.convert.sac.FissuresToSac;
 import org.apache.log4j.BasicConfigurator;
 import org.json.JSONException;
@@ -48,9 +44,6 @@ import com.martiansoftware.jsap.stringparsers.FileStringParser;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.receiverFunction.hibernate.ReceiverFunctionResult;
 import edu.sc.seis.receiverFunction.hibernate.RejectedMaxima;
-import edu.sc.seis.seisFile.fdsnws.stationxml.Channel;
-import edu.sc.seis.seisFile.fdsnws.stationxml.Network;
-import edu.sc.seis.seisFile.fdsnws.stationxml.Station;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import edu.sc.seis.sod.SodConfig;
 import edu.sc.seis.sod.model.common.FissuresException;
@@ -66,7 +59,7 @@ import edu.sc.seis.sod.web.jsonapi.JsonApiException;
 
 public class App {
     
-    public void config(String[] args) throws JSAPException, IOException {
+    public void config(String[] args) throws JSAPException, IOException, SeisFileException, XMLStreamException {
     	SimpleJSAP jsap = new SimpleJSAP( 
                 "HKStack", 
                 "Calculate H-K stacks for receiver functions",
@@ -75,6 +68,8 @@ public class App {
                         "File with list of receiver function filenames to include." ),
                     new FlaggedOption( "config", FileStringParser.getParser(), JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'c', JSAP.NO_LONGFLAG, 
                         "File with configuration parameters (json)." ),
+						new FlaggedOption( "staxml", FileStringParser.getParser(), JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 's', JSAP.NO_LONGFLAG,
+								"File network level stationxml." ),
                     new QualifiedSwitch( "verbose", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'v', "verbose", 
                         "Requests verbose output." ),
                     new Switch( "savedefaults", JSAP.NO_SHORTFLAG, "defaultconfig", 
@@ -86,6 +81,16 @@ public class App {
 
     	JSAPResult config = jsap.parse(args);    
     	if ( jsap.messagePrinted() ) System.exit( 1 );
+    	if (config.getFile("staxml") != null) {
+    		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(config.getFile("staxml")));
+			FDSNStationXML stationXml = FDSNStationXML.loadStationXML(bis);
+			NetworkIterator nIt = stationXml.getNetworks();
+			while (nIt.hasNext()) {
+				Network n = nIt.next();
+				networkList.add(n);
+			}
+			stationXml.closeReader();
+		}
     	if (config.getBoolean("savedefaults")) {
 
             File outFile = new File("config_default.json");
@@ -215,12 +220,31 @@ public class App {
         boolean doReport = runParams.optBoolean("doreport", true);
         
     	Channel chan = null;
+    	String netCodeYear = null;
     	int numEventsInput = 0;
     	for (String sacfilename: filenameList ) {
 
     		SacTimeSeries sac = SacTimeSeries.read(sacfilename);
+			LocalSeismogramImpl recFuncSeis = SacToFissures.getSeismogram(sac);
     		if (chan == null) {
     	    	Network net = new Network(sac.getHeader().getKnetwk().strip());
+				if (net.isTemporary()) {
+				    for (Network n: networkList ) {
+					    if (n.getNetworkCode() == net.getNetworkCode()
+								&& n.getStartDateTime().isBefore(recFuncSeis.getBeginTime())
+								&& n.getEndDateTime().isAfter(recFuncSeis.getBeginTime())) {
+					    	// net overlaps seismogram
+							net = n;
+							break;
+						}
+					}
+				} else {
+					for (Network n : networkList) {
+						if (n.getNetworkCode() == net.getNetworkCode()) {
+							net = n;
+						}
+					}
+				}
     	    	Station sta = new Station(net, sac.getHeader().getKstnm().strip());
     	    	chan = new Channel(sta, sac.getHeader().getKhole().strip(), sac.getHeader().getKcmpnm().strip());
     	    	chan.setElevation(sac.getHeader().getStel());
@@ -247,8 +271,7 @@ public class App {
     		if (rayParam < 0) {
     			throw new FissuresException("rayParam is undefined in sac file: "+rayParam+" for "+sacfilename);
     		}
-    		
-    		LocalSeismogramImpl recFuncSeis = SacToFissures.getSeismogram(sac);
+
     		Duration shift = ClockUtil.durationOfSeconds(sac.getHeader().getA()-sac.getHeader().getB());
 
     		HKStack stack = new HKStack(alpha,
@@ -321,13 +344,13 @@ public class App {
 		StackMaximum[] localMaxima = sumHK.getLocalMaxima(smallestH, 5);
 
     	if (doValues) {
-			writeStackXYZ("hkstack_"+chan.getNetworkCode()+"."+chan.getStationCode()+".xyz", sumHK);
+			writeStackXYZ("hkstack_"+chan.getNetworkId()+"."+chan.getStationCode()+".xyz", sumHK);
     	}
     	if (doSynthMaxima) {
 			StationResultRef earsStaRef = new StationResultRef("Global Maxima",
 					"ears",
 					"ears");
-			StationResult staResult = new StationResult(chan.getNetworkCode(),
+			StationResult staResult = new StationResult(chan.getNetworkId(),
 					chan.getStationCode(),
 					sumStack.getSum().getMaxValueH(sumStack.getSmallestH()),
 					sumStack.getSum().getMaxValueK(sumStack.getSmallestH()),
@@ -337,17 +360,17 @@ public class App {
 					sumStack.getGaussianWidth());
 			ReceiverFunctionResult rfr = complexity.getSynthetic(staResult);
 			SacTimeSeries sacRadial = FissuresToSac.getSAC(rfr.getRadial());
-			sacRadial.write("synth_"+chan.getNetworkCode()+"."+chan.getStationCode()+"."+chan.getLocCode()+"."+chan.getChannelCode()+".sac");
+			sacRadial.write("synth_"+chan.getNetworkId()+"."+chan.getStationCode()+"."+chan.getLocCode()+"."+chan.getChannelCode()+".sac");
     		HKStack maxima = rfr.getHKstack();
-			writeStackXYZ("synthstack_max_"+chan.getNetworkCode()+"."+chan.getStationCode()+".xyz", maxima);
+			writeStackXYZ("synthstack_max_"+chan.getNetworkId()+"."+chan.getStationCode()+".xyz", maxima);
 		}
     	if (doImage) {
     		HKStackImage stackImage = new HKStackImage(sumHK);
-    		ImageIO.write(stackImage.createImage(400, 400), "png", new File("hkstack_"+chan.getNetworkCode()+"."+chan.getStationCode()+".png"));
+    		ImageIO.write(stackImage.createImage(400, 400), "png", new File("hkstack_"+chan.getNetworkId()+"."+chan.getStationCode()+".png"));
 
     	}
     	if (doReport) {
-            File outFile = new File("report_"+chan.getNetworkCode()+"."+chan.getStationCode()+".json");
+            File outFile = new File("report_"+chan.getNetworkId()+"."+chan.getStationCode()+".json");
             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outFile)));
             JSONStringer json = new JSONStringer();
             json.object();
@@ -364,7 +387,7 @@ public class App {
             out.close();
     	}
 
-        File outFile = new File("config_"+chan.getNetworkCode()+"."+chan.getStationCode()+".json");
+        File outFile = new File("config_"+chan.getNetworkId()+"."+chan.getStationCode()+".json");
         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outFile)));
         out.println(runParams.toString(2));
         out.close();
@@ -410,7 +433,7 @@ public class App {
     
     List<String> filenameList = new ArrayList<String>();
     JSONObject runParams;
-    
+	List<Network> networkList = new ArrayList<Network>();
 
     public static void main(String[] args) throws FileNotFoundException, IOException, FissuresException, JSAPException {
         try {

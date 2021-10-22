@@ -686,6 +686,16 @@ public class SumHKStack {
             json.key("Kstddev").value(getKStdDev());
             json.key("mixedVariance").value(mixedVariance);
             json.key("iterations").value(hBootstrap.length);
+            json.key("hbootstrap").array();
+            for (double d: hBootstrap ) {
+                json.value(d);
+            }
+            json.endArray();
+            json.key("kbootstrap").array();
+            for (double d: kBootstrap ) {
+                json.value(d);
+            }
+            json.endArray();
         }
         json.endObject();
         json.key("gaussianWidth").value(gaussianWidth);

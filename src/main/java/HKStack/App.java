@@ -5,6 +5,7 @@ package HKStack;
 
 import java.io.*;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -229,6 +230,8 @@ public class App {
     		if (chan == null) {
     	    	Network net = new Network(sac.getHeader().getKnetwk().strip());
 				if (net.isTemporary()) {
+					// set start year as sac year just in case
+					net.setStartDateTime(Instant.parse(sac.getHeader().getNzyear()+"-01-01T00:00:00Z"));
 				    for (Network n: networkList ) {
 					    if (n.getNetworkCode() == net.getNetworkCode()
 								&& n.getStartDateTime().isBefore(recFuncSeis.getBeginTime())

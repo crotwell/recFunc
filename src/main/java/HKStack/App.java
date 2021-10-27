@@ -89,6 +89,9 @@ public class App {
 			while (nIt.hasNext()) {
 				Network n = nIt.next();
 				networkList.add(n);
+				if (n.getNetworkCode() == "XK") {
+					System.out.println("Found an XK network, using id="+n.getNetworkId());
+				}
 			}
 			stationXml.closeReader();
 		}
@@ -248,8 +251,11 @@ public class App {
 						}
 					}
 				}
+
     	    	Station sta = new Station(net, sac.getHeader().getKstnm().strip());
+				System.out.println("Updating network in channel for "+sta.getStationCode()+" to be "+net.getNetworkId());
     	    	chan = new Channel(sta, sac.getHeader().getKhole().strip(), sac.getHeader().getKcmpnm().strip());
+    	    	System.out.println(("Channel: "+chan.getSourceId()));
     	    	chan.setElevation(sac.getHeader().getStel());
     	    	chan.setDepth(sac.getHeader().getStdp());
     	    	chan.setLatitude(sac.getHeader().getStla());

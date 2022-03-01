@@ -146,6 +146,7 @@ public class App {
         JSONObject json = new JSONObject();
         json.put("doimage", true);
         json.put("dovalues", false);
+		json.put("donormvalues", false);
 		json.put("dosynthmaxima", false);
         json.put("doreport", true);
         json.put("alpha", "0.0");
@@ -177,7 +178,8 @@ public class App {
 
 
         boolean doImage = runParams.optBoolean("doimage", true);
-        boolean doValues = runParams.optBoolean("dovalues", false);
+		boolean doValues = runParams.optBoolean("dovalues", false);
+		boolean doNormValues = runParams.optBoolean("donormvalues", false);
 		boolean doSynthMaxima = runParams.optBoolean("dosynthmaxima", false);
 		QuantityImpl alpha;
 		if (runParams.has("alpha_from")) {
@@ -355,6 +357,31 @@ public class App {
     	if (doValues) {
 			writeStackXYZ("hkstack_"+chan.getNetworkId()+"."+chan.getStationCode()+".xyz", sumHK);
     	}
+		if (doNormValues) {
+			int numEQ = sumStack.getNumEQ();
+			float[][] stackVals = sumHK.getStack();
+			float[][] normed = new float[stackVals.length][stackVals[0].length];
+			for (int i=0; i<stackVals.length; i++) {
+				for (int j=0; j<stackVals[i].length; j++) {
+					normed[i][j] = stackVals[i][j] / numEQ;
+				}
+			}
+			HKStack normHK = new HKStack(sumHK.getAlpha(),
+					sumHK.getP(),
+					sumHK.getGaussianWidth(),
+					sumHK.getPercentMatch(),
+					sumHK.getMinH(),
+					sumHK.getStepH(),
+					sumHK.getNumH(),
+					sumHK.getMinK(),
+					sumHK.getStepK(),
+					sumHK.getNumK(),
+					sumHK.getWeightPs(),
+					sumHK.getWeightPpPs(),
+					sumHK.getWeightPsPs(),
+					normed);
+			writeStackXYZ("hkstack_norm_"+chan.getNetworkId()+"."+chan.getStationCode()+".xyz", normHK);
+		}
     	if (doSynthMaxima) {
 			StationResultRef earsStaRef = new StationResultRef("Global Maxima",
 					"ears",

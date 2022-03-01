@@ -782,7 +782,7 @@ public class HKStack  {
         return getAlpha().formatValue("0.00");
     }
 
-    protected float getGaussianWidth() {
+    public float getGaussianWidth() {
         return gwidth;
     }
 
